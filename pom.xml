@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openqa.selendroid</groupId>
+	<artifactId>selendroid</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>selendroid</name>
+	<modules>
+		<module>selendroid-server</module>
+		<module>selendroid-large-tests</module>
+		<module>selendroid-test-app</module>
+	</modules>
+
+	<properties>
+		<platform.version>2.3.3</platform.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<developers>
+		<developer>
+			<id>ddary</id>
+			<name>Dominik Dary</name>
+			<url>https://github.com/DominikDary</url>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+</project>

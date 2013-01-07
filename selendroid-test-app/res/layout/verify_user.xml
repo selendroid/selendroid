@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/tableLayout1" android:layout_width="match_parent"
+	android:layout_height="match_parent" android:shrinkColumns="*"
+	android:stretchColumns="*">
+
+	<TableRow android:id="@+id/tableHeader" android:layout_height="wrap_content"
+		android:layout_width="match_parent" android:gravity="center_horizontal">
+		<TextView android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:text="Verify user" />
+	</TableRow>
+
+	<TableRow android:id="@+id/tableRowName"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_name"
+			android:layout_height="wrap_content" android:text="@string/label_name" />
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_name_data"
+			android:layout_height="wrap_content" android:text="" />
+	</TableRow>
+	<TableRow android:id="@+id/tableRowUsername"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_username"
+			android:layout_height="wrap_content" android:text="@string/label_username" />
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_username_data"
+			android:layout_height="wrap_content" android:text="" />
+	</TableRow>
+	<TableRow android:id="@+id/tableRowPassword"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_password"
+			android:layout_height="wrap_content" android:text="@string/label_password" />
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_password_data"
+			android:layout_height="wrap_content" android:text="" />
+	</TableRow>
+	<TableRow android:id="@+id/tableRowEmail"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_email"
+			android:layout_height="wrap_content" android:text="@string/label_email" />
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_email_data"
+			android:layout_height="wrap_content" android:text="" />
+	</TableRow>
+	<TableRow android:id="@+id/tableRowPreferedProgrammingLanguage"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<TextView android:layout_width="fill_parent"
+			android:id="@+id/label_preferedProgrammingLanguage"
+			android:layout_height="wrap_content" android:text="@string/label_preferedProgrammingLanguage" />
+		<TextView android:layout_width="fill_parent"
+			android:id="@+id/label_preferedProgrammingLanguage_data"
+			android:layout_height="wrap_content" android:text="" />
+	</TableRow>
+
+	<TableRow android:id="@+id/tableRowAcceptAdds"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_acceptAdds"
+			android:layout_height="wrap_content" android:text="@string/label_acceptAdds" />
+		<TextView android:layout_width="fill_parent" android:id="@+id/label_acceptAdds_data"
+			android:layout_height="wrap_content" android:text="" />
+	</TableRow>
+
+	<TableRow android:id="@+id/tableHeader" android:layout_height="wrap_content"
+		android:layout_width="match_parent" android:gravity="center_horizontal">
+		<Button android:id="@+id/buttonRegisterUser"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:onClick="registerUserAfterVerificytion" android:text="Register User" />
+	</TableRow>
+</TableLayout>

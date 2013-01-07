@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/hello" />
+
+    <Button
+        android:id="@+id/buttonTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="showL10nDialog"
+        android:text="@string/button" />
+
+    <Button
+        android:id="@+id/buttonStartWebview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="showWebViewDialog"
+        android:text="Start Webview" />
+
+    <EditText
+        android:id="@+id/my_text_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/startUserRegistration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="showUserRegistrationDialog"
+        android:text="Start User Registration" />
+
+</LinearLayout>
