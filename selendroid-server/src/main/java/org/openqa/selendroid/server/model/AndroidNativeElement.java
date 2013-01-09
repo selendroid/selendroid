@@ -1,0 +1,300 @@
+/*
+ * Copyright 2012 selendroid committers.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package org.openqa.selendroid.server.model;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+
+import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.android.AndroidKeys;
+import org.openqa.selendroid.android.AndroidWait;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.TimeoutException;
+
+import android.content.res.Resources;
+import android.graphics.Rect;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.common.base.Function;
+import com.google.gson.JsonObject;
+
+public class AndroidNativeElement implements AndroidElement {
+  protected static final long DURATION_OF_LONG_PRESS = (long) (ViewConfiguration
+      .getLongPressTimeout() * 1.5f);
+  private View view;
+  private Collection<AndroidElement> children = new HashSet<AndroidElement>();
+  private AndroidElement parent;
+  private ServerInstrumentation instrumentation;
+
+  public AndroidNativeElement(View view, ServerInstrumentation instrumentation) {
+    this.view = view;
+    this.instrumentation = instrumentation;
+  }
+
+  @Override
+  public AndroidElement getParent() {
+    return parent;
+  }
+
+  public boolean isDisplayed() {
+    return view.hasWindowFocus() && view.isEnabled() && view.isShown() && (view.getWidth() > 0)
+        && (view.getHeight() > 0);
+  }
+
+  private void waitUntilIsDisplayed() {
+    AndroidWait wait = instrumentation.getAndroidWait();
+    // TODO(dxu): determine the proper timeout and call
+    // wait.setTimeoutInMillis(timeoutInMillis), default 1000ms in
+    // AndroidWait
+    try {
+      wait.until(new Function<Void, Boolean>() {
+        @Override
+        public Boolean apply(Void input) {
+          return isDisplayed();
+        }
+      });
+    } catch (TimeoutException exception) {
+      throw new SelendroidException("You may only do passive read with element not displayed");
+    }
+  }
+
+  protected void scrollIntoScreenIfNeeded() {
+    // TODO REVIEW: similar to click method
+    int[] location = new int[2];
+    view.getLocationOnScreen(location);
+    final int left = location[0];
+    final int top = location[1];
+    final int right = left + view.getWidth();
+    final int bottom = top + view.getHeight();
+
+    instrumentation.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        view.requestRectangleOnScreen(new Rect(left, top, right, bottom));
+      }
+    });
+
+  }
+
+  @Override
+  public void enterText(CharSequence text) {
+    final View viewview = view;
+    instrumentation.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        viewview.requestFocus();
+      }
+    });
+    click();
+    send(text);
+  }
+
+  @Override
+  public String getText() {
+    if (view instanceof TextView) {
+      return ((TextView) view).getText().toString();
+    }
+    System.err.println("not supported elment for getting the text: "
+        + view.getClass().getSimpleName());
+    return null;
+  }
+
+  @Override
+  public void click() {
+    waitUntilIsDisplayed();
+    scrollIntoScreenIfNeeded();
+    try {
+      Thread.sleep(300);
+    } catch (InterruptedException ignored) {}
+    int[] xy = new int[2];
+    view.getLocationOnScreen(xy);
+    final int viewWidth = view.getWidth();
+    final int viewHeight = view.getHeight();
+    final float x = xy[0] + (viewWidth / 2.0f);
+    float y = xy[1] + (viewHeight / 2.0f);
+
+    clickOnScreen(x, y);
+  }
+
+  private void clickOnScreen(float x, float y) {
+    final ServerInstrumentation inst = ServerInstrumentation.getInstance();
+    long downTime = SystemClock.uptimeMillis();
+    long eventTime = SystemClock.uptimeMillis();
+    final MotionEvent event =
+        MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0);
+    final MotionEvent event2 =
+        MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, x, y, 0);
+    //
+    ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
+      @Override
+      public void run() {}
+    });
+    try {
+      inst.waitForIdleSync();
+      inst.sendPointerSync(event);
+      inst.sendPointerSync(event2);
+      try {
+        Thread.sleep(300);
+      } catch (InterruptedException ignored) {}
+    } catch (SecurityException e) {
+      System.out.println("error while clicking element: " + e);
+    }
+  }
+
+  public Integer getAndroidId() {
+    int viewId = view.getId();
+    return (viewId == View.NO_ID) ? null : viewId;
+  }
+
+  @Override
+  public AndroidElement findElement(By c) throws NoSuchElementException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public <T> T findElement(Class<T> type, By c) throws NoSuchElementException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Collection<AndroidElement> getChildren() {
+    return children;
+  }
+
+  public void setParent(AndroidElement parent) {
+    this.parent = parent;
+  }
+
+  public void addChildren(AndroidElement children) {
+    this.children.add(children);
+  }
+
+  public String toString() {
+    StringBuilder string = new StringBuilder();
+    string.append("view " + view.getClass());
+    string.append("view " + view.getTag());
+
+    return string.toString();
+  }
+
+  private static int indexOfSpecialKey(CharSequence string, int startIndex) {
+    for (int i = startIndex; i < string.length(); i++) {
+      if (AndroidKeys.hasAndroidKeyEvent(string.charAt(i))) {
+        return i;
+      }
+    }
+    return string.length();
+  }
+
+  protected void send(CharSequence string) {
+    int currentIndex = 0;
+
+    instrumentation.waitForIdleSync();
+
+    while (currentIndex < string.length()) {
+      char currentCharacter = string.charAt(currentIndex);
+      if (AndroidKeys.hasAndroidKeyEvent(currentCharacter)) {
+        // The next character is special and must be sent individually
+        instrumentation.sendKeyDownUpSync(AndroidKeys.keyCodeFor(currentCharacter));
+        currentIndex++;
+      } else {
+        // There is at least one "normal" character, that is a character
+        // represented by a plain Unicode character that can be sent
+        // with
+        // sendStringSync. So send as many such consecutive normal
+        // characters
+        // as possible in a single String.
+        int nextSpecialKey = indexOfSpecialKey(string, currentIndex);
+        instrumentation.sendStringSync(string.subSequence(currentIndex, nextSpecialKey).toString());
+        currentIndex = nextSpecialKey;
+      }
+    }
+  }
+
+  public JsonObject toJson() {
+    JsonObject object = new JsonObject();
+    JsonObject l10n = new JsonObject();
+    l10n.addProperty("matches", 0);
+    object.add("l10n", l10n);
+    object.addProperty("label", String.valueOf(view.getContentDescription()));
+    object.addProperty("name", getNativeId());
+    JsonObject rect = new JsonObject();
+
+    object.add("rect", rect);
+    JsonObject origin = new JsonObject();
+    int[] xy = new int[2];
+    view.getLocationOnScreen(xy);
+    origin.addProperty("x", xy[0]);
+    origin.addProperty("y", xy[1]);
+    rect.add("origin", origin);
+
+    JsonObject size = new JsonObject();
+    size.addProperty("height", view.getHeight());
+    size.addProperty("width", view.getWidth());
+    rect.add("size", size);
+
+    object.addProperty("ref", view.getId());
+    object.addProperty("type", view.getClass().getSimpleName());
+    String value = null;
+    if (view instanceof TextView) {
+      value = String.valueOf(((TextView) view).getText());
+    }
+    object.addProperty("value", value);
+
+    return object;
+  }
+
+  private String getNativeId() {
+    String id = "";
+    try {
+      id =
+          ServerInstrumentation.getInstance().getCurrentActivity().getResources()
+              .getResourceName(view.getId());
+    } catch (Resources.NotFoundException e) {
+      // can happen
+    }
+    return id;
+  }
+
+  public View getView() {
+    return view;
+  }
+
+  @Override
+  public void clear() {
+    final View viewview = view;
+    instrumentation.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        viewview.requestFocus();
+        if (viewview instanceof EditText) {
+          ((EditText) viewview).setText("");
+        }
+      }
+    });
+  }
+
+  @Override
+  public void submit() {
+    throw new UnsupportedOperationException();
+  }
+}

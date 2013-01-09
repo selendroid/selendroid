@@ -19,39 +19,36 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.android.AndroidDriver;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
 
 public class BaseAndroidTest {
   protected WebDriver driver = null;
   final String pathSeparator = File.separator;
 
-  @BeforeTest
+  @Before
   public void setup() {
     driver = new AndroidDriver(getDefaultCapabilities());
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
   }
 
-  @AfterTest
+  @After
   public void teardown() {
     driver.quit();
   }
 
   protected DesiredCapabilities getDefaultCapabilities() {
     DesiredCapabilities capa = DesiredCapabilities.android();
-    capa.setCapability("aut", "demoapp");
+    capa.setCapability("aut", "selendroid-test-app");
     capa.setCapability("locale", "de_DE");
-    capa.setCapability("deviceId", "emulator-5554");
     capa.setCapability("maxInstances", "1");
-    capa.setCapability("browserName", "native-android-driver");
-    capa.setCapability("deviceName", "emulator");
+    capa.setCapability("browserName", "selendroid");
     return capa;
   }
 
@@ -61,7 +58,6 @@ public class BaseAndroidTest {
     String nameScreenshot = UUID.randomUUID().toString() + ".png";
     String path = getPath(nameScreenshot);
     FileUtils.copyFile(screenshot, new File(path));
-    Reporter.log("<a href=" + path + " target='_blank' >" + nameScreenshot + "</a>");
   }
 
   private String getPath(String nameTest) throws IOException {

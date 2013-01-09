@@ -15,6 +15,7 @@ package org.openqa.selendroid.tests;
 
 import junit.framework.Assert;
 
+import org.junit.Test;
 import org.openqa.selendroid.tests.domain.PreferedProgrammingLanguage;
 import org.openqa.selendroid.tests.domain.UserDO;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
@@ -22,7 +23,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.Test;
 
 public class UserResgistrationTest extends BaseAndroidTest {
   @Test
@@ -48,7 +48,7 @@ public class UserResgistrationTest extends BaseAndroidTest {
     driver.findElement(By.id("input_preferedProgrammingLanguage")).click();
     driver.findElement(By.linkText(user.getProgrammingLanguage().getValue())).click();
     driver.findElement(By.id("input_adds")).click();
-    takeScreenShoot();
+    //takeScreenShoot();
     driver.findElement(By.id("btnRegisterUser")).click();
   }
 
@@ -66,7 +66,7 @@ public class UserResgistrationTest extends BaseAndroidTest {
         .getText(), user.getProgrammingLanguage().getValue());
     Assert.assertEquals(driver.findElement(By.id("label_acceptAdds_data")).getText(), "true");
 
-    takeScreenShoot();
+    //takeScreenShoot();
     // driver.getPageSource();
     driver.findElement(By.id("buttonRegisterUser")).click();
   }

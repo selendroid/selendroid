@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello Default Locale, AndroidDemoProject!</string>
+    <string name="hello">Hello Default Locale, Selendroid-test-app!</string>
     <string name="button">EN Button</string>
-    <string name="app_name">NativeDriverTestapp</string>
+    <string name="app_name">Selendroid-test-app</string>
     <string name="welcomeRegisterUser">Welcome to register a new User</string>
-    <string name="verifyNewUser">Reguister User (verify)</string>
+    <string name="verifyNewUser">Register User (verify)</string>
     <string name="label_password">Password</string>
     <string name="label_username">Username</string>
     <string name="label_email">E-Mail</string>

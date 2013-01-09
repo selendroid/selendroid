@@ -13,14 +13,18 @@
  */
 package org.openqa.selendroid.tests;
 
+import junit.framework.Assert;
+
+import org.junit.Test;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
+
 
 public class SayHelloWebviewTest extends BaseAndroidTest {
+  @Test
   public void assertThatWebviewSaysHello() {
     WebElement button = driver.findElement(By.linkText("Start Webview"));
     button.click();
