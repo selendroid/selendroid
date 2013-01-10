@@ -57,9 +57,9 @@ public class AndroidServlet implements HttpHandler {
       new HashMap<String, Class<? extends RequestHandler>>();
   protected HashMap<String, Class<? extends RequestHandler>> deleteHandler =
       new HashMap<String, Class<? extends RequestHandler>>();
-  protected AndroidDriver driver = null;
+  protected SelendroidDriver driver = null;
 
-  public AndroidServlet(AndroidDriver driver) {
+  public AndroidServlet(SelendroidDriver driver) {
     this.driver = driver;
     init();
   }

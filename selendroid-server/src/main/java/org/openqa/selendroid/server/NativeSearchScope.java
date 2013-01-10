@@ -36,12 +36,12 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
 
-public class RootSearchScope implements SearchContext, FindsByL10n, FindsById, FindsByText {
+public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById, FindsByText {
   private ServerInstrumentation instrumentation;
   private KnownElements knownElements;
   private ViewHierarchyAnalyzer viewAnalyzer;
 
-  public RootSearchScope(ServerInstrumentation instrumentation, KnownElements knownElements) {
+  public NativeSearchScope(ServerInstrumentation instrumentation, KnownElements knownElements) {
     if (instrumentation == null) {
       throw new IllegalArgumentException("intrumentation instance is null");
     }

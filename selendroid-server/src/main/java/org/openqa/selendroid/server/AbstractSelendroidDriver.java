@@ -11,12 +11,10 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package org.openqa.selendroid.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,100 +23,21 @@ import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
-import org.openqa.selendroid.server.model.AndroidNativeElement;
 import org.openqa.selendroid.server.model.By;
+import org.openqa.selendroid.server.model.SearchContext;
+import org.openqa.selendroid.util.SelendroidLogger;
 
-import android.app.Activity;
+import com.google.gson.JsonObject;
+
 import android.graphics.Bitmap;
 import android.view.View;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-public class AndroidNativeDriver implements AndroidDriver {
-  private ServerInstrumentation serverInstrumentation = null;
-  RootSearchScope searchScope = null;
-  private final Object syncObject = new Object();
+public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   private boolean done = false;
-  static final long RESPONSE_TIMEOUT = 10000L;
-
-  private Session session = null;
-
-  public AndroidNativeDriver(ServerInstrumentation serverInstrumentation) {
-    this.serverInstrumentation = serverInstrumentation;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.openqa.selenium.android.server.AndroidDriver#getSession()
-   */
-  @Override
-  public Session getSession() {
-    return session;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.openqa.selenium.android.server.AndroidDriver#getCurrentUrl()
-   */
-  @Override
-  public String getCurrentUrl() {
-    Activity activity = serverInstrumentation.getCurrentActivity();
-    if (activity == null) {
-      return null;
-    }
-
-    return "and-activity://" + activity.getLocalClassName();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.openqa.selenium.android.server.AndroidDriver#getSessionCapabilities(java.lang.String)
-   */
-  @Override
-  public JsonObject getSessionCapabilities(String sessionId) {
-    System.out.println("session: " + sessionId);
-    System.out.println("capabilities: " + session.getCapabilities());
-    return session.getCapabilities();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.openqa.selenium.android.server.AndroidDriver#initializeSessionForCapabilities(com.google
-   * .gson.JsonObject)
-   */
-  @Override
-  public String initializeSessionForCapabilities(JsonObject desiredCapabilities) {
-    if (this.session != null) {
-      throw new SelendroidException(
-          "There is currently one active session. Not more than one session is possible.");
-    }
-    this.session =
-        new Session(desiredCapabilities, UUID.randomUUID().toString(), WindowType.NATIVE_APP);
-    searchScope = new RootSearchScope(serverInstrumentation, getSession().getKnownElements());
-
-    serverInstrumentation.startMainActivity();
-
-    System.out.println("new s: " + session.getSessionId());
-    return session.getSessionId();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.openqa.selenium.android.server.AndroidDriver#stopSession()
-   */
-  @Override
-  public void stopSession() {
-    serverInstrumentation.finishAllActivities();
-    this.session = null;
-    searchScope = null;
-  }
+  protected SearchContext searchScope;
+  protected ServerInstrumentation serverInstrumentation = null;
+  protected Session session = null;
+  private final Object syncObject = new Object();
 
   /*
    * (non-Javadoc)
@@ -172,35 +91,44 @@ public class AndroidNativeDriver implements AndroidDriver {
   /*
    * (non-Javadoc)
    * 
-   * @see org.openqa.selenium.android.server.AndroidDriver#getSourceOfCurrentActivity()
+   * @see org.openqa.selenium.android.server.AndroidDriver#getSession()
    */
   @Override
-  public JsonObject getSourceOfCurrentActivity() {
-    AndroidNativeElement rootElement = searchScope.getElementTree();
-    JsonObject root = rootElement.toJson();
-    root.addProperty("activity", serverInstrumentation.getCurrentActivity().getComponentName()
-        .toShortString());
-    addChildren(root, rootElement);
-
-    return root;
+  public Session getSession() {
+    return session;
   }
 
-  private void addChildren(JsonObject parent, AndroidElement parentElement) {
-    Collection<AndroidElement> children = parentElement.getChildren();
-    if (children == null || children.isEmpty()) {
-      return;
-    }
-    JsonArray childs = new JsonArray();
-    for (AndroidElement child : children) {
-      if (((AndroidNativeElement) child).getView().getId() != ((AndroidNativeElement) parentElement)
-          .getView().getId() && ((AndroidNativeElement) child).getView().getId() != View.NO_ID) {
-        JsonObject jsonChild = ((AndroidNativeElement) child).toJson();
-        childs.add(jsonChild);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.openqa.selenium.android.server.AndroidDriver#getSessionCapabilities(java.lang.String)
+   */
+  @Override
+  public JsonObject getSessionCapabilities(String sessionId) {
+    SelendroidLogger.log("session: " + sessionId);
+    SelendroidLogger.log("capabilities: " + session.getCapabilities());
+    return session.getCapabilities();
+  }
 
-        addChildren(jsonChild, child);
-      }
+  protected void sleepQuietly(long ms) {
+    try {
+      Thread.sleep(ms);
+    } catch (InterruptedException cause) {
+      Thread.currentThread().interrupt();
+      throw new SelendroidException(cause);
     }
-    parent.add("children", childs);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.openqa.selenium.android.server.AndroidDriver#stopSession()
+   */
+  @Override
+  public void stopSession() {
+    serverInstrumentation.finishAllActivities();
+    this.session = null;
+    searchScope = null;
   }
 
   /*
@@ -215,7 +143,8 @@ public class AndroidNativeDriver implements AndroidDriver {
       throw new SelendroidException("No open windows.");
     }
     done = false;
-    long end = System.currentTimeMillis() + RESPONSE_TIMEOUT;
+    long end =
+        System.currentTimeMillis() + serverInstrumentation.getAndroidWait().getTimeoutInMillis();
     final byte[][] rawPng = new byte[1][1];
     ServerInstrumentation.getInstance().getCurrentActivity().runOnUiThread(new Runnable() {
       public void run() {
@@ -245,17 +174,9 @@ public class AndroidNativeDriver implements AndroidDriver {
       }
     });
 
-    waitForDone(end, RESPONSE_TIMEOUT, "Failed to take screenshot.");
+    waitForDone(end, serverInstrumentation.getAndroidWait().getTimeoutInMillis(),
+        "Failed to take screenshot.");
     return rawPng[0];
-  }
-
-  private static void sleepQuietly(long ms) {
-    try {
-      Thread.sleep(ms);
-    } catch (InterruptedException cause) {
-      Thread.currentThread().interrupt();
-      throw new SelendroidException(cause);
-    }
   }
 
   private void waitForDone(long end, long timeout, String error) {
@@ -270,4 +191,29 @@ public class AndroidNativeDriver implements AndroidDriver {
     }
   }
 
+  public void switchWindow(WindowType type) {
+    session.setActiveWindowType(WindowType.WEBVIEW);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.openqa.selenium.android.server.AndroidDriver#initializeSessionForCapabilities(com.google
+   * .gson.JsonObject)
+   */
+  @Override
+  public String initializeSession(JsonObject desiredCapabilities) {
+    if (this.session != null) {
+      throw new SelendroidException(
+          "There is currently one active session. Not more than one session is possible.");
+    }
+    session = new Session(desiredCapabilities, UUID.randomUUID().toString(), WindowType.NATIVE_APP);
+    searchScope = new NativeSearchScope(serverInstrumentation, getSession().getKnownElements());
+
+    serverInstrumentation.startMainActivity();
+
+    SelendroidLogger.log("new s: " + session.getSessionId());
+    return session.getSessionId();
+  }
 }

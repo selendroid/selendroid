@@ -16,7 +16,7 @@ package org.openqa.selendroid.server;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.KnownElements;
-import org.openqa.selendroid.server.webview.AndroidWebDriver;
+import org.openqa.selendroid.server.webview.SelendroidWebDriver;
 import org.webbitserver.HttpRequest;
 
 import com.google.gson.JsonObject;
@@ -51,10 +51,10 @@ public abstract class RequestHandler {
     return null;
   }
 
-  protected AndroidDriver getAndroidDriver() {
-    AndroidDriver driver = (AndroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
+  protected SelendroidDriver getAndroidDriver() {
+    SelendroidDriver driver = (SelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
     if (isWebviewWindow(driver)) {
-      return new AndroidWebDriver(driver.getSession());
+      return new SelendroidWebDriver(driver.getSession());
     } else {
       return driver;
     }
@@ -64,7 +64,7 @@ public abstract class RequestHandler {
     return getAndroidDriver().getSession().getActiveWindowType();
   }
 
-  protected boolean isWebviewWindow(AndroidDriver driver) {
+  protected boolean isWebviewWindow(SelendroidDriver driver) {
     Session session = driver.getSession();
 
     if (session != null && WindowType.WEBVIEW.equals(session.getActiveWindowType())) {
@@ -83,9 +83,9 @@ public abstract class RequestHandler {
   }
 
   protected AndroidElement getElementFromCache(String id) {
-    AndroidDriver driver = getAndroidDriver();
+    SelendroidDriver driver = getAndroidDriver();
     if (isWebviewWindow(driver)) {
-      return ((AndroidWebDriver) getAndroidDriver()).newAndroidElement(id);
+      return ((SelendroidWebDriver) getAndroidDriver()).newAndroidElement(id);
     } else {
       return driver.getSession().getKnownElements().get(Integer.valueOf(id));
     }

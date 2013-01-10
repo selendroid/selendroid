@@ -15,6 +15,7 @@ package org.openqa.selendroid.server.webview;
 
 import java.util.List;
 
+import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidKeys;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 
@@ -38,7 +39,9 @@ class EventSender {
   /* package */static void sendMotion(final List<MotionEvent> events, final WebView view,
       Activity activity) {
 
-    long timeout = System.currentTimeMillis() + AndroidWebDriver.RESPONSE_TIMEOUT;
+    long timeout =
+        System.currentTimeMillis()
+            + ServerInstrumentation.getInstance().getAndroidWait().getTimeoutInMillis();
 
     synchronized (syncObject) {
       // We keep track of the last motion event sent, so the WebView.onTouchEvent() listener can
@@ -73,7 +76,7 @@ class EventSender {
   private static void waitForNotification(long timeout, String errorMsg) {
     while (!done && (System.currentTimeMillis() < timeout)) {
       try {
-        syncObject.wait(AndroidWebDriver.RESPONSE_TIMEOUT);
+        syncObject.wait(ServerInstrumentation.getInstance().getAndroidWait().getTimeoutInMillis());
       } catch (InterruptedException e) {
         throw new SelendroidException(errorMsg, e);
       }
@@ -92,7 +95,9 @@ class EventSender {
       final CharSequence... text) {
     final KeyCharacterMap characterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
 
-    long timeout = System.currentTimeMillis() + AndroidWebDriver.RESPONSE_TIMEOUT;
+    long timeout =
+        System.currentTimeMillis()
+            + ServerInstrumentation.getInstance().getAndroidWait().getTimeoutInMillis();
 
     synchronized (syncObject) {
       done = false;

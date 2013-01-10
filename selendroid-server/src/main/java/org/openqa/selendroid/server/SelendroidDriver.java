@@ -15,28 +15,31 @@ package org.openqa.selendroid.server;
 
 import java.util.List;
 
+import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
 
 import com.google.gson.JsonObject;
 
-public interface AndroidDriver {
+public interface SelendroidDriver {
 
-  public abstract Session getSession();
+  public AndroidElement findElement(By by);
 
-  public abstract String getCurrentUrl();
+  public List<AndroidElement> findElements(By by);
 
-  public abstract JsonObject getSessionCapabilities(String sessionId);
+  public String getCurrentUrl();
 
-  public abstract String initializeSessionForCapabilities(JsonObject desiredCapabilities);
+  public Session getSession();
 
-  public abstract void stopSession();
+  public JsonObject getSessionCapabilities(String sessionId);
 
-  public abstract AndroidElement findElement(By by);
+  public JsonObject getWindowSource();
 
-  public abstract List<AndroidElement> findElements(By by);
+  public String initializeSession(JsonObject desiredCapabilities);
 
-  public abstract JsonObject getSourceOfCurrentActivity();
+  public void stopSession();
 
-  public abstract byte[] takeScreenshot();
+  public void switchWindow(WindowType type);
+
+  public byte[] takeScreenshot();
 }

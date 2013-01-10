@@ -13,14 +13,11 @@
  */
 package org.openqa.selendroid.server;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
-import org.openqa.selendroid.server.model.AndroidNativeElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.By.ById;
 import org.openqa.selendroid.server.model.By.ByL10nElement;
@@ -30,45 +27,27 @@ import org.openqa.selendroid.server.model.SearchContext;
 import org.openqa.selendroid.server.model.internal.FindsById;
 import org.openqa.selendroid.server.model.internal.FindsByL10n;
 import org.openqa.selendroid.server.model.internal.FindsByText;
-import org.openqa.selendroid.server.webview.AndroidWebDriver;
 import org.openqa.selendroid.server.webview.AndroidWebElement;
+import org.openqa.selendroid.server.webview.SelendroidWebDriver;
 import org.openqa.selendroid.server.webview.js.AndroidAtoms;
 
-import android.app.Activity;
-import android.view.View;
 import android.webkit.WebView;
 
 public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById, FindsByText {
-  private ServerInstrumentation instrumentation;
   private KnownElements knownElements;
   private WebView view;
-  private AndroidWebDriver driver = null;
+  private SelendroidWebDriver driver = null;
 
-  public WebviewSearchScope(ServerInstrumentation instrumentation, KnownElements knownElements,
-      WebView webview, AndroidWebDriver driver) {
-    if (instrumentation == null) {
-      throw new IllegalArgumentException("intrumentation instance is null");
-    }
+  public WebviewSearchScope(KnownElements knownElements, WebView webview, SelendroidWebDriver driver) {
     if (knownElements == null) {
       throw new IllegalArgumentException("knowElements instance is null");
     }
     if (webview == null) {
       throw new IllegalArgumentException("webview instance is null");
     }
-    this.instrumentation = instrumentation;
     this.knownElements = knownElements;
     this.view = webview;
     this.driver = driver;
-  }
-
-  public AndroidNativeElement newAndroidElement(View view) {
-    if (knownElements.hasElement(view.getId())) {
-      return (AndroidNativeElement) knownElements.get(view.getId());
-    } else {
-      AndroidNativeElement e = new AndroidNativeElement(view, instrumentation);
-      knownElements.add(e);
-      return e;
-    }
   }
 
   public AndroidWebElement getElementTree() {
@@ -90,49 +69,30 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
   }
 
   public AndroidWebElement newAndroidWebElementById(String id) {
-    // TODO Review Driver concept
-    return new AndroidWebElement(id, view, driver);
+    AndroidWebElement element = new AndroidWebElement(id, view, driver);
+    knownElements.add(element);
+    return element;
   }
 
   @Override
   public AndroidElement findElement(By by) {
-    String response = null;
     if (by instanceof By.ById) {
-      String id = ((By.ById) by).getElementLocator();
-      response = findById(id);
+      return findElementById(by.getElementLocator());
     } else if (by instanceof By.ByXPath) {
-      String xpath = ((By.ByXPath) by).getElementLocator();
-      response = findByXPath(xpath);
+      return findElementByXPath(by.getElementLocator());
     } else if (by instanceof By.ByLinkText) {
-      throw new UnsupportedOperationException();
+      return findElementByText(by.getElementLocator());
     } else if (by instanceof By.ByName) {
-      String name = ((By.ByName) by).getElementLocator();
-      response = findByName(name);
+      return findElementByName(by.getElementLocator());
     } else {
       throw new UnsupportedOperationException();
     }
-    if (response == null) {
-      throw new NoSuchElementException("The element for locator: '" + by + "' was not found.");
-    }
-    return newAndroidWebElementById(response);
   }
 
   @Override
   public AndroidElement findElementById(String using) {
-    Activity currentActivity = instrumentation.getCurrentActivity();
-    if (currentActivity == null) {
-      return null;
-    }
-    int intId =
-        currentActivity.getResources().getIdentifier(using, "id", currentActivity.getPackageName());
-    if (intId == 0) {
-      return null;
-    }
-    View view = currentActivity.findViewById(intId);
-    if (view == null) {
-      return null;
-    }
-    return newAndroidElement(view);
+    return newAndroidWebElementById((String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id",
+        using));
   }
 
   @Override
@@ -154,30 +114,32 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
   @Override
   public AndroidElement findElementByText(String using) {
-    List<AndroidElement> list = findElementsByText(using);
-
-    if (list != null && !list.isEmpty()) {
-      return list.get(0);
-    }
-    return null;
+    return newAndroidWebElementById((String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT,
+        "linkText", using));
   }
 
   @Override
   public List<AndroidElement> findElementsByText(String using) {
-    List<AndroidElement> list = new ArrayList<AndroidElement>();
-    return list;
+    throw new UnsupportedOperationException();
   }
 
-  public String findById(String id) {
-    return (String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id", id);
-    // return findByXPath("*[@id = '" + id + "']");
+
+  public AndroidElement findElementByXPath(String using) {
+    return newAndroidWebElementById((String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "xpath",
+        using));
   }
 
-  public String findByName(String name) {
-    return (String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "name", name);
+
+  public List<AndroidElement> findElementsByXPath(String using) {
+    throw new UnsupportedOperationException();
   }
 
-  public String findByXPath(String xpath) {
-    return (String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "xpath", xpath);
+  public AndroidElement findElementByName(String using) {
+    return newAndroidWebElementById((String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "name",
+        using));
+  }
+
+  public List<AndroidElement> findElementsByName(String using) {
+    throw new UnsupportedOperationException();
   }
 }

@@ -19,31 +19,53 @@ import java.util.Map;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.DomWindow;
-import org.openqa.selendroid.server.AndroidDriver;
+import org.openqa.selendroid.server.AbstractSelendroidDriver;
 import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.server.WebviewSearchScope;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.model.AndroidElement;
-import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.webview.js.AndroidAtoms;
 import org.openqa.selendroid.server.webview.js.JavascriptExecutor;
 import org.openqa.selendroid.server.webview.js.JavascriptResultNotifier;
+import org.openqa.selendroid.util.SelendroidLogger;
 
 import android.webkit.WebView;
 
 import com.google.gson.JsonObject;
 
-public class AndroidWebDriver implements AndroidDriver {
+public class SelendroidWebDriver extends AbstractSelendroidDriver {
+  private static final String ELEMENT_KEY = "ELEMENT";
   private static final long FOCUS_TIMEOUT = 1000L;
   private static final long LOADING_TIMEOUT = 30000L;
   private static final long POLLING_INTERVAL = 50L;
-  static final long RESPONSE_TIMEOUT = 10000L;
-  private static final String ELEMENT_KEY = "ELEMENT";
-  private static final String WINDOW_KEY = "WINDOW";
   private static final long START_LOADING_TIMEOUT = 700L;
-
   static final long UI_TIMEOUT = 3000L;
+  private volatile boolean pageDoneLoading;
+  private volatile boolean pageStartedLoading;
+  private volatile String result;
+  private volatile boolean resultReady;
   private WebviewSearchScope searchScope = null;
+  private Session session;
+  private final Object syncObject = new Object();
+  private WebView webview = null;
+  private static final String WINDOW_KEY = "WINDOW";
+  private volatile boolean editAreaHasFocus;
+  private JavascriptExecutor jsExe = new JavascriptExecutor();
+  private JavascriptResultNotifier notifier = new JavascriptResultNotifier() {
+    public void notifyResultReady(String updated) {
+      SelendroidLogger.log("notifyResultReady: " + updated);
+      synchronized (syncObject) {
+        result = updated;
+        resultReady = true;
+        syncObject.notify();
+      }
+      System.out.println("result udated?: " + result);
+    }
+  };
+
+  public SelendroidWebDriver(Session session) {
+    this.session = session;
+    init();
+  }
 
   private static String escapeAndQuote(final String toWrap) {
     StringBuilder toReturn = new StringBuilder("\"");
@@ -61,50 +83,7 @@ public class AndroidWebDriver implements AndroidDriver {
     return toReturn.toString();
   }
 
-  private static void sleepQuietly(long ms) {
-    try {
-      Thread.sleep(ms);
-    } catch (InterruptedException cause) {
-      Thread.currentThread().interrupt();
-      throw new SelendroidException(cause);
-    }
-  }
-
-  private volatile boolean editAreaHasFocus;
-
-  private JavascriptExecutor jsExe = new JavascriptExecutor();
-
-  private JavascriptResultNotifier notifier = new JavascriptResultNotifier() {
-    public void notifyResultReady(String updated) {
-      System.out.println("notifyResultReady: " + updated);
-      synchronized (syncObject) {
-        result = updated;
-        resultReady = true;
-        syncObject.notify();
-      }
-      System.out.println("result udated?: " + result);
-    }
-  };
-
-  private volatile boolean pageDoneLoading;
-
-  private volatile boolean pageStartedLoading;
-
-  private volatile String result;
-
-  private volatile boolean resultReady;
-
-  private Session session;
-
-  private final Object syncObject = new Object();
-
-  private WebView webview = null;
-
-  public AndroidWebDriver(Session session) {
-    this.session = session;
-    init();
-  }
-
+  @SuppressWarnings("unchecked")
   private String convertToJsArgs(Object... args) {
     StringBuilder toReturn = new StringBuilder();
 
@@ -144,7 +123,7 @@ public class AndroidWebDriver implements AndroidDriver {
         toReturn.append(escapeAndQuote((String) args[i]));
       }
     }
-    System.out.println("convertToJsArgs: " + toReturn.toString());
+    SelendroidLogger.log("convertToJsArgs: " + toReturn.toString());
     return toReturn.toString();
   }
 
@@ -181,7 +160,8 @@ public class AndroidWebDriver implements AndroidDriver {
             .executeJs(view, notifier, script);
       }
     });
-    long timeout = System.currentTimeMillis() + RESPONSE_TIMEOUT;
+    long timeout =
+        System.currentTimeMillis() + serverInstrumentation.getAndroidWait().getTimeoutInMillis();
     synchronized (syncObject) {
       while (!resultReady && (System.currentTimeMillis() < timeout)) {
         try {
@@ -199,52 +179,19 @@ public class AndroidWebDriver implements AndroidDriver {
     return injectJavascript(script, false, args);
   }
 
-
-
-  @Override
-  public AndroidElement findElement(By by) {
-    if (by == null) {
-      throw new IllegalArgumentException("By cannot be null.");
-    }
-    long start = System.currentTimeMillis();
-
-    AndroidElement found = by.findElement(searchScope);
-
-    while (found == null
-        && (System.currentTimeMillis() - start <= ServerInstrumentation.getInstance()
-            .getAndroidWait().getTimeoutInMillis())) {
-      sleepQuietly(200);
-      found = by.findElement(searchScope);
-    }
-    return found;
-  }
-
-  @Override
-  public List<AndroidElement> findElements(By by) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
   @Override
   public String getCurrentUrl() {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException(
+        "Get current URL is currently not supported for webviews.");
   }
 
   @Override
-  public Session getSession() {
-    return session;
-  }
-
-  @Override
-  public JsonObject getSessionCapabilities(String sessionId) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public JsonObject getSourceOfCurrentActivity() {
-    return null;
+  public JsonObject getWindowSource() {
+    JsonObject json = new JsonObject();
+    String source =
+        (String) executeScript("return (new XMLSerializer()).serializeToString(document.documentElement);");
+    json.addProperty("source", source);
+    return json;
   }
 
   protected void init() {
@@ -260,15 +207,7 @@ public class AndroidWebDriver implements AndroidDriver {
     if (webview == null) {
       throw new SelendroidException("No webview found on current activity.");
     }
-    searchScope =
-        new WebviewSearchScope(ServerInstrumentation.getInstance(), session.getKnownElements(),
-            webview, this);
-  }
-
-  @Override
-  public String initializeSessionForCapabilities(JsonObject desiredCapabilities) {
-    // TODO Auto-generated method stub
-    return null;
+    searchScope = new WebviewSearchScope(session.getKnownElements(), webview, this);
   }
 
   Object injectJavascript(String toExecute, boolean isAsync, Object... args) {
@@ -285,6 +224,10 @@ public class AndroidWebDriver implements AndroidDriver {
 
   }
 
+  public AndroidWebElement newAndroidElement(String id) {
+    return searchScope.newAndroidWebElementById(id);
+  }
+
   void resetPageIsLoading() {
     pageStartedLoading = false;
     pageDoneLoading = false;
@@ -292,19 +235,6 @@ public class AndroidWebDriver implements AndroidDriver {
 
   void setEditAreaHasFocus(boolean focused) {
     editAreaHasFocus = focused;
-  }
-
-  @Override
-  public void stopSession() {
-    ServerInstrumentation.getInstance().finishAllActivities();
-    this.session = null;
-  }
-
-
-  @Override
-  public byte[] takeScreenshot() {
-    // TODO Auto-generated method stub
-    return null;
   }
 
   void waitForPageToLoad() {
@@ -338,9 +268,5 @@ public class AndroidWebDriver implements AndroidDriver {
         throw new RuntimeException(e);
       }
     }
-  }
-
-  public AndroidWebElement newAndroidElement(String id) {
-    return searchScope.newAndroidWebElementById(id);
   }
 }

@@ -36,8 +36,8 @@ public class AndroidServer {
     webServer.add(new AndroidServlet(createAndroidDriver(androidInstrumentation)));
   }
 
-  protected AndroidDriver createAndroidDriver(ServerInstrumentation androidInstrumentation) {
-    return new AndroidNativeDriver(androidInstrumentation);
+  protected SelendroidDriver createAndroidDriver(ServerInstrumentation androidInstrumentation) {
+    return new SelendroidNativeDriver(androidInstrumentation);
   }
 
   public void start() {

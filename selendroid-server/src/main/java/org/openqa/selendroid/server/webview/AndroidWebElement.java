@@ -36,9 +36,9 @@ import com.google.common.collect.Lists;
 public class AndroidWebElement implements AndroidElement {
   private String id;
   private WebView webview;
-  private AndroidWebDriver driver;
+  private SelendroidWebDriver driver;
 
-  public AndroidWebElement(String id, WebView webview, AndroidWebDriver driver) {
+  public AndroidWebElement(String id, WebView webview, SelendroidWebDriver driver) {
     this.id = id;
     this.webview = webview;
     this.driver = driver;
