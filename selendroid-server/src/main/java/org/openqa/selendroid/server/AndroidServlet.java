@@ -17,6 +17,8 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.Subject;
+
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.handler.CaptureScreenshot;
 import org.openqa.selendroid.server.handler.ClearElement;
@@ -34,6 +36,7 @@ import org.openqa.selendroid.server.handler.LogElementTree;
 import org.openqa.selendroid.server.handler.NewSession;
 import org.openqa.selendroid.server.handler.SendKeys;
 import org.openqa.selendroid.server.handler.SetImplicitWaitTimeout;
+import org.openqa.selendroid.server.handler.SubmitForm;
 import org.openqa.selendroid.server.handler.SwitchWindow;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpControl;
@@ -83,6 +86,7 @@ public class AndroidServlet implements HttpHandler {
     postHandler.put("/wd/hub/session/:sessionId/timeouts/implicit_wait",
         SetImplicitWaitTimeout.class);
     postHandler.put("/wd/hub/session/:sessionId/window", SwitchWindow.class);
+    postHandler.put("/session/:sessionId/element/:id/submit", SubmitForm.class);
   }
 
   public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
