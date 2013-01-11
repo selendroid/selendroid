@@ -115,7 +115,6 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public boolean isEnabled() {
-
     return Boolean.getBoolean((String) driver.executeAtom(AndroidAtoms.IS_ENABLED, this));
   }
 

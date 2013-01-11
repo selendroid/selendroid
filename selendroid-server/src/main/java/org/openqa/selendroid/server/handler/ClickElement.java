@@ -15,6 +15,7 @@ package org.openqa.selendroid.server.handler;
 
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
+import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -30,12 +31,16 @@ public class ClickElement extends RequestHandler {
     SelendroidLogger.log("Click element command");
     String id = getElementId();
     AndroidElement element = getElementFromCache(id);
+    if (element == null) {
+      return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"
+          + id + "' was not found."));
+    }
     try {
       element.click();
     } catch (Exception e) {
       SelendroidLogger.logError("error while clicking the element: ", e);
-      return new Response(getAndroidDriver().getSession().getSessionId(), 33, e);
+      return new Response(getSessionId(), 33, e);
     }
-    return new Response(getAndroidDriver().getSession().getSessionId(), "");
+    return new Response(getSessionId(), "");
   }
 }

@@ -27,17 +27,23 @@ import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.SearchContext;
 import org.openqa.selendroid.util.SelendroidLogger;
 
-import com.google.gson.JsonObject;
-
 import android.graphics.Bitmap;
 import android.view.View;
 
+import com.google.gson.JsonObject;
+
 public abstract class AbstractSelendroidDriver implements SelendroidDriver {
-  private boolean done = false;
-  protected SearchContext searchScope;
+  protected boolean done = false;
+  protected SearchContext nativeSearchScope;
+  protected WebviewSearchScope webviewSearchScope = null;
   protected ServerInstrumentation serverInstrumentation = null;
   protected Session session = null;
-  private final Object syncObject = new Object();
+  protected final Object syncObject = new Object();
+
+
+  public AbstractSelendroidDriver() {
+    serverInstrumentation = ServerInstrumentation.getInstance();
+  }
 
   /*
    * (non-Javadoc)
@@ -53,13 +59,13 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
     }
     long start = System.currentTimeMillis();
 
-    AndroidElement found = by.findElement(searchScope);
+    AndroidElement found = by.findElement(getSearchContext());
 
     while (found == null
         && (System.currentTimeMillis() - start <= serverInstrumentation.getAndroidWait()
             .getTimeoutInMillis())) {
       sleepQuietly(200);
-      found = by.findElement(searchScope);
+      found = by.findElement(getSearchContext());
     }
     return found;
   }
@@ -78,14 +84,23 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
     }
     long start = System.currentTimeMillis();
 
-    List<AndroidElement> found = by.findElements(searchScope);
+    List<AndroidElement> found = by.findElements(getSearchContext());
     while (found.isEmpty()
         && (System.currentTimeMillis() - start <= serverInstrumentation.getAndroidWait()
             .getTimeoutInMillis())) {
       sleepQuietly(200);
-      found = by.findElements(searchScope);
+      found = by.findElements(getSearchContext());
     }
     return found;
+  }
+
+  private SearchContext getSearchContext() {
+    if (WindowType.NATIVE_APP.equals(session.getActiveWindowType())) {
+      return nativeSearchScope;
+    } else {
+      return webviewSearchScope;
+    }
+
   }
 
   /*
@@ -128,7 +143,7 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   public void stopSession() {
     serverInstrumentation.finishAllActivities();
     this.session = null;
-    searchScope = null;
+    nativeSearchScope = null;
   }
 
   /*
@@ -208,8 +223,10 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
       throw new SelendroidException(
           "There is currently one active session. Not more than one session is possible.");
     }
-    session = new Session(desiredCapabilities, UUID.randomUUID().toString(), WindowType.NATIVE_APP);
-    searchScope = new NativeSearchScope(serverInstrumentation, getSession().getKnownElements());
+    this.session =
+        new Session(desiredCapabilities, UUID.randomUUID().toString(), WindowType.NATIVE_APP);
+    nativeSearchScope =
+        new NativeSearchScope(serverInstrumentation, getSession().getKnownElements());
 
     serverInstrumentation.startMainActivity();
 

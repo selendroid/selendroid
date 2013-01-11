@@ -35,7 +35,8 @@ public class FindElement extends RequestHandler {
     JsonObject payload = getPayload();
     String method = payload.get("using").getAsString();
     String selector = payload.get("value").getAsString();
-    SelendroidLogger.log(String.format("find element command using %s with selector %s.", method, selector));
+    SelendroidLogger.log(String.format("find element command using '%s' with selector '%s'.",
+        method, selector));
 
 
     By by = new NativeAndroidBySelector().pickFrom(method, selector, getCurrentWindowType());
@@ -46,13 +47,9 @@ public class FindElement extends RequestHandler {
       return new Response(getSessionId(), 7, e);
     }
     JsonObject result = new JsonObject();
-    // HACK
-    if (element instanceof AndroidWebElement) {
-      result.addProperty("ELEMENT", ((AndroidWebElement) element).getId());
-    } else {
-      result.addProperty("ELEMENT", getAndroidDriver().getSession().getKnownElements()
-          .getIdOfElement(element));
-    }
+
+    result.addProperty("ELEMENT", getKnownElements().getIdOfElement(element));
+
     return new Response(getSessionId(), 0, result);
   }
 }

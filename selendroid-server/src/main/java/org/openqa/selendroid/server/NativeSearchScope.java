@@ -54,8 +54,8 @@ public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById,
   }
 
   private AndroidNativeElement newAndroidElement(View view) {
-    if (knownElements.hasElement(view.getId())) {
-      return (AndroidNativeElement) knownElements.get(view.getId());
+    if (knownElements.hasElement(String.valueOf(view.getId()))) {
+      return (AndroidNativeElement) knownElements.get(String.valueOf(view.getId()));
     } else {
       AndroidNativeElement e = new AndroidNativeElement(view, instrumentation);
       knownElements.add(e);
@@ -75,7 +75,7 @@ public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById,
         continue;
       }
       AndroidNativeElement element = newAndroidElement(view);
-      Integer parentViewId = ((View) view.getParent()).getId();
+      String parentViewId = String.valueOf(((View) view.getParent()).getId());
       if (knownElements.hasElement(parentViewId)) {
         ((AndroidNativeElement) knownElements.get(parentViewId)).addChildren(element);
       } else {

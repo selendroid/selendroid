@@ -28,7 +28,7 @@ public class SayHelloWebviewTest extends BaseAndroidTest {
   public void assertThatWebviewSaysHello() {
     WebElement button = driver.findElement(By.linkText("Start Webview"));
     button.click();
-    WebDriverWait wait = new WebDriverWait(driver, 5);
+    WebDriverWait wait = new WebDriverWait(driver, 10);
     wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
     driver.switchTo().window("WEBVIEW");
     WebElement inputField = driver.findElement(By.id("name"));

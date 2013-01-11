@@ -24,7 +24,7 @@ import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.server.WebviewSearchScope;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.webview.js.AndroidAtoms;
-import org.openqa.selendroid.server.webview.js.JavascriptExecutor;
+import org.openqa.selendroid.server.webview.js.WebviewJsExecutor;
 import org.openqa.selendroid.server.webview.js.JavascriptResultNotifier;
 import org.openqa.selendroid.util.SelendroidLogger;
 
@@ -43,13 +43,10 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   private volatile boolean pageStartedLoading;
   private volatile String result;
   private volatile boolean resultReady;
-  private WebviewSearchScope searchScope = null;
-  private Session session;
-  private final Object syncObject = new Object();
   private WebView webview = null;
   private static final String WINDOW_KEY = "WINDOW";
   private volatile boolean editAreaHasFocus;
-  private JavascriptExecutor jsExe = new JavascriptExecutor();
+  private WebviewJsExecutor jsExe = new WebviewJsExecutor();
   private JavascriptResultNotifier notifier = new JavascriptResultNotifier() {
     public void notifyResultReady(String updated) {
       SelendroidLogger.log("notifyResultReady: " + updated);
@@ -58,12 +55,12 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
         resultReady = true;
         syncObject.notify();
       }
-      System.out.println("result udated?: " + result);
+      SelendroidLogger.log("result udated?: " + result);
     }
   };
 
   public SelendroidWebDriver(Session session) {
-    this.session = session;
+    super.session = session;
     init();
   }
 
@@ -156,7 +153,7 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
-        org.openqa.selendroid.server.webview.js.JavascriptExecutor
+        org.openqa.selendroid.server.webview.js.WebviewJsExecutor
             .executeJs(view, notifier, script);
       }
     });
@@ -207,7 +204,7 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
     if (webview == null) {
       throw new SelendroidException("No webview found on current activity.");
     }
-    searchScope = new WebviewSearchScope(session.getKnownElements(), webview, this);
+    webviewSearchScope = new WebviewSearchScope(session.getKnownElements(), webview, this);
   }
 
   Object injectJavascript(String toExecute, boolean isAsync, Object... args) {
@@ -225,7 +222,7 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   }
 
   public AndroidWebElement newAndroidElement(String id) {
-    return searchScope.newAndroidWebElementById(id);
+    return webviewSearchScope.newAndroidWebElementById(id);
   }
 
   void resetPageIsLoading() {

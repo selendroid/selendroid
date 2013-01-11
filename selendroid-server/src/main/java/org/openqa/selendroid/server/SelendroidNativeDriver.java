@@ -15,14 +15,10 @@
 package org.openqa.selendroid.server;
 
 import java.util.Collection;
-import java.util.UUID;
 
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.android.WindowType;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.AndroidNativeElement;
-import org.openqa.selendroid.util.SelendroidLogger;
 
 import android.app.Activity;
 import android.view.View;
@@ -77,7 +73,7 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
    */
   @Override
   public JsonObject getWindowSource() {
-    AndroidNativeElement rootElement = ((NativeSearchScope) searchScope).getElementTree();
+    AndroidNativeElement rootElement = ((NativeSearchScope) nativeSearchScope).getElementTree();
     JsonObject root = rootElement.toJson();
     root.addProperty("activity", serverInstrumentation.getCurrentActivity().getComponentName()
         .toShortString());

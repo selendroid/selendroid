@@ -109,7 +109,7 @@ public class AndroidServlet implements HttpHandler {
         Response result = null;
         try {
           result = instantiateHandler(entry.getValue(), request).handle();
-        } catch (SelendroidException e) {
+        } catch (Exception e) {
           SelendroidLogger.logError("Error occured while handling reuqest.", e);
           replyWithServerError(response);
           return;

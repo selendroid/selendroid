@@ -41,7 +41,7 @@ public class HttpServer extends NanoHTTPD {
 
   private HttpServer() {
     super(4450, new File("/"));
-    Logger.log("HTTP Server started on port 8080");
+    Logger.log("HTTP Server started on port 4450");
   }
 
   public Response serve(String uri, String method, Properties header, Properties parms,

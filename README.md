@@ -3,7 +3,7 @@
 Selendroid is an attempt to implement the Selenium JSON Wire Protocol for
 Android native and hybrid apps.
 
-The project is very early stages, but we plan to grow fast.
+Please keep in mind that this project is in very early stages.
 
 Help is appreciated. Reach us out in the issues or via email.
 

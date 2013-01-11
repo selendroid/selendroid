@@ -36,11 +36,11 @@ public class KnownElements {
     return id;
   }
 
-  public AndroidElement get(Integer elementId) {
+  public AndroidElement get(String elementId) {
     return elements.get(elementId);
   }
 
-  public boolean hasElement(Integer elementId) {
+  public boolean hasElement(String elementId) {
     return elements.containsKey(elementId);
   }
 

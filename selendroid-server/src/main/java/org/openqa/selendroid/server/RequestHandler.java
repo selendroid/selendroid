@@ -83,12 +83,7 @@ public abstract class RequestHandler {
   }
 
   protected AndroidElement getElementFromCache(String id) {
-    SelendroidDriver driver = getAndroidDriver();
-    if (isWebviewWindow(driver)) {
-      return ((SelendroidWebDriver) getAndroidDriver()).newAndroidElement(id);
-    } else {
-      return driver.getSession().getKnownElements().get(Integer.valueOf(id));
-    }
+    return getKnownElements().get(id);
   }
 
   protected KnownElements getKnownElements() {

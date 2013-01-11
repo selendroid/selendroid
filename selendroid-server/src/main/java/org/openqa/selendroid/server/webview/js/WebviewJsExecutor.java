@@ -19,7 +19,7 @@ import android.webkit.WebView;
 /**
  * Class that wraps synchronization housekeeping of execution of JavaScript code within WebView.
  */
-public class JavascriptExecutor {
+public class WebviewJsExecutor {
   private static JavascriptResultNotifier resNotifier;
 
   /**

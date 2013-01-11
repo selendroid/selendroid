@@ -13,6 +13,8 @@
  */
 package org.openqa.selendroid.server;
 
+import java.util.concurrent.Executors;
+
 import org.openqa.selendroid.ServerInstrumentation;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
