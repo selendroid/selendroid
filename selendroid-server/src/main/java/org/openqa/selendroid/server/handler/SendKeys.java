@@ -28,12 +28,12 @@ public class SendKeys extends RequestHandler {
   @Override
   public Response handle() {
     SelendroidLogger.log("send keys command");
-    String id = getElementId();
+    Long id = getElementId();
     String text = getPayload().get("value").getAsString();
     
     AndroidElement element=getElementFromCache(id);
     element.enterText(text);
-    return new Response(getAndroidDriver().getSession().getSessionId(), "");
+    return new Response(getSessionId(), "");
   }
 
 }

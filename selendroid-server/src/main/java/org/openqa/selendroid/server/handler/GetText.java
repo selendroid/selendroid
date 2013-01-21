@@ -27,7 +27,7 @@ public class GetText extends RequestHandler {
   @Override
   public Response handle() {
     System.out.println("get text command");
-    String id = getElementId();
+    Long id = getElementId();
 
     AndroidElement element = getElementFromCache(id);
     String text = element.getText();

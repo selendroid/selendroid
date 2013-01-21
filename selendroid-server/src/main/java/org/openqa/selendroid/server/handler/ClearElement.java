@@ -28,7 +28,7 @@ public class ClearElement extends RequestHandler {
   @Override
   public Response handle() {
     SelendroidLogger.log("Clear element command");
-    String id = getElementId();
+    Long id = getElementId();
     AndroidElement element = getElementFromCache(id);
     try {
       element.clear();

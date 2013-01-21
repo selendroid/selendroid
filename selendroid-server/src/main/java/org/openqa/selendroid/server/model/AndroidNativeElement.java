@@ -190,8 +190,9 @@ public class AndroidNativeElement implements AndroidElement {
 
   public String toString() {
     StringBuilder string = new StringBuilder();
-    string.append("view " + view.getClass());
-    string.append("view " + view.getTag());
+    string.append("id: " + view.getId());
+    string.append("view class: " + view.getClass());
+    string.append("view content desc: " + view.getContentDescription());
 
     return string.toString();
   }

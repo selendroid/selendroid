@@ -59,7 +59,7 @@ public class HttpServer extends NanoHTTPD {
       String name = parms.getProperty("name");
       html.append("<h3>Your name is:</h3>");
       html.append("&quot;" + name + "&quot;");
-      html.append("<br><hr>to start again click <a href='http://localhost:4450/'>here:</a>");
+      html.append("<br><hr>to start again click <a href='http://localhost:4450/'>here</a>");
       html.append("</body></html>");
 
       return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, html.toString());
@@ -70,8 +70,8 @@ public class HttpServer extends NanoHTTPD {
       html.append("Hello, can you please tell me your name?");
       html.append("<form name='myform' action='http://localhost:4450/sayhello' method='get'>");
       html.append("<div align='center'><br><br>");
-      html.append("<input type='text' name='name' size='25' value='Enter your name here!'>");
-      html.append("<br><input type='submit' value='Send me your name!''><br>");
+      html.append("<input type='text' id='name_input' name='name' size='25' value='Enter your name here!'>");
+      html.append("<br><input type='submit' value='Send me your name!'><br>");
       html.append("</div></form>");
 
       html.append("</body></html>");

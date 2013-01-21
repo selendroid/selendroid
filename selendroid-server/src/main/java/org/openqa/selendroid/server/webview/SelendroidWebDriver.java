@@ -16,21 +16,30 @@ package org.openqa.selendroid.server.webview;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.DomWindow;
 import org.openqa.selendroid.server.AbstractSelendroidDriver;
 import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.server.WebviewSearchScope;
+import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.webview.js.AndroidAtoms;
-import org.openqa.selendroid.server.webview.js.WebviewJsExecutor;
-import org.openqa.selendroid.server.webview.js.JavascriptResultNotifier;
 import org.openqa.selendroid.util.SelendroidLogger;
 
+import android.webkit.ConsoleMessage;
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class SelendroidWebDriver extends AbstractSelendroidDriver {
   private static final String ELEMENT_KEY = "ELEMENT";
@@ -43,21 +52,9 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   private volatile boolean pageStartedLoading;
   private volatile String result;
   private volatile boolean resultReady;
-  private WebView webview = null;
+  private volatile WebView webview = null;
   private static final String WINDOW_KEY = "WINDOW";
   private volatile boolean editAreaHasFocus;
-  private WebviewJsExecutor jsExe = new WebviewJsExecutor();
-  private JavascriptResultNotifier notifier = new JavascriptResultNotifier() {
-    public void notifyResultReady(String updated) {
-      SelendroidLogger.log("notifyResultReady: " + updated);
-      synchronized (syncObject) {
-        result = updated;
-        resultReady = true;
-        syncObject.notify();
-      }
-      SelendroidLogger.log("result udated?: " + result);
-    }
-  };
 
   public SelendroidWebDriver(Session session) {
     super.session = session;
@@ -129,32 +126,37 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
     String scriptInWindow =
         "(function(){ " + " var win; try{win=window;}catch(e){win=window;}" + "with(win){return ("
             + myScript + ")(" + convertToJsArgs(args) + ")}})()";
-    Object result =
-        executeJavascriptInWebView("nativedriver.resultAvailable(" + scriptInWindow + ")");
+    String jsResult = executeJavascriptInWebView("alert('selendroid:'+" + scriptInWindow + ")");
 
 
-    System.out.println("jsResult: " + result);
-    if (result == null || "undefined".equals(result)) {
+    SelendroidLogger.log("jsResult: " + jsResult);
+    if (jsResult == null || "undefined".equals(jsResult)) {
       return null;
     }
-    return result;
+
+
+    JsonObject json = new JsonParser().parse(jsResult).getAsJsonObject();
+
+    if (0 != json.get("status").getAsInt()) {
+      // TODO improve error handling
+      throw new SelendroidException("Result status != 0");
+    }
+    JsonElement value = json.get("value");
+    if (value.isJsonObject()) {
+      return value.getAsJsonObject();
+    }
+    return value;
   }
 
-  private Object executeJavascriptInWebView(final String script) {
-    final WebView view = webview;
+  private String executeJavascriptInWebView(final String script) {
     result = null;
     resultReady = false;
     ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
       public void run() {
-        view.addJavascriptInterface(jsExe, "nativedriver");
-        // view.reload();
-        try {
-          Thread.sleep(500);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+        if (webview.getUrl() == null) {
+          return;
         }
-        org.openqa.selendroid.server.webview.js.WebviewJsExecutor
-            .executeJs(view, notifier, script);
+        webview.loadUrl("javascript:" + script);
       }
     });
     long timeout =
@@ -192,19 +194,66 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   }
 
   protected void init() {
+    System.out.println("webdriver init");
     long start = System.currentTimeMillis();
-    webview = ViewHierarchyAnalyzer.getDefaultInstance().findAndPrepareWebView();
+    webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebView();
     while (webview == null
         && (System.currentTimeMillis() - start <= ServerInstrumentation.getInstance()
             .getAndroidWait().getTimeoutInMillis())) {
       sleepQuietly(500);
-      webview = ViewHierarchyAnalyzer.getDefaultInstance().findAndPrepareWebView();
+      webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebView();
     }
 
     if (webview == null) {
       throw new SelendroidException("No webview found on current activity.");
     }
+    configureWebView(webview);
+
     webviewSearchScope = new WebviewSearchScope(session.getKnownElements(), webview, this);
+  }
+
+  private void configureWebView(final WebView view) {
+    System.out.println("Configuring webview");
+    ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
+
+      @Override
+      public void run() {
+        // SETTINGS FROM ADNROID WEB DRIVER:
+        // view.clearCache(true);
+        // view.clearFormData();
+        // view.clearHistory();
+        // view.setFocusable(true);
+        // view.setFocusableInTouchMode(true);
+        // view.setWebViewClient(new WebViewClient());
+        //
+        //
+        // // Webview settings
+        WebSettings settings = view.getSettings();
+        // settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        // settings.setSupportMultipleWindows(true);
+        // settings.setBuiltInZoomControls(true);
+        // settings.setJavaScriptEnabled(true);
+        // settings.setAppCacheEnabled(true);
+        // settings.setAppCacheMaxSize(10 * 1024 * 1024);
+        // settings.setAppCachePath("");
+        // settings.setDatabaseEnabled(true);
+        // settings.setDomStorageEnabled(true);
+        // settings.setGeolocationEnabled(true);
+        // settings.setSaveFormData(false);
+        // settings.setSavePassword(false);
+        // settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        // // Flash settings
+        // settings.setPluginState(WebSettings.PluginState.ON);
+        //
+        // // Geo location settings
+        // settings.setGeolocationEnabled(true);
+        // settings.setGeolocationDatabasePath("/data/data/selendroid");
+        //
+        // view.setNetworkAvailable(true);
+        view.setWebChromeClient(new MyWebChromeClient());
+        settings.setJavaScriptEnabled(true);
+      }
+    });
   }
 
   Object injectJavascript(String toExecute, boolean isAsync, Object... args) {
@@ -264,6 +313,51 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
+    }
+  }
+
+
+  public class MyWebChromeClient extends WebChromeClient {
+
+    /**
+     * Unconventional way of adding a Javascript interface but the main reason why I took this way
+     * is that it is working stable compared to the webview.addJavascriptInterface way.
+     */
+    @Override
+    public boolean onJsAlert(WebView view, String url, String message, JsResult jsResult) {
+      System.out.println("onJsAlert: " + message);
+      if (message != null && message.startsWith("selendroid:")) {
+        jsResult.confirm();
+
+        synchronized (syncObject) {
+          result = message.replaceFirst("selendroid:", "");;
+          resultReady = true;
+          syncObject.notify();
+        }
+
+        return true;
+      } else {
+        return super.onJsAlert(view, url, message, jsResult);
+      }
+    }
+
+    @Override
+    public boolean onJsPrompt(WebView view, String url, String message, String defaultValue,
+        JsPromptResult result) {
+      System.out.println("onJsPrompt: " + message);
+      return super.onJsPrompt(view, url, message, defaultValue, result);
+    }
+
+    @Override
+    public boolean onJsTimeout() {
+      System.out.println("onJsTimeout: ");
+      return super.onJsTimeout();
+    }
+
+    @Override
+    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+      System.out.println("onConsoleMessage: " + consoleMessage.message());
+      return super.onConsoleMessage(consoleMessage);
     }
   }
 }

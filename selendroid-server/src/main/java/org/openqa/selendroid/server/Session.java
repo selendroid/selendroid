@@ -15,6 +15,7 @@ package org.openqa.selendroid.server;
 
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.model.KnownElements;
+import org.openqa.selendroid.server.webview.SelendroidWebDriver;
 
 import com.google.gson.JsonObject;
 
@@ -22,18 +23,28 @@ public class Session {
   private JsonObject capabilities = null;
   private KnownElements knownElements = null;
   private String sessionId = null;
-  private WindowType activeWindowType=null;
+  private WindowType activeWindowType = null;
+  private SelendroidWebDriver webviewDriver = null;
 
-  public Session(JsonObject capabilities, String sessionId,WindowType activeWindowType) {
+  public Session(JsonObject capabilities, String sessionId, WindowType activeWindowType) {
     super();
     this.capabilities = capabilities;
     this.sessionId = sessionId;
     this.knownElements = new KnownElements();
-    this.activeWindowType=activeWindowType;
+    this.activeWindowType = activeWindowType;
   }
 
   public WindowType getActiveWindowType() {
     return activeWindowType;
+  }
+
+  /** TODO rethink Driver concept and especially instance sharing */
+  public synchronized SelendroidDriver getWebviewDriver() {
+    if (webviewDriver == null) {
+      System.out.println("creating new instance of webviewdriver");
+      webviewDriver = new SelendroidWebDriver(this);
+    }
+    return webviewDriver;
   }
 
   public void setActiveWindowType(WindowType activeWindowType) {

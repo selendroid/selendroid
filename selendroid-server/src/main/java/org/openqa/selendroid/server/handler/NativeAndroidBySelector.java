@@ -17,6 +17,7 @@ package org.openqa.selendroid.server.handler;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.By;
+import org.openqa.selendroid.util.SelendroidLogger;
 
 public class NativeAndroidBySelector {
   public static final String SELECTOR_NATIVE_ID = "id";
@@ -40,7 +41,7 @@ public class NativeAndroidBySelector {
     }
 
     else {
-      System.out.println("By type for methof not found: " + method);
+      SelendroidLogger.log("By type for methof not found: " + method);
       throw new SelendroidException("method (by) not found: " + method);
     }
   }

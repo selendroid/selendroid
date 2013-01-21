@@ -27,7 +27,7 @@ public class LogElement extends RequestHandler {
   @Override
   public Response handle() {
     SelendroidLogger.log("get source of element command");
-    String id = getElementId();
+    Long id = getElementId();
 
     AndroidNativeElement element = (AndroidNativeElement) getElementFromCache(id);
 

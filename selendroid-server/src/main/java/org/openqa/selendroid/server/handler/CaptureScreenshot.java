@@ -28,12 +28,8 @@ public class CaptureScreenshot extends RequestHandler {
   public Response handle() {
     SelendroidLogger.log("take screenshot command");
     byte[] rawPng = getAndroidDriver().takeScreenshot();
-    // String image = Base64.encodeToString(, Base64.DEFAULT);
-    String base64Png = null;
-    base64Png = new Base64Encoder().encode(rawPng);
-    // base64Png = Base64.encodeToString(rawPng, Base64.DEFAULT);
+    String base64Png = new Base64Encoder().encode(rawPng);
     SelendroidLogger.log("take screenshot is done");
-
     return new Response(getSessionId(), base64Png);
   }
 }

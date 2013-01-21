@@ -94,7 +94,6 @@
 						<debuggable>true</debuggable>
 					</manifest>
 					<extractDuplicates>true</extractDuplicates>
-
 				</configuration>
 				<extensions>true</extensions>
 			</plugin>

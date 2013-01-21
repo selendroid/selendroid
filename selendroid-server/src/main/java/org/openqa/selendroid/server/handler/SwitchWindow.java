@@ -34,11 +34,16 @@ public class SwitchWindow extends RequestHandler {
     if (WindowType.NATIVE_APP.equals(windowName)) {
       switchToNativeDriver();
     } else if (WindowType.WEBVIEW.name().equals(windowName)) {
-      switchToWebViewDriver();
+      try {
+        switchToWebViewDriver();
+      } catch (SelendroidException e) {
+        return new Response(getSessionId(), 23, e);
+      }
+
     } else {
-      return new Response(getSessionId(), 8, new SelendroidException(
-          "An error occured while switching the window."));
+      return new Response(getSessionId(), 23, new SelendroidException(
+          "Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
     }
-    return new Response(getSessionId(), null);
+    return new Response(getSessionId(), "");
   }
 }

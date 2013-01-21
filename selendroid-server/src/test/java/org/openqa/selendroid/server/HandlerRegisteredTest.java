@@ -51,10 +51,10 @@ public class HandlerRegisteredTest extends BaseTest {
 
   @Test
   public void postClickHandlerRegistered() throws Exception {
-    String url = "http://localhost:" + port + "/wd/hub/session/12345/element/wdc:0815/click";
+    String url = "http://localhost:" + port + "/wd/hub/session/12345/element/815/click";
     HttpResponse response = executeRequest(url, HttpMethod.POST);
     SelendroidAssert.assertResponseIsOk(response);
-    Assert.assertEquals("{\"status\":0,\"value\":\"sessionId#12345 elementId#wdc:0815\"}",
+    Assert.assertEquals("{\"status\":0,\"value\":\"sessionId#12345 elementId#815\"}",
         IOUtils.toString(response.getEntity().getContent()));
   }
 

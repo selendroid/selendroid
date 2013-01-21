@@ -28,7 +28,7 @@ public class SubmitForm extends RequestHandler {
   @Override
   public Response handle() {
     SelendroidLogger.log("Submit element command");
-    String id = getElementId();
+    Long id = getElementId();
     AndroidElement element = getElementFromCache(id);
     String sessionId = getSessionId();
     try {

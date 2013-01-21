@@ -15,7 +15,6 @@ package org.openqa.selendroid.server;
 
 import java.util.List;
 
-import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
@@ -33,9 +32,11 @@ import org.openqa.selendroid.server.webview.js.AndroidAtoms;
 
 import android.webkit.WebView;
 
+import com.google.gson.JsonObject;
+
 public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById, FindsByText {
   private KnownElements knownElements;
-  private WebView view;
+  private volatile WebView view;
   private SelendroidWebDriver driver = null;
 
   public WebviewSearchScope(KnownElements knownElements, WebView webview, SelendroidWebDriver driver) {
@@ -69,6 +70,8 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
   }
 
   public AndroidWebElement newAndroidWebElementById(String id) {
+    // jsResult: {"status":0,"value":{"ELEMENT":":wdc:1358790510925"}}
+
     AndroidWebElement element = new AndroidWebElement(id, view, driver);
     knownElements.add(element);
     return element;
@@ -91,8 +94,9 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
   @Override
   public AndroidElement findElementById(String using) {
-    return newAndroidWebElementById((String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id",
-        using));
+    JsonObject result = (JsonObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id", using);
+    String id = result.get("ELEMENT").getAsString();
+    return newAndroidWebElementById(id);
   }
 
   @Override
@@ -114,8 +118,10 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
   @Override
   public AndroidElement findElementByText(String using) {
-    return newAndroidWebElementById((String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT,
-        "linkText", using));
+    JsonObject result =
+        (JsonObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "linkText", using);
+    String id = result.get("ELEMENT").getAsString();
+    return newAndroidWebElementById(id);
   }
 
   @Override
@@ -125,8 +131,9 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
 
   public AndroidElement findElementByXPath(String using) {
-    return newAndroidWebElementById((String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "xpath",
-        using));
+    JsonObject result = (JsonObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "xpath", using);
+    String id = result.get("ELEMENT").getAsString();
+    return newAndroidWebElementById(id);
   }
 
 
@@ -135,8 +142,9 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
   }
 
   public AndroidElement findElementByName(String using) {
-    return newAndroidWebElementById((String) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "name",
-        using));
+    JsonObject result = (JsonObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "name", using);
+    String id = result.get("ELEMENT").getAsString();
+    return newAndroidWebElementById(id);
   }
 
   public List<AndroidElement> findElementsByName(String using) {

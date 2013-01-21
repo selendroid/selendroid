@@ -18,7 +18,6 @@ import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
-import org.openqa.selendroid.server.webview.AndroidWebElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -44,6 +43,8 @@ public class FindElement extends RequestHandler {
     try {
       element = getAndroidDriver().findElement(by);
     } catch (NoSuchElementException e) {
+      return new Response(getSessionId(), 7, e);
+    } catch (UnsupportedOperationException e) {
       return new Response(getSessionId(), 7, e);
     }
     JsonObject result = new JsonObject();

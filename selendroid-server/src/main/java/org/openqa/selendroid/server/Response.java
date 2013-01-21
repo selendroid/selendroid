@@ -32,16 +32,18 @@ public class Response {
   }
 
   public Response(String sessionId, int status, Exception e) {
-    JsonObject value = new JsonObject();
-    value.addProperty("message", e.getMessage());
-    value.addProperty("class", e.getClass().getCanonicalName());
+    JsonObject errorValue = new JsonObject();
+    errorValue.addProperty("message", e.getMessage());
+    errorValue.addProperty("class", e.getClass().getCanonicalName());
 
     JsonArray stacktace = new JsonArray();
     for (StackTraceElement el : e.getStackTrace()) {
       stacktace.add(new Gson().toJsonTree(el.toString()));
     }
-    value.add("stacktrace", stacktace);
-    this.value = value;
+    errorValue.add("stacktrace", stacktace);
+    this.value = errorValue;
+    this.sessionId = sessionId;
+    this.status = status;
   }
 
   public Response(String sessionId, Object value) {

@@ -29,7 +29,7 @@ public class ClickElement extends RequestHandler {
   @Override
   public Response handle() {
     SelendroidLogger.log("Click element command");
-    String id = getElementId();
+    Long id = getElementId();
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
       return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"

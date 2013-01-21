@@ -17,9 +17,6 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.auth.Subject;
-
-import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.handler.CaptureScreenshot;
 import org.openqa.selendroid.server.handler.ClearElement;
 import org.openqa.selendroid.server.handler.ClickElement;
@@ -129,8 +126,8 @@ public class AndroidServlet implements HttpHandler {
         }
 
         if (result != null) {
-          // byte[] data = Charsets.UTF_8.encode(result).array();
-          response.content(result.toString());
+          String resultString = result.toString();
+          response.content(resultString);
         }
         response.end();
       }
@@ -166,7 +163,7 @@ public class AndroidServlet implements HttpHandler {
 
     String id = getParameter(mappedUri, request.uri(), ":id");
     if (id != null) {
-      request.data().put(ELEMENT_ID_KEY, id);
+      request.data().put(ELEMENT_ID_KEY, new Long(id));
     }
 
     request.data().put(DRIVER_KEY, driver);

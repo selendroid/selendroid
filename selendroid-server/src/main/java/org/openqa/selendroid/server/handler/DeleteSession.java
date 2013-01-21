@@ -18,8 +18,6 @@ import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
-import com.google.gson.JsonObject;
-
 public class DeleteSession extends RequestHandler {
 
   public DeleteSession(HttpRequest request) {
@@ -32,6 +30,6 @@ public class DeleteSession extends RequestHandler {
 
     getAndroidDriver().stopSession();
     SelendroidLogger.log("\n\n\n---------Session STOP ---------------\n\n\n");
-    return new Response(getSessionId(), 0, new JsonObject());
+    return new Response(getSessionId(), "");
   }
 }
