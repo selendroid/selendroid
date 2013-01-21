@@ -32,6 +32,7 @@ import android.view.MotionEvent;
 import android.webkit.WebView;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonElement;
 
 public class AndroidWebElement implements AndroidElement {
   private String id;
@@ -115,7 +116,7 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public boolean isEnabled() {
-    return Boolean.getBoolean((String) driver.executeAtom(AndroidAtoms.IS_ENABLED, this));
+    return ((JsonElement) driver.executeAtom(AndroidAtoms.IS_ENABLED, this)).getAsBoolean();
   }
 
   @Override
