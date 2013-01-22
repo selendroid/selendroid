@@ -25,8 +25,6 @@ public interface AndroidElement {
 
   public <T> T findElement(Class<T> type, By c) throws NoSuchElementException;
 
-  // public UIAElementArray<AndroidElement> findElements(By c);
-
   public void enterText(CharSequence text);
 
   public String getText();

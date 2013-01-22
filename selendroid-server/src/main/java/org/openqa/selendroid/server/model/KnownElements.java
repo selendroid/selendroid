@@ -31,7 +31,7 @@ public class KnownElements {
       id = nextId();
     }
 
-    elements.put(id, (AndroidElement) element);
+    elements.put(id, element);
     return id;
   }
 
@@ -51,6 +51,6 @@ public class KnownElements {
     if (elements.containsValue(element)) {
       return elements.inverse().get(element);
     }
-    return -1L;
+    return null;
   }
 }

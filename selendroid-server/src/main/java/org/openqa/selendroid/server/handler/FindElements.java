@@ -44,8 +44,11 @@ public class FindElements extends RequestHandler {
     JsonArray result = new JsonArray();
     for (AndroidElement element : elements) {
       JsonObject jsonElement = new JsonObject();
-      jsonElement.addProperty("ELEMENT",
-          getKnownElements().getIdOfElement((AndroidNativeElement) element));
+      Long id = getKnownElements().getIdOfElement((AndroidNativeElement) element);
+      if (id == null) {
+        continue;
+      }
+      jsonElement.addProperty("ELEMENT", id);
       result.add(jsonElement);
     }
     return new Response(getSessionId(), result);

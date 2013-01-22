@@ -34,8 +34,10 @@ public class AndroidServer {
   }
 
   protected void init(ServerInstrumentation androidInstrumentation) {
-    webServer = WebServers.createWebServer(driverPort);
+    webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
+    webServer.add("/wd/hub/status", new StatusServlet());
     webServer.add(new AndroidServlet(createAndroidDriver(androidInstrumentation)));
+    
   }
 
   protected SelendroidDriver createAndroidDriver(ServerInstrumentation androidInstrumentation) {

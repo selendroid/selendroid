@@ -48,8 +48,11 @@ public class FindElement extends RequestHandler {
       return new Response(getSessionId(), 7, e);
     }
     JsonObject result = new JsonObject();
-
-    result.addProperty("ELEMENT", getKnownElements().getIdOfElement(element));
+    Long id = getKnownElements().getIdOfElement(element);
+    if (id == null) {
+      return new Response(getSessionId(), 7, new NoSuchElementException("Element was not found."));
+    }
+    result.addProperty("ELEMENT", id);
 
     return new Response(getSessionId(), 0, result);
   }

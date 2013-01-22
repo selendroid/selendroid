@@ -33,6 +33,7 @@ public class SendKeys extends RequestHandler {
     
     AndroidElement element=getElementFromCache(id);
     element.enterText(text);
+    System.out.println("Send keys done");
     return new Response(getSessionId(), "");
   }
 

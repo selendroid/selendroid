@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Semaphore;
 
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidKeys;
@@ -83,27 +84,17 @@ public class AndroidWebElement implements AndroidElement {
     // Move the cursor to the end of the test input.
     // The trick is to set the value after the cursor
     driver.executeScript("arguments[0].focus();arguments[0].value=arguments[0].value;", this);
+    final WebView view = webview;
+    final Semaphore sem = new Semaphore(0);
+    // ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
+    //
+    // @Override
+    // public void run() {
+    EventSender.sendKeys(view, value);
+    sem.release();
+    // }
+    // });
 
-    CharSequence string = value;
-    int currentIndex = 0;
-    while (currentIndex < string.length()) {
-      char currentCharacter = string.charAt(currentIndex);
-      if (AndroidKeys.hasAndroidKeyEvent(currentCharacter)) {
-        // The next character is special and must be sent individually
-        ServerInstrumentation.getInstance().sendKeyDownUpSync(
-            AndroidKeys.keyCodeFor(currentCharacter));
-        currentIndex++;
-      } else {
-        // There is at least one "normal" character, that is a character
-        // represented by a plain Unicode character that can be sent with
-        // sendStringSync. So send as many such consecutive normal characters
-        // as possible in a single String.
-        int nextSpecialKey = indexOfSpecialKey(string, currentIndex);
-        ServerInstrumentation.getInstance().sendStringSync(
-            string.subSequence(currentIndex, nextSpecialKey).toString());
-        currentIndex = nextSpecialKey;
-      }
-    }
   }
 
   private static int indexOfSpecialKey(CharSequence string, int startIndex) {
@@ -215,7 +206,8 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public String getAttribute(String name) {
-    return (String) driver.executeAtom(AndroidAtoms.GET_ATTRIBUTE_VALUE, this, name);
+    return ((JsonElement) driver.executeAtom(AndroidAtoms.GET_ATTRIBUTE_VALUE, this, name))
+        .getAsString();
   }
 
   public String getId() {

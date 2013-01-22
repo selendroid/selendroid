@@ -91,8 +91,7 @@ class EventSender {
    * @param webview
    * @param text
    */
-  /* package */static void sendKeys(final WebView webview, Activity activity,
-      final CharSequence... text) {
+  /* package */static void sendKeys(final WebView webview, final CharSequence... text) {
     final KeyCharacterMap characterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
 
     long timeout =
@@ -102,7 +101,7 @@ class EventSender {
     synchronized (syncObject) {
       done = false;
 
-      activity.runOnUiThread(new Runnable() {
+      ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
         public void run() {
           for (CharSequence sequence : text) {
             for (int i = 0; i < sequence.length(); i++) {
@@ -122,7 +121,7 @@ class EventSender {
             }
           }
           done = true;
-          syncObject.notify();
+         // syncObject.notify();
         }
       });
     }

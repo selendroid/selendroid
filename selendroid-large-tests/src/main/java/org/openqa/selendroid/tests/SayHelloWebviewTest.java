@@ -25,13 +25,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class SayHelloWebviewTest extends BaseAndroidTest {
   @Test
-  public void assertThatWebviewSaysHello() {
+  public void assertThatWebviewSaysHello() throws Exception {
     WebElement button = driver.findElement(By.linkText("Start Webview"));
     button.click();
     WebDriverWait wait = new WebDriverWait(driver, 10);
     wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
     driver.switchTo().window("WEBVIEW");
-    //System.out.println(driver.getPageSource());
+    // System.out.println(driver.getPageSource());
+
     WebElement inputField = driver.findElement(By.id("name_input"));
     Assert.assertNotNull(inputField);
     inputField.clear();

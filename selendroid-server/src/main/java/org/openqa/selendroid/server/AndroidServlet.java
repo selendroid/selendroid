@@ -68,8 +68,6 @@ public class AndroidServlet implements HttpHandler {
     deleteHandler.put("/wd/hub/session/:sessionId", DeleteSession.class);
 
     getHandler.put("/wd/hub/session/:sessionId/screenshot", CaptureScreenshot.class);
-    getHandler.put("/wd/hub/status", GetStatus.class);
-
     postHandler.put("/wd/hub/session/:sessionId/element", FindElement.class);
     postHandler.put("/wd/hub/session/:sessionId/elements", FindElements.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/click", ClickElement.class);
@@ -83,7 +81,7 @@ public class AndroidServlet implements HttpHandler {
     postHandler.put("/wd/hub/session/:sessionId/timeouts/implicit_wait",
         SetImplicitWaitTimeout.class);
     postHandler.put("/wd/hub/session/:sessionId/window", SwitchWindow.class);
-    postHandler.put("/session/:sessionId/element/:id/submit", SubmitForm.class);
+    postHandler.put("/wd/hub/session/:sessionId/element/:id/submit", SubmitForm.class);
   }
 
   public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
@@ -103,6 +101,7 @@ public class AndroidServlet implements HttpHandler {
     for (Map.Entry<String, Class<? extends RequestHandler>> entry : handler.entrySet()) {
       if (isFor(entry.getKey(), request.uri())) {
         addHandlerAttributesToRequest(request, entry.getKey());
+        System.out.println("URI: " + request.uri());
         Response result = null;
         try {
           result = instantiateHandler(entry.getValue(), request).handle();
@@ -127,6 +126,7 @@ public class AndroidServlet implements HttpHandler {
 
         if (result != null) {
           String resultString = result.toString();
+          System.out.println("response: " + resultString);
           response.content(resultString);
         }
         response.end();

@@ -15,6 +15,7 @@ package org.openqa.selendroid.server.handler;
 
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
+import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -30,6 +31,10 @@ public class ClearElement extends RequestHandler {
     SelendroidLogger.log("Clear element command");
     Long id = getElementId();
     AndroidElement element = getElementFromCache(id);
+    if (element == null) {
+      return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"
+          + id + "' was not found."));
+    }
     try {
       element.clear();
     } catch (Exception e) {

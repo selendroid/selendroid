@@ -11,25 +11,30 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.handler;
+package org.openqa.selendroid.server;
 
-import org.openqa.selendroid.server.RequestHandler;
-import org.openqa.selendroid.server.Response;
+import org.webbitserver.HttpControl;
+import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
+import org.webbitserver.HttpResponse;
 
 import com.google.gson.JsonObject;
-@Deprecated
-public class GetStatus extends RequestHandler {
-  public GetStatus(HttpRequest req) {
-    super(req);
-  }
+
+
+public class StatusServlet implements HttpHandler {
 
   @Override
-  public Response handle() {
-    System.out.println("get Status command");
+  public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse,
+      HttpControl httpControl) throws Exception {
+    if (!"GET".equals(httpRequest.method())) {
+      httpResponse.status(500);
+      httpResponse.end();
+      return;
+    }
+    System.out.println("get Status Servlet Called");
     JsonObject build = new JsonObject();
     build.addProperty("version", "0.1-snapshot");
-    
+
     JsonObject os = new JsonObject();
     os.addProperty("arch", System.getProperty("os.arch"));
     os.addProperty("name", System.getProperty("os.name"));
@@ -38,7 +43,8 @@ public class GetStatus extends RequestHandler {
     JsonObject json = new JsonObject();
     json.add("build", build);
     json.add("os", os);
-
-    return new Response(null, 200, json);
+    httpResponse.header("Content-Type", "text/plain");
+    httpResponse.content("{status: 0, value: " + json.toString() + "}");
+    httpResponse.end();
   }
 }

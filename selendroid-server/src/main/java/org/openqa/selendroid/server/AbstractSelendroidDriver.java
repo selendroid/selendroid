@@ -95,6 +95,9 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   }
 
   private SearchContext getSearchContext() {
+    if (session == null) {
+      throw new SelendroidException("No Actice session found.");
+    }
     if (WindowType.NATIVE_APP.equals(session.getActiveWindowType())) {
       return nativeSearchScope;
     } else {
