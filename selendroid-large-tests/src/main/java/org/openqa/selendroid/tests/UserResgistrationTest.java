@@ -24,6 +24,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+/**
+ * Base Test to demonstrate how to test native android apps with Selendroid.
+ * 
+ * @author ddary
+ */
 public class UserResgistrationTest extends BaseAndroidTest {
   @Test
   public void assertUserAccountCanRegistered() throws Exception {
@@ -48,7 +53,7 @@ public class UserResgistrationTest extends BaseAndroidTest {
     driver.findElement(By.id("input_preferedProgrammingLanguage")).click();
     driver.findElement(By.linkText(user.getProgrammingLanguage().getValue())).click();
     driver.findElement(By.id("input_adds")).click();
-    //takeScreenShoot();
+    takeScreenShoot();
     driver.findElement(By.id("btnRegisterUser")).click();
   }
 
@@ -66,8 +71,7 @@ public class UserResgistrationTest extends BaseAndroidTest {
         .getText(), user.getProgrammingLanguage().getValue());
     Assert.assertEquals(driver.findElement(By.id("label_acceptAdds_data")).getText(), "true");
 
-    //takeScreenShoot();
-    // driver.getPageSource();
+    takeScreenShoot();
     driver.findElement(By.id("buttonRegisterUser")).click();
   }
 }

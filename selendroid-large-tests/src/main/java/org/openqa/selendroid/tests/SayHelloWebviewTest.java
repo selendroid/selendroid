@@ -22,7 +22,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-
+/**
+ * Base Test to demonstrate how to test webviews with Selendroid.
+ * 
+ * @author ddary
+ */
 public class SayHelloWebviewTest extends BaseAndroidTest {
   @Test
   public void assertThatWebviewSaysHello() throws Exception {
@@ -31,12 +35,13 @@ public class SayHelloWebviewTest extends BaseAndroidTest {
     WebDriverWait wait = new WebDriverWait(driver, 10);
     wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
     driver.switchTo().window("WEBVIEW");
-    // System.out.println(driver.getPageSource());
 
     WebElement inputField = driver.findElement(By.id("name_input"));
     Assert.assertNotNull(inputField);
     inputField.clear();
     inputField.sendKeys("Dominik");
+    takeScreenShoot();
     inputField.submit();
+    takeScreenShoot();
   }
 }

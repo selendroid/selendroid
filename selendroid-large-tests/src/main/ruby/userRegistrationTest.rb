@@ -33,7 +33,7 @@ class ExampleTest < Test::Unit::TestCase
     adds=@driver.find_element(:id, 'input_adds')
     adds.click
     #register user
-    @driver.save_screenshot("./screen01.png")
+    @driver.save_screenshot("./target/nativeScreen01.png")
     @driver.find_element(:id, 'btnRegisterUser').click
 
     sleep(2)
@@ -47,7 +47,7 @@ class ExampleTest < Test::Unit::TestCase
      'label_preferedProgrammingLanguage_data').text
     assert "true" == @driver.find_element(:id, 'label_acceptAdds_data').text
 
-    @driver.save_screenshot("./screen02.png")
+    @driver.save_screenshot("./target/nativeScreen02.png")
     puts "The source of current screen:"
     page_source = JSON.pretty_generate( @driver.page_source)
     write_to_file( page_source )

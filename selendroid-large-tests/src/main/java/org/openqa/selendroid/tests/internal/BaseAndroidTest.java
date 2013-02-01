@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.android.AndroidDriver;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -35,7 +36,7 @@ public class BaseAndroidTest {
 
   @Before
   public void setup() throws MalformedURLException {
-    driver = new RemoteWebDriver(getDefaultCapabilities());
+    driver = new AndroidDriver(getDefaultCapabilities());
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
   }
 

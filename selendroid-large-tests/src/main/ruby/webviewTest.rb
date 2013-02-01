@@ -4,10 +4,20 @@ require 'selenium-webdriver'
 require 'json'
 
 class ExampleTest < Test::Unit::TestCase
-  def test_simple_native
+  def test_simple_webview
     text='Start Webview'
     button = @driver.find_element(:link_text, text)
-    puts @driver.session_id
+    button.click()
+    
+    wait = Selenium::WebDriver::Wait.new(:timeout => 10) # seconds
+    wait.until { @driver.find_element(:link_text => 'Go to home screen') }
+    @driver.switchToWindow('WEBVIEW')
+    inputField = @driver.find_element(:id, 'name_input')
+    inputField.clear();
+    inputField.sendKeys("Dominik");
+    @driver.save_screenshot("./target/webviewScreen01.png")
+    inputField.submit();
+    @driver.save_screenshot("./target/webviewScreen02.png")
   end
 
   def setup
