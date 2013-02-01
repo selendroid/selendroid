@@ -32,6 +32,8 @@ import org.openqa.selendroid.server.webview.js.AndroidAtoms;
 
 import android.webkit.WebView;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById, FindsByText {
@@ -94,8 +96,11 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
   @Override
   public AndroidElement findElementById(String using) {
-    JsonObject result = (JsonObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id", using);
-    String id = result.get("ELEMENT").getAsString();
+    JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id", using);
+    if (result == null || result instanceof JsonNull) {
+      return null;
+    }
+    String id = ((JsonObject) result).get("ELEMENT").getAsString();
     return newAndroidWebElementById(id);
   }
 

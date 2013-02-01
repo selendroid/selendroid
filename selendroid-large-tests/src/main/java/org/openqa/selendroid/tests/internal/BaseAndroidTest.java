@@ -15,6 +15,7 @@ package org.openqa.selendroid.tests.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -24,17 +25,17 @@ import org.junit.Before;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.android.AndroidDriver;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class BaseAndroidTest {
   protected WebDriver driver = null;
   final String pathSeparator = File.separator;
 
   @Before
-  public void setup() {
-    driver = new AndroidDriver(getDefaultCapabilities());
+  public void setup() throws MalformedURLException {
+    driver = new RemoteWebDriver(getDefaultCapabilities());
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
   }
 

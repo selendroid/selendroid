@@ -97,8 +97,9 @@ class EventSender {
     long timeout =
         System.currentTimeMillis()
             + ServerInstrumentation.getInstance().getAndroidWait().getTimeoutInMillis();
+    System.out.println("Using timeout of " + timeout + " milli seconds.");
 
-    synchronized (syncObject) {
+   // synchronized (syncObject) {
       done = false;
 
       ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
@@ -121,10 +122,10 @@ class EventSender {
             }
           }
           done = true;
-         // syncObject.notify();
+          // syncObject.notify();
         }
       });
-    }
-    waitForNotification(timeout, "Failed to send keys.");
+    //}
+    //waitForNotification(timeout, "Failed to send keys.");
   }
 }

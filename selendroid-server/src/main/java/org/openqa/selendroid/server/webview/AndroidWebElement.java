@@ -83,15 +83,15 @@ public class AndroidWebElement implements AndroidElement {
     // driver.waitUntilEditAreaHasFocus();
     // Move the cursor to the end of the test input.
     // The trick is to set the value after the cursor
-    driver.executeScript("arguments[0].focus();arguments[0].value=arguments[0].value;", this);
+    // driver.executeScript("arguments[0].focus();arguments[0].value=arguments[0].value;", this);
     final WebView view = webview;
-    final Semaphore sem = new Semaphore(0);
+    // final Semaphore sem = new Semaphore(0);
     // ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
     //
     // @Override
     // public void run() {
     EventSender.sendKeys(view, value);
-    sem.release();
+    // sem.release();
     // }
     // });
 
@@ -206,8 +206,12 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public String getAttribute(String name) {
-    return ((JsonElement) driver.executeAtom(AndroidAtoms.GET_ATTRIBUTE_VALUE, this, name))
-        .getAsString();
+    JsonElement element =
+        ((JsonElement) driver.executeAtom(AndroidAtoms.GET_ATTRIBUTE_VALUE, this, name));
+    if (element == null) {
+      return null;
+    }
+    return element.getAsString();
   }
 
   public String getId() {

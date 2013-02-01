@@ -25,7 +25,6 @@ import org.openqa.selendroid.server.handler.FindElement;
 import org.openqa.selendroid.server.handler.FindElements;
 import org.openqa.selendroid.server.handler.GetCapabilities;
 import org.openqa.selendroid.server.handler.GetCurrentUrl;
-import org.openqa.selendroid.server.handler.GetStatus;
 import org.openqa.selendroid.server.handler.GetText;
 import org.openqa.selendroid.server.handler.ListSessions;
 import org.openqa.selendroid.server.handler.LogElement;

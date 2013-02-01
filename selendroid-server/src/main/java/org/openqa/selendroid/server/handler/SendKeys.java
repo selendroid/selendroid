@@ -30,10 +30,12 @@ public class SendKeys extends RequestHandler {
     SelendroidLogger.log("send keys command");
     Long id = getElementId();
     String text = getPayload().get("value").getAsString();
-    
-    AndroidElement element=getElementFromCache(id);
+
+    AndroidElement element = getElementFromCache(id);
+    Long start = System.currentTimeMillis();
     element.enterText(text);
-    System.out.println("Send keys done");
+    System.out.println("Send keys done in " + (System.currentTimeMillis() - start) / 1000
+        + " seconds");
     return new Response(getSessionId(), "");
   }
 
