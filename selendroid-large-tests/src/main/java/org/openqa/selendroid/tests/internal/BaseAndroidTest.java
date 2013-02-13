@@ -20,27 +20,27 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.android.AndroidDriver;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.Reporter;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 
 public class BaseAndroidTest {
   protected WebDriver driver = null;
   final String pathSeparator = File.separator;
 
-  @Before
+  @BeforeClass
   public void setup() throws MalformedURLException {
     driver = new AndroidDriver(getDefaultCapabilities());
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
   }
 
-  @After
+  @AfterClass
   public void teardown() {
     driver.quit();
   }
@@ -54,12 +54,15 @@ public class BaseAndroidTest {
     return capa;
   }
 
-  protected void takeScreenShoot() throws Exception {
+  protected void takeScreenShot(String message) throws Exception {
     WebDriver augmentedDriver = new Augmenter().augment(driver);
     File screenshot = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
     String nameScreenshot = UUID.randomUUID().toString() + ".png";
     String path = getPath(nameScreenshot);
     FileUtils.copyFile(screenshot, new File(path));
+
+    Reporter.log(message + "<br/><a href='" + path + "'> <img src='" + path
+        + "' height='100' width='100'/> </a>");
   }
 
   private String getPath(String nameTest) throws IOException {

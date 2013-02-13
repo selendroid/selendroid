@@ -14,9 +14,9 @@
 			<version>2.28.0</version>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -24,7 +24,6 @@
 			<version>1.4</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

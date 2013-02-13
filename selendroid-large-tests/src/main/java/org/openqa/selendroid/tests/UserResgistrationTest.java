@@ -13,9 +13,6 @@
  */
 package org.openqa.selendroid.tests;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
 import org.openqa.selendroid.tests.domain.PreferedProgrammingLanguage;
 import org.openqa.selendroid.tests.domain.UserDO;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
@@ -23,6 +20,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Base Test to demonstrate how to test native android apps with Selendroid.
@@ -41,7 +40,9 @@ public class UserResgistrationTest extends BaseAndroidTest {
 
   private void registerUser(UserDO user) throws Exception {
     WebElement button = driver.findElement(By.id("startUserRegistration"));
+    takeScreenShot("Main Activity started.");
     button.click();
+
     WebDriverWait wait = new WebDriverWait(driver, 5);
     WebElement inputUsername =
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
@@ -53,7 +54,7 @@ public class UserResgistrationTest extends BaseAndroidTest {
     driver.findElement(By.id("input_preferedProgrammingLanguage")).click();
     driver.findElement(By.linkText(user.getProgrammingLanguage().getValue())).click();
     driver.findElement(By.id("input_adds")).click();
-    takeScreenShoot();
+    takeScreenShot("User data entered.");
     driver.findElement(By.id("btnRegisterUser")).click();
   }
 
@@ -71,7 +72,7 @@ public class UserResgistrationTest extends BaseAndroidTest {
         .getText(), user.getProgrammingLanguage().getValue());
     Assert.assertEquals(driver.findElement(By.id("label_acceptAdds_data")).getText(), "true");
 
-    takeScreenShoot();
+    takeScreenShot("User Data Verification Activity.");
     driver.findElement(By.id("buttonRegisterUser")).click();
   }
 }

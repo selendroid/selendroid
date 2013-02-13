@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Selendroid regression test suite" parallel="false"
+	verbose="1">
+	<test name="android mobile tests">
+		<classes>
+			<class name="org.openqa.selendroid.tests.SayHelloWebviewTest" />
+			<class name="org.openqa.selendroid.tests.UserResgistrationTest" />
+		</classes>
+	</test>
+</suite>

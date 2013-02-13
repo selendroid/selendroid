@@ -13,14 +13,13 @@
  */
 package org.openqa.selendroid.tests;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Base Test to demonstrate how to test webviews with Selendroid.
@@ -31,6 +30,7 @@ public class SayHelloWebviewTest extends BaseAndroidTest {
   @Test
   public void assertThatWebviewSaysHello() throws Exception {
     WebElement button = driver.findElement(By.linkText("Start Webview"));
+    takeScreenShot("Main Activity started.");
     button.click();
     WebDriverWait wait = new WebDriverWait(driver, 10);
     wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
@@ -40,8 +40,8 @@ public class SayHelloWebviewTest extends BaseAndroidTest {
     Assert.assertNotNull(inputField);
     inputField.clear();
     inputField.sendKeys("Dominik");
-    takeScreenShoot();
+    takeScreenShot("After entering the name of the app user.");
     inputField.submit();
-    takeScreenShoot();
+    takeScreenShot("Result of web view: Hello app user.");
   }
 }

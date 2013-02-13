@@ -122,7 +122,6 @@ public class AndroidServlet implements HttpHandler {
 
     if (result != null) {
       String resultString = result.toString();
-      System.out.println("response: " + resultString);
       response.content(resultString);
     }
     response.end();
@@ -133,7 +132,6 @@ public class AndroidServlet implements HttpHandler {
     for (Map.Entry<String, Class<? extends RequestHandler>> entry : handler.entrySet()) {
       if (isFor(entry.getKey(), request.uri())) {
         addHandlerAttributesToRequest(request, entry.getKey());
-        System.out.println("URI: " + request.uri());
         return instantiateHandler(entry.getValue(), request);
       }
     }
