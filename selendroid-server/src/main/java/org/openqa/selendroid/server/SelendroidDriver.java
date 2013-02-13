@@ -18,6 +18,7 @@ import java.util.List;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
+import org.openqa.selendroid.server.model.Keyboard;
 
 import com.google.gson.JsonObject;
 
@@ -42,4 +43,6 @@ public interface SelendroidDriver {
   public void switchWindow(WindowType type);
 
   public byte[] takeScreenshot();
+  
+  public Keyboard getKeyboard() ;
 }

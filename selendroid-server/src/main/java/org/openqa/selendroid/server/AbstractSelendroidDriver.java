@@ -20,10 +20,12 @@ import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.android.KeySender;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
+import org.openqa.selendroid.server.model.Keyboard;
 import org.openqa.selendroid.server.model.SearchContext;
 import org.openqa.selendroid.util.SelendroidLogger;
 
@@ -39,10 +41,12 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   protected ServerInstrumentation serverInstrumentation = null;
   protected Session session = null;
   protected final Object syncObject = new Object();
+  private KeySender keySender = null;
 
 
   public AbstractSelendroidDriver() {
     serverInstrumentation = ServerInstrumentation.getInstance();
+    keySender = new KeySender(serverInstrumentation);
   }
 
   /*
@@ -235,5 +239,10 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
 
     SelendroidLogger.log("new s: " + session.getSessionId());
     return session.getSessionId();
+  }
+
+  @Override
+  public Keyboard getKeyboard() {
+    return keySender.getKeyboard();
   }
 }

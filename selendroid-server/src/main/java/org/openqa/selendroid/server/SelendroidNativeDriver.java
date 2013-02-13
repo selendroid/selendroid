@@ -19,6 +19,7 @@ import java.util.Collection;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.AndroidNativeElement;
+import org.openqa.selendroid.server.model.Keyboard;
 
 import android.app.Activity;
 import android.view.View;

@@ -30,6 +30,7 @@ import org.openqa.selendroid.server.handler.ListSessions;
 import org.openqa.selendroid.server.handler.LogElement;
 import org.openqa.selendroid.server.handler.LogElementTree;
 import org.openqa.selendroid.server.handler.NewSession;
+import org.openqa.selendroid.server.handler.SendKeyToActiveElement;
 import org.openqa.selendroid.server.handler.SendKeys;
 import org.openqa.selendroid.server.handler.SetImplicitWaitTimeout;
 import org.openqa.selendroid.server.handler.SubmitForm;
@@ -81,56 +82,62 @@ public class AndroidServlet implements HttpHandler {
         SetImplicitWaitTimeout.class);
     postHandler.put("/wd/hub/session/:sessionId/window", SwitchWindow.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/submit", SubmitForm.class);
+    postHandler.put("/wd/hub/session/:sessionId/keys", SendKeyToActiveElement.class);
   }
 
   public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
       throws Exception {
+    RequestHandler handler = null;
     if ("GET".equals(request.method())) {
-      findAndInvokeMatcher(request, response, getHandler);
+      handler = findMatcher(request, response, getHandler);
     } else if ("POST".equals(request.method())) {
-      findAndInvokeMatcher(request, response, postHandler);
+      handler = findMatcher(request, response, postHandler);
     } else if ("DELETE".equals(request.method())) {
-      findAndInvokeMatcher(request, response, deleteHandler);
+      handler = findMatcher(request, response, deleteHandler);
     }
-    replyWithServerError(response);
+    if (handler == null) {
+      replyWithServerError(response);
+    }
+    Response result = null;
+    try {
+      result = handler.handle();
+    } catch (Exception e) {
+      SelendroidLogger.logError("Error occured while handling reuqest.", e);
+      replyWithServerError(response);
+      return;
+    }
+
+    response.header("Content-Type", "application/json");
+    response.charset(Charsets.UTF_8);
+
+    if (isNewSessionRequest(request)) {
+      response.status(301);
+      String session = result.getSessionId();
+
+      SelendroidLogger.log("new URL: " + request.uri() + "/" + session);
+      response.header("location", request.uri() + "/" + session);
+    } else {
+      response.status(200);
+    }
+
+    if (result != null) {
+      String resultString = result.toString();
+      System.out.println("response: " + resultString);
+      response.content(resultString);
+    }
+    response.end();
   }
 
-  private void findAndInvokeMatcher(HttpRequest request, HttpResponse response,
+  private RequestHandler findMatcher(HttpRequest request, HttpResponse response,
       HashMap<String, Class<? extends RequestHandler>> handler) {
     for (Map.Entry<String, Class<? extends RequestHandler>> entry : handler.entrySet()) {
       if (isFor(entry.getKey(), request.uri())) {
         addHandlerAttributesToRequest(request, entry.getKey());
         System.out.println("URI: " + request.uri());
-        Response result = null;
-        try {
-          result = instantiateHandler(entry.getValue(), request).handle();
-        } catch (Exception e) {
-          SelendroidLogger.logError("Error occured while handling reuqest.", e);
-          replyWithServerError(response);
-          return;
-        }
-
-        response.header("Content-Type", "application/json");
-        response.charset(Charsets.UTF_8);
-
-        if (isNewSessionRequest(request)) {
-          response.status(301);
-          String session = result.getSessionId();
-
-          SelendroidLogger.log("new URL: " + request.uri() + "/" + session);
-          response.header("location", request.uri() + "/" + session);
-        } else {
-          response.status(200);
-        }
-
-        if (result != null) {
-          String resultString = result.toString();
-          System.out.println("response: " + resultString);
-          response.content(resultString);
-        }
-        response.end();
+        return instantiateHandler(entry.getValue(), request);
       }
     }
+    return null;
   }
 
   protected RequestHandler instantiateHandler(Class<? extends RequestHandler> clazz,

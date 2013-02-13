@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 selendroid committers.
+ * Copyright 2013 selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,22 +16,20 @@ package org.openqa.selendroid.server.handler;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 import com.google.gson.JsonElement;
 
-public class SendKeys extends RequestHandler {
+public class SendKeyToActiveElement extends RequestHandler {
 
-  public SendKeys(HttpRequest request) {
+  public SendKeyToActiveElement(HttpRequest request) {
     super(request);
   }
 
   @Override
   public Response handle() {
-    SelendroidLogger.log("send keys command");
-    Long id = getElementId();
+    SelendroidLogger.log("send key to active element command");
     JsonElement value = getPayload().get("value");
     if (value.isJsonNull()) {
       return new Response(getSessionId(), new SelendroidException(
@@ -39,11 +37,8 @@ public class SendKeys extends RequestHandler {
     }
     String text = value.getAsString();
 
-    AndroidElement element = getElementFromCache(id);
-    Long start = System.currentTimeMillis();
-    element.enterText(text);
-    System.out.println("Send keys done in " + (System.currentTimeMillis() - start) / 1000
-        + " seconds");
+    getAndroidDriver().getKeyboard().sendKeys(text);
+
     return new Response(getSessionId(), "");
   }
 
