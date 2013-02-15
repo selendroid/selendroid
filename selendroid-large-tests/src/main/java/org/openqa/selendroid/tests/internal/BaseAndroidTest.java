@@ -37,7 +37,7 @@ public class BaseAndroidTest {
   @BeforeClass
   public void setup() throws MalformedURLException {
     driver = new AndroidDriver(getDefaultCapabilities());
-    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
   }
 
   @AfterClass

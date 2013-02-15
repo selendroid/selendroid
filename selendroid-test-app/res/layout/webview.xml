@@ -1,19 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/webviewTable"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:shrinkColumns="*"
+    android:stretchColumns="*" >
 
-    <WebView
-        android:id="@+id/mainWebView"
+    <TableRow
+        android:id="@+id/tableHeader"
         android:layout_width="match_parent"
-        android:layout_height="419dp" >
-     </WebView>
-
-    <Button
-        android:id="@+id/goBack"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="showHomeScreenDialog"
-        android:text="Go to home screen" />
-</LinearLayout>
+        android:gravity="center_horizontal" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Web View Interaction" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRowButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Spinner
+            android:id="@+id/spinner_webdriver_test_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/prompt_webdriverHtmlTestFile" />
+        <!-- android:entries="@array/arrays_webdriverHtmlTestFile" -->
+
+        <Button
+            android:id="@+id/goBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="showHomeScreenDialog"
+            android:text="Go to home screen" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRowWebview"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_horizontal" >
+
+        <WebView
+            android:id="@+id/mainWebView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".70" />
+    </TableRow>
+
+</TableLayout>

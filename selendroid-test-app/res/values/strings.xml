@@ -12,6 +12,7 @@
     <string name="label_name">Name</string>
     <string name="label_preferedProgrammingLanguage">Programming Languge</string>
     <string name="prompt_preferedProgrammingLanguage">Programming Languge</string>
+    <string name="prompt_webdriverHtmlTestFile">Webdriver Test File</string>
     <string name="label_acceptAdds">I accept adds</string>
     <string name="label_conditions">TandC</string>
 

@@ -13,42 +13,90 @@
  */
 package org.openqa.selendroid.testapp;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.commons.io.IOUtils;
 import org.openqa.selendroid.testapp.server.HttpServer;
+import org.openqa.selendroid.testapp.webdrivertestserver.AppServer;
+import org.openqa.selendroid.testapp.webdrivertestserver.Pages;
+import org.openqa.selendroid.testapp.webdrivertestserver.WebbitAppServer;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+import com.google.common.base.Throwables;
 
 public class WebViewActivity extends Activity {
-  private static String TAG = "NativeAndroidDriver-demoapp";
   private HttpServer server = null;
+  private WebView mainWebView = null;
+  private Spinner testDataSpinner = null;
+  private Pages webdriverTestPages = null;
+  private ArrayAdapter<SpinnerItem> arrayAdapter = null;
+  private HttpdThread serverThread = null;;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
+
     server = HttpServer.getInstance();
+    // currently not used
+    // serverThread = new HttpdThread();
+    // serverThread.start();
+    // webdriverTestPages = new Pages(serverThread.getServer());
     super.onCreate(savedInstanceState);
     setContentView(R.layout.webview);
 
-    WebView mainWebView = (WebView) findViewById(R.id.mainWebView);
-    WebSettings webSettings = mainWebView.getSettings();
-    webSettings.setJavaScriptEnabled(true);
 
-    mainWebView.setWebViewClient(new MyCustomWebViewClient());
-    mainWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-    mainWebView.loadUrl("http://localhost:4450");
-  }
+    mainWebView = (WebView) findViewById(R.id.mainWebView);
+    testDataSpinner = (Spinner) findViewById(R.id.spinner_webdriver_test_data);
+    arrayAdapter =
+        new ArrayAdapter<SpinnerItem>(this, android.R.layout.simple_spinner_item,
+            new ArrayList<SpinnerItem>());
+    arrayAdapter.add(new SpinnerItem("'Say Hello'-Demo", "http://localhost:4450"));
+    arrayAdapter.add(new SpinnerItem("xhtmlTestPage", "file:///android_asset/web/xhtmlTest.html"));
+    arrayAdapter.add(new SpinnerItem("formPage", "file:///android_asset/web/xhtmlTest.html"));
+    arrayAdapter.add(new SpinnerItem("selectableItemsPage",
+        "file:///android_asset/web/selectableItems.html"));
+    arrayAdapter
+        .add(new SpinnerItem("nestedPage", "file:///android_asset/web/nestedElements.html"));
+    arrayAdapter.add(new SpinnerItem("javascriptPage",
+        "file:///android_asset/web/javascriptPage.html"));
+    arrayAdapter.add(new SpinnerItem("missedJsReferencePage",
+        "file:///android_asset/web/missedJsReference.html"));
+    arrayAdapter.add(new SpinnerItem("actualXhtmlPage",
+        "file:///android_asset/web/actualXhtmlPage.xhtml"));
+    arrayAdapter.add(new SpinnerItem("about:blank", "about:blank"));
 
-  public void runAtoms(final String scriptSrc, final WebView webView) {
-    webView.post(new Runnable() {
+    testDataSpinner.setAdapter(arrayAdapter);
+    testDataSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
       @Override
-      public void run() {
-        webView.loadUrl("javascript:" + scriptSrc);
+      public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+        SpinnerItem item = (SpinnerItem) testDataSpinner.getSelectedItem();
+        System.out.println("Selected Item: " + item.text);
+        mainWebView.loadUrl(item.url);
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> arg0) {
+        // do nothing
       }
     });
+  }
+
+  @Override
+  protected void onStart() {
+    mainWebView.loadUrl("http://localhost:4450");
+    super.onStart();
   }
 
   public void showHomeScreenDialog(View view) {
@@ -56,17 +104,63 @@ public class WebViewActivity extends Activity {
     startActivity(nextScreen);
   }
 
-  private class MyCustomWebViewClient extends WebViewClient {
-    @Override
-    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-      view.loadUrl(url);
-      return true;
-    }
-  }
-
   @Override
   protected void onDestroy() {
     server.stop();
+    if (serverThread != null) {
+      serverThread.stopLooping();
+      serverThread.interrupt();
+      try {
+        serverThread.join();
+      } catch (InterruptedException e) {
+        throw Throwables.propagate(e);
+      }
+      serverThread = null;
+    }
     super.onDestroy();
+  }
+
+  public class SpinnerItem {
+    private String text;
+    public String url;
+
+    SpinnerItem(String text, String url) {
+      this.text = text;
+      this.url = url;
+    }
+
+    @Override
+    public String toString() {
+      return text;
+    }
+  }
+  private class HttpdThread extends Thread {
+    private final AppServer server;
+    private Looper looper;
+
+    public HttpdThread() {
+
+      server = new WebbitAppServer();
+
+    }
+
+    @Override
+    public void run() {
+      Looper.prepare();
+      looper = Looper.myLooper();
+      server.start();
+      Looper.loop();
+    }
+
+    public AppServer getServer() {
+      return server;
+    }
+
+    public void stopLooping() {
+      if (looper == null) {
+        return;
+      }
+      looper.quit();
+    }
   }
 }
