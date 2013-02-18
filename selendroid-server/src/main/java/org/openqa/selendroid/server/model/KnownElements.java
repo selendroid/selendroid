@@ -27,7 +27,6 @@ public class KnownElements {
     Long id = nextId();
 
     elements.put(id, element);
-    System.out.println(this.toString() + " element added with id: " + id);
     return id;
   }
 
@@ -44,11 +43,9 @@ public class KnownElements {
   }
 
   public Long getIdOfElement(AndroidElement element) {
-    System.out.println(this.toString() + " try to find element: " + element);
     if (elements.containsValue(element)) {
       return elements.inverse().get(element);
     }
-    System.out.println("nothing found in cache");
     return null;
   }
 }

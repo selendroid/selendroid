@@ -63,7 +63,7 @@ public class WebViewActivity extends Activity {
             new ArrayList<SpinnerItem>());
     arrayAdapter.add(new SpinnerItem("'Say Hello'-Demo", "http://localhost:4450"));
     arrayAdapter.add(new SpinnerItem("xhtmlTestPage", "file:///android_asset/web/xhtmlTest.html"));
-    arrayAdapter.add(new SpinnerItem("formPage", "file:///android_asset/web/xhtmlTest.html"));
+    arrayAdapter.add(new SpinnerItem("formPage", "file:///android_asset/web/formPage.html"));
     arrayAdapter.add(new SpinnerItem("selectableItemsPage",
         "file:///android_asset/web/selectableItems.html"));
     arrayAdapter

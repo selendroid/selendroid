@@ -76,7 +76,6 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
     AndroidWebElement element = new AndroidWebElement(id, view, driver);
     Long cacheId = knownElements.add(element);
-    System.out.println("added web element "+element+" to cache with id: "+cacheId);
     return element;
   }
 
@@ -98,6 +97,11 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
   @Override
   public AndroidElement findElementById(String using) {
     JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id", using);
+
+    return reply(result);
+  }
+
+  private AndroidElement reply(JsonElement result) {
     if (result == null || result instanceof JsonNull) {
       return null;
     }
@@ -124,10 +128,9 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
   @Override
   public AndroidElement findElementByText(String using) {
-    JsonObject result =
-        (JsonObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "linkText", using);
-    String id = result.get("ELEMENT").getAsString();
-    return newAndroidWebElementById(id);
+    JsonElement result =
+        (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "linkText", using);
+    return reply(result);
   }
 
   @Override
@@ -137,9 +140,8 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
 
   public AndroidElement findElementByXPath(String using) {
-    JsonObject result = (JsonObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "xpath", using);
-    String id = result.get("ELEMENT").getAsString();
-    return newAndroidWebElementById(id);
+    JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "xpath", using);
+    return reply(result);
   }
 
 
@@ -148,9 +150,8 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
   }
 
   public AndroidElement findElementByName(String using) {
-    JsonObject result = (JsonObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "name", using);
-    String id = result.get("ELEMENT").getAsString();
-    return newAndroidWebElementById(id);
+    JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "name", using);
+    return reply(result);
   }
 
   public List<AndroidElement> findElementsByName(String using) {

@@ -320,7 +320,6 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
      */
     @Override
     public boolean onJsAlert(WebView view, String url, String message, JsResult jsResult) {
-      System.out.println("onJsAlert: " + message);
       if (message != null && message.startsWith("selendroid:")) {
         jsResult.confirm();
 
@@ -334,25 +333,6 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
       } else {
         return super.onJsAlert(view, url, message, jsResult);
       }
-    }
-
-    @Override
-    public boolean onJsPrompt(WebView view, String url, String message, String defaultValue,
-        JsPromptResult result) {
-      System.out.println("onJsPrompt: " + message);
-      return super.onJsPrompt(view, url, message, defaultValue, result);
-    }
-
-    @Override
-    public boolean onJsTimeout() {
-      System.out.println("onJsTimeout: ");
-      return super.onJsTimeout();
-    }
-
-    @Override
-    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-      System.out.println("onConsoleMessage: " + consoleMessage.message());
-      return super.onConsoleMessage(consoleMessage);
     }
   }
 
