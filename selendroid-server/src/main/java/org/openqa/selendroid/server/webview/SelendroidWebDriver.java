@@ -266,8 +266,7 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
         "(function(){" + "var win; try{win=" + window + "}catch(e){win=window}"
             + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", ["
             + convertToJsArgs(args) + "], true)}})()";
-    return executeJavascriptInWebView(wrappedScript);
-
+    return executeJavascriptInWebView("alert('selendroid:'+" + wrappedScript + ")");
   }
 
   public AndroidWebElement newAndroidElement(String id) {

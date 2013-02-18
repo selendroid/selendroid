@@ -75,7 +75,8 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
     // jsResult: {"status":0,"value":{"ELEMENT":":wdc:1358790510925"}}
 
     AndroidWebElement element = new AndroidWebElement(id, view, driver);
-    knownElements.add(element);
+    Long cacheId = knownElements.add(element);
+    System.out.println("added web element "+element+" to cache with id: "+cacheId);
     return element;
   }
 

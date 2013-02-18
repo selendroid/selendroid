@@ -75,7 +75,7 @@ public abstract class RequestHandler {
   protected void switchToWebViewDriver() {
     Session session = getAndroidDriver().getSession();
     session.setActiveWindowType(WindowType.WEBVIEW);
-    //to initialize the driver already
+    // to initialize the driver already
     getAndroidDriver();
   }
 
@@ -83,11 +83,27 @@ public abstract class RequestHandler {
     getAndroidDriver().getSession().setActiveWindowType(WindowType.NATIVE_APP);
   }
 
+  protected Long getIdOfKnownElement(AndroidElement element) {
+    KnownElements knownElements = getKnownElements();
+    if (knownElements == null) {
+      System.out.println("Error: known elements == null");
+      return null;
+    }
+    return knownElements.getIdOfElement(element);
+  }
+
   protected AndroidElement getElementFromCache(Long id) {
-    return getKnownElements().get(id);
+    KnownElements knownElements = getKnownElements();
+    if (knownElements == null) {
+      return null;
+    }
+    return knownElements.get(id);
   }
 
   protected KnownElements getKnownElements() {
+    if (getAndroidDriver().getSession() == null) {
+      return null;
+    }
     return getAndroidDriver().getSession().getKnownElements();
   }
 

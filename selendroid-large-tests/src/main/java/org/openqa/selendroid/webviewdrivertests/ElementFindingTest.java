@@ -16,6 +16,8 @@ package org.openqa.selendroid.webviewdrivertests;
 import static org.openqa.selendroid.webviewdrivertests.waiter.TestWaiter.waitFor;
 import static org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions.pageTitleToBe;
 
+import java.util.concurrent.TimeUnit;
+
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -43,7 +45,7 @@ public class ElementFindingTest extends BaseAndroidTest {
     driver.findElement(By.linkText(page)).click();
     driver.switchTo().window("WEBVIEW");
   }
-  
+
   protected void openWebdriverTestPageByOpeningWebview(String page) {
     openWebView();
     openWebdriverTestPage(page);
@@ -62,11 +64,12 @@ public class ElementFindingTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToClickOnLinkIdentifiedByText() {
+  public void testShouldBeAbleToClickOnLinkIdentifiedByText() throws Exception {
     openWebdriverTestPageByOpeningWebview(HtmlTestData.XHTML_TEST_PAGE);
-    driver.findElement(By.linkText("click me")).click();
-
-    waitFor(pageTitleToBe(driver, "We Arrive Here"));
+    WebElement clickMe = driver.findElement(By.linkText("click me"));
+    clickMe.click();
+    
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
 

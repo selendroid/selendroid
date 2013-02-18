@@ -28,7 +28,6 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -36,8 +35,30 @@ import com.google.common.base.Function;
 import com.google.gson.JsonObject;
 
 public class AndroidNativeElement implements AndroidElement {
-  protected static final long DURATION_OF_LONG_PRESS = (long) (ViewConfiguration
-      .getLongPressTimeout() * 1.5f);
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((view == null) ? 0 : view.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    AndroidNativeElement other = (AndroidNativeElement) obj;
+    if (view == null) {
+      if (other.view != null) return false;
+    } else if (!view.equals(other.view)) return false;
+    return true;
+  }
+
+  // TODO revisit
+  protected static final long DURATION_OF_LONG_PRESS = 750L;// (long)
+                                                            // (ViewConfiguration.getLongPressTimeout()
+                                                            // * 1.5f);
   private View view;
   private Collection<AndroidElement> children = new HashSet<AndroidElement>();
   private AndroidElement parent;

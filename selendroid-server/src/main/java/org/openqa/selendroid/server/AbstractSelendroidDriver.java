@@ -68,7 +68,7 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
     while (found == null
         && (System.currentTimeMillis() - start <= serverInstrumentation.getAndroidWait()
             .getTimeoutInMillis())) {
-      sleepQuietly(200);
+      sleepQuietly(400);
       found = by.findElement(getSearchContext());
     }
     return found;

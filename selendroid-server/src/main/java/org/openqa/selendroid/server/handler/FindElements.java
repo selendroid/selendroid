@@ -18,7 +18,6 @@ import java.util.List;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.model.AndroidElement;
-import org.openqa.selendroid.server.model.AndroidNativeElement;
 import org.openqa.selendroid.server.model.By;
 import org.webbitserver.HttpRequest;
 
@@ -44,7 +43,7 @@ public class FindElements extends RequestHandler {
     JsonArray result = new JsonArray();
     for (AndroidElement element : elements) {
       JsonObject jsonElement = new JsonObject();
-      Long id = getKnownElements().getIdOfElement((AndroidNativeElement) element);
+      Long id = getIdOfKnownElement(element);
       if (id == null) {
         continue;
       }
