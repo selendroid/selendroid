@@ -45,4 +45,6 @@ public interface SelendroidDriver {
   public byte[] takeScreenshot();
   
   public Keyboard getKeyboard() ;
+  
+  public String getTitle();
 }

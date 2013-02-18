@@ -25,6 +25,7 @@ import org.openqa.selendroid.server.handler.FindElement;
 import org.openqa.selendroid.server.handler.FindElements;
 import org.openqa.selendroid.server.handler.GetCapabilities;
 import org.openqa.selendroid.server.handler.GetCurrentUrl;
+import org.openqa.selendroid.server.handler.GetPageTitle;
 import org.openqa.selendroid.server.handler.GetText;
 import org.openqa.selendroid.server.handler.ListSessions;
 import org.openqa.selendroid.server.handler.LogElement;
@@ -83,6 +84,7 @@ public class AndroidServlet implements HttpHandler {
     postHandler.put("/wd/hub/session/:sessionId/window", SwitchWindow.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/submit", SubmitForm.class);
     postHandler.put("/wd/hub/session/:sessionId/keys", SendKeyToActiveElement.class);
+    getHandler.put("/wd/hub/session/:sessionId/title", GetPageTitle.class);
   }
 
   public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)

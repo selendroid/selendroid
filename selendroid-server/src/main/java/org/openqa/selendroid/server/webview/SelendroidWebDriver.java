@@ -16,17 +16,13 @@ package org.openqa.selendroid.server.webview;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.DomWindow;
 import org.openqa.selendroid.server.AbstractSelendroidDriver;
 import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.server.WebviewSearchScope;
-import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.webview.js.AndroidAtoms;
 import org.openqa.selendroid.util.SelendroidLogger;
 
@@ -357,6 +353,40 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
     public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
       System.out.println("onConsoleMessage: " + consoleMessage.message());
       return super.onConsoleMessage(consoleMessage);
+    }
+  }
+
+
+  @Override
+  public String getTitle() {
+    if (webview == null) {
+      throw new SelendroidException("No open web view.");
+    }
+    long end = System.currentTimeMillis() + UI_TIMEOUT;
+    final String[] title = new String[1];
+    done = false;
+    serverInstrumentation.runOnUiThread(new Runnable() {
+      public void run() {
+        synchronized (syncObject) {
+          title[0] = webview.getTitle();
+          done = true;
+          syncObject.notify();
+        }
+      }
+    });
+    waitForDone(end, UI_TIMEOUT, "Failed to get title");
+    return title[0];
+  }
+
+  private void waitForDone(long end, long timeout, String error) {
+    synchronized (syncObject) {
+      while (!done && System.currentTimeMillis() < end) {
+        try {
+          syncObject.wait(timeout);
+        } catch (InterruptedException e) {
+          throw new SelendroidException(error, e);
+        }
+      }
     }
   }
 }

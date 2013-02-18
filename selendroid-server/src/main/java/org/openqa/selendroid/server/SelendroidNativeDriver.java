@@ -82,4 +82,9 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
 
     return root;
   }
+
+  @Override
+  public String getTitle() {
+    throw new UnsupportedOperationException();
+  }
 }
