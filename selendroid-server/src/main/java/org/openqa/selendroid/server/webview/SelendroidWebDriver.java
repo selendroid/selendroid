@@ -195,8 +195,12 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
 
 
   @Override
-  public void get(String url) {
-    webview.loadUrl(url);
+  public void get(final String url) {
+    serverInstrumentation.runOnUiThread(new Runnable() {
+      public void run() {
+        webview.loadUrl(url);
+      }
+    });
   }
 
   @Override
