@@ -26,7 +26,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.webkit.WebView;
 
-class EventSender {
+public class EventSender {
 
   private static MotionEvent lastSent;
   private static final Object syncObject = new Object();
@@ -36,7 +36,7 @@ class EventSender {
     return lastSent;
   }
 
-  /* package */static void sendMotion(final List<MotionEvent> events, final WebView view,
+  public static void sendMotion(final List<MotionEvent> events, final WebView view,
       Activity activity) {
 
     long timeout =
@@ -91,7 +91,7 @@ class EventSender {
    * @param webview
    * @param text
    */
-  /* package */static void sendKeys(final WebView webview, final CharSequence... text) {
+  public static void sendKeys(final WebView webview, final CharSequence... text) {
     final KeyCharacterMap characterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
 
     long timeout =
@@ -99,33 +99,33 @@ class EventSender {
             + ServerInstrumentation.getInstance().getAndroidWait().getTimeoutInMillis();
     System.out.println("Using timeout of " + timeout + " milli seconds.");
 
-   // synchronized (syncObject) {
-      done = false;
+    // synchronized (syncObject) {
+    done = false;
 
-      ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
-        public void run() {
-          for (CharSequence sequence : text) {
-            for (int i = 0; i < sequence.length(); i++) {
-              char c = sequence.charAt(i);
-              int code = AndroidKeys.keyCodeFor(c);
-              if (code != -1) {
-                webview.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, code));
-                webview.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, code));
-              } else {
-                KeyEvent[] arr = characterMap.getEvents(new char[] {c});
-                if (arr != null) {
-                  for (int j = 0; j < arr.length; j++) {
-                    webview.dispatchKeyEvent(arr[j]);
-                  }
+    ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
+      public void run() {
+        for (CharSequence sequence : text) {
+          for (int i = 0; i < sequence.length(); i++) {
+            char c = sequence.charAt(i);
+            int code = AndroidKeys.keyCodeFor(c);
+            if (code != -1) {
+              webview.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, code));
+              webview.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, code));
+            } else {
+              KeyEvent[] arr = characterMap.getEvents(new char[] {c});
+              if (arr != null) {
+                for (int j = 0; j < arr.length; j++) {
+                  webview.dispatchKeyEvent(arr[j]);
                 }
               }
             }
           }
-          done = true;
-          // syncObject.notify();
         }
-      });
-    //}
-    //waitForNotification(timeout, "Failed to send keys.");
+        done = true;
+        // syncObject.notify();
+      }
+    });
+    // }
+    // waitForNotification(timeout, "Failed to send keys.");
   }
 }

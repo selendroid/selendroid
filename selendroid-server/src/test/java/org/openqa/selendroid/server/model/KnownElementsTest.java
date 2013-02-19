@@ -7,8 +7,6 @@ import static org.mockito.Mockito.when;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.server.webview.AndroidWebElement;
-import org.openqa.selendroid.server.webview.SelendroidWebDriver;
 
 import android.view.View;
 import android.webkit.WebView;

@@ -16,6 +16,7 @@ package org.openqa.selendroid.server;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.KnownElements;
+import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
 
 import com.google.gson.JsonObject;

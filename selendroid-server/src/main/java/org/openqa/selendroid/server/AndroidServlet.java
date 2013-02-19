@@ -38,6 +38,7 @@ import org.openqa.selendroid.server.handler.SendKeys;
 import org.openqa.selendroid.server.handler.SetImplicitWaitTimeout;
 import org.openqa.selendroid.server.handler.SubmitForm;
 import org.openqa.selendroid.server.handler.SwitchWindow;
+import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
