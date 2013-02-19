@@ -30,7 +30,10 @@ public interface AndroidElement {
   public String getText();
 
   public void click();
+
   public void submit();
-  
+
+  public boolean isSelected();
+
   public void clear();
 }

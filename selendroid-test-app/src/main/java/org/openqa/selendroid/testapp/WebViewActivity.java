@@ -13,11 +13,8 @@
  */
 package org.openqa.selendroid.testapp;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.commons.io.IOUtils;
 import org.openqa.selendroid.testapp.server.HttpServer;
 import org.openqa.selendroid.testapp.webdrivertestserver.AppServer;
 import org.openqa.selendroid.testapp.webdrivertestserver.Pages;
@@ -33,7 +30,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-
+  
 import com.google.common.base.Throwables;
 
 public class WebViewActivity extends Activity {
@@ -95,7 +92,7 @@ public class WebViewActivity extends Activity {
 
   @Override
   protected void onStart() {
-    mainWebView.loadUrl("http://localhost:4450");
+    mainWebView.loadUrl("about:blank");
     super.onStart();
   }
 

@@ -76,8 +76,7 @@ public class ElementFindingTest extends BaseAndroidTest {
   @Test
   public void testshouldBeAbleToClickOnLinkIdentifiedById() {
     openWebdriverTestPageByOpeningWebview(HtmlTestData.XHTML_TEST_PAGE);
-    String source=driver.getPageSource();
-    System.out.println("source: "+source);
+    
     driver.findElement(By.id("linkId")).click();
 
     waitFor(pageTitleToBe(driver, "We Arrive Here"));
@@ -100,7 +99,11 @@ public class ElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldfindAnElementBasedOnId() {
     openWebdriverTestPageByOpeningWebview(HtmlTestData.FORM_PAGE);
-
+    
+    
+    waitFor(pageTitleToBe(driver, "We Leave From Here"));
+    String source=driver.getPageSource();
+    System.out.println("source: "+source);
     WebElement element = driver.findElement(By.id("checky"));
 
     Assert.assertEquals(element.isSelected(), false);

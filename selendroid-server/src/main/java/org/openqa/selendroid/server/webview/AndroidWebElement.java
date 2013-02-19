@@ -132,6 +132,12 @@ public class AndroidWebElement implements AndroidElement {
     return ((JsonElement) driver.executeAtom(AndroidAtoms.IS_ENABLED, this)).getAsBoolean();
   }
 
+  public boolean isSelected() {
+    Boolean selected =
+        ((JsonElement) driver.executeAtom(AndroidAtoms.IS_SELECTED, this)).getAsBoolean();
+    return selected;
+  }
+
   @Override
   public String getText() {
     JsonElement response = (JsonElement) driver.executeAtom(AndroidAtoms.GET_TEXT, this);

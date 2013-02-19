@@ -319,4 +319,9 @@ public class AndroidNativeElement implements AndroidElement {
   public void submit() {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public boolean isSelected() {
+    throw new UnsupportedOperationException();
+  }
 }
