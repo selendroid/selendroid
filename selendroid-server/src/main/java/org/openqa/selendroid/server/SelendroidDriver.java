@@ -43,8 +43,10 @@ public interface SelendroidDriver {
   public void switchWindow(WindowType type);
 
   public byte[] takeScreenshot();
-  
-  public Keyboard getKeyboard() ;
-  
+
+  public Keyboard getKeyboard();
+
   public String getTitle();
+
+  public void get(String url);
 }

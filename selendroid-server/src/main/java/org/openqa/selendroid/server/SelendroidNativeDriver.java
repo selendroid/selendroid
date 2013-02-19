@@ -14,16 +14,19 @@
 
 package org.openqa.selendroid.server;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 
 import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.AndroidNativeElement;
-import org.openqa.selendroid.server.model.Keyboard;
 
 import android.app.Activity;
 import android.view.View;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -86,5 +89,30 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
   @Override
   public String getTitle() {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void get(String url) {
+    URI dest;
+    try {
+      dest = new URI(url);
+    } catch (URISyntaxException exception) {
+      throw new IllegalArgumentException(exception);
+    }
+
+    if (!"and-activity".equals(dest.getScheme())) {
+      throw new SelendroidException("Unrecognized scheme in URI: " + dest.toString());
+    } else if (!Strings.isNullOrEmpty(dest.getPath())) {
+      throw new SelendroidException("Unrecognized path in URI: " + dest.toString());
+    }
+
+    Class<?> clazz;
+    try {
+      clazz = Class.forName(dest.getAuthority());
+    } catch (ClassNotFoundException exception) {
+      throw new SelendroidException("The specified Activity class does not exist: "
+          + dest.getAuthority(), exception);
+    }
+    serverInstrumentation.startActivity(clazz);
   }
 }

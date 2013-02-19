@@ -32,6 +32,7 @@ import org.openqa.selendroid.server.handler.ListSessions;
 import org.openqa.selendroid.server.handler.LogElement;
 import org.openqa.selendroid.server.handler.LogElementTree;
 import org.openqa.selendroid.server.handler.NewSession;
+import org.openqa.selendroid.server.handler.OpenUrl;
 import org.openqa.selendroid.server.handler.SendKeyToActiveElement;
 import org.openqa.selendroid.server.handler.SendKeys;
 import org.openqa.selendroid.server.handler.SetImplicitWaitTimeout;
@@ -75,6 +76,7 @@ public class AndroidServlet implements HttpHandler {
     postHandler.put("/wd/hub/session/:sessionId/element/:id/click", ClickElement.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/text", GetText.class);
     getHandler.put("/wd/hub/session/:sessionId/url", GetCurrentUrl.class);
+    postHandler.put("/wd/hub/session/:sessionId/url", OpenUrl.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/value", SendKeys.class);
     getHandler.put("/wd/hub/session/:sessionId/source", LogElementTree.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/source", LogElement.class);

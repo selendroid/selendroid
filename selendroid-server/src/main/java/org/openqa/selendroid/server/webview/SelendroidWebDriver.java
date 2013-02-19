@@ -174,8 +174,29 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
 
   @Override
   public String getCurrentUrl() {
-    throw new UnsupportedOperationException(
-        "Get current URL is currently not supported for webviews.");
+    if (webview == null) {
+      throw new SelendroidException("No open web view.");
+    }
+    long end = System.currentTimeMillis() + UI_TIMEOUT;
+    final String[] url = new String[1];
+    done = false;
+    serverInstrumentation.runOnUiThread(new Runnable() {
+      public void run() {
+        synchronized (syncObject) {
+          url[0] = webview.getUrl();
+          done = true;
+          syncObject.notify();
+        }
+      }
+    });
+    waitForDone(end, UI_TIMEOUT, "Failed to get url");
+    return url[0];
+  }
+
+
+  @Override
+  public void get(String url) {
+    webview.loadUrl(url);
   }
 
   @Override

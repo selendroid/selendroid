@@ -31,7 +31,11 @@ public class SwitchWindow extends RequestHandler {
     if (windowName == null || windowName.isEmpty()) {
       return new Response(getSessionId(), 13, new SelendroidException("Window name is missing."));
     }
-    if (WindowType.NATIVE_APP.equals(windowName)) {
+    if (getCurrentWindowType().name().equals(windowName)) {
+      // nothing to do, already in the right mode.
+      return new Response(getSessionId(), "");
+    }
+    if (WindowType.NATIVE_APP.name().equals(windowName)) {
       switchToNativeDriver();
     } else if (WindowType.WEBVIEW.name().equals(windowName)) {
       try {

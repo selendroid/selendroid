@@ -35,15 +35,19 @@ public class ServerInstrumentation extends Instrumentation {
   private AndroidWait androidWait = new AndroidWait();
 
   public void startMainActivity() {
-    if (mainActivity == null) {
-      SelendroidLogger.logError("main activity class is empty", null);
+    startActivity(mainActivity);
+  }
+
+  public void startActivity(Class activity) {
+    if (activity == null) {
+      SelendroidLogger.logError("activity class is empty", null);
       return;
     }
 
     finishAllActivities();
 
     // start now the new activity
-    Intent intent = new Intent(getTargetContext(), mainActivity);
+    Intent intent = new Intent(getTargetContext(), activity);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.setAction(Intent.ACTION_MAIN);
     intent.addCategory(Intent.CATEGORY_LAUNCHER);

@@ -33,27 +33,23 @@ import org.testng.annotations.Test;
  * @author ddary
  */
 public class ElementFindingTest extends BaseAndroidTest {
-
-  protected void openWebView() {
-    driver.findElement(By.linkText("Start Webview")).click();
-    WebDriverWait wait = new WebDriverWait(driver, 5);
-    wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
-  }
+  public static final String ACTIVITY_CLASS = 
+      "org.openqa.selendroid.testapp." + "WebViewActivity";
 
   protected void openWebdriverTestPage(String page) {
+    driver.switchTo().window("NATIVE_APP");
+    driver.get("and-activity://" + ACTIVITY_CLASS);
+    WebDriverWait wait = new WebDriverWait(driver, 5);
+    wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
     driver.findElement(By.id("spinner_webdriver_test_data")).click();
     driver.findElement(By.linkText(page)).click();
     driver.switchTo().window("WEBVIEW");
   }
 
-  protected void openWebdriverTestPageByOpeningWebview(String page) {
-    openWebView();
-    openWebdriverTestPage(page);
-  }
 
   @Test()
   public void testShouldNotBeAbleToLocateASingleElementThatDoesNotExist() {
-    openWebdriverTestPageByOpeningWebview(HtmlTestData.FORM_PAGE);
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
     try {
       driver.findElement(By.id("nonExistantButton"));
@@ -65,18 +61,18 @@ public class ElementFindingTest extends BaseAndroidTest {
 
   @Test
   public void testShouldBeAbleToClickOnLinkIdentifiedByText() throws Exception {
-    openWebdriverTestPageByOpeningWebview(HtmlTestData.XHTML_TEST_PAGE);
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     WebElement clickMe = driver.findElement(By.linkText("click me"));
     clickMe.click();
-    
+
     waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
 
   @Test
   public void testshouldBeAbleToClickOnLinkIdentifiedById() {
-    openWebdriverTestPageByOpeningWebview(HtmlTestData.XHTML_TEST_PAGE);
-    
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+
     driver.findElement(By.id("linkId")).click();
 
     waitFor(pageTitleToBe(driver, "We Arrive Here"));
@@ -86,7 +82,7 @@ public class ElementFindingTest extends BaseAndroidTest {
 
   @Test
   public void testShouldThrowAnExceptionWhenThereIsNoLinkToClickAndItIsFoundWithLinkText() {
-    openWebdriverTestPageByOpeningWebview(HtmlTestData.XHTML_TEST_PAGE);
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
 
     try {
       driver.findElement(By.linkText("Not here either"));
@@ -98,12 +94,12 @@ public class ElementFindingTest extends BaseAndroidTest {
 
   @Test
   public void testShouldfindAnElementBasedOnId() {
-    openWebdriverTestPageByOpeningWebview(HtmlTestData.FORM_PAGE);
-    
-    
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+
     waitFor(pageTitleToBe(driver, "We Leave From Here"));
-    String source=driver.getPageSource();
-    System.out.println("source: "+source);
+    String source = driver.getPageSource();
+    System.out.println("source: " + source);
     WebElement element = driver.findElement(By.id("checky"));
 
     Assert.assertEquals(element.isSelected(), false);
@@ -111,7 +107,7 @@ public class ElementFindingTest extends BaseAndroidTest {
 
   @Test
   public void testShouldNotBeAbleTofindElementsBasedOnIdIfTheElementIsNotThere() {
-    openWebdriverTestPageByOpeningWebview(HtmlTestData.FORM_PAGE);
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
     try {
       driver.findElement(By.id("notThere"));
