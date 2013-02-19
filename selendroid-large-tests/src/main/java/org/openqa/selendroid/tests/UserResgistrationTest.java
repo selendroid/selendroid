@@ -17,6 +17,7 @@ import org.openqa.selendroid.tests.domain.PreferedProgrammingLanguage;
 import org.openqa.selendroid.tests.domain.UserDO;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -46,11 +47,10 @@ public class UserResgistrationTest extends BaseAndroidTest {
     WebDriverWait wait = new WebDriverWait(driver, 5);
     WebElement inputUsername =
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
-
     inputUsername.sendKeys(user.getUsername());
     driver.findElement(By.id("inputEmail")).sendKeys(user.getEmail());
     driver.findElement(By.id("inputPassword")).sendKeys(user.getPassword());
-    WebElement nameInput=driver.findElement(By.id("inputName"));
+    WebElement nameInput = driver.findElement(By.id("inputName"));
     Assert.assertEquals(nameInput.getText(), "Mr. Burns");
     nameInput.clear();
     nameInput.sendKeys(user.getName());
@@ -60,6 +60,14 @@ public class UserResgistrationTest extends BaseAndroidTest {
     Assert.assertEquals(acceptAddsCheckbox.isSelected(), false);
     acceptAddsCheckbox.click();
     takeScreenShot("User data entered.");
+    Assert.assertEquals(driver.getCurrentUrl(), "and-activity://RegisterUserActivity");
+    try {
+      driver.getTitle();
+      Assert.fail("Get title is not supported by SelendroidNativeDriver");
+    } catch (WebDriverException e) {
+      // expected behavior
+    }
+
     driver.findElement(By.id("btnRegisterUser")).click();
   }
 
