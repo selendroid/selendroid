@@ -33,17 +33,18 @@ import org.testng.annotations.Test;
  * @author ddary
  */
 public class ElementFindingTest extends BaseAndroidTest {
-  public static final String ACTIVITY_CLASS = 
-      "org.openqa.selendroid.testapp." + "WebViewActivity";
+  public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp." + "WebViewActivity";
+  public static final String NATIVE_APP = "NATIVE_APP";
+  public static final String WEBVIEW = "WEBVIEW";
 
-  protected void openWebdriverTestPage(String page) {
-    driver.switchTo().window("NATIVE_APP");
+  private void openWebdriverTestPage(String page) {
+    driver.switchTo().window(NATIVE_APP);
     driver.get("and-activity://" + ACTIVITY_CLASS);
     WebDriverWait wait = new WebDriverWait(driver, 5);
     wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
     driver.findElement(By.id("spinner_webdriver_test_data")).click();
     driver.findElement(By.linkText(page)).click();
-    driver.switchTo().window("WEBVIEW");
+    driver.switchTo().window(WEBVIEW);
   }
 
 
@@ -97,7 +98,7 @@ public class ElementFindingTest extends BaseAndroidTest {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
 
-    waitFor(pageTitleToBe(driver, "We Leave From Here"));
+    waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);
     String source = driver.getPageSource();
     System.out.println("source: " + source);
     WebElement element = driver.findElement(By.id("checky"));

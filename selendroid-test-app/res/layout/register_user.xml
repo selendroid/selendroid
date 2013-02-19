@@ -1,68 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="wrap_content">
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="fill_parent" android:layout_height="fill_parent"
-		android:orientation="vertical">
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
 
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:text="@string/welcomeRegisterUser"
-			android:textStyle="bold" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/welcomeRegisterUser"
+            android:textStyle="bold" />
 
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:text="@string/label_username"
-			android:textStyle="bold" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_username"
+            android:textStyle="bold" />
 
-		<EditText android:id="@+id/inputUsername"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:layout_marginBottom="20dip" android:layout_marginTop="5dip"
-			android:singleLine="true" />
+        <EditText
+            android:id="@+id/inputUsername"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dip"
+            android:layout_marginTop="5dip"
+            android:singleLine="true" />
 
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:text="@string/label_email"
-			android:textStyle="bold" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_email"
+            android:textStyle="bold" />
 
-		<EditText android:id="@+id/inputEmail" android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:layout_marginBottom="20dip"
-			android:layout_marginTop="5dip" android:singleLine="true" />
+        <EditText
+            android:id="@+id/inputEmail"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dip"
+            android:layout_marginTop="5dip"
+            android:singleLine="true" />
 
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:text="@string/label_password"
-			android:textStyle="bold" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_password"
+            android:textStyle="bold" />
 
-		<EditText android:id="@+id/inputPassword"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:layout_marginTop="5dip" android:password="true"
-			android:singleLine="true" />
+        <EditText
+            android:id="@+id/inputPassword"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dip"
+            android:password="true"
+            android:singleLine="true" />
 
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:text="@string/label_name"
-			android:textStyle="bold" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_name"
+            android:textStyle="bold" />
 
-		<EditText android:id="@+id/inputName" android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:layout_marginBottom="20dip"
-			android:layout_marginTop="5dip" android:singleLine="true" />
+        <EditText
+            android:id="@+id/inputName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dip"
+            android:layout_marginTop="5dip"
+            android:singleLine="true"
+            android:text="Mr. Burns" />
 
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:text="@string/label_preferedProgrammingLanguage"
-			android:textStyle="bold" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_preferedProgrammingLanguage"
+            android:textStyle="bold" />
 
-		<Spinner android:id="@+id/input_preferedProgrammingLanguage"
-			android:layout_width="match_parent" android:layout_height="wrap_content"
-			android:entries="@array/arrays_preferedProgrammingLanguage"
-			android:prompt="@string/prompt_preferedProgrammingLanguage" />
+        <Spinner
+            android:id="@+id/input_preferedProgrammingLanguage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/arrays_preferedProgrammingLanguage"
+            android:prompt="@string/prompt_preferedProgrammingLanguage" />
 
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:text="@string/label_conditions"
-			android:textStyle="bold" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_conditions"
+            android:textStyle="bold" />
 
-		<CheckBox android:id="@+id/input_adds" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="@string/label_acceptAdds" />
+        <CheckBox
+            android:id="@+id/input_adds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_acceptAdds" />
 
-		<Button android:id="@+id/btnRegisterUser" android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:layout_marginTop="10dip"
-			android:onClick="registerUser" android:text="@string/verifyNewUser" />
-	</LinearLayout>
+        <Button
+            android:id="@+id/btnRegisterUser"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:onClick="registerUser"
+            android:text="@string/verifyNewUser" />
+    </LinearLayout>
 
 </ScrollView>

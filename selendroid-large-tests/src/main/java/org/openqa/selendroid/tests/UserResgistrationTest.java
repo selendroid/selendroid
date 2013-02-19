@@ -50,7 +50,10 @@ public class UserResgistrationTest extends BaseAndroidTest {
     inputUsername.sendKeys(user.getUsername());
     driver.findElement(By.id("inputEmail")).sendKeys(user.getEmail());
     driver.findElement(By.id("inputPassword")).sendKeys(user.getPassword());
-    driver.findElement(By.id("inputName")).sendKeys(user.getName());
+    WebElement nameInput=driver.findElement(By.id("inputName"));
+    Assert.assertEquals(nameInput.getText(), "Mr. Burns");
+    nameInput.clear();
+    nameInput.sendKeys(user.getName());
     driver.findElement(By.id("input_preferedProgrammingLanguage")).click();
     driver.findElement(By.linkText(user.getProgrammingLanguage().getValue())).click();
     WebElement acceptAddsCheckbox = driver.findElement(By.id("input_adds"));
