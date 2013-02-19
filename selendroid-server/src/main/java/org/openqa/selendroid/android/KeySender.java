@@ -61,7 +61,8 @@ public class KeySender {
    * Creates a new instance which sends keys to the given {@code Instrumentation}.
    */
   public KeySender(Instrumentation instrumentation) {
-    this.instrumentation = Preconditions.checkNotNull(instrumentation);
+    //this.instrumentation = Preconditions.checkNotNull(instrumentation);
+    this.instrumentation=instrumentation;
     this.keyboardImpl = new KeyboardImpl();
   }
 
