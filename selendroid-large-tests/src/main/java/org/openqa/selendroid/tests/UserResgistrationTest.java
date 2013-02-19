@@ -53,6 +53,12 @@ public class UserResgistrationTest extends BaseAndroidTest {
     WebElement nameInput = driver.findElement(By.id("inputName"));
     Assert.assertEquals(nameInput.getText(), "Mr. Burns");
     nameInput.clear();
+    try {
+      nameInput.submit();
+      Assert.fail("submit is not supported by SelendroidNativeDriver");
+    } catch (WebDriverException e) {
+      // expected behavior
+    }
     nameInput.sendKeys(user.getName());
     driver.findElement(By.id("input_preferedProgrammingLanguage")).click();
     driver.findElement(By.linkText(user.getProgrammingLanguage().getValue())).click();
