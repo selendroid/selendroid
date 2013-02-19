@@ -19,11 +19,6 @@ public class IsElementSelected extends RequestHandler {
     System.out.println("is element selected command");
     Long id = getElementId();
 
-    if (!isWebviewWindow(getAndroidDriver())) {
-      return new Response(getSessionId(), 13, new UnsupportedOperationException(
-          "Is elemement selected command is only available for web views."));
-    }
-
     AndroidElement element = getElementFromCache(id);
     return new Response(getSessionId(), new JsonPrimitive(element.isSelected()));
   }

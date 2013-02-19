@@ -53,7 +53,9 @@ public class UserResgistrationTest extends BaseAndroidTest {
     driver.findElement(By.id("inputName")).sendKeys(user.getName());
     driver.findElement(By.id("input_preferedProgrammingLanguage")).click();
     driver.findElement(By.linkText(user.getProgrammingLanguage().getValue())).click();
-    driver.findElement(By.id("input_adds")).click();
+    WebElement acceptAddsCheckbox = driver.findElement(By.id("input_adds"));
+    Assert.assertEquals(acceptAddsCheckbox.isSelected(), false);
+    acceptAddsCheckbox.click();
     takeScreenShot("User data entered.");
     driver.findElement(By.id("btnRegisterUser")).click();
   }

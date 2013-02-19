@@ -28,7 +28,9 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.common.base.Function;
@@ -320,8 +322,18 @@ public class AndroidNativeElement implements AndroidElement {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * TODO use reflection
+   */
   @Override
   public boolean isSelected() {
-    throw new UnsupportedOperationException();
+    if (view instanceof CheckBox) {
+      return ((CheckBox) view).isChecked();
+    }
+    if (view instanceof RadioButton) {
+      return ((RadioButton) view).isChecked();
+    }
+    throw new UnsupportedOperationException(
+        "Is seleted is only available for checkboxes and Radio buttons.");
   }
 }
