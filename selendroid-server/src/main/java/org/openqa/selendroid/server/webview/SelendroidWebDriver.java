@@ -26,8 +26,6 @@ import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.webview.js.AndroidAtoms;
 import org.openqa.selendroid.util.SelendroidLogger;
 
-import android.webkit.ConsoleMessage;
-import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -181,12 +179,13 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   }
 
   @Override
-  public JsonObject getWindowSource() {
-    JsonObject json = new JsonObject();
-    String source =
-        (String) executeScript("return (new XMLSerializer()).serializeToString(document.documentElement);");
-    json.addProperty("source", source);
-    return json;
+  public Object getWindowSource() {
+    JsonObject source =
+        new JsonParser()
+            .parse(
+                (String) executeScript("return (new XMLSerializer()).serializeToString(document.documentElement);"))
+            .getAsJsonObject();
+    return source.get("value").getAsString();
   }
 
   protected void init() {
