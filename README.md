@@ -28,7 +28,7 @@ A sample test looks like:
 		
 		WebDriverWait wait = new WebDriverWait(driver, 5);
 		WebElement inputUsername =
-    wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
+    	wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
 		inputUsername.sendKeys(user.getUsername());
 		Assert.assertEquals(nameInput.getText(), "Mr. Burns");
 		nameInput.clear();
@@ -36,7 +36,7 @@ A sample test looks like:
 		takeScreenShot("User data entered.");
 		driver.findElement(By.id("btnRegisterUser")).click();
 
-More details about Selendroid you can find in the [wiki](https://github.com/DominikDary/selendroid/wiki/).
+More details about selendroid can be found in the [wiki](https://github.com/DominikDary/selendroid/wiki/).
 
 Current state
 -------------

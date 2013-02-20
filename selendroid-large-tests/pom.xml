@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openqa.selendroid</groupId>
 		<artifactId>selendroid</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.1</version>
 	</parent>
 	<artifactId>selendroid-large-tests</artifactId>
 	<dependencies>
