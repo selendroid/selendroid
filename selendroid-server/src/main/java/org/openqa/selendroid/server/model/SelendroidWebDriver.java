@@ -48,7 +48,8 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   private static final String WINDOW_KEY = "WINDOW";
   private volatile boolean editAreaHasFocus;
 
-  public SelendroidWebDriver(Session session) {
+  public SelendroidWebDriver(Session session, ServerInstrumentation instrumentation) {
+    super(instrumentation);
     super.session = session;
     init();
   }

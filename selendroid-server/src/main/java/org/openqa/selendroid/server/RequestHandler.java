@@ -17,6 +17,7 @@ import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.KnownElements;
 import org.openqa.selendroid.server.model.SelendroidDriver;
+import org.openqa.selendroid.server.model.SelendroidNativeDriver;
 import org.webbitserver.HttpRequest;
 
 import com.google.gson.JsonObject;
@@ -52,9 +53,10 @@ public abstract class RequestHandler {
   }
 
   protected SelendroidDriver getAndroidDriver() {
-    SelendroidDriver driver = (SelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
+    SelendroidNativeDriver driver =
+        (SelendroidNativeDriver) request.data().get(AndroidServlet.DRIVER_KEY);
     if (isWebviewWindow(driver)) {
-      return driver.getSession().getWebviewDriver();
+      return driver.getSession().getWebviewDriver(driver.getServerInstrumentation());
     } else {
       return driver;
     }

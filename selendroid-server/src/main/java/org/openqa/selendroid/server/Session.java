@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server;
 
+import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.model.KnownElements;
 import org.openqa.selendroid.server.model.SelendroidDriver;
@@ -40,9 +41,9 @@ public class Session {
   }
 
   /** TODO rethink Driver concept and especially instance sharing */
-  public synchronized SelendroidDriver getWebviewDriver() {
+  public synchronized SelendroidDriver getWebviewDriver(ServerInstrumentation instrumentation) {
     if (webviewDriver == null) {
-      webviewDriver = new SelendroidWebDriver(this);
+      webviewDriver = new SelendroidWebDriver(this, instrumentation);
     }
     return webviewDriver;
   }

@@ -3,4 +3,6 @@
 test-output/
 target/
 bin/
+*.DS_Store
+lint.xml
 gen/

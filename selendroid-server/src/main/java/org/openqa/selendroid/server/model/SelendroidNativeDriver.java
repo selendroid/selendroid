@@ -32,7 +32,7 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
 
 
   public SelendroidNativeDriver(ServerInstrumentation serverInstrumentation) {
-    super.serverInstrumentation = serverInstrumentation;
+    super(serverInstrumentation);
   }
 
   private void addChildren(JsonObject parent, AndroidElement parentElement) {
@@ -113,5 +113,9 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
           + dest.getAuthority(), exception);
     }
     serverInstrumentation.startActivity(clazz);
+  }
+
+  public ServerInstrumentation getServerInstrumentation() {
+    return serverInstrumentation;
   }
 }

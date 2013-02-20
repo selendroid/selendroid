@@ -37,12 +37,6 @@ public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById,
   private ViewHierarchyAnalyzer viewAnalyzer;
 
   public NativeSearchScope(ServerInstrumentation instrumentation, KnownElements knownElements) {
-    if (instrumentation == null) {
-      throw new IllegalArgumentException("intrumentation instance is null");
-    }
-    if (knownElements == null) {
-      throw new IllegalArgumentException("knowElements instance is null");
-    }
     this.instrumentation = instrumentation;
     this.knownElements = knownElements;
     this.viewAnalyzer = ViewHierarchyAnalyzer.getDefaultInstance();

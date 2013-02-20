@@ -4,13 +4,16 @@ import junit.framework.Assert;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.junit.Test;
 import org.openqa.selendroid.server.internal.SelendroidAssert;
 
 import com.google.gson.JsonObject;
-
+/**
+ * TODO rethink find element tests without having an emulator running.
+ * @author ddary
+ *
+ */
 public class FindElementHandlerTest extends BaseTest {
-  @Test
+  //@Test() 
   public void assertThatFindElementResponseHasCorrectFormat() throws Exception {
     HttpResponse response = executeCreateSessionRequest();
     SelendroidAssert.assertResponseIsRedirect(response);
@@ -23,7 +26,7 @@ public class FindElementHandlerTest extends BaseTest {
     payload.addProperty("value", "my_button_bar");
 
     String url = "http://localhost:" + port + "/wd/hub/session/" + sessionId + "/element";
-    HttpResponse element = executeRequestWithPayload(url, HttpMethod.GET, payload.toString());
+    HttpResponse element = executeRequestWithPayload(url, HttpMethod.POST, payload.toString());
     SelendroidAssert.assertResponseIsOk(element);
   }
 }

@@ -41,8 +41,8 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   private KeySender keySender = null;
 
 
-  public AbstractSelendroidDriver() {
-    serverInstrumentation = ServerInstrumentation.getInstance();
+  public AbstractSelendroidDriver(ServerInstrumentation instrumentation) {
+    serverInstrumentation = instrumentation;
     keySender = new KeySender(serverInstrumentation);
   }
 
