@@ -231,7 +231,6 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   }
 
   private void configureWebView(final WebView view) {
-    System.out.println("Configuring webview");
     ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
 
       @Override

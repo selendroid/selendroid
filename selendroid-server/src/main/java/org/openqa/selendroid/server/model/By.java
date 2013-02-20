@@ -152,19 +152,16 @@ public abstract class By {
 
     @Override
     public AndroidElement findElement(SearchContext context) {
-      // TODO Auto-generated method stub
-      return null;
+      return context.findElement(this);
     }
 
     @Override
     public List<AndroidElement> findElements(SearchContext context) {
-      // TODO Auto-generated method stub
-      return null;
+      return context.findElements(this);
     }
 
     @Override
     public String getElementLocator() {
-      // TODO Auto-generated method stub
       return name;
     }
   }
@@ -178,14 +175,12 @@ public abstract class By {
 
     @Override
     public AndroidElement findElement(SearchContext context) {
-      // TODO Auto-generated method stub
-      return null;
+      return context.findElement(this);
     }
 
     @Override
     public List<AndroidElement> findElements(SearchContext context) {
-      // TODO Auto-generated method stub
-      return null;
+      return context.findElements(this);
     }
 
     @Override

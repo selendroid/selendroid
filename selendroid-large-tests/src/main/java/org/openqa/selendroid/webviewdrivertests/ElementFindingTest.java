@@ -76,7 +76,6 @@ public class ElementFindingTest extends BaseAndroidTest {
   @Test
   public void testshouldBeAbleToClickOnLinkIdentifiedById() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
-    System.out.println(driver.getPageSource());
     driver.findElement(By.id("linkId")).click();
 
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
@@ -97,18 +96,9 @@ public class ElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldfindAnElementBasedOnId() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
-    try {
-      Thread.sleep(2000);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    System.out.println(driver.getPageSource());
     waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);
-    String source = driver.getPageSource();
-    System.out.println("source: " + source);
-    WebElement element = driver.findElement(By.id("checky"));
 
+    WebElement element = driver.findElement(By.id("checky"));
     Assert.assertEquals(element.isSelected(), false);
   }
 

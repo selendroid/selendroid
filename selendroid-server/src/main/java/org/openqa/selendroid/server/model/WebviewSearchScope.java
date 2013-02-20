@@ -13,12 +13,14 @@
  */
 package org.openqa.selendroid.server.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.By.ById;
 import org.openqa.selendroid.server.model.By.ByL10nElement;
 import org.openqa.selendroid.server.model.By.ByLinkText;
+import org.openqa.selendroid.server.model.By.ByXPath;
 import org.openqa.selendroid.server.model.internal.FindsById;
 import org.openqa.selendroid.server.model.internal.FindsByL10n;
 import org.openqa.selendroid.server.model.internal.FindsByText;
@@ -26,6 +28,7 @@ import org.openqa.selendroid.server.model.js.AndroidAtoms;
 
 import android.webkit.WebView;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -60,16 +63,16 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
       return findElementsByL10n(by.getElementLocator());
     } else if (by instanceof ByLinkText) {
       return findElementsByText(by.getElementLocator());
+    } else if (by instanceof ByXPath) {
+      return findElementsByXPath(by.getElementLocator());
     }
     throw new SelendroidException(String.format("By locator %s is curently not supported!", by
         .getClass().getSimpleName()));
   }
 
   public AndroidWebElement newAndroidWebElementById(String id) {
-    // jsResult: {"status":0,"value":{"ELEMENT":":wdc:1358790510925"}}
-
     AndroidWebElement element = new AndroidWebElement(id, view, driver);
-    Long cacheId = knownElements.add(element);
+    knownElements.add(element);
     return element;
   }
 
@@ -90,12 +93,10 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
   @Override
   public AndroidElement findElementById(String id) {
-    // JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id", id);
-    // return reply(result);
-    return findElementByXPath("*[@id = '" + id + "']");
+    return findElementByXPath("//*[@id='" + id + "']");
   }
 
-  private AndroidElement reply(JsonElement result) {
+  private AndroidElement replyElement(JsonElement result) {
     if (result == null || result instanceof JsonNull) {
       return null;
     }
@@ -104,8 +105,8 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
   }
 
   @Override
-  public List<AndroidElement> findElementsById(String using) {
-    throw new UnsupportedOperationException();
+  public List<AndroidElement> findElementsById(String id) {
+    return findElementsByXPath("//*[@id='" + id + "']");
   }
 
   @Override
@@ -124,32 +125,57 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
   public AndroidElement findElementByText(String using) {
     JsonElement result =
         (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "linkText", using);
-    return reply(result);
+    return replyElement(result);
   }
 
   @Override
   public List<AndroidElement> findElementsByText(String using) {
-    throw new UnsupportedOperationException();
+    JsonElement result =
+        (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, "linkText", using);
+
+    return replyElements(result);
   }
 
 
   public AndroidElement findElementByXPath(String using) {
     JsonElement result =
         (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "xpath", using);
-    return reply(result);
+    return replyElement(result);
   }
 
 
   public List<AndroidElement> findElementsByXPath(String using) {
-    throw new UnsupportedOperationException();
+    JsonElement result =
+        (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, "xpath", using);
+
+    return replyElements(result);
+  }
+
+  private List<AndroidElement> replyElements(JsonElement result) {
+    if (result == null || result instanceof JsonNull) {
+      return null;
+    }
+    List<AndroidElement> elements = new ArrayList<AndroidElement>();
+    JsonArray jsonElements = result.getAsJsonArray();
+    if (jsonElements != null && jsonElements.size() > 0) {
+      for (JsonElement element : jsonElements) {
+        String id = ((JsonObject) element).get("ELEMENT").getAsString();
+        elements.add(newAndroidWebElementById(id));
+      }
+    }
+
+    return elements;
   }
 
   public AndroidElement findElementByName(String using) {
     JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "name", using);
-    return reply(result);
+    return replyElement(result);
   }
 
   public List<AndroidElement> findElementsByName(String using) {
-    throw new UnsupportedOperationException();
+    JsonElement result =
+        (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, "name", using);
+
+    return replyElements(result);
   }
 }

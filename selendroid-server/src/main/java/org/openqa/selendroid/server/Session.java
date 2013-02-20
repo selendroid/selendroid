@@ -42,7 +42,6 @@ public class Session {
   /** TODO rethink Driver concept and especially instance sharing */
   public synchronized SelendroidDriver getWebviewDriver() {
     if (webviewDriver == null) {
-      System.out.println("creating new instance of webviewdriver");
       webviewDriver = new SelendroidWebDriver(this);
     }
     return webviewDriver;

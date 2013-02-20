@@ -137,10 +137,6 @@ public class ViewHierarchyAnalyzer {
     if (webViews.isEmpty()) {
       return null;
     }
-    System.out.println("Number of webviews: " + webViews.size());
     return webViews.get(0);
   }
-
-
-
 }

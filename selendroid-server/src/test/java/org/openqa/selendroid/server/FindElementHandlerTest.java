@@ -24,7 +24,6 @@ public class FindElementHandlerTest extends BaseTest {
 
     String url = "http://localhost:" + port + "/wd/hub/session/" + sessionId + "/element";
     HttpResponse element = executeRequestWithPayload(url, HttpMethod.GET, payload.toString());
-    // SelendroidAssert.assertResponseIsOk(element);
-    System.out.println("FindElement# " + element);
+    SelendroidAssert.assertResponseIsOk(element);
   }
 }

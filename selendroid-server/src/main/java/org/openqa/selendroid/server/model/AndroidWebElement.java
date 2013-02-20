@@ -193,7 +193,6 @@ public class AndroidWebElement implements AndroidElement {
 
   @Override
   public void click() {
-    System.out.println("click web element");
     String tagName = getTagName();
     if (tagName != null && "OPTION".equals(tagName.toUpperCase())) {
       driver.resetPageIsLoading();
@@ -225,7 +224,6 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public void submit() {
-    System.out.println("submit");
     String tagName = getTagName();
     if ("button".equalsIgnoreCase(tagName) || "submit".equalsIgnoreCase(getAttribute("type"))
         || "img".equalsIgnoreCase(tagName)) {

@@ -87,7 +87,6 @@ public abstract class RequestHandler {
   protected Long getIdOfKnownElement(AndroidElement element) {
     KnownElements knownElements = getKnownElements();
     if (knownElements == null) {
-      System.out.println("Error: known elements == null");
       return null;
     }
     return knownElements.getIdOfElement(element);
