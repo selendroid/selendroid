@@ -13,14 +13,14 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <title>Selendroid by DominikDary</title>
+    <title>Selendroid by Dominik Dary</title>
   </head>
 
   <body>
     <header>
       <div class="inner">
         <h1>Selendroid</h1>
-        <h2>&quot;Selenium for Android Apps&quot; (Test automate native or hybrid Android apps with Selendroid.)</h2>
+        <h2>&quot;Selenium for Android Apps&quot; <br/>(Test automate native or hybrid Android apps with Selendroid.)</h2>
         <a href="https://github.com/DominikDary/selendroid" class="button"><small>View project on</small>GitHub</a>
       </div>
     </header>
@@ -31,6 +31,7 @@
           <h1>Selendroid</h1>
 
 <p>Selendroid is an attempt to implement the Selenium JSON Wire Protocol for Android native and hybrid apps.</p>
+<p><iframe width="640" height="480" src="http://www.youtube.com/embed/UYl8r9br5cM?rel=0" frameborder="0" allowfullscreen></iframe></p>
 
 <h2>Getting started</h2>
 
@@ -43,7 +44,13 @@ Selendroid-server in combination with the application under test (aut) must be i
     selendroid build pathToYour.apk
 </code></pre>
 
-<p>Now you will find your customized selendroid-server. To run the server:</p>
+<p>Now you will find your customized selendroid-server. </p>
+
+<pre><code>    # install the customized selendroid-server on the device
+    adb install selendroid-server-0.1.0.apk
+</code></pre>
+	
+<p>To run the server:</p>
 
 <pre><code>    # start the selendroid server: 
     adb shell am instrument -e main_activity 'org.openqa.selendroid.testapp.HomeScreenActivity' org.openqa.selendroid.server/org.openqa.selendroid.server.ServerInstrumentation
