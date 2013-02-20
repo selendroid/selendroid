@@ -35,6 +35,7 @@ public class ServerInstrumentation extends Instrumentation {
   private AndroidWait androidWait = new AndroidWait();
 
   public void startMainActivity() {
+    finishAllActivities();
     startActivity(mainActivity);
   }
 
@@ -43,8 +44,6 @@ public class ServerInstrumentation extends Instrumentation {
       SelendroidLogger.logError("activity class is empty", null);
       return;
     }
-
-    finishAllActivities();
 
     // start now the new activity
     Intent intent = new Intent(getTargetContext(), activity);

@@ -236,40 +236,34 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
 
       @Override
       public void run() {
-        // SETTINGS FROM ADNROID WEB DRIVER:
-        // view.clearCache(true);
-        // view.clearFormData();
-        // view.clearHistory();
-        // view.setFocusable(true);
-        // view.setFocusableInTouchMode(true);
-        // view.setWebViewClient(new WebViewClient());
-        //
-        //
-        // // Webview settings
-        WebSettings settings = view.getSettings();
-        // settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        // settings.setSupportMultipleWindows(true);
-        // settings.setBuiltInZoomControls(true);
-        // settings.setJavaScriptEnabled(true);
-        // settings.setAppCacheEnabled(true);
-        // settings.setAppCacheMaxSize(10 * 1024 * 1024);
-        // settings.setAppCachePath("");
-        // settings.setDatabaseEnabled(true);
-        // settings.setDomStorageEnabled(true);
-        // settings.setGeolocationEnabled(true);
-        // settings.setSaveFormData(false);
-        // settings.setSavePassword(false);
-        // settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
-        // // Flash settings
-        // settings.setPluginState(WebSettings.PluginState.ON);
-        //
-        // // Geo location settings
-        // settings.setGeolocationEnabled(true);
-        // settings.setGeolocationDatabasePath("/data/data/selendroid");
-        //
-        // view.setNetworkAvailable(true);
+        view.clearCache(true);
+        view.clearFormData();
+        view.clearHistory();
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.setNetworkAvailable(true);
         view.setWebChromeClient(new MyWebChromeClient());
+
+        WebSettings settings = view.getSettings();
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        settings.setSupportMultipleWindows(true);
+        settings.setBuiltInZoomControls(true);
         settings.setJavaScriptEnabled(true);
+        settings.setAppCacheEnabled(true);
+        settings.setAppCacheMaxSize(10 * 1024 * 1024);
+        settings.setAppCachePath("");
+        settings.setDatabaseEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setGeolocationEnabled(true);
+        settings.setSaveFormData(false);
+        settings.setSavePassword(false);
+        settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        // Flash settings
+        settings.setPluginState(WebSettings.PluginState.ON);
+
+        // Geo location settings
+        settings.setGeolocationEnabled(true);
+        settings.setGeolocationDatabasePath("/data/data/selendroid");
       }
     });
   }

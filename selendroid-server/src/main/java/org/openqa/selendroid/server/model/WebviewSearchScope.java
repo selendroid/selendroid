@@ -89,10 +89,10 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
   }
 
   @Override
-  public AndroidElement findElementById(String using) {
-    JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id", using);
-
-    return reply(result);
+  public AndroidElement findElementById(String id) {
+    // JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "id", id);
+    // return reply(result);
+    return findElementByXPath("*[@id = '" + id + "']");
   }
 
   private AndroidElement reply(JsonElement result) {
@@ -134,7 +134,8 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
 
 
   public AndroidElement findElementByXPath(String using) {
-    JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "xpath", using);
+    JsonElement result =
+        (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "xpath", using);
     return reply(result);
   }
 

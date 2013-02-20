@@ -13,12 +13,17 @@
  */
 package org.openqa.selendroid.server.inspector;
 
+import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.server.model.KnownElements;
+import org.openqa.selendroid.server.model.NativeSearchScope;
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
 public class SelendroidInspectorServlet implements HttpHandler {
+  private NativeSearchScope scope = new NativeSearchScope(ServerInstrumentation.getInstance(),
+      new KnownElements());
 
   @Override
   public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse,
@@ -37,7 +42,8 @@ public class SelendroidInspectorServlet implements HttpHandler {
   private String buildHtml() {
     StringBuilder html = new StringBuilder();
     html.append("<html><head><title>Selendroid inspector</title></head>");
-    html.append("<body><h1>Selendroid Inspector</h1>");
+    html.append("<body><h1>Selendroid Inspector</h1><hr/>");
+
     html.append("</body></html>");
     return html.toString();
   }

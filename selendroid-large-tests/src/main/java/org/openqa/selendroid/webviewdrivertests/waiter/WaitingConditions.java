@@ -199,6 +199,25 @@ public class WaitingConditions {
       }
     };
   }
+  public static Callable<String> driverUrlToBe(final WebDriver driver, final String expectedUrl) {
+    return new Callable<String>() {
+
+      public String call() throws Exception {
+        String url = driver.getCurrentUrl();
+
+        if (expectedUrl.equals(url)) {
+          return url;
+        }
+
+        return null;
+      }
+
+      @Override
+      public String toString() {
+        return "url to be: " + expectedUrl;
+      }
+    };
+  }
 
   public static Callable<Point> elementLocationToBe(final WebElement element,
       final Point expectedLocation) {

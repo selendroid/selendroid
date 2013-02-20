@@ -18,7 +18,9 @@ import static org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions.
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.impl.client.AIMDBackoffManager;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
+import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -40,7 +42,8 @@ public class ElementFindingTest extends BaseAndroidTest {
   private void openWebdriverTestPage(String page) {
     driver.switchTo().window(NATIVE_APP);
     driver.get("and-activity://" + ACTIVITY_CLASS);
-    WebDriverWait wait = new WebDriverWait(driver, 5);
+    waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://WebViewActivity"));
+    WebDriverWait wait = new WebDriverWait(driver, 10);
     wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
     driver.findElement(By.id("spinner_webdriver_test_data")).click();
     driver.findElement(By.linkText(page)).click();
@@ -73,10 +76,8 @@ public class ElementFindingTest extends BaseAndroidTest {
   @Test
   public void testshouldBeAbleToClickOnLinkIdentifiedById() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
-
+    System.out.println(driver.getPageSource());
     driver.findElement(By.id("linkId")).click();
-
-    waitFor(pageTitleToBe(driver, "We Arrive Here"));
 
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
@@ -96,8 +97,13 @@ public class ElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldfindAnElementBasedOnId() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
-
-
+    try {
+      Thread.sleep(2000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    System.out.println(driver.getPageSource());
     waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);
     String source = driver.getPageSource();
     System.out.println("source: " + source);

@@ -108,6 +108,7 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
     try {
       clazz = Class.forName(dest.getAuthority());
     } catch (ClassNotFoundException exception) {
+      exception.printStackTrace();
       throw new SelendroidException("The specified Activity class does not exist: "
           + dest.getAuthority(), exception);
     }

@@ -28,11 +28,11 @@ public class OpenUrl extends RequestHandler {
 
   @Override
   public Response handle() {
-    SelendroidLogger.log("get current URL command");
+    SelendroidLogger.log("Open URL command");
     JsonElement url = getPayload().get("url");
     if (url.isJsonNull()) {
       return new Response(getSessionId(), 13, new SelendroidException(
-          "Nt able to open Url because Url is missing."));
+          "Not able to open Url because Url is missing."));
     }
     getAndroidDriver().get(url.getAsString());
     return new Response(getSessionId(), "");
