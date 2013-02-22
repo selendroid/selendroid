@@ -15,6 +15,7 @@ package org.openqa.selendroid.server.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.openqa.selendroid.ServerInstrumentation;
@@ -29,6 +30,7 @@ import org.openqa.selendroid.server.model.internal.FindsByText;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById, FindsByText {
@@ -52,28 +54,31 @@ public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById,
     }
   }
 
-  public Collection<View> getAllViews() {
-    return viewAnalyzer.getViews();
-  }
-
   public AndroidNativeElement getElementTree() {
     View decorView = viewAnalyzer.getRecentDecorView();
     AndroidNativeElement rootElement = newAndroidElement(decorView);
-    for (View view : getAllViews()) {
-      if (decorView.equals(view)) {
-        continue;
-      }
-      AndroidNativeElement element = newAndroidElement(view);
-      Long parentViewId = new Long(((View) view.getParent()).getId());
-      if (knownElements.hasElement(parentViewId)) {
-        ((AndroidNativeElement) knownElements.get(parentViewId)).addChildren(element);
-      } else {
-        AndroidNativeElement parent =
-            new AndroidNativeElement((View) view.getParent(), instrumentation);
-        parent.addChildren(element);
+
+    if (decorView instanceof ViewGroup) {
+      addChildren((ViewGroup) decorView, rootElement);
+    }
+
+    return rootElement;
+  }
+
+  private void addChildren(ViewGroup viewGroup, AndroidNativeElement parent) {
+    if (viewGroup.getChildCount() == 0) {
+      return;
+    }
+    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+      View childView = viewGroup.getChildAt(i);
+      AndroidNativeElement child = newAndroidElement(childView);
+
+      parent.addChild(child);
+      child.setParent(parent);
+      if (childView instanceof ViewGroup) {
+        addChildren((ViewGroup) childView, child);
       }
     }
-    return rootElement;
   }
 
   @Override
@@ -167,10 +172,13 @@ public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById,
   @Override
   public List<AndroidElement> findElementsByText(String using) {
     List<AndroidElement> list = new ArrayList<AndroidElement>();
-    for (View view : viewAnalyzer.getViews()) {
-      if (view instanceof TextView) {
-        if (using.equals(((TextView) view).getText())) {
-          list.add(newAndroidElement(view));
+    Collection<View> currentViews = viewAnalyzer.getViews();
+    if (!currentViews.isEmpty()) {
+      for (View view : viewAnalyzer.getViews()) {
+        if (view instanceof TextView) {
+          if (using.equals(((TextView) view).getText())) {
+            list.add(newAndroidElement(view));
+          }
         }
       }
     }

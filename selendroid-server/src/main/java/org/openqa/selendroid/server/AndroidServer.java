@@ -16,7 +16,6 @@ package org.openqa.selendroid.server;
 import java.util.concurrent.Executors;
 
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.server.inspector.SelendroidInspectorServlet;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.server.model.SelendroidNativeDriver;
 import org.webbitserver.WebServer;
@@ -39,7 +38,7 @@ public class AndroidServer {
   protected void init(ServerInstrumentation androidInstrumentation) {
     webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
     webServer.add("/wd/hub/status", new StatusServlet());
-    webServer.add("/inspector", new SelendroidInspectorServlet());
+    //webServer.add("/inspector", new SelendroidInspectorServlet());
     webServer.add(new AndroidServlet(createAndroidDriver(androidInstrumentation)));
 
   }

@@ -137,7 +137,7 @@ public class Capabilities {
     return true;
   }
 
-  public Map<String, Object> getRawCapabilities() {
+  public Map<String, Object> asMap() {
     return raw;
   }
 
@@ -148,7 +148,7 @@ public class Capabilities {
    */
   @Override
   public String toString() {
-    return "Calabash Capabilities [raw=" + raw + ", getLocale()=" + getLocale()
+    return "Selendroid Capabilities [raw=" + raw + ", getLocale()=" + getLocale()
         + ", getSDKVersion()=" + getSDKVersion() + "]";
   }
 }

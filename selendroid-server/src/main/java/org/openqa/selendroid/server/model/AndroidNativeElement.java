@@ -14,12 +14,13 @@
 package org.openqa.selendroid.server.model;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidKeys;
 import org.openqa.selendroid.android.AndroidWait;
+import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.TimeoutException;
 
@@ -34,6 +35,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.common.base.Function;
+import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 
 public class AndroidNativeElement implements AndroidElement {
@@ -62,7 +64,7 @@ public class AndroidNativeElement implements AndroidElement {
                                                             // (ViewConfiguration.getLongPressTimeout()
                                                             // * 1.5f);
   private View view;
-  private Collection<AndroidElement> children = new HashSet<AndroidElement>();
+  private Collection<AndroidElement> children = new LinkedHashSet<AndroidElement>();
   private AndroidElement parent;
   private ServerInstrumentation instrumentation;
 
@@ -207,8 +209,8 @@ public class AndroidNativeElement implements AndroidElement {
     this.parent = parent;
   }
 
-  public void addChildren(AndroidElement children) {
-    this.children.add(children);
+  public void addChild(AndroidElement child) {
+    this.children.add(child);
   }
 
   public String toString() {
@@ -259,7 +261,7 @@ public class AndroidNativeElement implements AndroidElement {
     JsonObject l10n = new JsonObject();
     l10n.addProperty("matches", 0);
     object.add("l10n", l10n);
-    object.addProperty("label", String.valueOf(view.getContentDescription()));
+    object.addProperty("label", Strings.nullToEmpty(String.valueOf(view.getContentDescription())));
     object.addProperty("name", getNativeId());
     JsonObject rect = new JsonObject();
 
@@ -288,15 +290,7 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   private String getNativeId() {
-    String id = "";
-    try {
-      id =
-          ServerInstrumentation.getInstance().getCurrentActivity().getResources()
-              .getResourceName(view.getId());
-    } catch (Resources.NotFoundException e) {
-      // can happen
-    }
-    return id;
+    return ViewHierarchyAnalyzer.getNativeId(view);
   }
 
   public View getView() {

@@ -13,20 +13,27 @@
  */
 package org.openqa.selendroid.server.model;
 
+import android.view.View;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 public class KnownElements {
-  private final BiMap<Long, AndroidElement> elements = HashBiMap.create();
+  private final BiMap<Long, AndroidElement> cache = HashBiMap.create();
+  private final BiMap<View, AndroidNativeElement> nativeElementsByView = HashBiMap.create();
   private long nextId = 0L;
 
   public Long add(AndroidElement element) {
-    if (elements.containsValue(element)) {
-      return elements.inverse().get(element);
+    if (cache.containsValue(element)) {
+      return cache.inverse().get(element);
     }
     Long id = nextId();
 
-    elements.put(id, element);
+    cache.put(id, element);
+    if(element instanceof AndroidNativeElement){
+      AndroidNativeElement nativeElement=(AndroidNativeElement)element;
+      nativeElementsByView.put(nativeElement.getView(), nativeElement);
+    }
     return id;
   }
 
@@ -34,17 +41,31 @@ public class KnownElements {
     return ++nextId;
   }
 
+  /**
+   * Uses the generated Id {@link #nextId()} to look up elements
+   */
   public AndroidElement get(Long elementId) {
-    return elements.get(elementId);
+    return cache.get(elementId);
   }
 
+  /**
+   * Uses the generated Id {@link #nextId()} to look up elements
+   */
   public boolean hasElement(Long elementId) {
-    return elements.containsKey(elementId);
+    return cache.containsKey(elementId);
+  }
+  
+  public AndroidNativeElement getNativeElement(View view) {
+    return nativeElementsByView.get(view);
+  }
+
+  public boolean hasNativeElement(View view) {
+    return nativeElementsByView.containsKey(view);
   }
 
   public Long getIdOfElement(AndroidElement element) {
-    if (elements.containsValue(element)) {
-      return elements.inverse().get(element);
+    if (cache.containsValue(element)) {
+      return cache.inverse().get(element);
     }
     return null;
   }

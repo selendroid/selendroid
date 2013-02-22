@@ -42,8 +42,8 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
     }
     JsonArray childs = new JsonArray();
     for (AndroidElement child : children) {
-      if (((AndroidNativeElement) child).getView().getId() != ((AndroidNativeElement) parentElement)
-          .getView().getId() && ((AndroidNativeElement) child).getView().getId() != View.NO_ID) {
+      if (((AndroidNativeElement) child).getView() != ((AndroidNativeElement) parentElement)
+          .getView()) {
         JsonObject jsonChild = ((AndroidNativeElement) child).toJson();
         childs.add(jsonChild);
 
@@ -77,6 +77,9 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
   public JsonObject getWindowSource() {
     AndroidNativeElement rootElement = ((NativeSearchScope) nativeSearchScope).getElementTree();
     JsonObject root = rootElement.toJson();
+    if (root == null) {
+      return new JsonObject();
+    }
     root.addProperty("activity", serverInstrumentation.getCurrentActivity().getComponentName()
         .toShortString());
     addChildren(root, rootElement);

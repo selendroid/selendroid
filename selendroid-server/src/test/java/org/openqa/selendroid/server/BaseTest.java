@@ -106,7 +106,7 @@ public class BaseTest {
     JsonObject payload = new JsonObject();
 
     payload.add("desiredCapabilities",
-        new Gson().toJsonTree(desiredCapabilities.getRawCapabilities()));
+        new Gson().toJsonTree(desiredCapabilities.asMap()));
     return payload;
   }
 }

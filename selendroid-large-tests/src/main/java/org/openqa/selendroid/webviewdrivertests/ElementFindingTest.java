@@ -18,7 +18,6 @@ import static org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions.
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.impl.client.AIMDBackoffManager;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
 import org.openqa.selenium.By;

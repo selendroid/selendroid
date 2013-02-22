@@ -31,7 +31,7 @@ public class LogElement extends RequestHandler {
 
     AndroidNativeElement element = (AndroidNativeElement) getElementFromCache(id);
 
-    return new Response(getSessionId(), 0, element.toJson());
+    return new Response(getSessionId(), element.toJson().toString());
   }
 
 }

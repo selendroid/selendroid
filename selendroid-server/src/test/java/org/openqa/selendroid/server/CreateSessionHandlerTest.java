@@ -36,6 +36,6 @@ public class CreateSessionHandlerTest extends BaseTest {
     Assert.assertEquals(sessionId, capa.get("sessionId").getAsString());
     Assert.assertEquals(0, capa.get("status").getAsInt());
     Capabilities getCapa = Capabilities.fromJSON(capa.get("value").getAsJsonObject());
-    Assert.assertEquals("selendroid", getCapa.getRawCapabilities().get(Capabilities.NAME));
+    Assert.assertEquals("selendroid", getCapa.asMap().get(Capabilities.NAME));
   }
 }

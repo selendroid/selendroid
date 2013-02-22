@@ -4,7 +4,9 @@
 	<test name="android mobile tests">
 		<classes>
 			<class name="org.openqa.selendroid.tests.SayHelloWebviewTest" />
-			<class name="org.openqa.selendroid.tests.UserResgistrationTest" />
+			<class name="org.openqa.selendroid.tests.UserRegistrationTest" />
+			<class name="org.openqa.selendroid.nativetests.GetWindowSourceTests" />
+			<class name="org.openqa.selendroid.webviewdrivertests.ElementFindingTest" />
 		</classes>
 	</test>
 </suite>

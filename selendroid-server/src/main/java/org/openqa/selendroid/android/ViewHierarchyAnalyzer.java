@@ -30,7 +30,6 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 
 public class ViewHierarchyAnalyzer {
@@ -40,7 +39,10 @@ public class ViewHierarchyAnalyzer {
     return INSTANCE;
   }
 
-  public Set<View> getTopLevelViews() {
+  public Set<View> _getTopLevelViews() {
+    // Set<View> top=new HashSet<View>();
+    // top.add(ServerInstrumentation.getInstance().getRootView());
+    // return top;
     try {
       Class<?> wmClass = Class.forName("android.view.WindowManagerImpl");
       Object wm = wmClass.getDeclaredMethod("getDefault").invoke(null);
@@ -51,6 +53,55 @@ public class ViewHierarchyAnalyzer {
       }
     } catch (Exception exception) {
       throw new SelendroidException("Selendroid only supports Android 2.2", exception);
+    }
+  }
+
+  public Set<View> getTopLevelViews() {
+    Class<?> windowManager = null;
+    try {
+      String windowManagerClassName;
+      if (android.os.Build.VERSION.SDK_INT >= 17) {
+        windowManagerClassName = "android.view.WindowManagerGlobal";
+      } else {
+        windowManagerClassName = "android.view.WindowManagerImpl";
+      }
+      windowManager = Class.forName(windowManagerClassName);
+
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    } catch (SecurityException e) {
+      e.printStackTrace();
+    }
+    Field views;
+    Field instanceField;
+    try {
+      views = windowManager.getDeclaredField("mViews");
+      instanceField = windowManager.getDeclaredField(getWindowManagerString());
+      views.setAccessible(true);
+      instanceField.setAccessible(true);
+      Object instance = instanceField.get(null);
+      synchronized (windowManager) {
+        return new HashSet<View>(Arrays.asList(((View[]) views.get(instance))));
+      }
+    } catch (SecurityException e) {
+      e.printStackTrace();
+    } catch (NoSuchFieldException e) {
+      e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  private String getWindowManagerString() {
+    if (android.os.Build.VERSION.SDK_INT >= 17) {
+      return "sDefaultWindowManager";
+    } else if (android.os.Build.VERSION.SDK_INT >= 13) {
+      return "sWindowManager";
+    } else {
+      return "mWindowManager";
     }
   }
 
@@ -74,51 +125,41 @@ public class ViewHierarchyAnalyzer {
   private static class DecorViewPredicate implements Predicate<View> {
     @Override
     public boolean apply(View view) {
-      return view.getClass().getName()
-          .equals("com.android.internal.policy.impl.PhoneWindow$DecorView");
-    }
-  }
-
-  private void addChildren(ArrayList<View> views, ViewGroup viewGroup) {
-    if (viewGroup != null) {
-      for (int i = 0; i < viewGroup.getChildCount(); i++) {
-        final View child = viewGroup.getChildAt(i);
-        views.add(child);
-        if (child instanceof ViewGroup) {
-          addChildren(views, (ViewGroup) child);
-        }
-      }
+      return "DecorView".equals(view.getClass().getSimpleName());
     }
   }
 
   public Collection<View> getViews() {
-    Set<View> views = getTopLevelViews();
-    final ArrayList<View> allViews = new ArrayList<View>();
-    Collection<View> nonDecorViews =
-        Collections2.filter(views, Predicates.not(new DecorViewPredicate()));
+    View rootView = getRecentDecorView();
+    final List<View> views = new ArrayList<View>();
+    addAllChilren((ViewGroup) rootView, views);
 
-    if (views != null && views.size() > 0) {
-      for (View view : nonDecorViews) {
-        try {
-          addChildren(allViews, (ViewGroup) view);
-        } catch (Exception ignored) {}
-        if (view != null) allViews.add(view);
-      }
-      View decorView = getRecentDecorView(views);
-      try {
-        addChildren(allViews, (ViewGroup) decorView);
-      } catch (Exception ignored) {}
-      if (decorView != null) allViews.add(decorView);
-    }
-    return allViews;
+    return views;
   }
 
-  public String getNativeId(View view) {
+  private void addAllChilren(ViewGroup viewGroup, List<View> list) {
+    if (viewGroup.getChildCount() == 0) {
+      return;
+    }
+    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+      View childView = viewGroup.getChildAt(i);
+      if (childView.isShown()) {
+        list.add(childView);
+      }
+      if (childView instanceof ViewGroup) {
+        addAllChilren((ViewGroup) childView, list);
+      }
+    }
+  }
+
+  public static String getNativeId(View view) {
     String id = "";
     try {
       id =
           ServerInstrumentation.getInstance().getCurrentActivity().getResources()
               .getResourceName(view.getId());
+      // remove the package name
+      id = id.split(":")[1];
     } catch (Resources.NotFoundException e) {
       // can happen
     }

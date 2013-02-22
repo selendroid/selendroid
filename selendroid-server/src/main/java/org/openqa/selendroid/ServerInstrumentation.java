@@ -139,18 +139,19 @@ public class ServerInstrumentation extends Instrumentation {
   }
 
   public View getRootView() {
-    for (int i = 0; i < 25; i++) {
-      try {
-        View rootView = getCurrentActivity().getWindow().getDecorView();
+    try {
+      View decorView = getCurrentActivity().getWindow().getDecorView();
+      if (decorView != null) {
+        View rootView = null;//decorView.findViewById(android.R.id.content);
         if (rootView != null) {
           return rootView;
         }
-
-        Thread.sleep(200);
-      } catch (Exception e) {
-        SelendroidLogger.logError("Error occured while searching for root view: ", e);
       }
+      return decorView;
+    } catch (Exception e) {
+      SelendroidLogger.logError("Error occured while searching for root view: ", e);
     }
+
     throw new SelendroidException("Could not find any views");
   }
 

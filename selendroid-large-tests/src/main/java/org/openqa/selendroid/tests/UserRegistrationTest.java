@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
  * 
  * @author ddary
  */
-public class UserResgistrationTest extends BaseAndroidTest {
+public class UserRegistrationTest extends BaseAndroidTest {
   @Test
   public void assertUserAccountCanRegistered() throws Exception {
     UserDO user =

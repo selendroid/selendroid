@@ -18,6 +18,8 @@ import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
+import com.google.gson.JsonObject;
+
 public class LogElementTree extends RequestHandler {
 
   public LogElementTree(HttpRequest request) {
@@ -29,6 +31,11 @@ public class LogElementTree extends RequestHandler {
     SelendroidLogger.log("LogElementTree for session: "
         + getAndroidDriver().getSession().getSessionId());
     Object source = getAndroidDriver().getWindowSource();
-    return new Response(getSessionId(), source);
+    if (source instanceof String) {
+      return new Response(getSessionId(), (String) source);
+    }
+    JsonObject json = ((JsonObject) source);
+
+    return new Response(getSessionId(), json.toString());
   }
 }
