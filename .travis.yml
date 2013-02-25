@@ -3,6 +3,8 @@ before_install:
   # download the latest android sdk and unzip
   - wget http://dl.google.com/android/android-sdk_r21.1-macosx.zip 
   - unzip android-sdk_r21.1-macosx.zip
+  - echo ls -l
+  - echo pwd
   # setup your ANDROID_HOME and PATH environment variables
   # use ~/builds/DominikDary/r/selendroid/android-sdk-linux
   - export ANDROID_HOME=/home/travis/builds/DominikDary/selendroid/android-sdk-linux
