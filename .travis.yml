@@ -13,3 +13,4 @@ before_install:
   # you are building for android (run "android list sdk" to get the full list.  9 = 2.3.3 or API level 10
   #- android list sdk
   - android update sdk --filter 1,4,"addon-google_apis-google-16" --no-ui --force
+  - ls /home/travis/build/DominikDary/selendroid/android-sdk-linux/platforms/android-16/
