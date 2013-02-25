@@ -4,8 +4,8 @@ before_install:
   - wget http://dl.google.com/android/android-sdk_r21.1-macosx.zip 
   - unzip android-sdk_r21.1-macosx.zip
   # setup your ANDROID_HOME and PATH environment variables
-  # use ~/builds/calabash-driver/calabash-driver-demoapp/android-sdk-linux
-  - export ANDROID_HOME=/home/travis/builds/calabash-driver/calabash-driver-demoapp/android-sdk-linux
+  # use ~/builds/DominikDary/r/selendroid/android-sdk-linux
+  - export ANDROID_HOME=/home/travis/builds/DominikDary/selendroid/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   # only update the sdk for the tools and platform-tools (1,2) and whatever api level
   # you are building for android (run "android list sdk" to get the full list.  9 = 2.3.3 or API level 10
