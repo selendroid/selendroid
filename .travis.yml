@@ -1,8 +1,8 @@
 language: java
 before_install:
   # download the latest android sdk and unzip
-  - wget http://dl.google.com/android/android-sdk_r20.0.3-linux.tgz
-  - unzip http://dl.google.com/android/android-sdk_r21.1-macosx.zip
+  - wget http://dl.google.com/android/android-sdk_r21.1-macosx.zip 
+  - unzip android-sdk_r21.1-macosx.zip
   # setup your ANDROID_HOME and PATH environment variables
   # use ~/builds/calabash-driver/calabash-driver-demoapp/android-sdk-linux
   - export ANDROID_HOME=/home/travis/builds/calabash-driver/calabash-driver-demoapp/android-sdk-linux
