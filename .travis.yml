@@ -1,8 +1,8 @@
 language: java
 before_install:
   # download the latest android sdk and unzip
-  - wget http://dl.google.com/android/android-sdk_r21.1-macosx.zip 
-  - unzip android-sdk_r21.1-macosx.zip
+  - wget http://dl.google.com/android/android-sdk_r21.1-linux.tgz 
+  - tar -zxf android-sdk_r21.1-linux.tgz
   - ls -l
   - pwd
   # setup your ANDROID_HOME and PATH environment variables
