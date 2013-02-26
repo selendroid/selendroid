@@ -25,9 +25,15 @@ import com.google.gson.JsonParser;
 
 public abstract class RequestHandler {
   private HttpRequest request = null;
+  private String mappedUri = null;
 
-  public RequestHandler(HttpRequest request) {
+  public RequestHandler(HttpRequest request, String mappedUri) {
     this.request = request;
+    this.mappedUri = mappedUri;
+  }
+
+  public String getMappedUri() {
+    return mappedUri;
   }
 
   public String getSessionId() {

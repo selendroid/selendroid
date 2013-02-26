@@ -24,8 +24,8 @@ import com.google.gson.JsonObject;
 
 public class NewSession extends RequestHandler {
 
-  public NewSession(HttpRequest request) {
-    super(request);
+  public NewSession(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

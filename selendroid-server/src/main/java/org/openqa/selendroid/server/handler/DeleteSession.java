@@ -20,8 +20,8 @@ import org.webbitserver.HttpRequest;
 
 public class DeleteSession extends RequestHandler {
 
-  public DeleteSession(HttpRequest request) {
-    super(request);
+  public DeleteSession(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

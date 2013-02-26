@@ -15,13 +15,12 @@ package org.openqa.selendroid.server.handler;
 
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
-import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
 
 public class GetPageTitle extends RequestHandler {
-  public GetPageTitle(HttpRequest request) {
-    super(request);
+  public GetPageTitle(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

@@ -20,8 +20,8 @@ import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class CaptureScreenshot extends RequestHandler {
-  public CaptureScreenshot(HttpRequest request) {
-    super(request);
+  public CaptureScreenshot(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
@@ -29,7 +29,7 @@ public class CaptureScreenshot extends RequestHandler {
     SelendroidLogger.log("take screenshot command");
     byte[] rawPng = getAndroidDriver().takeScreenshot();
     String base64Png = new Base64Encoder().encode(rawPng);
-    SelendroidLogger.log("take screenshot is done");
+    
     return new Response(getSessionId(), base64Png);
   }
 }

@@ -11,22 +11,22 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.handler;
+package org.openqa.selendroid.server.inspector;
 
-import org.openqa.selendroid.server.RequestHandler;
-import org.openqa.selendroid.server.Response;
-import org.openqa.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpRequest;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
 
-public class GetCurrentUrl extends RequestHandler {
-  public GetCurrentUrl(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+public class SeledroidInspectorException extends SelendroidException {
+  private static final long serialVersionUID = 6848294719850875948L;
+
+  public SeledroidInspectorException(String message, Throwable t) {
+    super(message, t);
   }
 
-  @Override
-  public Response handle() {
-    SelendroidLogger.log("get current URL command");
+  public SeledroidInspectorException(Throwable t) {
+    super(t);
+  }
 
-    return new Response(getSessionId(), getAndroidDriver().getCurrentUrl());
+  public SeledroidInspectorException(String message) {
+    super(message);
   }
 }

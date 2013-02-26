@@ -26,8 +26,8 @@ import com.google.gson.JsonObject;
 
 public class FindElements extends RequestHandler {
 
-  public FindElements(HttpRequest request) {
-    super(request);
+  public FindElements(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

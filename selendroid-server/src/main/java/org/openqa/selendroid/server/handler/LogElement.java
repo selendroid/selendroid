@@ -20,8 +20,8 @@ import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class LogElement extends RequestHandler {
-  public LogElement(HttpRequest request) {
-    super(request);
+  public LogElement(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

@@ -5,13 +5,12 @@ import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.webbitserver.HttpRequest;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
 public class IsElementSelected extends RequestHandler {
 
-  public IsElementSelected(HttpRequest request) {
-    super(request);
+  public IsElementSelected(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

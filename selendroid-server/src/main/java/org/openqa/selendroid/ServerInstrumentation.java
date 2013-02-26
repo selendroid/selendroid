@@ -94,7 +94,7 @@ public class ServerInstrumentation extends Instrumentation {
       try {
         startServer();
       } catch (Exception e) {
-        SelendroidLogger.logError("Exception when starting Jetty.", e);
+        SelendroidLogger.logError("Exception when starting selendroid.", e);
       }
     }
     SelendroidLogger.log("Selendroid started on port " + server.getPort());

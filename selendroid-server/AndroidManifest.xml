@@ -3,7 +3,7 @@
     package="org.openqa.selendroid"
     android:versionCode="1"
     android:versionName="0.1" >
-    <uses-sdk android:minSdkVersion="16" />
+    <uses-sdk android:minSdkVersion="10" />
 
     <instrumentation
         android:name="org.openqa.selendroid.ServerInstrumentation"

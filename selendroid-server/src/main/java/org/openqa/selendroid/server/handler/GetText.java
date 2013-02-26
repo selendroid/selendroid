@@ -20,8 +20,8 @@ import org.webbitserver.HttpRequest;
 
 public class GetText extends RequestHandler {
 
-  public GetText(HttpRequest request) {
-    super(request);
+  public GetText(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

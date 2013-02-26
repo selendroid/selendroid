@@ -19,8 +19,8 @@ import org.webbitserver.HttpRequest;
 
 public class SessionAndIdExtractionTestHandler extends RequestHandler {
 
-  public SessionAndIdExtractionTestHandler(HttpRequest request) {
-    super(request);
+  public SessionAndIdExtractionTestHandler(HttpRequest request, String mappedUri) {
+    super(request,mappedUri);
   }
 
   public Response handle() {

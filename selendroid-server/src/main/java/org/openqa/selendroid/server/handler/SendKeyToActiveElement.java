@@ -23,8 +23,8 @@ import com.google.gson.JsonElement;
 
 public class SendKeyToActiveElement extends RequestHandler {
 
-  public SendKeyToActiveElement(HttpRequest request) {
-    super(request);
+  public SendKeyToActiveElement(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

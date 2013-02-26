@@ -24,8 +24,8 @@ import com.google.gson.JsonElement;
 
 public class SendKeys extends RequestHandler {
 
-  public SendKeys(HttpRequest request) {
-    super(request);
+  public SendKeys(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

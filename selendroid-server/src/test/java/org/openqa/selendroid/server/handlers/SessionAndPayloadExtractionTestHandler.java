@@ -21,8 +21,8 @@ import com.google.gson.JsonObject;
 
 public class SessionAndPayloadExtractionTestHandler extends RequestHandler {
 
-  public SessionAndPayloadExtractionTestHandler(HttpRequest request) {
-    super(request);
+  public SessionAndPayloadExtractionTestHandler(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   public Response handle() {

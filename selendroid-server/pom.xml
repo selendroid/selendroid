@@ -11,18 +11,13 @@
 	<packaging>apk</packaging>
 	<properties>
 		<com.google.code.gson-version>2.2.1</com.google.code.gson-version>
-		<com.google.android.android-version>4.0.1.2</com.google.android.android-version>
+		<com.google.android.android-version>4.1.1.4</com.google.android.android-version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.webbitserver</groupId>
 			<artifactId>webbit</artifactId>
 			<version>0.4.14</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -69,12 +64,12 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.2.1</version>
 			<scope>test</scope>
-		</dependency -->
+		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>

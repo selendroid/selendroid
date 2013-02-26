@@ -13,10 +13,7 @@
  */
 package org.openqa.selendroid.server;
 
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.openqa.selendroid.server.common.BaseServlet;
 import org.openqa.selendroid.server.handler.CaptureScreenshot;
 import org.openqa.selendroid.server.handler.ClearElement;
 import org.openqa.selendroid.server.handler.ClickElement;
@@ -46,18 +43,18 @@ import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
-public class AndroidServlet implements HttpHandler {
+public class AndroidServlet extends BaseServlet implements HttpHandler {
   public static final int INTERNAL_SERVER_ERROR = 500;
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
   public static final String ELEMENT_ID_KEY = "ELEMENT_ID_KEY";
   public static final String DRIVER_KEY = "DRIVER_KEY";
-  protected HashMap<String, Class<? extends RequestHandler>> getHandler =
-      new HashMap<String, Class<? extends RequestHandler>>();
-  protected HashMap<String, Class<? extends RequestHandler>> postHandler =
-      new HashMap<String, Class<? extends RequestHandler>>();
-  protected HashMap<String, Class<? extends RequestHandler>> deleteHandler =
-      new HashMap<String, Class<? extends RequestHandler>>();
+  protected BiMap<String, Class<? extends RequestHandler>> getHandler = HashBiMap.create();
+  protected BiMap<String, Class<? extends RequestHandler>> postHandler = HashBiMap.create();
+  protected BiMap<String, Class<? extends RequestHandler>> deleteHandler = HashBiMap.create();
+
   protected SelendroidDriver driver = null;
 
   public AndroidServlet(SelendroidDriver driver) {
@@ -108,6 +105,7 @@ public class AndroidServlet implements HttpHandler {
     }
     Response result = null;
     try {
+      addHandlerAttributesToRequest(request, handler.getMappedUri());
       result = handler.handle();
     } catch (Exception e) {
       SelendroidLogger.logError("Error occured while handling reuqest.", e);
@@ -135,31 +133,6 @@ public class AndroidServlet implements HttpHandler {
     response.end();
   }
 
-  private RequestHandler findMatcher(HttpRequest request, HttpResponse response,
-      HashMap<String, Class<? extends RequestHandler>> handler) {
-    for (Map.Entry<String, Class<? extends RequestHandler>> entry : handler.entrySet()) {
-      if (isFor(entry.getKey(), request.uri())) {
-        addHandlerAttributesToRequest(request, entry.getKey());
-        return instantiateHandler(entry.getValue(), request);
-      }
-    }
-    return null;
-  }
-
-  protected RequestHandler instantiateHandler(Class<? extends RequestHandler> clazz,
-      HttpRequest request) {
-    RequestHandler handler = null;
-    try {
-      Constructor<? extends RequestHandler> handlerConstr = clazz.getConstructor(HttpRequest.class);
-      handler = handlerConstr.newInstance(request);
-    } catch (Exception e) {
-      e.printStackTrace();
-      SelendroidLogger.logError("Error occured while creating handler: ", e);
-    }
-
-    return handler;
-  }
-
   private boolean isNewSessionRequest(HttpRequest request) {
     if ("POST".equals(request.method()) && "/wd/hub/session".equals(request.uri())) {
       return true;
@@ -179,42 +152,5 @@ public class AndroidServlet implements HttpHandler {
     }
 
     request.data().put(DRIVER_KEY, driver);
-  }
-
-  private String getParameter(String configuredUri, String actualUri, String param) {
-    String[] configuredSections = configuredUri.split("/");
-    String[] currentSections = actualUri.split("/");
-    if (configuredSections.length != currentSections.length) {
-      return null;
-    }
-    for (int i = 0; i < currentSections.length; i++) {
-      if (configuredSections[i].contains(param)) {
-        return currentSections[i];
-      }
-    }
-    return null;
-  }
-
-  private void replyWithServerError(HttpResponse response) {
-    response.status(INTERNAL_SERVER_ERROR);
-    response.end();
-  }
-
-  public boolean isFor(String mapperUrl, String urlToMatch) {
-    String[] sections = mapperUrl.split("/");
-    if (urlToMatch == null) {
-      return sections.length == 0;
-    }
-    String[] allParts = urlToMatch.split("/");
-    if (sections.length != allParts.length) {
-      return false;
-    }
-    for (int i = 0; i < sections.length; i++) {
-      if (!(sections[i].startsWith(":") || sections[i].equals(allParts[i]))) {
-        return false;
-      }
-    }
-
-    return true;
   }
 }

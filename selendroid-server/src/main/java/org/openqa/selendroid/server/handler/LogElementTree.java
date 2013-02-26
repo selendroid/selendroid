@@ -22,8 +22,8 @@ import com.google.gson.JsonObject;
 
 public class LogElementTree extends RequestHandler {
 
-  public LogElementTree(HttpRequest request) {
-    super(request);
+  public LogElementTree(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

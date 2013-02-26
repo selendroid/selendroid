@@ -21,8 +21,8 @@ import org.webbitserver.HttpRequest;
 
 public class SubmitForm extends RequestHandler {
 
-  public SubmitForm(HttpRequest request) {
-    super(request);
+  public SubmitForm(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

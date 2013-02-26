@@ -22,8 +22,8 @@ import org.webbitserver.HttpRequest;
 
 public class ClickElement extends RequestHandler {
 
-  public ClickElement(HttpRequest request) {
-    super(request);
+  public ClickElement(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

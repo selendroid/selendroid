@@ -24,8 +24,8 @@ import com.google.gson.JsonObject;
 public class GetCapabilities extends RequestHandler {
 
 
-  public GetCapabilities(HttpRequest request) {
-    super(request);
+  public GetCapabilities(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

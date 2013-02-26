@@ -22,8 +22,8 @@ import com.google.gson.JsonObject;
 
 public class ListSessions extends RequestHandler {
 
-  public ListSessions(HttpRequest request) {
-    super(request);
+  public ListSessions(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

@@ -22,8 +22,8 @@ import org.webbitserver.HttpRequest;
 
 public class ClearElement extends RequestHandler {
 
-  public ClearElement(HttpRequest request) {
-    super(request);
+  public ClearElement(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

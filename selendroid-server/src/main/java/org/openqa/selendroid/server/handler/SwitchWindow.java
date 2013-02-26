@@ -22,8 +22,8 @@ import org.webbitserver.HttpRequest;
 
 public class SwitchWindow extends RequestHandler {
 
-  public SwitchWindow(HttpRequest request) {
-    super(request);
+  public SwitchWindow(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

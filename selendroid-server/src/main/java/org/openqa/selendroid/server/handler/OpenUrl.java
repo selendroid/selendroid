@@ -22,8 +22,8 @@ import org.webbitserver.HttpRequest;
 import com.google.gson.JsonElement;
 
 public class OpenUrl extends RequestHandler {
-  public OpenUrl(HttpRequest request) {
-    super(request);
+  public OpenUrl(HttpRequest request,String mappedUri) {
+    super(request,mappedUri);
   }
 
   @Override

@@ -75,6 +75,9 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
    */
   @Override
   public JsonObject getWindowSource() {
+    if (nativeSearchScope == null) {
+      throw new SelendroidException("No active session found.");
+    }
     AndroidNativeElement rootElement = ((NativeSearchScope) nativeSearchScope).getElementTree();
     JsonObject root = rootElement.toJson();
     if (root == null) {

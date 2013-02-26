@@ -11,26 +11,26 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.handler;
+package org.openqa.selendroid.server.inspector;
 
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.server.RequestHandler;
-import org.openqa.selendroid.server.Response;
-import org.openqa.selendroid.util.SelendroidLogger;
+import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
+import org.webbitserver.HttpResponse;
 
-public class SetImplicitWaitTimeout extends RequestHandler {
-  public SetImplicitWaitTimeout(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+
+public abstract class SelendroidInspectorView {
+  protected ServerInstrumentation serverInstrumentation = null;
+  protected SelendroidDriver driver = null;
+
+  public SelendroidInspectorView(ServerInstrumentation serverInstrumentation,
+      SelendroidDriver driver) {
+    this.serverInstrumentation = serverInstrumentation;
+    if(driver==null){
+      throw new RuntimeException("driver ==null");
+    }
+    this.driver = driver;
   }
 
-  @Override
-  public Response handle() {
-    SelendroidLogger.log("set implicit wait timeout called");
-
-    Long timeout = getPayload().get("ms").getAsLong();
-    ServerInstrumentation.getInstance().setImplicitWait(timeout);
-
-    return new Response(getSessionId(), timeout);
-  }
+  public abstract void render(HttpRequest request, HttpResponse response);
 }
