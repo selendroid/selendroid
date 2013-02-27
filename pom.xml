@@ -10,6 +10,7 @@
 		<module>selendroid-server</module>
 		<module>selendroid-large-tests</module>
 		<module>selendroid-test-app</module>
+                <module>selendroid-client</module>
 	</modules>
 
 	<properties>

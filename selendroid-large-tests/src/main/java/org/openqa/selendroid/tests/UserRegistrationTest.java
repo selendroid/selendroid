@@ -13,12 +13,13 @@
  */
 package org.openqa.selendroid.tests;
 
+import org.apache.commons.lang3.CharSequenceUtils;
+import org.openqa.selendroid.SelendroidKeys;
 import org.openqa.selendroid.tests.domain.PreferedProgrammingLanguage;
 import org.openqa.selendroid.tests.domain.UserDO;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.HasInputDevices;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -50,8 +51,9 @@ public class UserRegistrationTest extends BaseAndroidTest {
     WebElement inputUsername =
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
     CharSequence cs="Selendroid";
+
     ((HasInputDevices) driver).getKeyboard().sendKeys(cs);
-    ((HasInputDevices) driver).getKeyboard().pressKey(Keys.MENU);
+    ((HasInputDevices) driver).getKeyboard().sendKeys(SelendroidKeys.MENU);
 
     driver.findElement(By.linkText("User Registration Settings")).click();
     driver.findElement(By.linkText("I agree")).click();
