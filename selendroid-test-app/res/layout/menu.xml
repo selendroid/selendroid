@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" >
+    <item
+        android:id="@+id/menu_settings"
+        android:contentDescription="menu_settings"
+        android:title="User Registration Settings"/>
+    
+    <item
+        android:id="@+id/menu_home"
+        android:contentDescription="menu_home"
+        android:title="Home Dialog"/>
+
+    <item
+        android:id="@+id/menu_web_view"
+        android:contentDescription="menu_web_view"
+        android:title="Open Web View Dialog"/>
+
+</menu>

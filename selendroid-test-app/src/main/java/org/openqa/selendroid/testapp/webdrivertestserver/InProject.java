@@ -16,10 +16,6 @@ package org.openqa.selendroid.testapp.webdrivertestserver;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.apache.commons.io.IOUtils;
-
-import android.content.res.AssetManager;
-
 public class InProject {
   /**
    * Locates a file in the current project

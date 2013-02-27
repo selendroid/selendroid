@@ -33,7 +33,7 @@ import android.widget.Toast;
  */
 public class HomeScreenActivity extends Activity {
   private static final int DIALOG_ALERT = 10;
-  private static String TAG = "NativeAndroidDriver-demoapp";
+  private static String TAG = "Selendroid-demoapp";
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

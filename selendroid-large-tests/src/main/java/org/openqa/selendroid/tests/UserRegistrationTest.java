@@ -17,6 +17,8 @@ import org.openqa.selendroid.tests.domain.PreferedProgrammingLanguage;
 import org.openqa.selendroid.tests.domain.UserDO;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
+import org.openqa.selenium.HasInputDevices;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -47,6 +49,7 @@ public class UserRegistrationTest extends BaseAndroidTest {
     WebDriverWait wait = new WebDriverWait(driver, 5);
     WebElement inputUsername =
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
+    ((HasInputDevices) driver).getKeyboard().pressKey(Keys.MENU);
     inputUsername.sendKeys(user.getUsername());
     driver.findElement(By.id("inputEmail")).sendKeys(user.getEmail());
     driver.findElement(By.id("inputPassword")).sendKeys(user.getPassword());

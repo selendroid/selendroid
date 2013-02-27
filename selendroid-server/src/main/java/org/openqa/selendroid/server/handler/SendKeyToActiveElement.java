@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.openqa.selendroid.android.Keys;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
@@ -23,8 +24,8 @@ import com.google.gson.JsonElement;
 
 public class SendKeyToActiveElement extends RequestHandler {
 
-  public SendKeyToActiveElement(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public SendKeyToActiveElement(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
@@ -35,11 +36,10 @@ public class SendKeyToActiveElement extends RequestHandler {
       return new Response(getSessionId(), new SelendroidException(
           "No key to send to an element was found."));
     }
-    String text = value.getAsString();
 
-    getAndroidDriver().getKeyboard().sendKeys(text);
+    Keys key = Keys.valueOf(value.getAsString());
+    getAndroidDriver().getKeyboard().pressKey(key);
 
     return new Response(getSessionId(), "");
   }
-
 }
