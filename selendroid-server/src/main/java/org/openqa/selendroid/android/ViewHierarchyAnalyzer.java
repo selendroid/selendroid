@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
 
 import android.content.res.Resources;
 import android.view.View;
@@ -37,23 +36,6 @@ public class ViewHierarchyAnalyzer {
 
   public static ViewHierarchyAnalyzer getDefaultInstance() {
     return INSTANCE;
-  }
-
-  public Set<View> _getTopLevelViews() {
-    // Set<View> top=new HashSet<View>();
-    // top.add(ServerInstrumentation.getInstance().getRootView());
-    // return top;
-    try {
-      Class<?> wmClass = Class.forName("android.view.WindowManagerImpl");
-      Object wm = wmClass.getDeclaredMethod("getDefault").invoke(null);
-      Field views = wmClass.getDeclaredField("mViews");
-      views.setAccessible(true);
-      synchronized (wm) {
-        return new HashSet<View>(Arrays.asList(((View[]) views.get(wm)).clone()));
-      }
-    } catch (Exception exception) {
-      throw new SelendroidException("Selendroid only supports Android 2.2", exception);
-    }
   }
 
   public Set<View> getTopLevelViews() {

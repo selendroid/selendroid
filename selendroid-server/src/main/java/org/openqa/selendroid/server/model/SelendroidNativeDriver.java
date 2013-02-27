@@ -22,7 +22,6 @@ import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 
 import android.app.Activity;
-import android.view.View;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;

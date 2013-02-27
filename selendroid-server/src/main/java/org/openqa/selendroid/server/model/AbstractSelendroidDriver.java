@@ -21,12 +21,20 @@ import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.KeySender;
+import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.util.SelendroidLogger;
 
+import android.app.Activity;
+import android.content.res.TypedArray;
+import android.content.res.Resources.Theme;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.view.Display;
 import android.view.View;
 
 import com.google.gson.JsonObject;
@@ -34,7 +42,7 @@ import com.google.gson.JsonObject;
 public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   protected boolean done = false;
   protected SearchContext nativeSearchScope;
-  protected WebviewSearchScope webviewSearchScope = null;
+  protected SearchContext webviewSearchScope = null;
   protected ServerInstrumentation serverInstrumentation = null;
   protected Session session = null;
   protected final Object syncObject = new Object();
@@ -151,14 +159,25 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   }
 
   /*
-   * (non-Javadoc)
+   * 
    * 
    * @see org.openqa.selenium.android.server.AndroidDriver#takeScreenshot()
    */
   @Override
   public byte[] takeScreenshot() {
-    final View view = serverInstrumentation.getRootView();
-    if (view == null) {
+    ViewHierarchyAnalyzer viewAnalyzer = ViewHierarchyAnalyzer.getDefaultInstance();
+    long drawingTime = 0;
+    View container = null;
+    for (View view : viewAnalyzer.getTopLevelViews()) {
+      if (view != null && view.isShown() && view.hasWindowFocus()
+          && view.getDrawingTime() > drawingTime) {
+
+        container = view;
+        drawingTime = view.getDrawingTime();
+      }
+    }
+    final View mainView = container;
+    if (mainView == null) {
       throw new SelendroidException("No open windows.");
     }
     done = false;
@@ -168,14 +187,34 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
     ServerInstrumentation.getInstance().getCurrentActivity().runOnUiThread(new Runnable() {
       public void run() {
         synchronized (syncObject) {
-          Bitmap raw;
-          view.setDrawingCacheEnabled(true);
-          view.buildDrawingCache(true);
-          raw = Bitmap.createBitmap(view.getDrawingCache());
-          view.setDrawingCacheEnabled(false);
+          Display display =
+              serverInstrumentation.getCurrentActivity().getWindowManager().getDefaultDisplay();
+          Point size = new Point();
+          display.getSize(size);
+
+          // Get root view
+          View view = mainView.getRootView();
+
+          // Create the bitmap to use to draw the screenshot
+          final Bitmap bitmap = Bitmap.createBitmap(size.x, size.y, Bitmap.Config.ARGB_8888);
+          final Canvas canvas = new Canvas(bitmap);
+
+          // Get current theme to know which background to use
+          final Activity activity = serverInstrumentation.getCurrentActivity();
+          final Theme theme = activity.getTheme();
+          final TypedArray ta =
+              theme.obtainStyledAttributes(new int[] {android.R.attr.windowBackground});
+          final int res = ta.getResourceId(0, 0);
+          final Drawable background = activity.getResources().getDrawable(res);
+
+          // Draw background
+          background.draw(canvas);
+
+          // Draw views
+          view.draw(canvas);
 
           ByteArrayOutputStream stream = new ByteArrayOutputStream();
-          if (!raw.compress(Bitmap.CompressFormat.PNG, 100, stream)) {
+          if (!bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)) {
             throw new RuntimeException("Error while compressing screenshot image.");
           }
           try {
@@ -187,6 +226,7 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
             IOUtils.closeQuietly(stream);
           }
           rawPng[0] = stream.toByteArray();
+          mainView.destroyDrawingCache();
           done = true;
           syncObject.notify();
         }

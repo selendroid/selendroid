@@ -282,7 +282,7 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   }
 
   public AndroidWebElement newAndroidElement(String id) {
-    return webviewSearchScope.newAndroidWebElementById(id);
+    return ((WebviewSearchScope) webviewSearchScope).newAndroidWebElementById(id);
   }
 
   void resetPageIsLoading() {

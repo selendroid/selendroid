@@ -4,8 +4,8 @@
 - [x] fixed to major bugs #1 and #2
 - [x] Created an inspector that allows to inspect the application under test and makes it easier to write test cases.
 - [x] Added support for pressing keys like the Android menu button.
-- [ ] Fixed a bug in taking screenshots. Now pop up dialogs are included as well.  
-
+- [X] Fixed a bug in taking screenshots. Now pop up dialogs are included as well.  
+- [x] Added a client library that contains already selenium as dependency and the interface SelendroidKeys.
 
 0.1
 -----
