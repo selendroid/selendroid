@@ -1,4 +1,3 @@
-
 0.2 (Currently under development)
 ---------------------------------
 
@@ -7,8 +6,6 @@
 - [x] Added support for pressing keys like the Android menu button.
 - [ ] Fixed a bug in taking screenshots. Now pop up dialogs are included as well.  
 
-- [ ] this is an incomplete item
-- [x] this is a complete item
 
 0.1
 -----
