@@ -19,9 +19,11 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 
 import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 
 import android.app.Activity;
+import android.view.View;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
@@ -63,7 +65,6 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
     if (activity == null) {
       return null;
     }
-
     return "and-activity://" + activity.getLocalClassName();
   }
 

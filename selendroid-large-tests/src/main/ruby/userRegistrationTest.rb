@@ -60,17 +60,14 @@ class ExampleTest < Test::Unit::TestCase
     caps.version = "5"
     caps.platform = :linux
     caps.proxy = nil
-    caps[:aut] = "selendroid-test-app"
-    caps[:locale]="de_DE"
-    caps[:deviceName]="emulator"
-    caps[:deviceId]="emulator-5554"
     caps[:maxInstances]="1"
-    caps[:browserName]="selendroid"
-    caps[:sdkVersion]="4.1"
-
+    
+    client = Selenium::WebDriver::Remote::Http::Default.new
+    client.timeout = 120 # seconds
+    
     @driver = Selenium::WebDriver.for(
-    :remote,
-    :url => "http://localhost:8080/wd/hub",
+    :remote, :http_client => client, 
+    :url => "http://localhost:8090/wd/hub",
     :desired_capabilities => caps)
   end
 

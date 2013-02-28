@@ -264,8 +264,7 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   @Override
   public String initializeSession(JsonObject desiredCapabilities) {
     if (this.session != null) {
-      throw new SelendroidException(
-          "There is currently one active session. Not more than one session is possible.");
+      return session.getSessionId();
     }
     this.session =
         new Session(desiredCapabilities, UUID.randomUUID().toString(), WindowType.NATIVE_APP);

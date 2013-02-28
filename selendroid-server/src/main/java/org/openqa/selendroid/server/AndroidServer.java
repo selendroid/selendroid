@@ -17,8 +17,6 @@ import java.util.concurrent.Executors;
 
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.inspector.InspectorServlet;
-import org.openqa.selendroid.server.inspector.view.TreeView;
-import org.openqa.selendroid.server.inspector.view.ResourceView;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.server.model.SelendroidNativeDriver;
 import org.webbitserver.WebServer;

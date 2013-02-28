@@ -51,7 +51,5 @@ public class InspectorServlet implements HttpHandler {
     } else {
       httpControl.nextHandler();
     }
-
-    httpResponse.status(404).end();
   }
 }

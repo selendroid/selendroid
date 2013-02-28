@@ -13,7 +13,6 @@
  */
 package org.openqa.selendroid.tests;
 
-import org.apache.commons.lang3.CharSequenceUtils;
 import org.openqa.selendroid.SelendroidKeys;
 import org.openqa.selendroid.tests.domain.PreferedProgrammingLanguage;
 import org.openqa.selendroid.tests.domain.UserDO;
