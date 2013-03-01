@@ -1,23 +1,24 @@
-0.2 (Currently under development)
+0.2 (under development)
 ---------------------------------
 
-- [x] fixed to major bugs #1 and #2
-- [x] Created an inspector that allows to inspect the application under test and makes it easier to write test cases.
-- [x] Added support for pressing keys like the Android menu button.
-- [X] Fixed a bug in taking screenshots. Now pop up dialogs are included as well.  
-- [x] Added a client library that contains already selenium as dependency and the interface SelendroidKeys.
+- fixed to major bugs #1 and #2
+- Created an inspector that allows to inspect the application under test and makes it easier to write test cases: http://localhost:8080/inspector
+- Added support for pressing keys like the Android menu button.
+- Fixed a bug in taking screenshots. Now pop up dialogs are included as well.  
+- Added /sessionId/keys support and a client library that contains already selenium as dependency and the interface SelendroidKeys.
+- The gem contains an interactive console that starts automatically selendroid-server and a Ruby webdriver client that allows to interactively try commands out.
 
 0.1
 -----
 
-- [x] initial Selendroid version including support for android native and hybrid apps.
-      - Driver support:
-         - takeScreenshot
-         - getPageSource
-         - get current url/ activity and open activity
-      - Driver supports following find element locators:
-         - for web views: by id, by xpath, by text, by name
-         - for Android native: by id, by l10n key, by text
-      - Found elements features:
-         - click, clear, enter text, getValue, is selected and submit
+- initial Selendroid version including support for android native and hybrid apps.
+  - Driver support:
+    - takeScreenshot
+    - getPageSource
+    - get current url/ activity and open activity
+  - Driver supports following find element locators:
+    - for web views: by id, by xpath, by text, by name
+    - for Android native: by id, by l10n key, by text
+  - Found elements features:
+    - click, clear, enter text, getValue, is selected and submit
       
