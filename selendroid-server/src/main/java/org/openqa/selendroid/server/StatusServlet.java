@@ -13,6 +13,8 @@
  */
 package org.openqa.selendroid.server;
 
+import java.util.Locale;
+
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
@@ -33,12 +35,13 @@ public class StatusServlet implements HttpHandler {
     }
     System.out.println("get Status Servlet Called");
     JsonObject build = new JsonObject();
-    build.addProperty("version", "0.1-snapshot");
-
+    build.addProperty("version", "0.2");
+    
     JsonObject os = new JsonObject();
-    os.addProperty("arch", System.getProperty("os.arch"));
-    os.addProperty("name", System.getProperty("os.name"));
-    os.addProperty("version", System.getProperty("os.version"));
+    os.addProperty("arch", android.os.Build.CPU_ABI);
+    os.addProperty("name", "Android");
+    os.addProperty("version", android.os.Build.VERSION.SDK_INT);
+    os.addProperty("locale", Locale.getDefault().toString());
 
     JsonObject json = new JsonObject();
     json.add("build", build);

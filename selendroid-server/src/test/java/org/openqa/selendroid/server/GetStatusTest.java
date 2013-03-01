@@ -20,7 +20,7 @@ public class GetStatusTest extends BaseTest {
 
     Assert.assertFalse(result.has("sessionId"));
     JsonObject value = result.get("value").getAsJsonObject();
-    Assert.assertEquals("0.1-snapshot", value.get("build").getAsJsonObject().get("version")
+    Assert.assertEquals("0.2", value.get("build").getAsJsonObject().get("version")
         .getAsString());
   }
 
