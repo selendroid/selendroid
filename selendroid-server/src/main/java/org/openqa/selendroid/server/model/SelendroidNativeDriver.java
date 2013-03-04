@@ -19,18 +19,16 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 
 import android.app.Activity;
-import android.view.View;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class SelendroidNativeDriver extends AbstractSelendroidDriver {
-
+  public final String ACTIVITY_URL_PREFIX = "and-activity://";
 
   public SelendroidNativeDriver(ServerInstrumentation serverInstrumentation) {
     super(serverInstrumentation);
@@ -53,6 +51,7 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
     }
     parent.add("children", childs);
   }
+
 
   /*
    * (non-Javadoc)
@@ -95,6 +94,20 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
     throw new UnsupportedOperationException();
   }
 
+  private URI getCurrentURI() {
+    String currentActivityUrl = getCurrentUrl();
+    if (currentActivityUrl == null) {
+      return null;
+    }
+    URI current;
+    try {
+      current = new URI(currentActivityUrl);
+    } catch (URISyntaxException exception) {
+      throw new IllegalArgumentException(exception);
+    }
+    return current;
+  }
+
   @Override
   public void get(String url) {
     URI dest;
@@ -108,6 +121,11 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
       throw new SelendroidException("Unrecognized scheme in URI: " + dest.toString());
     } else if (!Strings.isNullOrEmpty(dest.getPath())) {
       throw new SelendroidException("Unrecognized path in URI: " + dest.toString());
+    }
+    URI currentUri = getCurrentURI();
+    if (currentUri != null && dest.getPath().contains(currentUri.getPath())) {
+      // ignore request, activity is already open
+      return;
     }
 
     Class<?> clazz;
