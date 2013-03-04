@@ -2,9 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.openqa.selendroid.testapp"
     android:versionCode="1"
-    android:versionName="0.1-SNAPSHOT" >
+    android:versionName="0.2" >
 
     <uses-sdk android:minSdkVersion="10" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -19,7 +20,18 @@
         <activity android:name=".WebViewActivity" />
         <activity android:name=".RegisterUserActivity" />
         <activity android:name=".VerifyUserActivity" />
+        <activity android:name=".SearchUsersActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <meta-data android:name="android.app.default_searchable"
+               android:value=".SearchUsersActivity" />
 
         <service android:name=".services.impl.UserServiceImpl" />
     </application>
+
 </manifest>

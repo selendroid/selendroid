@@ -1,42 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
+
+    <!-- suffix CD stands for: content description -->
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/hello" />
 
-    <Button
-        android:id="@+id/buttonTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="showL10nDialog"
-        android:text="@string/button" />
+    <LinearLayout
+        android:id="@+id/l10n"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="l10nCD" >
 
-    <Button
-        android:id="@+id/buttonStartWebview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="showWebViewDialog"
-        android:text="Start Webview" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Localization (L10n) locator test" />
+
+        <Button
+            android:id="@+id/buttonTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="showL10nDialog"
+            android:text="@string/button" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="imageViewCD" >
+
+        <ImageButton
+            android:id="@+id/buttonStartWebview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="buttonStartWebviewCD"
+            android:onClick="showWebViewDialog"
+            android:scaleType="center"
+            android:src="@drawable/chrome" />
+
+        <ImageButton
+            android:id="@+id/startUserRegistration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="startUserRegistrationCD"
+            android:onClick="showUserRegistrationDialog"
+            android:src="@drawable/person" />
+    </LinearLayout>
 
     <EditText
         android:id="@+id/my_text_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:contentDescription="my_text_fieldCD"
         android:ems="10" >
-
-        <requestFocus />
     </EditText>
-
-    <Button
-        android:id="@+id/startUserRegistration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="showUserRegistrationDialog"
-        android:text="Start User Registration" />
 
 </LinearLayout>

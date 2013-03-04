@@ -26,7 +26,7 @@ import android.view.View;
 import android.widget.Toast;
 
 /**
- * Demo project to verify NativeAndroidDriver actions.
+ * Demo project to verify selendroid actions.
  * 
  * @author ddary
  * 
@@ -48,6 +48,11 @@ public class HomeScreenActivity extends Activity {
 
   public void showWebViewDialog(View view) {
     Intent nextScreen = new Intent(getApplicationContext(), WebViewActivity.class);
+    startActivity(nextScreen);
+  }
+  
+  public void showSearchDialog(View view) {
+    Intent nextScreen = new Intent(getApplicationContext(), SearchUsersActivity.class);
     startActivity(nextScreen);
   }
   
