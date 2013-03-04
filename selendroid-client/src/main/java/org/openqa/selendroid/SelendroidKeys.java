@@ -13,6 +13,8 @@
  */
 package org.openqa.selendroid;
 
+import org.openqa.selenium.Keys;
+
 /**
  * Keystrokes to simulate Android native key events.
  * 
@@ -23,6 +25,17 @@ package org.openqa.selendroid;
  * @author ddary
  */
 public interface SelendroidKeys {
+  // Keys that are shared with normal WebDriver (sorted alphabetically)
+  public static final CharSequence ALT_LEFT = Keys.ALT;
+  public static final CharSequence DEL = Keys.DELETE;
+  public static final CharSequence DPAD_DOWN = Keys.ARROW_DOWN;
+  public static final CharSequence DPAD_LEFT = Keys.ARROW_LEFT;
+  public static final CharSequence DPAD_RIGHT = Keys.ARROW_RIGHT;
+  public static final CharSequence DPAD_UP = Keys.ARROW_UP;
+  public static final CharSequence ENTER = Keys.ENTER;
+  public static final CharSequence SHIFT_LEFT = Keys.SHIFT;
+
+
   public static final CharSequence BACK = String.valueOf('\uE100');
   public static final CharSequence ANDROID_HOME = String.valueOf('\uE101');
   public static final CharSequence MENU = String.valueOf('\uE102');

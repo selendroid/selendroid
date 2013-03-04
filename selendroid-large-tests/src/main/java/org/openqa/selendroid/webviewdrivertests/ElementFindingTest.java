@@ -35,8 +35,6 @@ import org.testng.annotations.Test;
  */
 public class ElementFindingTest extends BaseAndroidTest {
   public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp." + "WebViewActivity";
-  public static final String NATIVE_APP = "NATIVE_APP";
-  public static final String WEBVIEW = "WEBVIEW";
 
   private void openWebdriverTestPage(String page) {
     driver.switchTo().window(NATIVE_APP);

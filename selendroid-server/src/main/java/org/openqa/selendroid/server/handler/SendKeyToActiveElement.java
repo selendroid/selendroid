@@ -13,12 +13,16 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import java.util.List;
+
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
+import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -32,14 +36,21 @@ public class SendKeyToActiveElement extends RequestHandler {
   public Response handle() {
     SelendroidLogger.log("send key to active element command");
     JsonObject payload = getPayload();
-    System.out.println("send key payload: " + payload);
+
     JsonElement value = payload.get("value");
     if (value.isJsonNull()) {
       return new Response(getSessionId(), new SelendroidException(
           "No key to send to an element was found."));
     }
+    JsonArray valueArr = value.getAsJsonArray();
+    List<CharSequence> temp = Lists.newArrayList();
 
-    getAndroidDriver().getKeyboard().sendKeys(value.toString());
+    for (int i = 0; i < valueArr.size(); i++) {
+      temp.add(valueArr.get(i).getAsString());
+    }
+    String[] keysToSend = temp.toArray(new String[0]);
+    
+    getAndroidDriver().getKeyboard().sendKeys(keysToSend);
 
     return new Response(getSessionId(), "");
   }

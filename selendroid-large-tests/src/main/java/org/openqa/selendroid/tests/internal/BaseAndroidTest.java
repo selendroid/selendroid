@@ -34,6 +34,9 @@ import org.testng.annotations.BeforeClass;
 public class BaseAndroidTest {
   protected WebDriver driver = null;
   final String pathSeparator = File.separator;
+  public static final String NATIVE_APP = "NATIVE_APP";
+  public static final String WEBVIEW = "WEBVIEW";
+
 
   @BeforeClass
   public void setup() throws MalformedURLException {
