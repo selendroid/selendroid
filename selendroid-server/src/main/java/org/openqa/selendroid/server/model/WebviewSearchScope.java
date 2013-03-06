@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.model.By.ByClass;
 import org.openqa.selendroid.server.model.By.ById;
 import org.openqa.selendroid.server.model.By.ByL10nElement;
 import org.openqa.selendroid.server.model.By.ByLinkText;
 import org.openqa.selendroid.server.model.By.ByXPath;
+import org.openqa.selendroid.server.model.internal.FindsByClass;
 import org.openqa.selendroid.server.model.internal.FindsById;
 import org.openqa.selendroid.server.model.internal.FindsByL10n;
 import org.openqa.selendroid.server.model.internal.FindsByText;
@@ -33,7 +35,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
-public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById, FindsByText {
+public class WebviewSearchScope
+    implements
+      SearchContext,
+      FindsByL10n,
+      FindsById,
+      FindsByText,
+      FindsByClass {
   private KnownElements knownElements;
   private volatile WebView view;
   private SelendroidWebDriver driver = null;
@@ -65,6 +73,8 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
       return findElementsByText(by.getElementLocator());
     } else if (by instanceof ByXPath) {
       return findElementsByXPath(by.getElementLocator());
+    } else if (by instanceof ByClass) {
+      return findElementsByClass(by.getElementLocator());
     }
     throw new SelendroidException(String.format("By locator %s is curently not supported!", by
         .getClass().getSimpleName()));
@@ -86,6 +96,8 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
       return findElementByText(by.getElementLocator());
     } else if (by instanceof By.ByName) {
       return findElementByName(by.getElementLocator());
+    } else if (by instanceof By.ByClass) {
+      return findElementByClass(by.getElementLocator());
     } else {
       throw new UnsupportedOperationException();
     }
@@ -175,6 +187,21 @@ public class WebviewSearchScope implements SearchContext, FindsByL10n, FindsById
   public List<AndroidElement> findElementsByName(String using) {
     JsonElement result =
         (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, "name", using);
+
+    return replyElements(result);
+  }
+
+  @Override
+  public AndroidElement findElementByClass(String using) {
+    JsonElement result =
+        (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, "class", using);
+    return replyElement(result);
+  }
+
+  @Override
+  public List<AndroidElement> findElementsByClass(String using) {
+    JsonElement result =
+        (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, "class", using);
 
     return replyElements(result);
   }

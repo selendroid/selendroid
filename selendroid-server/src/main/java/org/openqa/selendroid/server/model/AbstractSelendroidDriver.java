@@ -28,8 +28,8 @@ import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.util.SelendroidLogger;
 
 import android.app.Activity;
-import android.content.res.TypedArray;
 import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -47,6 +47,7 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   protected Session session = null;
   protected final Object syncObject = new Object();
   private KeySender keySender = null;
+  protected TouchScreen touch;
 
 
   public AbstractSelendroidDriver(ServerInstrumentation instrumentation) {
@@ -280,5 +281,10 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   @Override
   public Keyboard getKeyboard() {
     return keySender.getKeyboard();
+  }
+
+  @Override
+  public TouchScreen getTouch() {
+    return null;
   }
 }

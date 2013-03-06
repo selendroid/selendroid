@@ -7,6 +7,7 @@
 - Fixed a bug in taking screenshots. Now pop up dialogs are included as well.  
 - Added /sessionId/keys support and a client library that contains already selenium as dependency and the interface SelendroidKeys.
 - The gem contains an interactive console that starts automatically selendroid-server and a Ruby webdriver client that allows to interactively try commands out.
+- Added locator strategy by class for native and web view context
 
 0.1
 -----

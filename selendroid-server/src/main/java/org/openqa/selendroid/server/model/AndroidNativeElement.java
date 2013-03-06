@@ -21,10 +21,10 @@ import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidKeys;
 import org.openqa.selendroid.android.AndroidWait;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
+import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.TimeoutException;
 
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -85,9 +85,7 @@ public class AndroidNativeElement implements AndroidElement {
 
   private void waitUntilIsDisplayed() {
     AndroidWait wait = instrumentation.getAndroidWait();
-    // TODO(dxu): determine the proper timeout and call
-    // wait.setTimeoutInMillis(timeoutInMillis), default 1000ms in
-    // AndroidWait
+
     try {
       wait.until(new Function<Void, Boolean>() {
         @Override
@@ -166,13 +164,8 @@ public class AndroidNativeElement implements AndroidElement {
         MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0);
     final MotionEvent event2 =
         MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, x, y, 0);
-    //
-    ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
-      @Override
-      public void run() {}
-    });
+
     try {
-      inst.waitForIdleSync();
       inst.sendPointerSync(event);
       inst.sendPointerSync(event2);
       try {
@@ -279,7 +272,7 @@ public class AndroidNativeElement implements AndroidElement {
     rect.add("size", size);
 
     object.addProperty("ref", view.getId());
-    object.addProperty("type", view.getClass().getSimpleName());
+    object.addProperty("type", view.getClass().getName());
     String value = null;
     if (view instanceof TextView) {
       value = String.valueOf(((TextView) view).getText());
@@ -329,5 +322,12 @@ public class AndroidNativeElement implements AndroidElement {
     }
     throw new UnsupportedOperationException(
         "Is seleted is only available for checkboxes and Radio buttons.");
+  }
+
+  @Override
+  public Point getLocation() {
+    int[] xy = new int[2];
+    view.getLocationOnScreen(xy);
+    return new Point(xy[0], xy[1]);
   }
 }

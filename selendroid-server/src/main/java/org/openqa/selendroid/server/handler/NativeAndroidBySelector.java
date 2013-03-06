@@ -26,6 +26,7 @@ public class NativeAndroidBySelector {
   public static final String SELECTOR_TEXT = "link text";
   public static final String SELECTOR_XPATH = "xpath";
   public static final String SELECTOR_NAME = "name";
+  public static final String SELECTOR_CLASS="class name";
 
   public By pickFrom(String method, String selector, WindowType type) {
     if (SELECTOR_NATIVE_ID.equals(method)) {
@@ -38,6 +39,8 @@ public class NativeAndroidBySelector {
       return By.linkText(selector);
     } else if (SELECTOR_XPATH.equals(method)) {
       return By.xpath(selector);
+    }else if (SELECTOR_CLASS.equals(method)) {
+      return By.className(selector);
     }
 
     else {

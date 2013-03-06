@@ -18,6 +18,7 @@ import org.openqa.selendroid.server.handler.CaptureScreenshot;
 import org.openqa.selendroid.server.handler.ClearElement;
 import org.openqa.selendroid.server.handler.ClickElement;
 import org.openqa.selendroid.server.handler.DeleteSession;
+import org.openqa.selendroid.server.handler.ElementLocation;
 import org.openqa.selendroid.server.handler.FindElement;
 import org.openqa.selendroid.server.handler.FindElements;
 import org.openqa.selendroid.server.handler.GetCapabilities;
@@ -30,6 +31,7 @@ import org.openqa.selendroid.server.handler.LogElement;
 import org.openqa.selendroid.server.handler.LogElementTree;
 import org.openqa.selendroid.server.handler.NewSession;
 import org.openqa.selendroid.server.handler.OpenUrl;
+import org.openqa.selendroid.server.handler.ScrollGesture;
 import org.openqa.selendroid.server.handler.SendKeyToActiveElement;
 import org.openqa.selendroid.server.handler.SendKeys;
 import org.openqa.selendroid.server.handler.SetImplicitWaitTimeout;
@@ -87,6 +89,7 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     postHandler.put("/wd/hub/session/:sessionId/keys", SendKeyToActiveElement.class);
     getHandler.put("/wd/hub/session/:sessionId/title", GetPageTitle.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/selected", IsElementSelected.class);
+    getHandler.put("/wd/hub/session/:sessionId/:id/location", ElementLocation.class);
   }
 
   public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)

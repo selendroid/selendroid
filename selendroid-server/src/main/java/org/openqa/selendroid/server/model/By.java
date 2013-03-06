@@ -42,20 +42,17 @@ public abstract class By {
 
     @Override
     public AndroidElement findElement(SearchContext context) {
-      // TODO Auto-generated method stub
-      return null;
+      return context.findElement(By.cssSelector(selector));
     }
 
     @Override
     public List<AndroidElement> findElements(SearchContext context) {
-      // TODO Auto-generated method stub
-      return null;
+      return context.findElements(By.cssSelector(selector));
     }
 
     @Override
     public String getElementLocator() {
-      // TODO Auto-generated method stub
-      return null;
+      return selector;
     }
   }
 
@@ -84,6 +81,34 @@ public abstract class By {
     @Override
     public String toString() {
       return "By.id: " + id;
+    }
+  }
+
+  public static class ByClass extends By {
+    private final String clazz;
+
+    public ByClass(String clazz) {
+      this.clazz = clazz;
+    }
+
+    @Override
+    public AndroidElement findElement(SearchContext context) {
+      return context.findElement(By.className(clazz));
+    }
+
+    @Override
+    public List<AndroidElement> findElements(SearchContext context) {
+      return context.findElements(By.className(clazz));
+    }
+
+    @Override
+    public String getElementLocator() {
+      return clazz;
+    }
+
+    @Override
+    public String toString() {
+      return "By.clazz: " + clazz;
     }
   }
 
@@ -229,6 +254,12 @@ public abstract class By {
     if (xpathExpression == null)
       throw new IllegalArgumentException("Cannot find elements when xpath is null.");
     return new ByXPath(xpathExpression);
+  }
+
+  public static By className(String className) {
+    if (className == null)
+      throw new IllegalArgumentException("Cannot find elements when className is null.");
+    return new ByClass(className);
   }
 
   @Override

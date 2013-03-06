@@ -47,4 +47,6 @@ public interface SelendroidDriver {
   public String getTitle();
 
   public void get(String url);
+  
+  public TouchScreen getTouch();
 }

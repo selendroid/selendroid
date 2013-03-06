@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,9 +28,13 @@ import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.AbsListView;
+import android.widget.ScrollView;
 
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.FluentIterable;
 
 public class ViewHierarchyAnalyzer {
   private static final ViewHierarchyAnalyzer INSTANCE = new ViewHierarchyAnalyzer();
@@ -125,9 +130,8 @@ public class ViewHierarchyAnalyzer {
     }
     for (int i = 0; i < viewGroup.getChildCount(); i++) {
       View childView = viewGroup.getChildAt(i);
-      if (childView.isShown()) {
-        list.add(childView);
-      }
+      list.add(childView);
+
       if (childView instanceof ViewGroup) {
         addAllChilren((ViewGroup) childView, list);
       }
@@ -149,17 +153,33 @@ public class ViewHierarchyAnalyzer {
   }
 
   public WebView findWebView() {
-    final List<WebView> webViews = new ArrayList<WebView>();
-    Collection<View> views = getViews();
-    for (View view : views) {
-      if (view instanceof WebView) {
-        final WebView webview = (WebView) view;
-        webViews.add(webview);
-      }
-    }
+    final List<View> webViews =
+        FluentIterable.from(getViews()).filter(Predicates.instanceOf(WebView.class))
+            .toImmutableList();
+
     if (webViews.isEmpty()) {
       return null;
     }
-    return webViews.get(0);
+    return (WebView) webViews.get(0);
+  }
+
+  public List<View> findScrollableContainer() {
+    Collection<View> allViews = getViews();
+    List<View> container = new ArrayList<View>();
+    List<View> listview =
+        FluentIterable.from(allViews).filter(Predicates.instanceOf(AbsListView.class))
+            .toImmutableList();
+    if (listview != null && !listview.isEmpty()) {
+      container.addAll(listview);
+    }
+    List<View> scrollview =
+        FluentIterable.from(allViews).filter(Predicates.instanceOf(ScrollView.class))
+            .toImmutableList();
+    container.addAll(scrollview);
+    List<View> webview =
+        FluentIterable.from(allViews).filter(Predicates.instanceOf(WebView.class))
+            .toImmutableList();
+    container.addAll(webview);
+    return container;
   }
 }

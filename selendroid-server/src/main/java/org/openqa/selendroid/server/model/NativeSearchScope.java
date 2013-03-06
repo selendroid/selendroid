@@ -21,9 +21,11 @@ import java.util.List;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.model.By.ByClass;
 import org.openqa.selendroid.server.model.By.ById;
 import org.openqa.selendroid.server.model.By.ByL10nElement;
 import org.openqa.selendroid.server.model.By.ByLinkText;
+import org.openqa.selendroid.server.model.internal.FindsByClass;
 import org.openqa.selendroid.server.model.internal.FindsById;
 import org.openqa.selendroid.server.model.internal.FindsByL10n;
 import org.openqa.selendroid.server.model.internal.FindsByText;
@@ -33,7 +35,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById, FindsByText {
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.FluentIterable;
+
+public class NativeSearchScope
+    implements
+      SearchContext,
+      FindsByL10n,
+      FindsById,
+      FindsByText,
+      FindsByClass {
   private ServerInstrumentation instrumentation;
   private KnownElements knownElements;
   private ViewHierarchyAnalyzer viewAnalyzer;
@@ -44,7 +59,7 @@ public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById,
     this.viewAnalyzer = ViewHierarchyAnalyzer.getDefaultInstance();
   }
 
-  private AndroidNativeElement newAndroidElement(View view) {
+  AndroidNativeElement newAndroidElement(View view) {
     if (knownElements.hasElement(new Long(view.getId()))) {
       return (AndroidNativeElement) knownElements.get(new Long(view.getId()));
     } else {
@@ -89,7 +104,10 @@ public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById,
       return findElementsByL10n(by.getElementLocator());
     } else if (by instanceof ByLinkText) {
       return findElementsByText(by.getElementLocator());
+    } else if (by instanceof ByClass) {
+      return findElementsByClass(by.getElementLocator());
     }
+
     throw new SelendroidException(String.format("By locator %s is curently not supported!", by
         .getClass().getSimpleName()));
   }
@@ -102,6 +120,8 @@ public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById,
       return findElementByL10n(by.getElementLocator());
     } else if (by instanceof ByLinkText) {
       return findElementByText(by.getElementLocator());
+    } else if (by instanceof ByClass) {
+      return findElementByClass(by.getElementLocator());
     }
     throw new SelendroidException(String.format("By locator %s is curently not supported!", by
         .getClass().getSimpleName()));
@@ -183,5 +203,39 @@ public class NativeSearchScope implements SearchContext, FindsByL10n, FindsById,
       }
     }
     return list;
+  }
+
+  @Override
+  public AndroidElement findElementByClass(String using) {
+    List<AndroidElement> list = findElementsByText(using);
+
+    if (list != null && !list.isEmpty()) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public List<AndroidElement> findElementsByClass(String using) {
+    Collection<View> currentViews = viewAnalyzer.getViews();
+    Class viewClass = null;
+    try {
+      viewClass = Class.forName(using);
+    } catch (ClassNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new SelendroidException("The view class '" + using + "' was not found.", e);
+    }
+
+    final List<AndroidElement> filtered =
+        FluentIterable.from(currentViews).filter(Predicates.instanceOf(viewClass))
+            .transform(new Function<View, AndroidElement>() {
+              @Override
+              public AndroidNativeElement apply(final View view) {
+                return newAndroidElement(view);
+              }
+            }).toImmutableList();
+
+    return filtered;
   }
 }

@@ -18,8 +18,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +35,9 @@ import android.widget.Toast;
  */
 public class HomeScreenActivity extends Activity {
   private static final int DIALOG_ALERT = 10;
+  private static final int DIALOG_DOWNLOAD_PROGRESS = 11;
   private static String TAG = "Selendroid-demoapp";
+  private ProgressDialog progressDialog = null;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -46,18 +50,22 @@ public class HomeScreenActivity extends Activity {
     showDialog(DIALOG_ALERT);
   }
 
+  public void showWaitingDialog(View view) {
+    new MyAsyncTask().execute("");
+  }
+
   public void showWebViewDialog(View view) {
     Intent nextScreen = new Intent(getApplicationContext(), WebViewActivity.class);
     startActivity(nextScreen);
   }
-  
+
   public void showSearchDialog(View view) {
     Intent nextScreen = new Intent(getApplicationContext(), SearchUsersActivity.class);
     startActivity(nextScreen);
   }
-  
+
   public void showUserRegistrationDialog(View view) {
-    Intent nextScreen = new Intent(getApplicationContext(),RegisterUserActivity.class);
+    Intent nextScreen = new Intent(getApplicationContext(), RegisterUserActivity.class);
     startActivity(nextScreen);
   }
 
@@ -73,6 +81,15 @@ public class HomeScreenActivity extends Activity {
         builder.setNegativeButton("No, no", new CancelOnClickListener());
         AlertDialog dialog = builder.create();
         dialog.show();
+      case DIALOG_DOWNLOAD_PROGRESS:
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Waiting Dialog");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setMax(100);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+        return progressDialog;
     }
     return super.onCreateDialog(id);
   }
@@ -88,5 +105,33 @@ public class HomeScreenActivity extends Activity {
       HomeScreenActivity.this.finish();
     }
   }
+  class MyAsyncTask extends AsyncTask<String, String, String> {
+    @Override
+    protected void onPreExecute() {
+      super.onPreExecute();
+      showDialog(DIALOG_DOWNLOAD_PROGRESS);
+    }
 
+    @Override
+    protected String doInBackground(String... params) {
+      try {
+        Thread.sleep(2000);
+        progressDialog.setProgress(25);
+        Thread.sleep(2000);
+        progressDialog.setProgress(50);
+        Thread.sleep(2000);
+        progressDialog.setProgress(75);
+        Thread.sleep(2000);
+        progressDialog.setProgress(100);
+        Thread.sleep(1000);
+      } catch (Exception e) {}
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(String unused) {
+      dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
+    }
+
+  }
 }

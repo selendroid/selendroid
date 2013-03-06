@@ -16,6 +16,8 @@ package org.openqa.selendroid.server.model;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
+import org.openqa.selendroid.android.internal.Point;
+
 public interface AndroidElement {
   public AndroidElement getParent();
 
@@ -36,4 +38,6 @@ public interface AndroidElement {
   public boolean isSelected();
 
   public void clear();
+  
+  public Point getLocation();
 }
