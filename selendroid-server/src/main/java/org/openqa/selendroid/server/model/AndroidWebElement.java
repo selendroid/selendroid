@@ -21,6 +21,7 @@ import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidKeys;
 import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
+import org.openqa.selendroid.server.model.internal.AbstractWebviewSearchScope;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.server.webview.EventSender;
 
@@ -35,34 +36,40 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class AndroidWebElement implements AndroidElement {
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() != obj.getClass()) return false;
-    AndroidWebElement other = (AndroidWebElement) obj;
-    if (id == null) {
-      if (other.id != null) return false;
-    } else if (!id.equals(other.id)) return false;
-    return true;
-  }
-
   private final String id;
   private WebView webview;
   private SelendroidWebDriver driver;
+  private SearchContext elementContext = null;
 
-  public AndroidWebElement(String id, WebView webview, SelendroidWebDriver driver) {
+
+  private class ElementSearchContext extends AbstractWebviewSearchScope {
+    public ElementSearchContext(KnownElements knownElements, WebView webview,
+        SelendroidWebDriver driver) {
+      super(knownElements, webview, driver);
+    }
+
+    @Override
+    protected AndroidElement lookupElement(String strategy, String locator) {
+      JsonElement result =
+          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator, id);
+      return replyElement(result);
+    }
+
+    @Override
+    protected List<AndroidElement> lookupElements(String strategy, String locator) {
+      JsonElement result =
+          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator, id);
+
+      return replyElements(result);
+    }
+  }
+
+  public AndroidWebElement(String id, WebView webview, SelendroidWebDriver driver,
+      KnownElements knownElements) {
     this.id = id;
     this.webview = webview;
     this.driver = driver;
+    this.elementContext = new ElementSearchContext(knownElements, webview, driver);
   }
 
   @Override
@@ -76,13 +83,12 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   @Override
-  public AndroidElement findElement(By c) throws NoSuchElementException {
-    throw new UnsupportedOperationException();
+  public AndroidElement findElement(By by) throws NoSuchElementException {
+    return by.findElement(elementContext);
   }
 
-  @Override
-  public <T> T findElement(Class<T> type, By c) throws NoSuchElementException {
-    throw new UnsupportedOperationException();
+  public List<AndroidElement> findElements(By by) throws NoSuchElementException {
+    return by.findElements(elementContext);
   }
 
   @Override
@@ -251,4 +257,25 @@ public class AndroidWebElement implements AndroidElement {
   public String getId() {
     return id;
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    AndroidWebElement other = (AndroidWebElement) obj;
+    if (id == null) {
+      if (other.id != null) return false;
+    } else if (!id.equals(other.id)) return false;
+    return true;
+  }
+
 }

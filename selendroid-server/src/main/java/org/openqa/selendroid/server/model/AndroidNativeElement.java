@@ -15,6 +15,7 @@ package org.openqa.selendroid.server.model;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.openqa.selendroid.ServerInstrumentation;
@@ -183,14 +184,12 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public AndroidElement findElement(By c) throws NoSuchElementException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
-  public <T> T findElement(Class<T> type, By c) throws NoSuchElementException {
-    // TODO Auto-generated method stub
-    return null;
+  public List<AndroidElement> findElements(By by) throws NoSuchElementException {
+    throw new UnsupportedOperationException();
   }
 
   @Override

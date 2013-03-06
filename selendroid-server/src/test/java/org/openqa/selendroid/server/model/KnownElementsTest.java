@@ -22,7 +22,7 @@ public class KnownElementsTest {
   @Test
   public void testAddWebElement() {
     KnownElements ke = new KnownElements();
-    Long id = ke.add(createWebElement(":wdc:1234"));
+    Long id = ke.add(createWebElement(":wdc:1234", ke));
     Assert.assertEquals(new Long(1), id);
   }
 
@@ -38,7 +38,7 @@ public class KnownElementsTest {
   @Test
   public void testGetIdOfWebElement() {
     KnownElements ke = new KnownElements();
-    AndroidElement element = createWebElement(":wdc:1234");
+    AndroidElement element = createWebElement(":wdc:1234", ke);
     Long id = ke.add(element);
 
     Assert.assertEquals(id, ke.getIdOfElement(element));
@@ -49,13 +49,13 @@ public class KnownElementsTest {
     KnownElements ke = new KnownElements();
     AndroidElement nativeElement = createNativeElement();
     Long nativeId = ke.add(nativeElement);
-    AndroidElement element = createWebElement(":wdc:1234");
+    AndroidElement element = createWebElement(":wdc:1234", ke);
     Long id = ke.add(element);
-    ke.add(createWebElement(":wdc:1235"));
-    ke.add(createWebElement(":wdc:1236"));
+    ke.add(createWebElement(":wdc:1235", ke));
+    ke.add(createWebElement(":wdc:1236", ke));
     ke.add(createNativeElement());
-    ke.add(createWebElement(":wdc:1237"));
-    ke.add(createWebElement(":wdc:1238"));
+    ke.add(createWebElement(":wdc:1237", ke));
+    ke.add(createWebElement(":wdc:1238", ke));
     Assert.assertEquals(nativeId, ke.getIdOfElement(nativeElement));
     Assert.assertEquals(id, ke.getIdOfElement(element));
 
@@ -74,9 +74,9 @@ public class KnownElementsTest {
   @Test
   public void testGetIdOfWebElementAddedTwice() {
     KnownElements ke = new KnownElements();
-    AndroidElement element = createWebElement(":wdc:1234");
+    AndroidElement element = createWebElement(":wdc:1234", ke);
     Long id = ke.add(element);
-    ke.add(createWebElement(":wdc:1234"));
+    ke.add(createWebElement(":wdc:1234", ke));
 
     Assert.assertEquals(id, ke.getIdOfElement(element));
   }
@@ -98,10 +98,10 @@ public class KnownElementsTest {
     return new AndroidNativeElement(view, instrumentation);
   }
 
-  private AndroidElement createWebElement(String id) {
+  private AndroidElement createWebElement(String id, KnownElements ke) {
     WebView view = mock(WebView.class);
     SelendroidWebDriver driver = mock(SelendroidWebDriver.class);
 
-    return new AndroidWebElement(id, view, driver);
+    return new AndroidWebElement(id, view, driver, ke);
   }
 }

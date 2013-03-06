@@ -14,6 +14,7 @@
 package org.openqa.selendroid.server.model;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.openqa.selendroid.android.internal.Point;
@@ -23,9 +24,9 @@ public interface AndroidElement {
 
   public Collection<AndroidElement> getChildren();
 
-  public AndroidElement findElement(By c) throws NoSuchElementException;
+  public AndroidElement findElement(By by) throws NoSuchElementException;
 
-  public <T> T findElement(Class<T> type, By c) throws NoSuchElementException;
+  public List<AndroidElement> findElements(By by) throws NoSuchElementException;
 
   public void enterText(CharSequence text);
 
@@ -38,6 +39,6 @@ public interface AndroidElement {
   public boolean isSelected();
 
   public void clear();
-  
+
   public Point getLocation();
 }

@@ -19,6 +19,8 @@ import org.openqa.selendroid.server.handler.ClearElement;
 import org.openqa.selendroid.server.handler.ClickElement;
 import org.openqa.selendroid.server.handler.DeleteSession;
 import org.openqa.selendroid.server.handler.ElementLocation;
+import org.openqa.selendroid.server.handler.FindChildElement;
+import org.openqa.selendroid.server.handler.FindChildElements;
 import org.openqa.selendroid.server.handler.FindElement;
 import org.openqa.selendroid.server.handler.FindElements;
 import org.openqa.selendroid.server.handler.GetCapabilities;
@@ -31,7 +33,6 @@ import org.openqa.selendroid.server.handler.LogElement;
 import org.openqa.selendroid.server.handler.LogElementTree;
 import org.openqa.selendroid.server.handler.NewSession;
 import org.openqa.selendroid.server.handler.OpenUrl;
-import org.openqa.selendroid.server.handler.ScrollGesture;
 import org.openqa.selendroid.server.handler.SendKeyToActiveElement;
 import org.openqa.selendroid.server.handler.SendKeys;
 import org.openqa.selendroid.server.handler.SetImplicitWaitTimeout;
@@ -72,6 +73,8 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
 
     getHandler.put("/wd/hub/session/:sessionId/screenshot", CaptureScreenshot.class);
     postHandler.put("/wd/hub/session/:sessionId/element", FindElement.class);
+    postHandler.put("/wd/hub/session/:sessionId/element/:id/element", FindChildElement.class);
+    postHandler.put("/wd/hub/session/:sessionId/element/:id/elements", FindChildElements.class);
     postHandler.put("/wd/hub/session/:sessionId/elements", FindElements.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/click", ClickElement.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/text", GetText.class);
