@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
+import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
@@ -40,7 +41,12 @@ public class FindElements extends RequestHandler {
         selector));
 
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
-    List<AndroidElement> elements = getAndroidDriver().findElements(by);
+    List<AndroidElement> elements = null;
+    try {
+      elements = getAndroidDriver().findElements(by);
+    } catch (NoSuchElementException e) {
+      return new Response(getSessionId(), 7, e);
+    }
     JsonArray result = new JsonArray();
     for (AndroidElement element : elements) {
       JsonObject jsonElement = new JsonObject();

@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
+import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.AndroidNativeElement;
@@ -32,11 +33,11 @@ import org.openqa.selendroid.server.model.KnownElements;
 import org.openqa.selendroid.server.model.SearchContext;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -160,6 +161,9 @@ public abstract class AbstractNativeElementContext
         list.add(newAndroidElement(view));
       }
     }
+    if (list.isEmpty()) {
+      throw new NoSuchElementException("No elements were found.");
+    }
     return list;
   }
 
@@ -225,9 +229,11 @@ public abstract class AbstractNativeElementContext
     int resourceId =
         currentActivity.getResources().getIdentifier(l10nKey, "string",
             currentActivity.getPackageName());
-
-    String localizedString = currentActivity.getResources().getString(resourceId);
-    return localizedString;
+    try {
+      return currentActivity.getResources().getString(resourceId);
+    } catch (Resources.NotFoundException e) {
+      throw new NoSuchElementException("The l10n key '" + l10nKey + "' was not found.");
+    }
   }
 
   @Override
@@ -264,7 +270,7 @@ public abstract class AbstractNativeElementContext
     try {
       viewClass = Class.forName(using);
     } catch (ClassNotFoundException e) {
-      throw new SelendroidException("The view class '" + using + "' was not found.", e);
+      throw new NoSuchElementException("The view class '" + using + "' was not found.");
     }
     return filterAndTransformElements(currentViews, Predicates.instanceOf(viewClass));
   }
@@ -280,7 +286,13 @@ public abstract class AbstractNativeElementContext
               }
             }).toImmutableList();
 
+    if (filtered.isEmpty()) {
+      throw new NoSuchElementException("No elements were found.");
+    }
+
     return filtered;
+
+
   }
 
   protected abstract View getRootView();

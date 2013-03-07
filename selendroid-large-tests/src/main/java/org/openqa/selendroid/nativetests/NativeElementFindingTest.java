@@ -18,7 +18,6 @@ import static org.openqa.selendroid.webviewdrivertests.waiter.TestWaiter.waitFor
 import java.util.List;
 
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
-import org.openqa.selendroid.webviewdrivertests.HtmlTestData;
 import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -169,10 +168,10 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindButtonsIdentifiedByL10nKey() throws Exception {
     openStartActivity();
-    String buttonText = "Show Progress Bar for a while";
+    String buttonText = "EN Button";
     List<WebElement> elements = driver.findElements(By.tagName("button"));
-    Assert.assertEquals(elements.size(), 2);
-    Assert.assertEquals(elements.get(1).getText(), buttonText);
+    Assert.assertEquals(elements.size(), 1);
+    Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
 
   @Test()
@@ -200,8 +199,8 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindButtonIdentifiedByContentDescription() throws Exception {
     openStartActivity();
-    String buttonText = "EN Button";
-    WebElement clickMe = driver.findElement(By.name("button"));
+    String buttonText = "Show Progress Bar for a while";
+    WebElement clickMe = driver.findElement(By.name("waitingButtonTestCD"));
     Assert.assertEquals(clickMe.getText(), buttonText);
   }
 
@@ -209,9 +208,9 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindButtonsIdentifiedContentDescription() throws Exception {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
-    List<WebElement> elements = driver.findElements(By.name("button"));
-    Assert.assertEquals(elements.size(), 2);
-    Assert.assertEquals(elements.get(1).getText(), buttonText);
+    List<WebElement> elements = driver.findElements(By.name("waitingButtonTestCD"));
+    Assert.assertEquals(elements.size(), 1);
+    Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
 
   @Test()
