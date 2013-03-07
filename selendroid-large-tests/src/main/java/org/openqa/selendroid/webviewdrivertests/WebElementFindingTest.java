@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
  * 
  * @author ddary
  */
-public class ElementFindingTest extends BaseAndroidTest {
+public class WebElementFindingTest extends BaseAndroidTest {
   public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp." + "WebViewActivity";
 
   private void openWebdriverTestPage(String page) {

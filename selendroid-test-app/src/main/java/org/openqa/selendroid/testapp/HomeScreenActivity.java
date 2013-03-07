@@ -81,6 +81,7 @@ public class HomeScreenActivity extends Activity {
         builder.setNegativeButton("No, no", new CancelOnClickListener());
         AlertDialog dialog = builder.create();
         dialog.show();
+        return dialog;
       case DIALOG_DOWNLOAD_PROGRESS:
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Waiting Dialog");

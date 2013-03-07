@@ -18,10 +18,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.android.AndroidKeys;
 import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
-import org.openqa.selendroid.server.model.internal.AbstractWebviewSearchScope;
+import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.server.webview.EventSender;
 
@@ -42,7 +41,7 @@ public class AndroidWebElement implements AndroidElement {
   private SearchContext elementContext = null;
 
 
-  private class ElementSearchContext extends AbstractWebviewSearchScope {
+  private class ElementSearchContext extends AbstractWebElementContext {
     public ElementSearchContext(KnownElements knownElements, WebView webview,
         SelendroidWebDriver driver) {
       super(knownElements, webview, driver);
@@ -120,15 +119,6 @@ public class AndroidWebElement implements AndroidElement {
     // }
     // });
 
-  }
-
-  private static int indexOfSpecialKey(CharSequence string, int startIndex) {
-    for (int i = startIndex; i < string.length(); i++) {
-      if (AndroidKeys.hasAndroidKeyEvent(string.charAt(i))) {
-        return i;
-      }
-    }
-    return string.length();
   }
 
   public boolean isEnabled() {

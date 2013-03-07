@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 selendroid committers.
+ * Copyright 2007-2009 Selenium committers
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -11,14 +11,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package org.openqa.selendroid.server.model.internal;
 
 import java.util.List;
 
 import org.openqa.selendroid.server.model.AndroidElement;
 
-public interface FindsByL10n {
-  AndroidElement findElementByL10n(String using);
+public interface FindsByName {
+  AndroidElement findElementByName(String using);
 
-  List<AndroidElement> findElementsByL10n(String using);
+  List<AndroidElement> findElementsByName(String using);
 }

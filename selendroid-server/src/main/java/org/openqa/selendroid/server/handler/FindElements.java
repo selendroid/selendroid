@@ -19,6 +19,7 @@ import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
+import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
 import org.webbitserver.HttpRequest;
 
 import com.google.gson.JsonArray;
@@ -26,8 +27,8 @@ import com.google.gson.JsonObject;
 
 public class FindElements extends RequestHandler {
 
-  public FindElements(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public FindElements(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
@@ -38,7 +39,7 @@ public class FindElements extends RequestHandler {
     System.out.println(String.format("find element command using %s with selector %s.", method,
         selector));
 
-    By by = new NativeAndroidBySelector().pickFrom(method, selector, getCurrentWindowType());
+    By by = new NativeAndroidBySelector().pickFrom(method, selector);
     List<AndroidElement> elements = getAndroidDriver().findElements(by);
     JsonArray result = new JsonArray();
     for (AndroidElement element : elements) {

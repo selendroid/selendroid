@@ -11,49 +11,51 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.model;
+package org.openqa.selendroid.server.model.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.model.AndroidElement;
+import org.openqa.selendroid.server.model.AndroidNativeElement;
+import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.By.ByClass;
 import org.openqa.selendroid.server.model.By.ById;
-import org.openqa.selendroid.server.model.By.ByL10nElement;
 import org.openqa.selendroid.server.model.By.ByLinkText;
-import org.openqa.selendroid.server.model.internal.FindsByClass;
-import org.openqa.selendroid.server.model.internal.FindsById;
-import org.openqa.selendroid.server.model.internal.FindsByL10n;
-import org.openqa.selendroid.server.model.internal.FindsByText;
+import org.openqa.selendroid.server.model.By.ByName;
+import org.openqa.selendroid.server.model.By.ByTagName;
+import org.openqa.selendroid.server.model.KnownElements;
+import org.openqa.selendroid.server.model.SearchContext;
 
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
 
-public class NativeSearchScope
+public abstract class AbstractNativeElementContext
     implements
       SearchContext,
-      FindsByL10n,
+      FindsByTagName,
+      FindsByName,
       FindsById,
       FindsByText,
       FindsByClass {
-  private ServerInstrumentation instrumentation;
-  private KnownElements knownElements;
-  private ViewHierarchyAnalyzer viewAnalyzer;
+  protected ServerInstrumentation instrumentation;
+  protected KnownElements knownElements;
+  protected ViewHierarchyAnalyzer viewAnalyzer;
 
-  public NativeSearchScope(ServerInstrumentation instrumentation, KnownElements knownElements) {
+  public AbstractNativeElementContext(ServerInstrumentation instrumentation,
+      KnownElements knownElements) {
     this.instrumentation = instrumentation;
     this.knownElements = knownElements;
     this.viewAnalyzer = ViewHierarchyAnalyzer.getDefaultInstance();
@@ -63,7 +65,7 @@ public class NativeSearchScope
     if (knownElements.hasElement(new Long(view.getId()))) {
       return (AndroidNativeElement) knownElements.get(new Long(view.getId()));
     } else {
-      AndroidNativeElement e = new AndroidNativeElement(view, instrumentation);
+      AndroidNativeElement e = new AndroidNativeElement(view, instrumentation, knownElements);
       knownElements.add(e);
       return e;
     }
@@ -100,12 +102,14 @@ public class NativeSearchScope
   public List<AndroidElement> findElements(By by) {
     if (by instanceof ById) {
       return findElementsById(by.getElementLocator());
-    } else if (by instanceof ByL10nElement) {
-      return findElementsByL10n(by.getElementLocator());
+    } else if (by instanceof ByTagName) {
+      return findElementsByTagName(by.getElementLocator());
     } else if (by instanceof ByLinkText) {
       return findElementsByText(by.getElementLocator());
     } else if (by instanceof ByClass) {
       return findElementsByClass(by.getElementLocator());
+    } else if (by instanceof ByName) {
+      return findElementsByName(by.getElementLocator());
     }
 
     throw new SelendroidException(String.format("By locator %s is curently not supported!", by
@@ -116,12 +120,14 @@ public class NativeSearchScope
   public AndroidElement findElement(By by) {
     if (by instanceof ById) {
       return findElementById(by.getElementLocator());
-    } else if (by instanceof ByL10nElement) {
-      return findElementByL10n(by.getElementLocator());
+    } else if (by instanceof ByTagName) {
+      return findElementByTagName(by.getElementLocator());
     } else if (by instanceof ByLinkText) {
       return findElementByText(by.getElementLocator());
     } else if (by instanceof ByClass) {
       return findElementByClass(by.getElementLocator());
+    } else if (by instanceof ByName) {
+      return findElementByName(by.getElementLocator());
     }
     throw new SelendroidException(String.format("By locator %s is curently not supported!", by
         .getClass().getSimpleName()));
@@ -148,9 +154,9 @@ public class NativeSearchScope
   @Override
   public List<AndroidElement> findElementsById(String using) {
     List<AndroidElement> list = new ArrayList<AndroidElement>();
-    for (View view : viewAnalyzer.getViews()) {
-      String id = viewAnalyzer.getNativeId(view);
-      if (id.endsWith(":id/" + using)) {
+    for (View view : viewAnalyzer.getViews(getRootView())) {
+      String id = ViewHierarchyAnalyzer.getNativeId(view);
+      if (id.endsWith("id/" + using)) {
         list.add(newAndroidElement(view));
       }
     }
@@ -158,13 +164,58 @@ public class NativeSearchScope
   }
 
   @Override
-  public AndroidElement findElementByL10n(String using) {
+  public AndroidElement findElementByName(String using) {
+    List<AndroidElement> list = findElementsByName(using);
+
+    if (list != null && !list.isEmpty()) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public List<AndroidElement> findElementsByName(String using) {
+    Collection<View> currentViews = viewAnalyzer.getViews(getRootView());
+    Predicate<View> predicate = new ViewContentDescriptionPredicate(using);
+    return filterAndTransformElements(currentViews, predicate);
+  }
+
+  class ViewContentDescriptionPredicate implements Predicate<View> {
+    private String contenDescription = null;
+
+    ViewContentDescriptionPredicate(String contenDescription) {
+      this.contenDescription = contenDescription;
+    }
+
+    public boolean apply(View view) {
+      return contenDescription.equals(view.getContentDescription());
+    }
+  }
+
+  class ViewTextPredicate implements Predicate<View> {
+    private String text = null;
+
+    ViewTextPredicate(String text) {
+      this.text = text;
+    }
+
+    public boolean apply(View view) {
+      if (view instanceof TextView) {
+        return (text.equals(((TextView) view).getText()));
+      }
+      return false;
+    }
+  }
+
+
+  @Override
+  public AndroidElement findElementByTagName(String using) {
     String localizedString = getLocalizedString(using);
     return findElementByText(localizedString);
   }
 
   @Override
-  public List<AndroidElement> findElementsByL10n(String using) {
+  public List<AndroidElement> findElementsByTagName(String using) {
     String localizedString = getLocalizedString(using);
     return findElementsByText(localizedString);
   }
@@ -191,23 +242,14 @@ public class NativeSearchScope
 
   @Override
   public List<AndroidElement> findElementsByText(String using) {
-    List<AndroidElement> list = new ArrayList<AndroidElement>();
-    Collection<View> currentViews = viewAnalyzer.getViews();
-    if (!currentViews.isEmpty()) {
-      for (View view : viewAnalyzer.getViews()) {
-        if (view instanceof TextView) {
-          if (using.equals(((TextView) view).getText())) {
-            list.add(newAndroidElement(view));
-          }
-        }
-      }
-    }
-    return list;
+    Collection<View> currentViews = viewAnalyzer.getViews(getRootView());
+    Predicate<View> predicate = new ViewTextPredicate(using);
+    return filterAndTransformElements(currentViews, predicate);
   }
 
   @Override
   public AndroidElement findElementByClass(String using) {
-    List<AndroidElement> list = findElementsByText(using);
+    List<AndroidElement> list = findElementsByClass(using);
 
     if (list != null && !list.isEmpty()) {
       return list.get(0);
@@ -217,18 +259,20 @@ public class NativeSearchScope
 
   @Override
   public List<AndroidElement> findElementsByClass(String using) {
-    Collection<View> currentViews = viewAnalyzer.getViews();
+    Collection<View> currentViews = viewAnalyzer.getViews(getRootView());
     Class viewClass = null;
     try {
       viewClass = Class.forName(using);
     } catch (ClassNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
       throw new SelendroidException("The view class '" + using + "' was not found.", e);
     }
+    return filterAndTransformElements(currentViews, Predicates.instanceOf(viewClass));
+  }
 
+  private List<AndroidElement> filterAndTransformElements(Collection<View> currentViews,
+      Predicate predicate) {
     final List<AndroidElement> filtered =
-        FluentIterable.from(currentViews).filter(Predicates.instanceOf(viewClass))
+        FluentIterable.from(currentViews).filter(predicate)
             .transform(new Function<View, AndroidElement>() {
               @Override
               public AndroidNativeElement apply(final View view) {
@@ -238,4 +282,6 @@ public class NativeSearchScope
 
     return filtered;
   }
+
+  protected abstract View getRootView();
 }

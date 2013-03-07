@@ -25,6 +25,7 @@ import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.TimeoutException;
+import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
 
 import android.graphics.Rect;
 import android.os.SystemClock;
@@ -68,10 +69,12 @@ public class AndroidNativeElement implements AndroidElement {
   private Collection<AndroidElement> children = new LinkedHashSet<AndroidElement>();
   private AndroidElement parent;
   private ServerInstrumentation instrumentation;
+  private SearchContext nativeElementSearchScope = null;
 
-  public AndroidNativeElement(View view, ServerInstrumentation instrumentation) {
+  public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KnownElements ke) {
     this.view = view;
     this.instrumentation = instrumentation;
+    this.nativeElementSearchScope = new NativeElementSearchScope(instrumentation, ke);
   }
 
   @Override
@@ -183,13 +186,13 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   @Override
-  public AndroidElement findElement(By c) throws NoSuchElementException {
-    throw new UnsupportedOperationException();
+  public AndroidElement findElement(By by) throws NoSuchElementException {
+    return by.findElement(nativeElementSearchScope);
   }
 
   @Override
   public List<AndroidElement> findElements(By by) throws NoSuchElementException {
-    throw new UnsupportedOperationException();
+    return by.findElements(nativeElementSearchScope);
   }
 
   @Override
@@ -328,5 +331,17 @@ public class AndroidNativeElement implements AndroidElement {
     int[] xy = new int[2];
     view.getLocationOnScreen(xy);
     return new Point(xy[0], xy[1]);
+  }
+
+  private class NativeElementSearchScope extends AbstractNativeElementContext {
+    public NativeElementSearchScope(ServerInstrumentation instrumentation,
+        KnownElements knownElements) {
+      super(instrumentation, knownElements);
+    }
+
+    @Override
+    protected View getRootView() {
+      return view;
+    }
   }
 }

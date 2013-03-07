@@ -18,6 +18,7 @@ import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
+import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -38,7 +39,7 @@ public class FindChildElement extends RequestHandler {
         method, selector));
     AndroidElement root = getElementFromCache(getElementId());
 
-    By by = new NativeAndroidBySelector().pickFrom(method, selector, getCurrentWindowType());
+    By by = new NativeAndroidBySelector().pickFrom(method, selector);
     AndroidElement element = null;
     try {
       element = root.findElement(by);

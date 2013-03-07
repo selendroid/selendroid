@@ -36,7 +36,10 @@ A sample test looks like:
 		takeScreenShot("User data entered.");
 		driver.findElement(By.id("btnRegisterUser")).click();
 
-More details about selendroid can be found in the [wiki](https://github.com/DominikDary/selendroid/wiki/).
+You want more details?
+----------------------
+
+Check out our [wiki](https://github.com/DominikDary/selendroid/wiki/).
 
 Current state
 -------------

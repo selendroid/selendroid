@@ -19,6 +19,7 @@ import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
+import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
 import org.webbitserver.HttpRequest;
 
 import com.google.gson.JsonArray;
@@ -39,7 +40,7 @@ public class FindChildElements extends RequestHandler {
         selector));
     AndroidElement root = getElementFromCache(getElementId());
 
-    By by = new NativeAndroidBySelector().pickFrom(method, selector, getCurrentWindowType());
+    By by = new NativeAndroidBySelector().pickFrom(method, selector);
     List<AndroidElement> elements = root.findElements(by);
     JsonArray result = new JsonArray();
     for (AndroidElement element : elements) {

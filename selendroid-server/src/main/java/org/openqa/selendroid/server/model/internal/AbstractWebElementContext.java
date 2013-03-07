@@ -22,7 +22,7 @@ import org.openqa.selendroid.server.model.AndroidWebElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.By.ByClass;
 import org.openqa.selendroid.server.model.By.ById;
-import org.openqa.selendroid.server.model.By.ByL10nElement;
+import org.openqa.selendroid.server.model.By.ByTagName;
 import org.openqa.selendroid.server.model.By.ByLinkText;
 import org.openqa.selendroid.server.model.By.ByXPath;
 import org.openqa.selendroid.server.model.KnownElements;
@@ -36,10 +36,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
-public abstract class AbstractWebviewSearchScope
+public abstract class AbstractWebElementContext
     implements
       SearchContext,
-      FindsByL10n,
+      FindsByTagName,
+      FindsByName,
       FindsById,
       FindsByText,
       FindsByClass {
@@ -56,7 +57,7 @@ public abstract class AbstractWebviewSearchScope
   protected volatile WebView view;
   protected SelendroidWebDriver driver = null;
 
-  public AbstractWebviewSearchScope(KnownElements knownElements, WebView webview,
+  public AbstractWebElementContext(KnownElements knownElements, WebView webview,
       SelendroidWebDriver driver) {
     if (knownElements == null) {
       throw new IllegalArgumentException("knowElements instance is null");
@@ -107,14 +108,16 @@ public abstract class AbstractWebviewSearchScope
   public List<AndroidElement> findElements(By by) {
     if (by instanceof ById) {
       return findElementsById(by.getElementLocator());
-    } else if (by instanceof ByL10nElement) {
-      return findElementsByL10n(by.getElementLocator());
+    } else if (by instanceof ByTagName) {
+      return findElementsByTagName(by.getElementLocator());
     } else if (by instanceof ByLinkText) {
       return findElementsByText(by.getElementLocator());
     } else if (by instanceof ByXPath) {
       return findElementsByXPath(by.getElementLocator());
     } else if (by instanceof ByClass) {
       return findElementsByClass(by.getElementLocator());
+    }else if (by instanceof By.ByName) {
+      return findElementsByName(by.getElementLocator());
     }
     throw new SelendroidException(String.format("By locator %s is curently not supported!", by
         .getClass().getSimpleName()));
@@ -148,15 +151,13 @@ public abstract class AbstractWebviewSearchScope
   }
 
   @Override
-  public AndroidElement findElementByL10n(String using) {
-    throw new UnsupportedOperationException(
-        "finding elements by l10n locator is not supported in webviews.");
+  public AndroidElement findElementByTagName(String using) {
+    return lookupElement(LOCATOR_TAG_NAME, using);
   }
 
   @Override
-  public List<AndroidElement> findElementsByL10n(String using) {
-    throw new UnsupportedOperationException(
-        "finding elements by l10n locator is not supported in webviews.");
+  public List<AndroidElement> findElementsByTagName(String using) {
+    return lookupElements(LOCATOR_TAG_NAME, using);
   }
 
   @Override

@@ -25,6 +25,9 @@ import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
+import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
+import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.util.SelendroidLogger;
 
 import android.app.Activity;
@@ -36,7 +39,9 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.view.Display;
 import android.view.View;
+import android.webkit.WebView;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public abstract class AbstractSelendroidDriver implements SelendroidDriver {
@@ -286,5 +291,38 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   @Override
   public TouchScreen getTouch() {
     return null;
+  }
+
+  public class WebviewSearchScope extends AbstractWebElementContext {
+    public WebviewSearchScope(KnownElements knownElements, WebView webview,
+        SelendroidWebDriver driver) {
+      super(knownElements, webview, driver);
+    }
+
+    @Override
+    protected AndroidElement lookupElement(String strategy, String locator) {
+      JsonElement result =
+          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator);
+      return replyElement(result);
+    }
+
+    @Override
+    protected List<AndroidElement> lookupElements(String strategy, String locator) {
+      JsonElement result =
+          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator);
+
+      return replyElements(result);
+    }
+  }
+
+  public class NativeSearchScope extends AbstractNativeElementContext {
+    public NativeSearchScope(ServerInstrumentation instrumentation, KnownElements knownElements) {
+      super(instrumentation, knownElements);
+    }
+
+    @Override
+    protected View getRootView() {
+      return viewAnalyzer.getRecentDecorView();
+    }
   }
 }

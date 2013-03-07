@@ -11,10 +11,9 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.handler;
+package org.openqa.selendroid.server.model.internal;
 
 
-import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.util.SelendroidLogger;
@@ -26,20 +25,20 @@ public class NativeAndroidBySelector {
   public static final String SELECTOR_TEXT = "link text";
   public static final String SELECTOR_XPATH = "xpath";
   public static final String SELECTOR_NAME = "name";
-  public static final String SELECTOR_CLASS="class name";
+  public static final String SELECTOR_CLASS = "class name";
 
-  public By pickFrom(String method, String selector, WindowType type) {
+  public By pickFrom(String method, String selector) {
     if (SELECTOR_NATIVE_ID.equals(method)) {
       return By.id(selector);
     } else if (SELECTOR_L10N.equals(method)) {
-      return By.l10n(selector);
+      return By.tagName(selector);
     } else if (SELECTOR_NAME.equals(method)) {
       return By.name(selector);
     } else if (SELECTOR_TEXT.equals(method)) {
       return By.linkText(selector);
     } else if (SELECTOR_XPATH.equals(method)) {
       return By.xpath(selector);
-    }else if (SELECTOR_CLASS.equals(method)) {
+    } else if (SELECTOR_CLASS.equals(method)) {
       return By.className(selector);
     }
 

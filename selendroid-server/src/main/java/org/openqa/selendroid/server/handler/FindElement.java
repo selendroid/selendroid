@@ -18,6 +18,7 @@ import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
+import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -25,8 +26,8 @@ import com.google.gson.JsonObject;
 
 public class FindElement extends RequestHandler {
 
-  public FindElement(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public FindElement(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
@@ -38,7 +39,7 @@ public class FindElement extends RequestHandler {
         method, selector));
 
 
-    By by = new NativeAndroidBySelector().pickFrom(method, selector, getCurrentWindowType());
+    By by = new NativeAndroidBySelector().pickFrom(method, selector);
     AndroidElement element = null;
     try {
       element = getAndroidDriver().findElement(by);

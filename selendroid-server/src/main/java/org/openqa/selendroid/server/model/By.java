@@ -15,7 +15,7 @@ package org.openqa.selendroid.server.model;
 
 import java.util.List;
 
-import org.openqa.selendroid.server.model.internal.FindsByL10n;
+import org.openqa.selendroid.server.model.internal.FindsByTagName;
 
 /**
  * Mechanism used to locate elements within a document. In order to create your own locating
@@ -112,31 +112,31 @@ public abstract class By {
     }
   }
 
-  public static class ByL10nElement extends By {
-    private final String l10nKey;
+  public static class ByTagName extends By {
+    private final String tagName;
 
-    public ByL10nElement(String l10nKey) {
-      this.l10nKey = l10nKey;
+    public ByTagName(String tagName) {
+      this.tagName = tagName;
     }
 
     @Override
     public AndroidElement findElement(SearchContext context) {
-      return ((FindsByL10n) context).findElementByL10n(l10nKey);
+      return ((FindsByTagName) context).findElementByTagName(tagName);
     }
 
     @Override
     public List<AndroidElement> findElements(SearchContext context) {
-      return ((FindsByL10n) context).findElementsByL10n((l10nKey));
+      return ((FindsByTagName) context).findElementsByTagName((tagName));
     }
 
     @Override
     public String getElementLocator() {
-      return l10nKey;
+      return tagName;
     }
 
     @Override
     public String toString() {
-      return "By.l10nKey: " + l10nKey;
+      return "By.tagName: " + tagName;
     }
   }
 
@@ -230,11 +230,11 @@ public abstract class By {
     return new ById(id);
   }
 
-  public static By l10n(final String l10nKey) {
-    if (l10nKey == null)
-      throw new IllegalArgumentException("Cannot find elements when l10n key is null.");
+  public static By tagName(final String tagName) {
+    if (tagName == null)
+      throw new IllegalArgumentException("Cannot find elements when tag name is null.");
 
-    return new ByL10nElement(l10nKey);
+    return new ByTagName(tagName);
   }
 
   public static By linkText(final String text) {

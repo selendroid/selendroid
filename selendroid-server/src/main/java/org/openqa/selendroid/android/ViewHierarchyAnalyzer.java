@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
 
 import android.content.res.Resources;
 import android.view.View;
@@ -31,6 +32,7 @@ import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.ScrollView;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
@@ -116,8 +118,8 @@ public class ViewHierarchyAnalyzer {
     }
   }
 
-  public Collection<View> getViews() {
-    View rootView = getRecentDecorView();
+  public Collection<View> getViews(View rootView) {
+    Preconditions.checkNotNull(rootView);
     final List<View> views = new ArrayList<View>();
     addAllChilren((ViewGroup) rootView, views);
 
@@ -125,7 +127,7 @@ public class ViewHierarchyAnalyzer {
   }
 
   private void addAllChilren(ViewGroup viewGroup, List<View> list) {
-    if (viewGroup.getChildCount() == 0) {
+    if (viewGroup == null || viewGroup.getChildCount() == 0) {
       return;
     }
     for (int i = 0; i < viewGroup.getChildCount(); i++) {
@@ -154,8 +156,8 @@ public class ViewHierarchyAnalyzer {
 
   public WebView findWebView() {
     final List<View> webViews =
-        FluentIterable.from(getViews()).filter(Predicates.instanceOf(WebView.class))
-            .toImmutableList();
+        FluentIterable.from(getViews(getRecentDecorView()))
+            .filter(Predicates.instanceOf(WebView.class)).toImmutableList();
 
     if (webViews.isEmpty()) {
       return null;
@@ -164,7 +166,7 @@ public class ViewHierarchyAnalyzer {
   }
 
   public List<View> findScrollableContainer() {
-    Collection<View> allViews = getViews();
+    Collection<View> allViews = getViews(getRecentDecorView());
     List<View> container = new ArrayList<View>();
     List<View> listview =
         FluentIterable.from(allViews).filter(Predicates.instanceOf(AbsListView.class))
