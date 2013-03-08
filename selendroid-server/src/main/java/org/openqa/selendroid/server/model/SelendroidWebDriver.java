@@ -49,8 +49,7 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   private volatile boolean editAreaHasFocus;
 
   public SelendroidWebDriver(Session session, ServerInstrumentation instrumentation) {
-    super(instrumentation);
-    super.session = session;
+    super(instrumentation, session);
     init();
   }
 

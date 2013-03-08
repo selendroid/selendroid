@@ -24,6 +24,7 @@ import org.openqa.selendroid.android.KeySender;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.Session;
+import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
 import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
@@ -57,6 +58,12 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
 
   public AbstractSelendroidDriver(ServerInstrumentation instrumentation) {
     serverInstrumentation = instrumentation;
+    keySender = new KeySender(serverInstrumentation);
+  }
+
+  protected AbstractSelendroidDriver(ServerInstrumentation instrumentation, Session session) {
+    serverInstrumentation = instrumentation;
+    this.session = session;
     keySender = new KeySender(serverInstrumentation);
   }
 
@@ -310,8 +317,11 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
     protected List<AndroidElement> lookupElements(String strategy, String locator) {
       JsonElement result =
           (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator);
-
-      return replyElements(result);
+      List<AndroidElement> elements = replyElements(result);
+      if (elements == null || elements.isEmpty()) {
+        throw new NoSuchElementException("The element was not found.");
+      }
+      return elements;
     }
   }
 

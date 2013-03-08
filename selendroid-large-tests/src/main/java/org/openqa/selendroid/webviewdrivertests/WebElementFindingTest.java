@@ -49,7 +49,7 @@ public class WebElementFindingTest extends BaseAndroidTest {
 
 
   @Test()
-  public void testShouldNotBeAbleToLocateASingleElementThatDoesNotExist() {
+  public void testShouldNotBeAbleToLocateASingleElementByIdThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
     try {
@@ -61,6 +61,141 @@ public class WebElementFindingTest extends BaseAndroidTest {
   }
 
   @Test
+  public void testShouldNotBeAbleToLocateASingleElementByXPathThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElement(By.xpath("//*[@id='notThere']"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToLocateASingleElementByTagNameThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElement(By.tagName("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToLocateASingleElementByClassThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElement(By.className("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToLocateASingleElementByNameThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElement(By.name("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToLocateASingleElementByTextThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElement(By.linkText("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateMultipleElementsByIdThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElements(By.id("nonExistantButton"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToLocateMultipleElementsByXPathThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElements(By.xpath("//*[@id='notThere']"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToLocateAMultipleElementsByTagNameThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElements(By.tagName("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToLocateMultipleElementsByClassThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElements(By.className("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToLocateMultipleElementsByNameThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElements(By.name("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToLocateMultipleElementsByTextThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElements(By.linkText("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+  
+  /** #################### old ################### */
+  
+  
+  @Test(enabled=false)
   public void testShouldBeAbleToClickOnLinkIdentifiedByText() throws Exception {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     WebElement clickMe = driver.findElement(By.linkText("click me"));
@@ -70,7 +205,8 @@ public class WebElementFindingTest extends BaseAndroidTest {
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
 
-  @Test
+
+  @Test(enabled=false)
   public void testshouldBeAbleToClickOnLinkIdentifiedById() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     driver.findElement(By.id("linkId")).click();
@@ -78,7 +214,7 @@ public class WebElementFindingTest extends BaseAndroidTest {
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
 
-  @Test
+  @Test(enabled=false)
   public void testShouldThrowAnExceptionWhenThereIsNoLinkToClickAndItIsFoundWithLinkText() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
 
@@ -90,24 +226,12 @@ public class WebElementFindingTest extends BaseAndroidTest {
     }
   }
 
-  @Test
+  @Test(enabled=false)
   public void testShouldfindAnElementBasedOnId() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);
 
     WebElement element = driver.findElement(By.id("checky"));
     Assert.assertEquals(element.isSelected(), false);
-  }
-
-  @Test
-  public void testShouldNotBeAbleTofindElementsBasedOnIdIfTheElementIsNotThere() {
-    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
-
-    try {
-      driver.findElement(By.id("notThere"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
   }
 }

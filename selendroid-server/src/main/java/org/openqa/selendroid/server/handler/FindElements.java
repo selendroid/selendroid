@@ -37,7 +37,7 @@ public class FindElements extends RequestHandler {
     JsonObject payload = getPayload();
     String method = payload.get("using").getAsString();
     String selector = payload.get("value").getAsString();
-    System.out.println(String.format("find element command using %s with selector %s.", method,
+    System.out.println(String.format("find elements command using %s with selector %s.", method,
         selector));
 
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
