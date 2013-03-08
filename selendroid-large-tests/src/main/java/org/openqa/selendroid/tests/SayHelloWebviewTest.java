@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 public class SayHelloWebviewTest extends BaseAndroidTest {
   @Test
   public void assertThatWebviewSaysHello() throws Exception {
-    WebElement button = driver.findElement(By.linkText("Start Webview"));
+    WebElement button = driver.findElement(By.id("buttonStartWebview"));
     takeScreenShot("Main Activity started.");
     button.click();
     WebDriverWait wait = new WebDriverWait(driver, 10);

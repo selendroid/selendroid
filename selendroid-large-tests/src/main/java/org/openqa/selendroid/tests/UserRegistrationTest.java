@@ -50,14 +50,9 @@ public class UserRegistrationTest extends BaseAndroidTest {
     WebDriverWait wait = new WebDriverWait(driver, 5);
     WebElement inputUsername =
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
-    Point point = inputUsername.getLocation();
-    Assert.assertNotNull(point.x);
-    Assert.assertNotNull(point.y);
-    CharSequence cs = "Selendroid";
 
-    ((HasInputDevices) driver).getKeyboard().sendKeys(cs);
     ((HasInputDevices) driver).getKeyboard().sendKeys(SelendroidKeys.MENU);
-
+    Thread.sleep(500);
     driver.findElement(By.linkText("User Registration Settings")).click();
     driver.findElement(By.linkText("I agree")).click();
     inputUsername.sendKeys(user.getUsername());
