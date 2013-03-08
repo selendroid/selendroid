@@ -34,14 +34,14 @@ public class ScrollGesture extends RequestHandler {
     int xoffset = payload.get("xoffset").getAsInt();
     int yoffset = payload.get("yoffset").getAsInt();
     if (elementId == null) {
-      getAndroidDriver().getTouch().scroll(xoffset, yoffset);
+      getSelendroidDriver().getTouch().scroll(xoffset, yoffset);
     } else {
       AndroidElement element = getElementFromCache(elementId);
       if (element == null) {
         return new Response(getSessionId(), 7, new SelendroidException("Element with id '"
             + elementId + "' was not found."));
       }
-      getAndroidDriver().getTouch().scroll(element.getLocation(), xoffset, yoffset);
+      getSelendroidDriver().getTouch().scroll(element.getLocation(), xoffset, yoffset);
     }
     return new Response(getSessionId(), "");
   }

@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
 
 import android.app.Activity;
 
@@ -27,11 +28,15 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class SelendroidNativeDriver extends AbstractSelendroidDriver {
+public class SelendroidNativeDriver {
   public final String ACTIVITY_URL_PREFIX = "and-activity://";
+  private ServerInstrumentation serverInstrumentation;
+  private NativeSearchScope nativeSearchScope;
 
-  public SelendroidNativeDriver(ServerInstrumentation serverInstrumentation) {
-    super(serverInstrumentation);
+  public SelendroidNativeDriver(ServerInstrumentation serverInstrumentation,
+      NativeSearchScope nativeSearchScope) {
+    this.serverInstrumentation = serverInstrumentation;
+    this.nativeSearchScope = nativeSearchScope;
   }
 
   private void addChildren(JsonObject parent, AndroidElement parentElement) {
@@ -58,7 +63,6 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
    * 
    * @see org.openqa.selenium.android.server.AndroidDriver#getCurrentUrl()
    */
-  @Override
   public String getCurrentUrl() {
     Activity activity = serverInstrumentation.getCurrentActivity();
     if (activity == null) {
@@ -72,12 +76,8 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
    * 
    * @see org.openqa.selenium.android.server.AndroidDriver#getSourceOfCurrentActivity()
    */
-  @Override
   public JsonObject getWindowSource() {
-    if (nativeSearchScope == null) {
-      throw new SelendroidException("No active session found.");
-    }
-    AndroidNativeElement rootElement = ((NativeSearchScope) nativeSearchScope).getElementTree();
+    AndroidNativeElement rootElement = nativeSearchScope.getElementTree();
     JsonObject root = rootElement.toJson();
     if (root == null) {
       return new JsonObject();
@@ -89,7 +89,6 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
     return root;
   }
 
-  @Override
   public String getTitle() {
     throw new UnsupportedOperationException();
   }
@@ -108,7 +107,6 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
     return current;
   }
 
-  @Override
   public void get(String url) {
     URI dest;
     try {
@@ -140,10 +138,6 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
     }
 
     serverInstrumentation.startActivity(clazz);
-    sleepQuietly(500);
-  }
-
-  public ServerInstrumentation getServerInstrumentation() {
-    return serverInstrumentation;
+    DefaultSelendroidDriver.sleepQuietly(500);
   }
 }

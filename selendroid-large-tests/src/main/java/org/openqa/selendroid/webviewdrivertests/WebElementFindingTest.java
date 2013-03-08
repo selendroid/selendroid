@@ -42,8 +42,18 @@ public class WebElementFindingTest extends BaseAndroidTest {
     waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://WebViewActivity"));
     WebDriverWait wait = new WebDriverWait(driver, 10);
     wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
-    driver.findElement(By.id("spinner_webdriver_test_data")).click();
+    WebElement spinner = driver.findElement(By.id("spinner_webdriver_test_data"));
+    spinner.click();
+    // Hack: to work around the bug that an already open page will not be opened again.
+    driver.findElement(By.linkText(HtmlTestData.ABOUT_BLANK)).click();
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    spinner.click();
     driver.findElement(By.linkText(page)).click();
+
     driver.switchTo().window(WEBVIEW);
   }
 
@@ -191,12 +201,9 @@ public class WebElementFindingTest extends BaseAndroidTest {
       // this is expected
     }
   }
-  
-  /** #################### old ################### */
-  
-  
-  @Test(enabled=false)
-  public void testShouldBeAbleToClickOnLinkIdentifiedByText() throws Exception {
+
+  @Test
+  public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedByText() throws Exception {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     WebElement clickMe = driver.findElement(By.linkText("click me"));
     clickMe.click();
@@ -206,27 +213,45 @@ public class WebElementFindingTest extends BaseAndroidTest {
   }
 
 
-  @Test(enabled=false)
-  public void testshouldBeAbleToClickOnLinkIdentifiedById() {
+  @Test
+  public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedById() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     driver.findElement(By.id("linkId")).click();
-
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
 
-  @Test(enabled=false)
-  public void testShouldThrowAnExceptionWhenThereIsNoLinkToClickAndItIsFoundWithLinkText() {
+  @Test
+  public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedByXPath() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
-
-    try {
-      driver.findElement(By.linkText("Not here either"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    driver.findElement(By.xpath("//a[@id='linkId']")).click();
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
 
-  @Test(enabled=false)
+  @Test
+  public void testShouldBeAbleToFindElementAndGetTextOnLinkIdentifiedByTagName() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement element = driver.findElement(By.tagName("a"));
+    Assert.assertEquals(element.getText(), "Open new window");
+  }
+
+  @Test
+  public void testShouldBeAbleToFindElementAndGetTextOnLinkIdentifiedByClass() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement element = driver.findElement(By.className("myTestClass"));
+    Assert.assertEquals(element.getText(), "click me");
+  }
+
+  @Test
+  public void testShouldBeAbleToFindElementAndGetTextOnLinkIdentifiedByName() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    System.out.println(driver.getPageSource());
+    WebElement element = driver.findElement(By.name("nameTest"));
+    Assert.assertEquals(element.getText(), "click me");
+  }
+
+  @Test
   public void testShouldfindAnElementBasedOnId() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);

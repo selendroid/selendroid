@@ -34,7 +34,7 @@ public class OpenUrl extends RequestHandler {
       return new Response(getSessionId(), 13, new SelendroidException(
           "Not able to open Url because Url is missing."));
     }
-    getAndroidDriver().get(url.getAsString());
+    getSelendroidDriver().get(url.getAsString());
     return new Response(getSessionId(), "");
   }
 }

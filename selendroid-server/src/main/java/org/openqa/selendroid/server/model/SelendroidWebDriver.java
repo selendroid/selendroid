@@ -19,8 +19,8 @@ import java.util.Map;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.DomWindow;
-import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.model.DefaultSelendroidDriver.WebviewSearchScope;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.util.SelendroidLogger;
 
@@ -33,7 +33,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class SelendroidWebDriver extends AbstractSelendroidDriver {
+public class SelendroidWebDriver {
   private static final String ELEMENT_KEY = "ELEMENT";
   private static final long FOCUS_TIMEOUT = 1000L;
   private static final long LOADING_TIMEOUT = 30000L;
@@ -47,9 +47,12 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   private volatile WebView webview = null;
   private static final String WINDOW_KEY = "WINDOW";
   private volatile boolean editAreaHasFocus;
+  private final Object syncObject = new Object();
+  private boolean done = false;
+  private ServerInstrumentation serverInstrumentation = null;
 
-  public SelendroidWebDriver(Session session, ServerInstrumentation instrumentation) {
-    super(instrumentation, session);
+  public SelendroidWebDriver(ServerInstrumentation serverInstrumentation) {
+    this.serverInstrumentation = serverInstrumentation;
     init();
   }
 
@@ -170,7 +173,6 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
     return injectJavascript(script, false, args);
   }
 
-  @Override
   public String getCurrentUrl() {
     if (webview == null) {
       throw new SelendroidException("No open web view.");
@@ -192,7 +194,6 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
   }
 
 
-  @Override
   public void get(final String url) {
     serverInstrumentation.runOnUiThread(new Runnable() {
       public void run() {
@@ -201,7 +202,6 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
     });
   }
 
-  @Override
   public Object getWindowSource() {
     JsonObject source =
         new JsonParser()
@@ -218,7 +218,7 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
     while (webview == null
         && (System.currentTimeMillis() - start <= ServerInstrumentation.getInstance()
             .getAndroidWait().getTimeoutInMillis())) {
-      sleepQuietly(500);
+      DefaultSelendroidDriver.sleepQuietly(500);
       webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebView();
     }
 
@@ -226,8 +226,6 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
       throw new SelendroidException("No webview found on current activity.");
     }
     configureWebView(webview);
-
-    webviewSearchScope = new WebviewSearchScope(session.getKnownElements(), webview, this);
   }
 
   private void configureWebView(final WebView view) {
@@ -278,10 +276,6 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
             + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", ["
             + convertToJsArgs(args) + "], true)}})()";
     return executeJavascriptInWebView("alert('selendroid:'+" + wrappedScript + ")");
-  }
-
-  public AndroidWebElement newAndroidElement(String id) {
-    return ((WebviewSearchScope) webviewSearchScope).newAndroidWebElementById(id);
   }
 
   void resetPageIsLoading() {
@@ -351,8 +345,6 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
     }
   }
 
-
-  @Override
   public String getTitle() {
     if (webview == null) {
       throw new SelendroidException("No open web view.");
@@ -383,5 +375,9 @@ public class SelendroidWebDriver extends AbstractSelendroidDriver {
         }
       }
     }
+  }
+
+  public WebView getWebview() {
+    return webview;
   }
 }

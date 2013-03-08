@@ -38,7 +38,7 @@ public interface SelendroidDriver {
 
   public void stopSession();
 
-  public void switchWindow(WindowType type);
+  public void switchDriverMode(WindowType type);
 
   public byte[] takeScreenshot();
 

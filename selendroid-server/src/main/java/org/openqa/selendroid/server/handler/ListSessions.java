@@ -30,10 +30,10 @@ public class ListSessions extends RequestHandler {
   public Response handle() {
 
     JsonArray sessions = new JsonArray();
-    if (getAndroidDriver().getSession() != null) {
+    if (getSelendroidDriver().getSession() != null) {
       JsonObject sessionResponse = new JsonObject();
-      sessionResponse.addProperty("id", getAndroidDriver().getSession().getSessionId());
-      sessionResponse.add("capabilities", getAndroidDriver().getSession().getCapabilities());
+      sessionResponse.addProperty("id", getSelendroidDriver().getSession().getSessionId());
+      sessionResponse.add("capabilities", getSelendroidDriver().getSession().getCapabilities());
       sessions.add(sessionResponse);
     }
     return new Response(null, sessions);

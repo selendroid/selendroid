@@ -27,6 +27,6 @@ public class GetCurrentUrl extends RequestHandler {
   public Response handle() {
     SelendroidLogger.log("get current URL command");
 
-    return new Response(getSessionId(), getAndroidDriver().getCurrentUrl());
+    return new Response(getSessionId(), getSelendroidDriver().getCurrentUrl());
   }
 }

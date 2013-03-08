@@ -17,13 +17,14 @@ import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class SwitchWindow extends RequestHandler {
 
-  public SwitchWindow(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public SwitchWindow(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
@@ -33,19 +34,11 @@ public class SwitchWindow extends RequestHandler {
     if (windowName == null || windowName.isEmpty()) {
       return new Response(getSessionId(), 13, new SelendroidException("Window name is missing."));
     }
-    if (getCurrentWindowType().name().equals(windowName)) {
-      // nothing to do, already in the right mode.
-      return new Response(getSessionId(), "");
-    }
+    SelendroidDriver driver = getSelendroidDriver();
     if (WindowType.NATIVE_APP.name().equals(windowName)) {
-      switchToNativeDriver();
+      driver.switchDriverMode(WindowType.NATIVE_APP);
     } else if (WindowType.WEBVIEW.name().equals(windowName)) {
-      try {
-        switchToWebViewDriver();
-      } catch (SelendroidException e) {
-        return new Response(getSessionId(), 23, e);
-      }
-
+      driver.switchDriverMode(WindowType.WEBVIEW);
     } else {
       return new Response(getSessionId(), 23, new SelendroidException(
           "Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));

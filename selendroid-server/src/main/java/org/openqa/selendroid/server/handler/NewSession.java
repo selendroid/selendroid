@@ -37,7 +37,7 @@ public class NewSession extends RequestHandler {
     desiredCapabilities.addProperty("version", "0.1");
     String sessionID = null;
     try {
-      sessionID = getAndroidDriver().initializeSession(desiredCapabilities);
+      sessionID = getSelendroidDriver().initializeSession(desiredCapabilities);
     } catch (SelendroidException e) {
       SelendroidLogger.logError("Error while creating new session: ", e);
       return new Response("", 33, e);

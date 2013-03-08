@@ -66,7 +66,6 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
   }
 
   protected void init() {
-
     postHandler.put("/wd/hub/session", NewSession.class);
     getHandler.put("/wd/hub/session/:sessionId", GetCapabilities.class);
     deleteHandler.put("/wd/hub/session/:sessionId", DeleteSession.class);

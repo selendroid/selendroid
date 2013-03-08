@@ -31,9 +31,9 @@ public class GetCapabilities extends RequestHandler {
   @Override
   public Response handle() {
     SelendroidLogger.log("get capabilities command");
-    Session session = getAndroidDriver().getSession();
+    Session session = getSelendroidDriver().getSession();
 
-    JsonObject caps = getAndroidDriver().getSessionCapabilities(session.getSessionId());
+    JsonObject caps = getSelendroidDriver().getSessionCapabilities(session.getSessionId());
 
     return new Response(session.getSessionId(), caps);
   }

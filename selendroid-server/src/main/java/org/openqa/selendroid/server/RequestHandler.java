@@ -15,6 +15,7 @@ package org.openqa.selendroid.server;
 
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.model.AndroidElement;
+import org.openqa.selendroid.server.model.DefaultSelendroidDriver;
 import org.openqa.selendroid.server.model.KnownElements;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.server.model.SelendroidNativeDriver;
@@ -58,38 +59,10 @@ public abstract class RequestHandler {
     return null;
   }
 
-  protected SelendroidDriver getAndroidDriver() {
-    SelendroidNativeDriver driver =
-        (SelendroidNativeDriver) request.data().get(AndroidServlet.DRIVER_KEY);
-    if (isWebviewWindow(driver)) {
-      return driver.getSession().getWebviewDriver(driver.getServerInstrumentation());
-    } else {
-      return driver;
-    }
-  }
-
-  protected WindowType getCurrentWindowType() {
-    return getAndroidDriver().getSession().getActiveWindowType();
-  }
-
-  protected boolean isWebviewWindow(SelendroidDriver driver) {
-    Session session = driver.getSession();
-
-    if (session != null && WindowType.WEBVIEW.equals(session.getActiveWindowType())) {
-      return true;
-    }
-    return false;
-  }
-
-  protected void switchToWebViewDriver() {
-    Session session = getAndroidDriver().getSession();
-    session.setActiveWindowType(WindowType.WEBVIEW);
-    // to initialize the driver already
-    getAndroidDriver();
-  }
-
-  protected void switchToNativeDriver() {
-    getAndroidDriver().getSession().setActiveWindowType(WindowType.NATIVE_APP);
+  protected SelendroidDriver getSelendroidDriver() {
+    DefaultSelendroidDriver driver =
+        (DefaultSelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
+    return driver;
   }
 
   protected Long getIdOfKnownElement(AndroidElement element) {
@@ -109,10 +82,10 @@ public abstract class RequestHandler {
   }
 
   protected KnownElements getKnownElements() {
-    if (getAndroidDriver().getSession() == null) {
+    if (getSelendroidDriver().getSession() == null) {
       return null;
     }
-    return getAndroidDriver().getSession().getKnownElements();
+    return getSelendroidDriver().getSession().getKnownElements();
   }
 
   public abstract Response handle();

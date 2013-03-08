@@ -39,7 +39,7 @@ public class ClearElement extends RequestHandler {
       element.clear();
     } catch (Exception e) {
       SelendroidLogger.logError("error while clearing the element: ", e);
-      return new Response(getAndroidDriver().getSession().getSessionId(), 33, e);
+      return new Response(getSelendroidDriver().getSession().getSessionId(), 33, e);
     }
     return new Response(getSessionId(), "");
   }

@@ -15,20 +15,22 @@ package org.openqa.selendroid.server.handler;
 
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
+import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class DeleteSession extends RequestHandler {
 
-  public DeleteSession(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public DeleteSession(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
   public Response handle() {
     SelendroidLogger.log("delete session command");
+    SelendroidDriver driver = getSelendroidDriver();
 
-    getAndroidDriver().stopSession();
+    driver.stopSession();
     SelendroidLogger.log("\n\n\n---------Session STOP ---------------\n\n\n");
     return new Response(getSessionId(), "");
   }

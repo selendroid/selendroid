@@ -50,7 +50,7 @@ public class SendKeyToActiveElement extends RequestHandler {
     }
     String[] keysToSend = temp.toArray(new String[0]);
     
-    getAndroidDriver().getKeyboard().sendKeys(keysToSend);
+    getSelendroidDriver().getKeyboard().sendKeys(keysToSend);
 
     return new Response(getSessionId(), "");
   }

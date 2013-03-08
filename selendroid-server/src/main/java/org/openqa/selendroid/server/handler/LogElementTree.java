@@ -29,8 +29,8 @@ public class LogElementTree extends RequestHandler {
   @Override
   public Response handle() {
     SelendroidLogger.log("LogElementTree for session: "
-        + getAndroidDriver().getSession().getSessionId());
-    Object source = getAndroidDriver().getWindowSource();
+        + getSelendroidDriver().getSession().getSessionId());
+    Object source = getSelendroidDriver().getWindowSource();
     if (source instanceof String) {
       return new Response(getSessionId(), (String) source);
     }

@@ -19,18 +19,18 @@ import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
 
 public class GetPageTitle extends RequestHandler {
-  public GetPageTitle(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public GetPageTitle(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
   public Response handle() {
-    SelendroidDriver driver = getAndroidDriver();
+    SelendroidDriver driver = getSelendroidDriver();
 
-    if (isWebviewWindow(driver)) {
+    try {
       return new Response(getSessionId(), driver.getTitle());
+    } catch (UnsupportedOperationException e) {
+      return new Response(getSessionId(), 13, e);
     }
-    return new Response(getSessionId(), 13, new UnsupportedOperationException(
-        "Get title is only available for web views."));
   }
 }

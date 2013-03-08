@@ -42,7 +42,7 @@ public class FindElement extends RequestHandler {
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
     AndroidElement element = null;
     try {
-      element = getAndroidDriver().findElement(by);
+      element = getSelendroidDriver().findElement(by);
     } catch (NoSuchElementException e) {
       return new Response(getSessionId(), 7, e);
     } catch (UnsupportedOperationException e) {

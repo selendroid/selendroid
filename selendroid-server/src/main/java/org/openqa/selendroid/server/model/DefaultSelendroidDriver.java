@@ -42,28 +42,26 @@ import android.view.Display;
 import android.view.View;
 import android.webkit.WebView;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public abstract class AbstractSelendroidDriver implements SelendroidDriver {
-  protected boolean done = false;
-  protected SearchContext nativeSearchScope;
-  protected SearchContext webviewSearchScope = null;
-  protected ServerInstrumentation serverInstrumentation = null;
-  protected Session session = null;
-  protected final Object syncObject = new Object();
+public class DefaultSelendroidDriver implements SelendroidDriver {
+  private boolean done = false;
+  private SearchContext nativeSearchScope = null;
+  private SearchContext webviewSearchScope = null;
+  private ServerInstrumentation serverInstrumentation = null;
+  private Session session = null;
+  private final Object syncObject = new Object();
   private KeySender keySender = null;
-  protected TouchScreen touch;
+  private TouchScreen touch;
+  private SelendroidNativeDriver selendroidNativeDriver = null;
+  private SelendroidWebDriver selendroidWebDriver = null;
+  private WindowType activeWindowType = null;
 
 
-  public AbstractSelendroidDriver(ServerInstrumentation instrumentation) {
+  public DefaultSelendroidDriver(ServerInstrumentation instrumentation) {
     serverInstrumentation = instrumentation;
-    keySender = new KeySender(serverInstrumentation);
-  }
-
-  protected AbstractSelendroidDriver(ServerInstrumentation instrumentation, Session session) {
-    serverInstrumentation = instrumentation;
-    this.session = session;
     keySender = new KeySender(serverInstrumentation);
   }
 
@@ -80,14 +78,14 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
       throw new IllegalArgumentException("By cannot be null.");
     }
     long start = System.currentTimeMillis();
-
-    AndroidElement found = by.findElement(getSearchContext());
+    SearchContext context = getSearchContext();
+    AndroidElement found = by.findElement(context);
 
     while (found == null
         && (System.currentTimeMillis() - start <= serverInstrumentation.getAndroidWait()
             .getTimeoutInMillis())) {
       sleepQuietly(400);
-      found = by.findElement(getSearchContext());
+      found = by.findElement(context);
     }
     return found;
   }
@@ -105,24 +103,24 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
       throw new IllegalArgumentException("By cannot be null.");
     }
     long start = System.currentTimeMillis();
+    SearchContext context = getSearchContext();
 
-    List<AndroidElement> found = by.findElements(getSearchContext());
+    List<AndroidElement> found = by.findElements(context);
     while (found.isEmpty()
         && (System.currentTimeMillis() - start <= serverInstrumentation.getAndroidWait()
             .getTimeoutInMillis())) {
       sleepQuietly(200);
-      found = by.findElements(getSearchContext());
+      found = by.findElements(context);
     }
     return found;
   }
 
   private SearchContext getSearchContext() {
-    if (session == null) {
-      throw new SelendroidException("No Actice session found.");
-    }
-    if (WindowType.NATIVE_APP.equals(session.getActiveWindowType())) {
+    if (isNativeWindowMode()) {
+      Preconditions.checkNotNull(nativeSearchScope);
       return nativeSearchScope;
     } else {
+      Preconditions.checkNotNull(webviewSearchScope);
       return webviewSearchScope;
     }
 
@@ -150,7 +148,7 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
     return session.getCapabilities();
   }
 
-  protected void sleepQuietly(long ms) {
+  public static void sleepQuietly(long ms) {
     try {
       Thread.sleep(ms);
     } catch (InterruptedException cause) {
@@ -167,8 +165,12 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
   @Override
   public void stopSession() {
     serverInstrumentation.finishAllActivities();
+    this.activeWindowType = WindowType.NATIVE_APP;
     this.session = null;
     nativeSearchScope = null;
+    selendroidNativeDriver = null;
+    selendroidWebDriver = null;
+    webviewSearchScope = null;
   }
 
   /*
@@ -263,8 +265,22 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
     }
   }
 
-  public void switchWindow(WindowType type) {
-    session.setActiveWindowType(WindowType.WEBVIEW);
+  public void switchDriverMode(WindowType type) {
+    Preconditions.checkNotNull(type);
+    if (type.equals(activeWindowType)) {
+      // do nothing
+    } else {
+      this.activeWindowType = type;
+      if (WindowType.WEBVIEW.equals(type)) {
+        this.selendroidWebDriver = new SelendroidWebDriver(serverInstrumentation);
+        webviewSearchScope =
+            new WebviewSearchScope(session.getKnownElements(), selendroidWebDriver.getWebview(),
+                selendroidWebDriver);
+      } else {
+        this.webviewSearchScope = null;
+        this.selendroidWebDriver = null;
+      }
+    }
   }
 
   /*
@@ -279,13 +295,14 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
     if (this.session != null) {
       return session.getSessionId();
     }
-    this.session =
-        new Session(desiredCapabilities, UUID.randomUUID().toString(), WindowType.NATIVE_APP);
+    activeWindowType = WindowType.NATIVE_APP;
+    this.session = new Session(desiredCapabilities, UUID.randomUUID().toString());
     nativeSearchScope =
         new NativeSearchScope(serverInstrumentation, getSession().getKnownElements());
 
+    selendroidNativeDriver =
+        new SelendroidNativeDriver(serverInstrumentation, (NativeSearchScope) nativeSearchScope);
     serverInstrumentation.startMainActivity();
-
     SelendroidLogger.log("new s: " + session.getSessionId());
     return session.getSessionId();
   }
@@ -334,5 +351,48 @@ public abstract class AbstractSelendroidDriver implements SelendroidDriver {
     protected View getRootView() {
       return viewAnalyzer.getRecentDecorView();
     }
+  }
+
+  @Override
+  public String getCurrentUrl() {
+    if (isNativeWindowMode()) {
+      return selendroidNativeDriver.getCurrentUrl();
+    } else {
+      return selendroidWebDriver.getCurrentUrl();
+    }
+  }
+
+  @Override
+  public Object getWindowSource() {
+    if (isNativeWindowMode()) {
+      return selendroidNativeDriver.getWindowSource();
+    } else {
+      return selendroidWebDriver.getWindowSource();
+    }
+  }
+
+  @Override
+  public String getTitle() {
+    if (isNativeWindowMode()) {
+      return selendroidNativeDriver.getTitle();
+    } else {
+      return selendroidWebDriver.getTitle();
+    }
+  }
+
+  @Override
+  public void get(String url) {
+    if (isNativeWindowMode()) {
+      selendroidNativeDriver.get(url);
+    } else {
+      selendroidWebDriver.get(url);
+    }
+  }
+
+  public boolean isNativeWindowMode() {
+    if (WindowType.WEBVIEW.equals(activeWindowType)) {
+      return false;
+    }
+    return true;
   }
 }

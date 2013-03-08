@@ -61,16 +61,11 @@ public class WebViewActivity extends Activity {
     arrayAdapter.add(new SpinnerItem("'Say Hello'-Demo", "http://localhost:4450"));
     arrayAdapter.add(new SpinnerItem("xhtmlTestPage", "file:///android_asset/web/xhtmlTest.html"));
     arrayAdapter.add(new SpinnerItem("formPage", "file:///android_asset/web/formPage.html"));
-    arrayAdapter.add(new SpinnerItem("selectableItemsPage",
-        "file:///android_asset/web/selectableItems.html"));
-    arrayAdapter
-        .add(new SpinnerItem("nestedPage", "file:///android_asset/web/nestedElements.html"));
-    arrayAdapter.add(new SpinnerItem("javascriptPage",
-        "file:///android_asset/web/javascriptPage.html"));
-    arrayAdapter.add(new SpinnerItem("missedJsReferencePage",
-        "file:///android_asset/web/missedJsReference.html"));
-    arrayAdapter.add(new SpinnerItem("actualXhtmlPage",
-        "file:///android_asset/web/actualXhtmlPage.xhtml"));
+    arrayAdapter.add(new SpinnerItem("selectableItemsPage", "file:///android_asset/web/selectableItems.html"));
+    arrayAdapter.add(new SpinnerItem("nestedPage", "file:///android_asset/web/nestedElements.html"));
+    arrayAdapter.add(new SpinnerItem("javascriptPage",  "file:///android_asset/web/javascriptPage.html"));
+    arrayAdapter.add(new SpinnerItem("missedJsReferencePage", "file:///android_asset/web/missedJsReference.html"));
+    arrayAdapter.add(new SpinnerItem("actualXhtmlPage", "file:///android_asset/web/actualXhtmlPage.xhtml"));
     arrayAdapter.add(new SpinnerItem("about:blank", "about:blank"));
 
     testDataSpinner.setAdapter(arrayAdapter);
@@ -78,6 +73,7 @@ public class WebViewActivity extends Activity {
 
       @Override
       public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+        mainWebView.loadUrl("about:blank");
         SpinnerItem item = (SpinnerItem) testDataSpinner.getSelectedItem();
         System.out.println("Selected Item: " + item.text);
         mainWebView.loadUrl(item.url);
@@ -85,7 +81,10 @@ public class WebViewActivity extends Activity {
 
       @Override
       public void onNothingSelected(AdapterView<?> arg0) {
-        // do nothing
+        mainWebView.loadUrl("about:blank");
+        SpinnerItem item = (SpinnerItem) testDataSpinner.getSelectedItem();
+        System.out.println("Selected Item: " + item.text);
+        mainWebView.loadUrl(item.url);
       }
     });
   }
