@@ -1,0 +1,259 @@
+/*
+ * Copyright 2013 selendroid committers.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package org.openqa.selendroid.nativetests;
+
+import static org.openqa.selendroid.webviewdrivertests.waiter.TestWaiter.waitFor;
+
+import java.util.List;
+
+import org.openqa.selendroid.tests.internal.BaseAndroidTest;
+import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+/**
+ * Child element finding test for the native view part of selendroid.
+ * 
+ * @author ddary
+ */
+public class NativeChildElementFindingTest extends BaseAndroidTest {
+  public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp."
+      + "HomeScreenActivity";
+
+  private void openStartActivity() {
+    driver.switchTo().window(NATIVE_APP);
+    driver.get("and-activity://" + ACTIVITY_CLASS);
+    waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://HomeScreenActivity"));
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonIdentifiedByText() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    WebElement clickMe = rootElement.findElement(By.linkText(buttonText));
+    Assert.assertEquals(clickMe.getText(), buttonText);
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonsIdentifiedByText() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    List<WebElement> elements = rootElement.findElements(By.linkText(buttonText));
+    Assert.assertEquals(elements.size(), 1);
+    Assert.assertEquals(elements.get(0).getText(), buttonText);
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateASingleChildElementByTextThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElement(By.linkText("nonExistantButton"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateMultipleChildElementsByTextThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElements(By.linkText("nonExistantButton"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonIdentifiedById() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    WebElement clickMe = rootElement.findElement(By.id("buttonTest"));
+    Assert.assertEquals(clickMe.getText(), buttonText);
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonsIdentifiedById() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    List<WebElement> elements = rootElement.findElements(By.id("buttonTest"));
+    Assert.assertEquals(elements.size(), 1);
+    Assert.assertEquals(elements.get(0).getText(), buttonText);
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateASingleChildElementByIdThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    
+    try {
+      rootElement.findElement(By.id("nonExistantButton"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateMultipleChildElementsByIdThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElements(By.id("nonExistantButton"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonIdentifiedByClass() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    WebElement clickMe = rootElement.findElement(By.className("android.widget.Button"));
+    Assert.assertEquals(clickMe.getText(), buttonText);
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonsIdentifiedByClass() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    List<WebElement> elements = rootElement.findElements(By.className("android.widget.Button"));
+    Assert.assertEquals(elements.size(), 1);
+    Assert.assertEquals(elements.get(0).getText(), buttonText);
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateASingleChildElementByClassThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElement(By.className("de.dary.MyView"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateMultipleChildElementsByClassThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElements(By.className("de.dary.MyView"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonIdentifiedByL10nKey() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    WebElement clickMe = rootElement.findElement(By.tagName("button"));
+    Assert.assertEquals(clickMe.getText(), buttonText);
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonsIdentifiedByL10nKey() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    List<WebElement> elements = rootElement.findElements(By.tagName("button"));
+    Assert.assertEquals(elements.size(), 1);
+    Assert.assertEquals(elements.get(0).getText(), buttonText);
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateASingleChildElementByL10nKeyThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElement(By.tagName("de.dary.MyView.l10nView"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateMultipleChildElementsByL10nKeyThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElements(By.tagName("de.dary.MyView.l10nView"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+  
+  @Test
+  public void testShouldBeAbleToFindChildButtonIdentifiedByContentDescription() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    WebElement clickMe = rootElement.findElement(By.name("buttonTestCD"));
+    Assert.assertEquals(clickMe.getText(), buttonText);
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonsIdentifiedContentDescription() throws Exception {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    String buttonText = "EN Button";
+    List<WebElement> elements = rootElement.findElements(By.name("buttonTestCD"));
+    Assert.assertEquals(elements.size(), 1);
+    Assert.assertEquals(elements.get(0).getText(), buttonText);
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateASingleChildElementByContentDescriptionThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElement(By.name("cdDoesNotExist"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateMultipleChildElementsByContentDescriptionThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement=driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElements(By.name("cdDoesNotExist"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+}

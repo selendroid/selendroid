@@ -26,6 +26,7 @@
             android:id="@+id/buttonTest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="buttonTestCD"
             android:onClick="showL10nDialog"
             android:text="@string/button" />
     </LinearLayout>
