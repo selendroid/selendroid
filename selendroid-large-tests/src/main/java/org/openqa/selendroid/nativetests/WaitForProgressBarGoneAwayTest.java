@@ -18,7 +18,7 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
     waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://HomeScreenActivity"));
   }
 
-  @Test
+  @Test(enabled=false)
   public void progressBarIsPresentTest() throws Exception {
     precondition();
 

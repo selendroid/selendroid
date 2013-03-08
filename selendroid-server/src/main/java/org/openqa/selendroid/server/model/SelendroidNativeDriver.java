@@ -122,8 +122,10 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
     } else if (!Strings.isNullOrEmpty(dest.getPath())) {
       throw new SelendroidException("Unrecognized path in URI: " + dest.toString());
     }
+
     URI currentUri = getCurrentURI();
-    if (currentUri != null && dest.getPath().contains(currentUri.getPath())) {
+
+    if (currentUri != null && dest.getAuthority().endsWith(currentUri.getAuthority())) {
       // ignore request, activity is already open
       return;
     }
@@ -136,7 +138,9 @@ public class SelendroidNativeDriver extends AbstractSelendroidDriver {
       throw new SelendroidException("The specified Activity class does not exist: "
           + dest.getAuthority(), exception);
     }
+
     serverInstrumentation.startActivity(clazz);
+    sleepQuietly(500);
   }
 
   public ServerInstrumentation getServerInstrumentation() {
