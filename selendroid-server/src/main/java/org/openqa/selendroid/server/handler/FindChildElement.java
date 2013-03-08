@@ -16,6 +16,7 @@ package org.openqa.selendroid.server.handler;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
@@ -35,10 +36,15 @@ public class FindChildElement extends RequestHandler {
     JsonObject payload = getPayload();
     String method = payload.get("using").getAsString();
     String selector = payload.get("value").getAsString();
-    SelendroidLogger.log(String.format("find element command using '%s' with selector '%s'.",
+    SelendroidLogger.log(String.format("find child element command using '%s' with selector '%s'.",
         method, selector));
-    AndroidElement root = getElementFromCache(getElementId());
 
+    Long elementId = getElementId();
+    AndroidElement root = getElementFromCache(elementId);
+    if (root == null) {
+      return new Response(getSessionId(), 10, new SelendroidException("The element with Id: "
+          + elementId + " was not found."));
+    }
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
     AndroidElement element = null;
     try {

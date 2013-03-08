@@ -15,11 +15,11 @@ package org.openqa.selendroid.server.model;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
+import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.server.webview.EventSender;
@@ -50,16 +50,24 @@ public class AndroidWebElement implements AndroidElement {
     @Override
     protected AndroidElement lookupElement(String strategy, String locator) {
       JsonElement result =
-          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator, id);
-      return replyElement(result);
+          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator, AndroidWebElement.this);
+      AndroidElement element = replyElement(result);
+      if (element == null) {
+        throw new NoSuchElementException("element was not found.");
+      }
+      return element;
     }
 
     @Override
     protected List<AndroidElement> lookupElements(String strategy, String locator) {
       JsonElement result =
-          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator, id);
+          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator, AndroidWebElement.this);
 
-      return replyElements(result);
+      List<AndroidElement> elements = replyElements(result);
+      if (elements == null || elements.isEmpty()) {
+        throw new NoSuchElementException("no elements were found.");
+      }
+      return elements;
     }
   }
 
