@@ -252,6 +252,54 @@ public class WebElementFindingTest extends BaseAndroidTest {
   }
 
   @Test
+  public void testShouldBeAbleToFindElementsAndClickOnLinkIdentifiedByText() throws Exception {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement clickMe = driver.findElements(By.linkText("click me")).get(0);
+    clickMe.click();
+
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
+  }
+
+
+  @Test
+  public void testShouldBeAbleToFindElementsAndClickOnLinkIdentifiedById() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    driver.findElements(By.id("linkId")).get(0).click();
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
+  }
+
+  @Test
+  public void testShouldBeAbleToFindElementsAndClickOnLinkIdentifiedByXPath() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    driver.findElements(By.xpath("//a[@id='linkId']")).get(0).click();
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
+  }
+
+  @Test
+  public void testShouldBeAbleToFindElementsAndGetTextOnLinkIdentifiedByTagName() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement element = driver.findElements(By.tagName("a")).get(0);
+    Assert.assertEquals(element.getText(), "Open new window");
+  }
+
+  @Test
+  public void testShouldBeAbleToFindElementsAndGetTextOnLinkIdentifiedByClass() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement element = driver.findElements(By.className("myTestClass")).get(0);
+    Assert.assertEquals(element.getText(), "click me");
+  }
+
+  @Test
+  public void testShouldBeAbleToFindElementsAndGetTextOnLinkIdentifiedByName() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement element = driver.findElements(By.name("nameTest")).get(0);
+    Assert.assertEquals(element.getText(), "click me");
+  }
+
+  @Test
   public void testShouldfindAnElementBasedOnId() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);

@@ -1,13 +1,14 @@
-0.2 (under development)
----------------------------------
+0.2 
+----
 
 - fixed to major bugs #1 and #2
 - Created an inspector that allows to inspect the application under test and makes it easier to write test cases: http://localhost:8080/inspector
 - Added support for pressing keys like the Android menu button.
 - Fixed a bug in taking screenshots. Now pop up dialogs are included as well.  
 - Added /sessionId/keys support and a client library that contains already selenium as dependency and the interface SelendroidKeys.
-- The gem contains an interactive console that starts automatically selendroid-server and a Ruby webdriver client that allows to interactively try commands out.
+- The gem contains an interactive shell that starts automatically selendroid-server and a Ruby webdriver client that allows to interactively try commands out.
 - Added locator strategy by class for native and web view context
+- added support for all available locators findElement, findElements and corresponding find child element and din child elements.
 
 0.1
 -----
