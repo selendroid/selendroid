@@ -23,18 +23,20 @@ Now you will find your customized selendroid-server. To run the server:
 
 A sample test looks like:
 
+```java
 		driver = new AndroidDriver(new URL("http://localhost:8080/wd/hub"), getDefaultCapabilities());
 		driver.findElement(By.id("startUserRegistration")).click();
 		
 		WebDriverWait wait = new WebDriverWait(driver, 5);
 		WebElement inputUsername =
-    	wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
+         	wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
 		inputUsername.sendKeys(user.getUsername());
 		Assert.assertEquals(nameInput.getText(), "Mr. Burns");
 		nameInput.clear();
 		nameInput.sendKeys(user.getName());
 		takeScreenShot("User data entered.");
 		driver.findElement(By.id("btnRegisterUser")).click();
+```
 
 You want more details?
 ----------------------
