@@ -35,9 +35,10 @@ public class Response {
     errorValue.put("message", e.getMessage());
     errorValue.put("class", e.getClass().getCanonicalName());
 
+
     JSONArray stacktace = new JSONArray();
     for (StackTraceElement el : e.getStackTrace()) {
-      stacktace.put(new JSONObject(e.toString()));
+      stacktace.put(el.toString());
     }
     errorValue.put("stacktrace", stacktace);
     this.value = errorValue;

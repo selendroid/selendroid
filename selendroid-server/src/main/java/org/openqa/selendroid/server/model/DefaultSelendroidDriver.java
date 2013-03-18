@@ -329,9 +329,11 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       AndroidElement element = null;
 
 
-      JSONObject result =
-          (JSONObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator);
-      element = replyElement(result);
+      Object result = driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator);
+      if (result == null) {
+        return null;
+      }
+      element = replyElement((JSONObject) result);
       return element;
     }
 
@@ -339,9 +341,11 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     protected List<AndroidElement> lookupElements(String strategy, String locator) {
       List<AndroidElement> elements = null;
 
-      JSONArray result =
-          (JSONArray) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator);
-      elements = replyElements(result);
+      Object result = driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator);
+      if (result == null) {
+        return null;
+      }
+      elements = replyElements((JSONArray) result);
       if (elements == null || elements.isEmpty()) {
         throw new NoSuchElementException("The element was not found.");
       }

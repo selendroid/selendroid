@@ -69,7 +69,7 @@ public abstract class AbstractWebElementContext
   }
 
   protected List<AndroidElement> replyElements(JSONArray result) {
-    if (result == null) {
+    if (result == null || result.length() == 0) {
       return null;
     }
     List<AndroidElement> elements = new ArrayList<AndroidElement>();

@@ -132,8 +132,11 @@ public class SelendroidWebDriver {
         // TODO improve error handling
         throw new SelendroidException("Result status != 0");
       }
-
-      return json.get("value");
+      if (json.isNull("value")) {
+        return null;
+      } else {
+        return json.get("value");
+      }
     } catch (JSONException e) {
       throw new SelendroidException(e);
     }
