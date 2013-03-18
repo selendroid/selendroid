@@ -15,10 +15,9 @@ package org.openqa.selendroid.server.model;
 
 import java.util.List;
 
+import org.json.JSONObject;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.Session;
-
-import com.google.gson.JsonObject;
 
 public interface SelendroidDriver {
 
@@ -30,11 +29,11 @@ public interface SelendroidDriver {
 
   public Session getSession();
 
-  public JsonObject getSessionCapabilities(String sessionId);
+  public JSONObject getSessionCapabilities(String sessionId);
 
   public Object getWindowSource();
 
-  public String initializeSession(JsonObject desiredCapabilities);
+  public String initializeSession(JSONObject desiredCapabilities);
 
   public void stopSession();
 

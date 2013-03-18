@@ -39,6 +39,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
@@ -57,12 +58,13 @@ public abstract class AbstractNativeElementContext
 
   public AbstractNativeElementContext(ServerInstrumentation instrumentation,
       KnownElements knownElements) {
-    this.instrumentation = instrumentation;
-    this.knownElements = knownElements;
+    this.instrumentation = Preconditions.checkNotNull(instrumentation);
+    this.knownElements = Preconditions.checkNotNull(knownElements);
     this.viewAnalyzer = ViewHierarchyAnalyzer.getDefaultInstance();
   }
 
   AndroidNativeElement newAndroidElement(View view) {
+    Preconditions.checkNotNull(view);
     if (knownElements.hasElement(new Long(view.getId()))) {
       return (AndroidNativeElement) knownElements.get(new Long(view.getId()));
     } else {
@@ -74,6 +76,9 @@ public abstract class AbstractNativeElementContext
 
   public AndroidNativeElement getElementTree() {
     View decorView = viewAnalyzer.getRecentDecorView();
+    if (decorView == null) {
+      throw new SelendroidException("No open windows.");
+    }
     AndroidNativeElement rootElement = newAndroidElement(decorView);
 
     if (decorView instanceof ViewGroup) {

@@ -13,12 +13,12 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 public class ListSessions extends RequestHandler {
 
@@ -27,14 +27,14 @@ public class ListSessions extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
 
-    JsonArray sessions = new JsonArray();
+    JSONArray sessions = new     JSONArray();
     if (getSelendroidDriver().getSession() != null) {
-      JsonObject sessionResponse = new JsonObject();
-      sessionResponse.addProperty("id", getSelendroidDriver().getSession().getSessionId());
-      sessionResponse.add("capabilities", getSelendroidDriver().getSession().getCapabilities());
-      sessions.add(sessionResponse);
+      JSONObject sessionResponse = new JSONObject();
+      sessionResponse.put("id", getSelendroidDriver().getSession().getSessionId());
+      sessionResponse.put("capabilities", getSelendroidDriver().getSession().getCapabilities());
+      sessions.put(sessionResponse);
     }
     return new Response(null, sessions);
   }

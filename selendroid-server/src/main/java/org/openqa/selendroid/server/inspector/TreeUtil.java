@@ -13,72 +13,57 @@
  */
 package org.openqa.selendroid.server.inspector;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class TreeUtil {
-  public static JsonObject createFromNativeWindowsSource(JsonObject from) {
-    JsonObject node = new JsonObject();
-    node.addProperty("data", getNodeTitle(from));
-    node.addProperty("id", getNodeTitle(from));
+  public static JSONObject createFromNativeWindowsSource(JSONObject from) throws JSONException {
+    JSONObject node = new JSONObject();
+    node.put("data", getNodeTitle(from));
+    node.put("id", getNodeTitle(from));
 
     // add an id to the node to make them selectable by :reference
-    JsonObject attr = new JsonObject();
-    attr.addProperty("id", from.get("ref").getAsString());
-    node.add("attr", attr);
+    JSONObject attr = new JSONObject();
+    attr.put("id", from.getString("ref"));
+    node.put("attr", attr);
 
-    JsonObject metadata = new JsonObject();
-    metadata.addProperty("type", from.get("type").getAsString());
-    metadata.addProperty("reference", from.get("ref").getAsString());
-    metadata.addProperty("label", from.get("label").getAsString());
-    metadata.addProperty("name", from.get("name").getAsString());
-    if (from.has("value")) {
-      JsonElement value = from.get("value");
-      if (value instanceof JsonNull) {} else {
-        metadata.addProperty("value", value != null ? value.getAsString() : "");
-      }
-    }
-    metadata.add("l10n", from.getAsJsonObject("l10n"));
+    JSONObject metadata = new JSONObject();
+    metadata.put("type", from.getString("type"));
+    metadata.put("reference", from.getString("ref"));
+    metadata.put("label", from.getString("label"));
+    metadata.put("name", from.getString("name"));
+    metadata.put("value", from.opt("value"));
+    metadata.put("l10n", from.getJSONObject("l10n"));
 
+    node.put("metadata", metadata);
+    JSONObject rect = new JSONObject();
+    rect.put("x", from.getJSONObject("rect").getJSONObject("origin").getInt("x"));
+    rect.put("y", from.getJSONObject("rect").getJSONObject("origin").getInt("y"));
+    rect.put("h", from.getJSONObject("rect").getJSONObject("size").getInt("height"));
+    rect.put("w", from.getJSONObject("rect").getJSONObject("size").getInt("width"));
+    metadata.put("rect", rect);
 
-    node.add("metadata", metadata);
-    JsonObject rect = new JsonObject();
-    rect.addProperty("x", from.getAsJsonObject("rect").getAsJsonObject("origin").get("x")
-        .getAsInt());
-    rect.addProperty("y", from.getAsJsonObject("rect").getAsJsonObject("origin").get("y")
-        .getAsInt());
-    rect.addProperty("h", from.getAsJsonObject("rect").getAsJsonObject("size").get("height")
-        .getAsInt());
-    rect.addProperty("w", from.getAsJsonObject("rect").getAsJsonObject("size").get("width")
-        .getAsInt());
-    metadata.add("rect", rect);
+    JSONArray children = from.optJSONArray("children");
 
-
-
-    JsonArray children = from.getAsJsonArray("children");
-
-    if (children != null && children.size() != 0) {
-      JsonArray jstreeChildren = new JsonArray();
-      node.add("children", jstreeChildren);
-      for (int i = 0; i < children.size(); i++) {
-        JsonObject child = (JsonObject) children.get(i);
-        JsonObject jstreenode = createFromNativeWindowsSource(child);
-        jstreeChildren.add(jstreenode);
+    if (children != null && children.length() != 0) {
+      JSONArray jstreeChildren = new JSONArray();
+      node.put("children", jstreeChildren);
+      for (int i = 0; i < children.length(); i++) {
+        JSONObject child = (JSONObject) children.get(i);
+        JSONObject jstreenode = createFromNativeWindowsSource(child);
+        jstreeChildren.put(jstreenode);
       }
     }
 
     return node;
   }
 
-
-
-  private static String getNodeTitle(JsonObject node) {
+  private static String getNodeTitle(JSONObject node) throws JSONException {
     StringBuilder b = new StringBuilder();
-    b.append("[" + node.get("type") + "]-");
+    b.append("[" + node.getString("type") + "]-");
 
-    String name = node.get("name").getAsString();
+    String name = node.getString("name");
 
     if (name != null) {
       if (name.length() > 18) {

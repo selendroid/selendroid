@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.android.internal.Base64Encoder;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
@@ -25,7 +26,7 @@ public class CaptureScreenshot extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException{
     SelendroidLogger.log("take screenshot command");
     byte[] rawPng = getSelendroidDriver().takeScreenshot();
     String base64Png = new Base64Encoder().encode(rawPng);

@@ -13,6 +13,8 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
@@ -22,8 +24,6 @@ import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
-import com.google.gson.JsonObject;
-
 public class FindElement extends RequestHandler {
 
   public FindElement(HttpRequest request, String mappedUri) {
@@ -31,10 +31,10 @@ public class FindElement extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
-    JsonObject payload = getPayload();
-    String method = payload.get("using").getAsString();
-    String selector = payload.get("value").getAsString();
+  public Response handle() throws JSONException{
+    JSONObject payload = getPayload();
+    String method = payload.getString("using");
+    String selector = payload.getString("value");
     SelendroidLogger.log(String.format("find element command using '%s' with selector '%s'.",
         method, selector));
 
@@ -48,13 +48,13 @@ public class FindElement extends RequestHandler {
     } catch (UnsupportedOperationException e) {
       return new Response(getSessionId(), 13, e);
     }
-    JsonObject result = new JsonObject();
+    JSONObject result = new JSONObject();
 
     Long id = getIdOfKnownElement(element);
     if (id == null) {
       return new Response(getSessionId(), 7, new NoSuchElementException("Element was not found."));
     }
-    result.addProperty("ELEMENT", id);
+    result.put("ELEMENT", id);
 
     return new Response(getSessionId(), 0, result);
   }

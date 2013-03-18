@@ -13,28 +13,27 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
-import com.google.gson.JsonElement;
-
 public class OpenUrl extends RequestHandler {
-  public OpenUrl(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public OpenUrl(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
     SelendroidLogger.log("Open URL command");
-    JsonElement url = getPayload().get("url");
-    if (url.isJsonNull()) {
+    String url = getPayload().getString("url");
+    if (url == null || url.isEmpty()) {
       return new Response(getSessionId(), 13, new SelendroidException(
           "Not able to open Url because Url is missing."));
     }
-    getSelendroidDriver().get(url.getAsString());
+    getSelendroidDriver().get(url);
     return new Response(getSessionId(), "");
   }
 }

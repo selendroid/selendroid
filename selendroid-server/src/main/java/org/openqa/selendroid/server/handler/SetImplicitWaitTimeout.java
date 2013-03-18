@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
@@ -25,10 +26,10 @@ public class SetImplicitWaitTimeout extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
     SelendroidLogger.log("set implicit wait timeout called");
 
-    Long timeout = getPayload().get("ms").getAsLong();
+    Long timeout = getPayload().getLong("ms");
     ServerInstrumentation.getInstance().setImplicitWait(timeout);
 
     return new Response(getSessionId(), timeout);

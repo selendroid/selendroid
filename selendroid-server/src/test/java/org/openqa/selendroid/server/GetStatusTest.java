@@ -4,10 +4,9 @@ import junit.framework.Assert;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.openqa.selendroid.server.internal.SelendroidAssert;
-
-import com.google.gson.JsonObject;
 
 public class GetStatusTest extends BaseTest {
   @Test
@@ -15,13 +14,13 @@ public class GetStatusTest extends BaseTest {
     String url = "http://localhost:" + server.getPort() + "/wd/hub/status";
     HttpResponse response = executeRequest(url, HttpMethod.GET);
     SelendroidAssert.assertResponseIsOk(response);
-    JsonObject result = parseJsonResponse(response);
+    JSONObject result = parseJsonResponse(response);
     SelendroidAssert.assertResponseIsOk(response);
 
     Assert.assertFalse(result.has("sessionId"));
-    JsonObject value = result.get("value").getAsJsonObject();
-    Assert.assertEquals("0.2", value.get("build").getAsJsonObject().get("version")
-        .getAsString());
+    JSONObject value = result.getJSONObject("value");
+    Assert.assertEquals("0.2", value.getJSONObject("build").getString("version")
+               );
   }
 
   @Test

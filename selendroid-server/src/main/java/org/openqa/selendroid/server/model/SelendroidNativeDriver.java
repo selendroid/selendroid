@@ -18,6 +18,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
@@ -25,8 +28,6 @@ import org.openqa.selendroid.server.model.DefaultSelendroidDriver.NativeSearchSc
 import android.app.Activity;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 public class SelendroidNativeDriver {
   public final String ACTIVITY_URL_PREFIX = "and-activity://";
@@ -39,22 +40,22 @@ public class SelendroidNativeDriver {
     this.nativeSearchScope = nativeSearchScope;
   }
 
-  private void addChildren(JsonObject parent, AndroidElement parentElement) {
+  private void addChildren(JSONObject parent, AndroidElement parentElement) throws JSONException {
     Collection<AndroidElement> children = parentElement.getChildren();
     if (children == null || children.isEmpty()) {
       return;
     }
-    JsonArray childs = new JsonArray();
+    JSONArray childs = new JSONArray();
     for (AndroidElement child : children) {
       if (((AndroidNativeElement) child).getView() != ((AndroidNativeElement) parentElement)
           .getView()) {
-        JsonObject jsonChild = ((AndroidNativeElement) child).toJson();
-        childs.add(jsonChild);
+        JSONObject jsonChild = ((AndroidNativeElement) child).toJson();
+        childs.put(jsonChild);
 
         addChildren(jsonChild, child);
       }
     }
-    parent.add("children", childs);
+    parent.put("children", childs);
   }
 
 
@@ -76,13 +77,13 @@ public class SelendroidNativeDriver {
    * 
    * @see org.openqa.selenium.android.server.AndroidDriver#getSourceOfCurrentActivity()
    */
-  public JsonObject getWindowSource() {
+  public JSONObject getWindowSource() throws JSONException {
     AndroidNativeElement rootElement = nativeSearchScope.getElementTree();
-    JsonObject root = rootElement.toJson();
+    JSONObject root = rootElement.toJson();
     if (root == null) {
-      return new JsonObject();
+      return new JSONObject();
     }
-    root.addProperty("activity", serverInstrumentation.getCurrentActivity().getComponentName()
+    root.put("activity", serverInstrumentation.getCurrentActivity().getComponentName()
         .toShortString());
     addChildren(root, rootElement);
 

@@ -24,6 +24,7 @@ public class SendKeyAndNativeKeyTests extends BaseAndroidTest {
     precondition();
 
     ((HasInputDevices) driver).getKeyboard().sendKeys(SelendroidKeys.SEARCH);
+    
 
     ((HasInputDevices) driver).getKeyboard().sendKeys("cars");
 

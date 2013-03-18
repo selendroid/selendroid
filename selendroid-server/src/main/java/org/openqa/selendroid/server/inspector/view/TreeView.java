@@ -13,6 +13,8 @@
  */
 package org.openqa.selendroid.server.inspector.view;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.inspector.SelendroidInspectorView;
@@ -22,19 +24,18 @@ import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
 import com.google.common.base.Charsets;
-import com.google.gson.JsonObject;
 
 public class TreeView extends SelendroidInspectorView {
   public TreeView(ServerInstrumentation serverInstrumentation, SelendroidDriver driver) {
     super(serverInstrumentation, driver);
   }
 
-  public void render(HttpRequest request, HttpResponse response) {
-    JsonObject source = null;
+  public void render(HttpRequest request, HttpResponse response) throws JSONException {
+    JSONObject source = null;
     try {
-      source = (JsonObject) driver.getWindowSource();
+      source = (JSONObject) driver.getWindowSource();
     } catch (SelendroidException e) {
-      source = new JsonObject();
+      source = new JSONObject();
     }
     String convertedTree = TreeUtil.createFromNativeWindowsSource(source).toString();
     response.header("Content-type", "application/x-javascript").charset(Charsets.UTF_8)

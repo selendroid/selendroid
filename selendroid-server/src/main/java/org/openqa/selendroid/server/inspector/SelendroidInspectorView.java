@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.inspector;
 
+import org.json.JSONException;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
@@ -26,11 +27,11 @@ public abstract class SelendroidInspectorView {
   public SelendroidInspectorView(ServerInstrumentation serverInstrumentation,
       SelendroidDriver driver) {
     this.serverInstrumentation = serverInstrumentation;
-    if(driver==null){
+    if (driver == null) {
       throw new RuntimeException("driver ==null");
     }
     this.driver = driver;
   }
 
-  public abstract void render(HttpRequest request, HttpResponse response);
+  public abstract void render(HttpRequest request, HttpResponse response) throws JSONException;
 }

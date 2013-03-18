@@ -15,6 +15,9 @@ package org.openqa.selendroid.server.handler;
 
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
@@ -24,9 +27,6 @@ import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
 import org.webbitserver.HttpRequest;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 public class FindChildElements extends RequestHandler {
 
   public FindChildElements(HttpRequest request, String mappedUri) {
@@ -34,10 +34,10 @@ public class FindChildElements extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
-    JsonObject payload = getPayload();
-    String method = payload.get("using").getAsString();
-    String selector = payload.get("value").getAsString();
+  public Response handle() throws JSONException{
+    JSONObject payload = getPayload();
+    String method = payload.getString("using");
+    String selector = payload.getString("value");
     System.out.println(String.format("find child element command using %s with selector %s.",
         method, selector));
     Long elementId = getElementId();
@@ -54,15 +54,15 @@ public class FindChildElements extends RequestHandler {
       return new Response(getSessionId(), 7, e);
     }
 
-    JsonArray result = new JsonArray();
+    JSONArray result = new JSONArray();
     for (AndroidElement element : elements) {
-      JsonObject jsonElement = new JsonObject();
+      JSONObject jsonElement = new JSONObject();
       Long id = getIdOfKnownElement(element);
       if (id == null) {
         continue;
       }
-      jsonElement.addProperty("ELEMENT", id);
-      result.add(jsonElement);
+      jsonElement.put("ELEMENT", id);
+      result.put(jsonElement);
     }
     return new Response(getSessionId(), result);
   }

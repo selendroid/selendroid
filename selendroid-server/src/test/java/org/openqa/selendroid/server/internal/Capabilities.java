@@ -11,12 +11,10 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.model;
+package org.openqa.selendroid.server.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.gson.JsonObject;
 
 public class Capabilities {
   public static final String AUT = "aut";
@@ -35,17 +33,17 @@ public class Capabilities {
     return res;
   }
 
-  public static Capabilities fromJSON(JsonObject capa) {
-    Capabilities desiredCapability = new Capabilities();
-    desiredCapability.setName(capa.get(Capabilities.NAME).getAsString());
-    desiredCapability.setMaxInstances(capa.get(Capabilities.MAX_INSTANCES).getAsInt());
-    desiredCapability.setLocale(capa.get(Capabilities.LOCALE).getAsString());
-
-    desiredCapability.setSDKVersion(capa.get(Capabilities.SDK_VERSION).getAsString());
-    desiredCapability.setAut(capa.get(Capabilities.AUT).getAsString());
-
-    return desiredCapability;
-  }
+//  public static Capabilities fromJSON(JSONObject capa) {
+//    Capabilities desiredCapability = new Capabilities();
+//    desiredCapability.setName(capa.get(Capabilities.NAME).getAsString());
+//    desiredCapability.setMaxInstances(capa.get(Capabilities.MAX_INSTANCES).getAsInt());
+//    desiredCapability.setLocale(capa.get(Capabilities.LOCALE).getAsString());
+//
+//    desiredCapability.setSDKVersion(capa.get(Capabilities.SDK_VERSION).getAsString());
+//    desiredCapability.setAut(capa.get(Capabilities.AUT).getAsString());
+//
+//    return desiredCapability;
+//  }
 
   private final Map<String, Object> raw = new HashMap<String, Object>();
 

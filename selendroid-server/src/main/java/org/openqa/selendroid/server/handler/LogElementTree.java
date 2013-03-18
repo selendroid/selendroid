@@ -13,12 +13,11 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
-
-import com.google.gson.JsonObject;
 
 public class LogElementTree extends RequestHandler {
 
@@ -34,7 +33,7 @@ public class LogElementTree extends RequestHandler {
     if (source instanceof String) {
       return new Response(getSessionId(), (String) source);
     }
-    JsonObject json = ((JsonObject) source);
+    JSONObject json = ((JSONObject) source);
 
     return new Response(getSessionId(), json.toString());
   }

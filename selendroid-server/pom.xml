@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>org.openqa.selendroid</groupId>
 		<artifactId>selendroid</artifactId>
-		<version>0.2</version>
+		<version>0.3</version>
 	</parent>
 	<artifactId>selendroid-server</artifactId>
 	<name>selendroid-server</name>
 	<packaging>apk</packaging>
 	<properties>
-		<com.google.code.gson-version>2.2.1</com.google.code.gson-version>
+		<com.google.code.gson-version>2.2.2</com.google.code.gson-version>
 		<com.google.android.android-version>4.1.1.4</com.google.android.android-version>
 	</properties>
 	<dependencies>
@@ -33,12 +33,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-android</artifactId>
 			<version>1.6.1-RC1</version>
-		</dependency>
-		<dependency>
-			<!-- Using Gson for JSON marshaling -->
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>${com.google.code.gson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.android</groupId>

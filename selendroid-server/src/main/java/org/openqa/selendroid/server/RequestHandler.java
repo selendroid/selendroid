@@ -13,16 +13,13 @@
  */
 package org.openqa.selendroid.server;
 
-import org.openqa.selendroid.android.WindowType;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.DefaultSelendroidDriver;
 import org.openqa.selendroid.server.model.KnownElements;
 import org.openqa.selendroid.server.model.SelendroidDriver;
-import org.openqa.selendroid.server.model.SelendroidNativeDriver;
 import org.webbitserver.HttpRequest;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public abstract class RequestHandler {
   private HttpRequest request = null;
@@ -51,12 +48,12 @@ public abstract class RequestHandler {
     return null;
   }
 
-  public JsonObject getPayload() {
+  public JSONObject getPayload() throws JSONException {
     String json = request.body();
     if (json != null && !json.isEmpty()) {
-      return (JsonObject) new JsonParser().parse(json);
+      return new JSONObject(json);
     }
-    return null;
+    return new JSONObject();
   }
 
   protected SelendroidDriver getSelendroidDriver() {
@@ -88,5 +85,5 @@ public abstract class RequestHandler {
     return getSelendroidDriver().getSession().getKnownElements();
   }
 
-  public abstract Response handle();
+  public abstract Response handle() throws JSONException;
 }

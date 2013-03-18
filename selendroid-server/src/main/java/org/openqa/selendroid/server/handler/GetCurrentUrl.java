@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.util.SelendroidLogger;
@@ -24,7 +25,7 @@ public class GetCurrentUrl extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException{
     SelendroidLogger.log("get current URL command");
 
     return new Response(getSessionId(), getSelendroidDriver().getCurrentUrl());

@@ -13,22 +13,21 @@
  */
 package org.openqa.selendroid.server;
 
+import org.json.JSONObject;
 import org.openqa.selendroid.server.model.KnownElements;
 
-import com.google.gson.JsonObject;
-
 public class Session {
-  private JsonObject capabilities = null;
+  private JSONObject capabilities = null;
   private KnownElements knownElements = null;
   private String sessionId = null;
 
-  public Session(JsonObject capabilities, String sessionId) {
+  public Session(JSONObject capabilities, String sessionId) {
     this.capabilities = capabilities;
     this.sessionId = sessionId;
     this.knownElements = new KnownElements();
   }
 
-  public JsonObject getCapabilities() {
+  public JSONObject getCapabilities() {
     return capabilities;
   }
 

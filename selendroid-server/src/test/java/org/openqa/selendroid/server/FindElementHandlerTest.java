@@ -4,26 +4,27 @@ import junit.framework.Assert;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.internal.SelendroidAssert;
 
-import com.google.gson.JsonObject;
 /**
  * TODO rethink find element tests without having an emulator running.
+ * 
  * @author ddary
- *
+ * 
  */
 public class FindElementHandlerTest extends BaseTest {
-  //@Test() 
+  // @Test()
   public void assertThatFindElementResponseHasCorrectFormat() throws Exception {
     HttpResponse response = executeCreateSessionRequest();
     SelendroidAssert.assertResponseIsRedirect(response);
-    JsonObject session = parseJsonResponse(response);
-    String sessionId = session.get("sessionId").getAsString();
+    JSONObject session = parseJsonResponse(response);
+    String sessionId = session.getString("sessionId");
     Assert.assertFalse(sessionId.isEmpty());
 
-    JsonObject payload = new JsonObject();
-    payload.addProperty("using", "id");
-    payload.addProperty("value", "my_button_bar");
+    JSONObject payload = new JSONObject();
+    payload.put("using", "id");
+    payload.put("value", "my_button_bar");
 
     String url = "http://localhost:" + port + "/wd/hub/session/" + sessionId + "/element";
     HttpResponse element = executeRequestWithPayload(url, HttpMethod.POST, payload.toString());

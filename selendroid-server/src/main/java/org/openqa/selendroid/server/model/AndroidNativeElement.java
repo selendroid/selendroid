@@ -18,6 +18,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidKeys;
 import org.openqa.selendroid.android.AndroidWait;
@@ -38,7 +40,6 @@ import android.widget.TextView;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
-import com.google.gson.JsonObject;
 
 public class AndroidNativeElement implements AndroidElement {
   @Override
@@ -251,35 +252,35 @@ public class AndroidNativeElement implements AndroidElement {
     }
   }
 
-  public JsonObject toJson() {
-    JsonObject object = new JsonObject();
-    JsonObject l10n = new JsonObject();
-    l10n.addProperty("matches", 0);
-    object.add("l10n", l10n);
-    object.addProperty("label", Strings.nullToEmpty(String.valueOf(view.getContentDescription())));
-    object.addProperty("name", getNativeId());
-    JsonObject rect = new JsonObject();
+  public JSONObject toJson() throws JSONException {
+    JSONObject object = new JSONObject();
+    JSONObject l10n = new JSONObject();
+    l10n.put("matches", 0);
+    object.put("l10n", l10n);
+    object.put("label", Strings.nullToEmpty(String.valueOf(view.getContentDescription())));
+    object.put("name", getNativeId());
+    JSONObject rect = new JSONObject();
 
-    object.add("rect", rect);
-    JsonObject origin = new JsonObject();
+    object.put("rect", rect);
+    JSONObject origin = new JSONObject();
     int[] xy = new int[2];
     view.getLocationOnScreen(xy);
-    origin.addProperty("x", xy[0]);
-    origin.addProperty("y", xy[1]);
-    rect.add("origin", origin);
+    origin.put("x", xy[0]);
+    origin.put("y", xy[1]);
+    rect.put("origin", origin);
 
-    JsonObject size = new JsonObject();
-    size.addProperty("height", view.getHeight());
-    size.addProperty("width", view.getWidth());
-    rect.add("size", size);
+    JSONObject size = new JSONObject();
+    size.put("height", view.getHeight());
+    size.put("width", view.getWidth());
+    rect.put("size", size);
 
-    object.addProperty("ref", view.getId());
-    object.addProperty("type", view.getClass().getName());
+    object.put("ref", view.getId());
+    object.put("type", view.getClass().getName());
     String value = null;
     if (view instanceof TextView) {
       value = String.valueOf(((TextView) view).getText());
     }
-    object.addProperty("value", value);
+    object.put("value", value);
 
     return object;
   }

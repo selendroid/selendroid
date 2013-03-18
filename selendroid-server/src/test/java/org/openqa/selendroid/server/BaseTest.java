@@ -12,17 +12,16 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.Mockito;
 import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
 import org.openqa.selendroid.server.handlers.SessionAndPayloadExtractionTestHandler;
-import org.openqa.selendroid.server.model.Capabilities;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import org.openqa.selendroid.server.internal.Capabilities;
 
 public class BaseTest {
   public static final int port = 8055;
@@ -53,9 +52,8 @@ public class BaseTest {
     return getHttpClient().execute(new HttpHost("localhost", port), request);
   }
 
-  public JsonObject parseJsonResponse(HttpResponse response) throws Exception {
-    return new JsonParser().parse(IOUtils.toString(response.getEntity().getContent()))
-        .getAsJsonObject();
+  public JSONObject parseJsonResponse(HttpResponse response) throws Exception {
+    return new JSONObject(IOUtils.toString(response.getEntity().getContent()));
   }
 
   public HttpResponse executeRequest(String url, HttpMethod method) throws Exception {
@@ -101,12 +99,15 @@ public class BaseTest {
     return response;
   }
 
-  protected JsonObject getCapabilityPayload() {
+  protected JSONObject getCapabilityPayload() {
     Capabilities desiredCapabilities = getCapabilities();
-    JsonObject payload = new JsonObject();
+    JSONObject payload = new JSONObject();
 
-    payload.add("desiredCapabilities",
-        new Gson().toJsonTree(desiredCapabilities.asMap()));
+    try {
+      payload.put("desiredCapabilities", new JSONObject(desiredCapabilities.asMap()));
+    } catch (JSONException e) {
+      throw new SelendroidException(e);
+    }
     return payload;
   }
 }

@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.KeySender;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
@@ -43,8 +46,6 @@ import android.view.View;
 import android.webkit.WebView;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 public class DefaultSelendroidDriver implements SelendroidDriver {
   private boolean done = false;
@@ -142,7 +143,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
    * @see org.openqa.selenium.android.server.AndroidDriver#getSessionCapabilities(java.lang.String)
    */
   @Override
-  public JsonObject getSessionCapabilities(String sessionId) {
+  public JSONObject getSessionCapabilities(String sessionId) {
     SelendroidLogger.log("session: " + sessionId);
     SelendroidLogger.log("capabilities: " + session.getCapabilities());
     return session.getCapabilities();
@@ -291,7 +292,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
    * .gson.JsonObject)
    */
   @Override
-  public String initializeSession(JsonObject desiredCapabilities) {
+  public String initializeSession(JSONObject desiredCapabilities) {
     if (this.session != null) {
       return session.getSessionId();
     }
@@ -325,16 +326,22 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
     @Override
     protected AndroidElement lookupElement(String strategy, String locator) {
-      JsonElement result =
-          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator);
-      return replyElement(result);
+      AndroidElement element = null;
+
+
+      JSONObject result =
+          (JSONObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator);
+      element = replyElement(result);
+      return element;
     }
 
     @Override
     protected List<AndroidElement> lookupElements(String strategy, String locator) {
-      JsonElement result =
-          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator);
-      List<AndroidElement> elements = replyElements(result);
+      List<AndroidElement> elements = null;
+
+      JSONArray result =
+          (JSONArray) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator);
+      elements = replyElements(result);
       if (elements == null || elements.isEmpty()) {
         throw new NoSuchElementException("The element was not found.");
       }
@@ -364,11 +371,17 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
   @Override
   public Object getWindowSource() {
-    if (isNativeWindowMode()) {
-      return selendroidNativeDriver.getWindowSource();
-    } else {
-      return selendroidWebDriver.getWindowSource();
+    Object source = null;
+    try {
+      if (isNativeWindowMode()) {
+        source = selendroidNativeDriver.getWindowSource();
+      } else {
+        source = selendroidWebDriver.getWindowSource();
+      }
+    } catch (JSONException e) {
+      throw new SelendroidException(e);
     }
+    return source;
   }
 
   @Override

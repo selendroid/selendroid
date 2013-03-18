@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
@@ -20,24 +21,21 @@ import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
-import com.google.gson.JsonElement;
-
 public class SendKeys extends RequestHandler {
 
-  public SendKeys(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public SendKeys(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
     SelendroidLogger.log("send keys command");
     Long id = getElementId();
-    JsonElement value = getPayload().get("value");
-    if (value.isJsonNull()) {
+    String text = getPayload().getString("value");
+    if (text == null || text.isEmpty()) {
       return new Response(getSessionId(), new SelendroidException(
           "No key to send to an element was found."));
     }
-    String text = value.getAsString();
 
     AndroidElement element = getElementFromCache(id);
     Long start = System.currentTimeMillis();

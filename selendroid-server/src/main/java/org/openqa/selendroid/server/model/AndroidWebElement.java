@@ -16,10 +16,14 @@ package org.openqa.selendroid.server.model;
 import java.util.Collection;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.server.webview.EventSender;
@@ -30,9 +34,6 @@ import android.view.MotionEvent;
 import android.webkit.WebView;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class AndroidWebElement implements AndroidElement {
   private final String id;
@@ -49,8 +50,9 @@ public class AndroidWebElement implements AndroidElement {
 
     @Override
     protected AndroidElement lookupElement(String strategy, String locator) {
-      JsonElement result =
-          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator, AndroidWebElement.this);
+      JSONObject result =
+          (JSONObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator,
+              AndroidWebElement.this);
       AndroidElement element = replyElement(result);
       if (element == null) {
         throw new NoSuchElementException("element was not found.");
@@ -60,8 +62,9 @@ public class AndroidWebElement implements AndroidElement {
 
     @Override
     protected List<AndroidElement> lookupElements(String strategy, String locator) {
-      JsonElement result =
-          (JsonElement) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator, AndroidWebElement.this);
+      JSONArray result =
+          (JSONArray) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator,
+              AndroidWebElement.this);
 
       List<AndroidElement> elements = replyElements(result);
       if (elements == null || elements.isEmpty()) {
@@ -130,22 +133,16 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public boolean isEnabled() {
-    return ((JsonElement) driver.executeAtom(AndroidAtoms.IS_ENABLED, this)).getAsBoolean();
+    return (Boolean) driver.executeAtom(AndroidAtoms.IS_ENABLED, this);
   }
 
   public boolean isSelected() {
-    Boolean selected =
-        ((JsonElement) driver.executeAtom(AndroidAtoms.IS_SELECTED, this)).getAsBoolean();
-    return selected;
+    return (Boolean) driver.executeAtom(AndroidAtoms.IS_SELECTED, this);
   }
 
   @Override
   public String getText() {
-    JsonElement response = (JsonElement) driver.executeAtom(AndroidAtoms.GET_TEXT, this);
-    if (response == null) {
-      return null;
-    }
-    return response.getAsString();
+    return (String) driver.executeAtom(AndroidAtoms.GET_TEXT, this);
   }
 
   public String getTagName() {
@@ -153,11 +150,7 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public boolean isDisplayed() {
-    JsonElement result = (JsonElement) driver.executeAtom(AndroidAtoms.IS_DISPLAYED, this);
-    if (result != null) {
-      return result.getAsBoolean();
-    }
-    return false;
+    return (Boolean) driver.executeAtom(AndroidAtoms.IS_DISPLAYED, this);
   }
 
   /**
@@ -167,10 +160,14 @@ public class AndroidWebElement implements AndroidElement {
    * @return A point, containing the location of the top left-hand corner of the element
    */
   public Point getLocation() {
-    Object object = driver.executeAtom(AndroidAtoms.GET_TOP_LEFT_COORDINATES, this);
-    JsonObject result = ((JsonElement) object).getAsJsonObject();
+    JSONObject result =
+        (JSONObject) driver.executeAtom(AndroidAtoms.GET_TOP_LEFT_COORDINATES, this);
 
-    return new Point(result.get("x").getAsInt(), result.get("y").getAsInt());
+    try {
+      return new Point(result.getInt("x"), result.getInt("y"));
+    } catch (JSONException e) {
+      throw new SecurityException(e);
+    }
   }
 
   private Point getCenterCoordinates() {
@@ -188,9 +185,14 @@ public class AndroidWebElement implements AndroidElement {
             + "  __webdriver_w = arguments[0].offsetWidth;"
             + "  __webdriver_h = arguments[0].offsetHeight;"
             + "}; return __webdriver_w + ',' + __webdriver_h;";
-    JsonObject response =
-        new JsonParser().parse((String) driver.executeScript(sizeJs, this)).getAsJsonObject();
-    String[] result = response.get("value").getAsString().split(",");
+    String[] result=null;
+    try {
+      JSONObject response = new JSONObject((String) driver.executeScript(sizeJs, this));
+     result = response.getString("value").split(",");
+    } catch (JSONException e) {
+     throw new SelendroidException(e);
+    }
+    
     return new Point(topLeft.x + Integer.parseInt(result[0]) / 2, topLeft.y
         + Integer.parseInt(result[1]) / 2);
   }
@@ -244,12 +246,7 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public String getAttribute(String name) {
-    JsonElement element =
-        ((JsonElement) driver.executeAtom(AndroidAtoms.GET_ATTRIBUTE_VALUE, this, name));
-    if (element == null) {
-      return null;
-    }
-    return element.getAsString();
+    return (String) driver.executeAtom(AndroidAtoms.GET_ATTRIBUTE_VALUE, this, name);
   }
 
   public String getId() {

@@ -15,12 +15,11 @@ package org.openqa.selendroid.server;
 
 import java.util.Locale;
 
+import org.json.JSONObject;
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
-
-import com.google.gson.JsonObject;
 
 
 public class StatusServlet implements HttpHandler {
@@ -34,18 +33,18 @@ public class StatusServlet implements HttpHandler {
       return;
     }
     System.out.println("get Status Servlet Called");
-    JsonObject build = new JsonObject();
-    build.addProperty("version", "0.2");
+    JSONObject build = new JSONObject();
+    build.put("version", "0.2");
     
-    JsonObject os = new JsonObject();
-    os.addProperty("arch", android.os.Build.CPU_ABI);
-    os.addProperty("name", "Android");
-    os.addProperty("version", android.os.Build.VERSION.SDK_INT);
-    os.addProperty("locale", Locale.getDefault().toString());
+    JSONObject os = new JSONObject();
+    os.put("arch", android.os.Build.CPU_ABI);
+    os.put("name", "Android");
+    os.put("version", android.os.Build.VERSION.SDK_INT);
+    os.put("locale", Locale.getDefault().toString());
 
-    JsonObject json = new JsonObject();
-    json.add("build", build);
-    json.add("os", os);
+    JSONObject json = new JSONObject();
+    json.put("build", build);
+    json.put("os", os);
     httpResponse.header("Content-Type", "text/plain");
     httpResponse.content("{status: 0, value: " + json.toString() + "}");
     httpResponse.end();

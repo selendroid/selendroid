@@ -13,13 +13,12 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
-
-import com.google.gson.JsonObject;
 
 public class GetCapabilities extends RequestHandler {
 
@@ -33,7 +32,7 @@ public class GetCapabilities extends RequestHandler {
     SelendroidLogger.log("get capabilities command");
     Session session = getSelendroidDriver().getSession();
 
-    JsonObject caps = getSelendroidDriver().getSessionCapabilities(session.getSessionId());
+    JSONObject caps = getSelendroidDriver().getSessionCapabilities(session.getSessionId());
 
     return new Response(session.getSessionId(), caps);
   }

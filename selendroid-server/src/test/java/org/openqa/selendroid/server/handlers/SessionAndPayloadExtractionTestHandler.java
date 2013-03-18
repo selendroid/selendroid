@@ -13,11 +13,11 @@
  */
 package org.openqa.selendroid.server.handlers;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
-
-import com.google.gson.JsonObject;
 
 public class SessionAndPayloadExtractionTestHandler extends RequestHandler {
 
@@ -25,10 +25,10 @@ public class SessionAndPayloadExtractionTestHandler extends RequestHandler {
     super(request, mappedUri);
   }
 
-  public Response handle() {
-    JsonObject payload = getPayload();
-    String method = payload.get("using").getAsString();
-    String selector = payload.get("value").getAsString();
+  public Response handle() throws JSONException{
+    JSONObject payload = getPayload();
+    String method = payload.getString("using");
+    String selector = payload.getString("value");
     return new Response(null, "sessionId#" + getSessionId() + " using#" + method + " value#"
         + selector);
   }

@@ -15,6 +15,9 @@ package org.openqa.selendroid.server.handler;
 
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
@@ -22,9 +25,6 @@ import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 public class SendKeyToActiveElement extends RequestHandler {
 
@@ -33,20 +33,19 @@ public class SendKeyToActiveElement extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException{
     SelendroidLogger.log("send key to active element command");
-    JsonObject payload = getPayload();
+    JSONObject payload = getPayload();
 
-    JsonElement value = payload.get("value");
-    if (value.isJsonNull()) {
+    JSONArray valueArr = payload.getJSONArray("value");
+    if (valueArr==null||valueArr.length()==0) {
       return new Response(getSessionId(), new SelendroidException(
           "No key to send to an element was found."));
     }
-    JsonArray valueArr = value.getAsJsonArray();
     List<CharSequence> temp = Lists.newArrayList();
 
-    for (int i = 0; i < valueArr.size(); i++) {
-      temp.add(valueArr.get(i).getAsString());
+    for (int i = 0; i < valueArr.length(); i++) {
+      temp.add(valueArr.getString(i));
     }
     String[] keysToSend = temp.toArray(new String[0]);
     

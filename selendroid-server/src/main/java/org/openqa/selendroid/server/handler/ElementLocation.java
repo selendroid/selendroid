@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
@@ -28,7 +29,7 @@ public class ElementLocation extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException{
     SelendroidLogger.log("Get element location command");
     Long id = getElementId();
     AndroidElement element = getElementFromCache(id);

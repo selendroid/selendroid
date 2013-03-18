@@ -13,13 +13,13 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.webbitserver.HttpRequest;
-
-import com.google.gson.JsonObject;
 
 public class ScrollGesture extends RequestHandler {
 
@@ -28,11 +28,11 @@ public class ScrollGesture extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
     Long elementId = getElementId();
-    JsonObject payload = getPayload();
-    int xoffset = payload.get("xoffset").getAsInt();
-    int yoffset = payload.get("yoffset").getAsInt();
+    JSONObject payload = getPayload();
+    int xoffset = payload.getInt("xoffset");
+    int yoffset = payload.getInt("yoffset");
     if (elementId == null) {
       getSelendroidDriver().getTouch().scroll(xoffset, yoffset);
     } else {

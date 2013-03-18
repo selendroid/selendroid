@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
@@ -27,7 +28,7 @@ public class ClickElement extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException{
     SelendroidLogger.log("Click element command");
     Long id = getElementId();
     AndroidElement element = getElementFromCache(id);

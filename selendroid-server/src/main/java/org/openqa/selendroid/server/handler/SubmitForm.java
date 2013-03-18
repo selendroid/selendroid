@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.model.AndroidElement;
@@ -26,7 +27,7 @@ public class SubmitForm extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
     SelendroidLogger.log("Submit element command");
     Long id = getElementId();
     AndroidElement element = getElementFromCache(id);

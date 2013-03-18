@@ -13,6 +13,7 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
@@ -28,9 +29,9 @@ public class SwitchWindow extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
     SelendroidLogger.log("Switch Window command");
-    String windowName = getPayload().get("name").getAsString();
+    String windowName = getPayload().getString("name");
     if (windowName == null || windowName.isEmpty()) {
       return new Response(getSessionId(), 13, new SelendroidException("Window name is missing."));
     }

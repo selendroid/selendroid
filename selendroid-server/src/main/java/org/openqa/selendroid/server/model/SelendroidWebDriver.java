@@ -16,11 +16,12 @@ package org.openqa.selendroid.server.model;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.DomWindow;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.model.DefaultSelendroidDriver.WebviewSearchScope;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.util.SelendroidLogger;
 
@@ -28,10 +29,6 @@ import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class SelendroidWebDriver {
   private static final String ELEMENT_KEY = "ELEMENT";
@@ -129,18 +126,17 @@ public class SelendroidWebDriver {
       return null;
     }
 
+    try {
+      JSONObject json = new JSONObject(jsResult);
+      if (0 != json.optInt("status")) {
+        // TODO improve error handling
+        throw new SelendroidException("Result status != 0");
+      }
 
-    JsonObject json = new JsonParser().parse(jsResult).getAsJsonObject();
-
-    if (0 != json.get("status").getAsInt()) {
-      // TODO improve error handling
-      throw new SelendroidException("Result status != 0");
+      return json.get("value");
+    } catch (JSONException e) {
+      throw new SelendroidException(e);
     }
-    JsonElement value = json.get("value");
-    if (value.isJsonObject()) {
-      return value.getAsJsonObject();
-    }
-    return value;
   }
 
   private String executeJavascriptInWebView(final String script) {
@@ -202,13 +198,11 @@ public class SelendroidWebDriver {
     });
   }
 
-  public Object getWindowSource() {
-    JsonObject source =
-        new JsonParser()
-            .parse(
-                (String) executeScript("return (new XMLSerializer()).serializeToString(document.documentElement);"))
-            .getAsJsonObject();
-    return source.get("value").getAsString();
+  public Object getWindowSource() throws JSONException {
+    JSONObject source =
+        new JSONObject(
+            (String) executeScript("return (new XMLSerializer()).serializeToString(document.documentElement);"));
+    return source.getString("value");
   }
 
   protected void init() {

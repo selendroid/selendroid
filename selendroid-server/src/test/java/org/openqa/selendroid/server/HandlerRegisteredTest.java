@@ -18,12 +18,11 @@ import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.openqa.selendroid.server.internal.SelendroidAssert;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
-
-import com.google.gson.JsonObject;
 
 public class HandlerRegisteredTest extends BaseTest {
   private WebServer server = null;
@@ -37,9 +36,9 @@ public class HandlerRegisteredTest extends BaseTest {
 
   @Test
   public void getFindElementHandlerRegistered() throws Exception {
-    JsonObject payload = new JsonObject();
-    payload.addProperty("using", "id");
-    payload.addProperty("value", "my_button_bar");
+    JSONObject payload = new JSONObject();
+    payload.put("using", "id");
+    payload.put("value", "my_button_bar");
 
     String url = "http://localhost:" + port + "/wd/hub/session/1234567890/element";
     HttpResponse response = executeRequestWithPayload(url, HttpMethod.GET, payload.toString());

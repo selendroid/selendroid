@@ -1,11 +1,10 @@
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.webbitserver.HttpRequest;
-
-import com.google.gson.JsonPrimitive;
 
 public class IsElementSelected extends RequestHandler {
 
@@ -14,14 +13,12 @@ public class IsElementSelected extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
     System.out.println("is element selected command");
     Long id = getElementId();
 
     AndroidElement element = getElementFromCache(id);
-    return new Response(getSessionId(), new JsonPrimitive(element.isSelected()));
+    
+    return new Response(getSessionId(), element.isSelected());
   }
-
-
-
 }

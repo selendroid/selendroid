@@ -14,13 +14,13 @@
 package org.openqa.selendroid.server.handler;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
-
-import com.google.gson.JsonObject;
 
 public class NewSession extends RequestHandler {
 
@@ -29,12 +29,13 @@ public class NewSession extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
     SelendroidLogger.log("new session command");
-    JsonObject payload = getPayload();
+    JSONObject payload = getPayload();
 
-    JsonObject desiredCapabilities = payload.getAsJsonObject("desiredCapabilities");
-    desiredCapabilities.addProperty("version", "0.1");
+    JSONObject desiredCapabilities = payload.getJSONObject("desiredCapabilities");
+    //TODO review this 
+    desiredCapabilities.put("version", "0.2");
     String sessionID = null;
     try {
       sessionID = getSelendroidDriver().initializeSession(desiredCapabilities);

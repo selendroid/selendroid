@@ -13,8 +13,10 @@
  */
 package org.openqa.selendroid.server.inspector.view;
 
-import java.util.Map;
+import java.util.Iterator;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.inspector.SelendroidInspectorView;
 import org.openqa.selendroid.server.model.SelendroidDriver;
@@ -22,8 +24,6 @@ import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
 import com.google.common.base.Charsets;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 public class InspectorView extends SelendroidInspectorView {
   public InspectorView(ServerInstrumentation serverInstrumentation, SelendroidDriver driver) {
@@ -31,12 +31,12 @@ public class InspectorView extends SelendroidInspectorView {
   }
 
   @Override
-  public void render(HttpRequest request, HttpResponse response) {
+  public void render(HttpRequest request, HttpResponse response) throws JSONException {
     response.header("Content-Type", "text/html").charset(Charsets.UTF_8).status(200)
         .content(buildHtml()).end();
   }
 
-  protected String buildHtml() {
+  protected String buildHtml() throws JSONException {
     StringBuilder b = new StringBuilder();
     b.append("<html>");
     b.append("<head>");
@@ -116,16 +116,17 @@ public class InspectorView extends SelendroidInspectorView {
     return getResource(ResourceView.SCREENSHOT);
   }
 
-  private String displayCapabilities() {
+  private String displayCapabilities() throws JSONException {
     if (driver.getSession() != null) {
       StringBuffer capabilities = new StringBuffer();
-      JsonObject capa = driver.getSession().getCapabilities();
+      JSONObject capa = driver.getSession().getCapabilities();
       if (capa == null) {
         return "No capabilities available.";
       }
 
-      for (Map.Entry<String, JsonElement> entry : capa.entrySet()) {
-        capabilities.append("<p><b>" + entry.getKey() + "</b>: " + entry.getValue() + "</p>");
+      for (Iterator<String> keyIter = capa.keys(); keyIter.hasNext();) {
+        String key = keyIter.next();
+        capabilities.append("<p><b>" + key + "</b>: " + capa.get(key) + "</p>");
       }
       return capabilities.toString();
     }

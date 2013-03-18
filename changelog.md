@@ -1,6 +1,9 @@
+0.3
+----
+- Moved from google gson library to org.json
+
 0.2 
 ----
-
 - fixed to major bugs #1 and #2
 - Created an inspector that allows to inspect the application under test and makes it easier to write test cases: http://localhost:8080/inspector
 - Added support for pressing keys like the Android menu button.
@@ -12,7 +15,6 @@
 
 0.1
 -----
-
 - initial Selendroid version including support for android native and hybrid apps.
   - Driver support:
       - takeScreenshot

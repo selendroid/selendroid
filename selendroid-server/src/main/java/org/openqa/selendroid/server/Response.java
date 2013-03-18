@@ -13,10 +13,9 @@
  */
 package org.openqa.selendroid.server;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Response {
   private String sessionId;
@@ -25,22 +24,22 @@ public class Response {
 
   protected Response() {}
 
-  public Response(String sessionId, int status, JsonObject value) {
+  public Response(String sessionId, int status, JSONObject value) {
     this.sessionId = sessionId;
     this.status = status;
     this.value = value;
   }
 
-  public Response(String sessionId, int status, Exception e) {
-    JsonObject errorValue = new JsonObject();
-    errorValue.addProperty("message", e.getMessage());
-    errorValue.addProperty("class", e.getClass().getCanonicalName());
+  public Response(String sessionId, int status, Exception e) throws JSONException {
+    JSONObject errorValue = new JSONObject();
+    errorValue.put("message", e.getMessage());
+    errorValue.put("class", e.getClass().getCanonicalName());
 
-    JsonArray stacktace = new JsonArray();
+    JSONArray stacktace = new JSONArray();
     for (StackTraceElement el : e.getStackTrace()) {
-      stacktace.add(new Gson().toJsonTree(el.toString()));
+      stacktace.put(new JSONObject(e.toString()));
     }
-    errorValue.add("stacktrace", stacktace);
+    errorValue.put("stacktrace", stacktace);
     this.value = errorValue;
     this.sessionId = sessionId;
     this.status = status;
@@ -66,21 +65,17 @@ public class Response {
 
   @Override
   public String toString() {
-    JsonObject o = new JsonObject();
-    if (sessionId != null) {
-      o.addProperty("sessionId", sessionId);
-    }
-    o.addProperty("status", status);
-    if (value != null) {
-      if (value instanceof JsonElement) {
-        o.add("value", (JsonElement) value);
-      } else if (value instanceof String) {
-        o.addProperty("value", (String) value);
-      } else if (value instanceof Long) {
-        o.addProperty("value", (Long) value);
-      } else {
-        o.addProperty("value", value.toString());
+    JSONObject o = new JSONObject();
+    try {
+      if (sessionId != null) {
+        o.put("sessionId", sessionId);
       }
+      o.put("status", status);
+      if (value != null) {
+        o.put("value", value);
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
     return o.toString();
   }

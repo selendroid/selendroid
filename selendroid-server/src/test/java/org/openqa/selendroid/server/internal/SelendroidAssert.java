@@ -3,8 +3,7 @@ package org.openqa.selendroid.server.internal;
 import junit.framework.Assert;
 
 import org.apache.http.HttpResponse;
-
-import com.google.gson.JsonObject;
+import org.json.JSONObject;
 
 public class SelendroidAssert {
   public static final String SESSION_ID_KEY = "sessionId";
@@ -24,11 +23,11 @@ public class SelendroidAssert {
     assertResponseStatusCode(response, 200);
   }
 
-  public static void assertResponseValueHasSessionId(JsonObject responseValue) {
+  public static void assertResponseValueHasSessionId(JSONObject responseValue) {
     Assert.assertTrue(responseValue.has("SESSION_ID_KEY"));
   }
 
-  public static void assertResponseValueHasNoSessionId(JsonObject responseValue) {
+  public static void assertResponseValueHasNoSessionId(JSONObject responseValue) {
     Assert.assertFalse(responseValue.has("SESSION_ID_KEY"));
   }
 }

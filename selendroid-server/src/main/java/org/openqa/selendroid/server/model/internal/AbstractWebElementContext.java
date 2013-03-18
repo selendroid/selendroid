@@ -16,25 +16,23 @@ package org.openqa.selendroid.server.model.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.AndroidWebElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.By.ByClass;
 import org.openqa.selendroid.server.model.By.ById;
-import org.openqa.selendroid.server.model.By.ByTagName;
 import org.openqa.selendroid.server.model.By.ByLinkText;
+import org.openqa.selendroid.server.model.By.ByTagName;
 import org.openqa.selendroid.server.model.By.ByXPath;
 import org.openqa.selendroid.server.model.KnownElements;
 import org.openqa.selendroid.server.model.SearchContext;
 import org.openqa.selendroid.server.model.SelendroidWebDriver;
 
 import android.webkit.WebView;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
 
 public abstract class AbstractWebElementContext
     implements
@@ -70,27 +68,36 @@ public abstract class AbstractWebElementContext
     this.driver = driver;
   }
 
-  protected List<AndroidElement> replyElements(JsonElement result) {
-    if (result == null || result instanceof JsonNull) {
+  protected List<AndroidElement> replyElements(JSONArray result) {
+    if (result == null) {
       return null;
     }
     List<AndroidElement> elements = new ArrayList<AndroidElement>();
-    JsonArray jsonElements = result.getAsJsonArray();
-    if (jsonElements != null && jsonElements.size() > 0) {
-      for (JsonElement element : jsonElements) {
-        String id = ((JsonObject) element).get("ELEMENT").getAsString();
-        elements.add(newAndroidWebElementById(id));
+    try {
+      if (result != null && result.length() > 0) {
+        for (int i = 0; i < result.length(); i++) {
+          JSONObject element = result.getJSONObject(i);
+          String id = element.getString("ELEMENT");
+          elements.add(newAndroidWebElementById(id));
+        }
       }
+    } catch (JSONException e) {
+      throw new SelendroidException(e);
     }
     return elements;
   }
 
-  protected AndroidElement replyElement(JsonElement result) {
-    if (result == null || result instanceof JsonNull) {
+  protected AndroidElement replyElement(JSONObject result) {
+    if (result == null) {
       return null;
     }
-    String id = ((JsonObject) result).get("ELEMENT").getAsString();
-    return newAndroidWebElementById(id);
+    String id;
+    try {
+      id = result.getString("ELEMENT");
+      return newAndroidWebElementById(id);
+    } catch (JSONException e) {
+      throw new SelendroidException(e);
+    }
   }
 
   public AndroidWebElement newAndroidWebElementById(String id) {
@@ -116,7 +123,7 @@ public abstract class AbstractWebElementContext
       return findElementsByXPath(by.getElementLocator());
     } else if (by instanceof ByClass) {
       return findElementsByClass(by.getElementLocator());
-    }else if (by instanceof By.ByName) {
+    } else if (by instanceof By.ByName) {
       return findElementsByName(by.getElementLocator());
     }
     throw new SelendroidException(String.format("By locator %s is curently not supported!", by
