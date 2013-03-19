@@ -230,7 +230,9 @@ public class AndroidTouchScreen implements TouchScreen {
       for (MotionEvent event : eventsToSend) {
         instr.sendPointerSync(event);
       }
-    } catch (SecurityException ignored) {}
+    } catch (SecurityException ignored) {
+      ignored.printStackTrace();
+    }
   }
 
   final class Scroll {

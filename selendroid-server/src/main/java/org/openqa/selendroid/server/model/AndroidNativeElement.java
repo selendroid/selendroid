@@ -332,9 +332,18 @@ public class AndroidNativeElement implements AndroidElement {
   @Override
   public Coordinates getCoordinates() {
     if (coordinates == null) {
-      coordinates = new AndroidCoordinates(String.valueOf(view.getId()), getLocation());
+      coordinates = new AndroidCoordinates(String.valueOf(view.getId()), getCenterCoordinates());
     }
     return coordinates;
+  }
+
+  private Point getCenterCoordinates() {
+    int height = view.getHeight();
+    int width = view.getWidth();
+    Point location = getLocation();
+    int x = location.x + (height / 2);
+    int y = location.y + (width / 2);
+    return new Point(x, y);
   }
 
   @Override

@@ -61,7 +61,7 @@ public class TreeUtil {
 
   private static String getNodeTitle(JSONObject node) throws JSONException {
     StringBuilder b = new StringBuilder();
-    b.append("[" + node.getString("type") + "]-");
+    b.append("[" + node.optString("type") + "]-");
 
     String name = node.getString("name");
 

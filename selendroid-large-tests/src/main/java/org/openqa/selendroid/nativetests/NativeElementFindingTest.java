@@ -22,6 +22,7 @@ import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.touch.TouchActions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -195,7 +196,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
       // this is expected
     }
   }
-  
+
   @Test
   public void testShouldBeAbleToFindButtonIdentifiedByContentDescription() throws Exception {
     openStartActivity();
