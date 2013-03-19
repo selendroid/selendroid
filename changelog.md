@@ -1,6 +1,7 @@
 0.3
 ----
 - Moved from google gson library to org.json
+- Added first support of Selenium Advanced User Interactions API
 
 0.2 
 ----
