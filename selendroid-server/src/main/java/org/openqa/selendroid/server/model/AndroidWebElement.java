@@ -24,6 +24,8 @@ import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.model.interactions.AndroidCoordinates;
+import org.openqa.selendroid.server.model.interactions.Coordinates;
 import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.server.webview.EventSender;
@@ -40,6 +42,7 @@ public class AndroidWebElement implements AndroidElement {
   private WebView webview;
   private SelendroidWebDriver driver;
   private SearchContext elementContext = null;
+  private Coordinates coordinates = null;
 
 
   private class ElementSearchContext extends AbstractWebElementContext {
@@ -185,14 +188,14 @@ public class AndroidWebElement implements AndroidElement {
             + "  __webdriver_w = arguments[0].offsetWidth;"
             + "  __webdriver_h = arguments[0].offsetHeight;"
             + "}; return __webdriver_w + ',' + __webdriver_h;";
-    String[] result=null;
+    String[] result = null;
     try {
       JSONObject response = new JSONObject((String) driver.executeScript(sizeJs, this));
-     result = response.getString("value").split(",");
+      result = response.getString("value").split(",");
     } catch (JSONException e) {
-     throw new SelendroidException(e);
+      throw new SelendroidException(e);
     }
-    
+
     return new Point(topLeft.x + Integer.parseInt(result[0]) / 2, topLeft.y
         + Integer.parseInt(result[1]) / 2);
   }
@@ -273,4 +276,13 @@ public class AndroidWebElement implements AndroidElement {
     return true;
   }
 
+  public Coordinates getCoordinates() {
+    if (coordinates == null) {
+      coordinates =
+          new AndroidCoordinates(id, id.equals("0")
+              ? new Point(0, 0)
+              : getCenterCoordinates());
+    }
+    return coordinates;
+  }
 }

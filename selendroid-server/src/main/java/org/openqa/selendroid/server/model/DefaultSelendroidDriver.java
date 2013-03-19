@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.android.AndroidTouchScreen;
 import org.openqa.selendroid.android.KeySender;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.WindowType;
@@ -64,6 +65,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   public DefaultSelendroidDriver(ServerInstrumentation instrumentation) {
     serverInstrumentation = instrumentation;
     keySender = new KeySender(serverInstrumentation);
+    touch = new AndroidTouchScreen(this);
   }
 
   /*
@@ -315,7 +317,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
   @Override
   public TouchScreen getTouch() {
-    return null;
+    return touch;
   }
 
   public class WebviewSearchScope extends AbstractWebElementContext {

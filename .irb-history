@@ -1,0 +1,32 @@
+helpme
+driver.action.move_by( 100,0)
+driver.action.move_by( 100,0).perform
+driver.touch.flick(0, 20)
+driver.touch.flick(0, 30)
+driver.touch.flick(0, 30).perform
+driver.touch.flick(0, 30).perform
+driver.touch.flick(0, 30)
+driver.touch.down 200
+driver.touch.down( 200 ).perform
+driver.touch.down( 200,0 ).perform
+quit
+driver.touch.down( 200,0 ).perform
+quit
+driver.touch.down( 200,0 ).perform
+quit
+driver.touch.down( 200,0 ).perform
+driver.touch.down( 0,200 ).perform
+driver.touch.down( 0,200 ).perform
+driver.touch.scroll( 0,200 ).perform
+driver.touch.scroll( 200,0 ).perform
+driver.action.mobe_by( 200,0 ).perform
+driver.action.mobe_by( 0,200 ).perform
+driver.action.move_by( 0,200 ).perform
+driver.action.move_by( 0,200 ).perform
+driver.touch.move_by( 0,200 ).perform
+driver.touch.move( 0,200 ).perform
+driver.touch.scroll( 0,200 ).perform
+driver.touch.flick( 0,-200 ).perform
+driver.touch.flick( 0,-200 ).perform
+driver.touch.scroll( 0,-200 ).perform
+quit

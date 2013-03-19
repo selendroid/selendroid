@@ -27,6 +27,8 @@ import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.TimeoutException;
+import org.openqa.selendroid.server.model.interactions.AndroidCoordinates;
+import org.openqa.selendroid.server.model.interactions.Coordinates;
 import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
 
 import android.graphics.Rect;
@@ -42,26 +44,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Strings;
 
 public class AndroidNativeElement implements AndroidElement {
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((view == null) ? 0 : view.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() != obj.getClass()) return false;
-    AndroidNativeElement other = (AndroidNativeElement) obj;
-    if (view == null) {
-      if (other.view != null) return false;
-    } else if (!view.equals(other.view)) return false;
-    return true;
-  }
-
   // TODO revisit
   protected static final long DURATION_OF_LONG_PRESS = 750L;// (long)
                                                             // (ViewConfiguration.getLongPressTimeout()
@@ -71,6 +53,7 @@ public class AndroidNativeElement implements AndroidElement {
   private AndroidElement parent;
   private ServerInstrumentation instrumentation;
   private SearchContext nativeElementSearchScope = null;
+  private Coordinates coordinates = null;
 
   public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KnownElements ke) {
     this.view = view;
@@ -344,5 +327,33 @@ public class AndroidNativeElement implements AndroidElement {
     protected View getRootView() {
       return view;
     }
+  }
+
+  @Override
+  public Coordinates getCoordinates() {
+    if (coordinates == null) {
+      coordinates = new AndroidCoordinates(String.valueOf(view.getId()), getLocation());
+    }
+    return coordinates;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((view == null) ? 0 : view.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    AndroidNativeElement other = (AndroidNativeElement) obj;
+    if (view == null) {
+      if (other.view != null) return false;
+    } else if (!view.equals(other.view)) return false;
+    return true;
   }
 }

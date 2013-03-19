@@ -14,7 +14,7 @@
 package org.openqa.selendroid.server.model;
 
 
-import org.openqa.selendroid.android.internal.Point;
+import org.openqa.selendroid.server.model.interactions.Coordinates;
 
 /**
  * Interface representing basic touch screen operations.
@@ -26,7 +26,7 @@ public interface TouchScreen {
    * 
    * @param where The location on the screen. Typically a {@link WebElement}
    */
-  //void singleTap(Point where);
+  void singleTap(Coordinates where);
 
   /**
    * Allows the execution of the gesture 'down' on the screen. It is typically the first of a
@@ -35,7 +35,7 @@ public interface TouchScreen {
    * @param x The x coordinate relative to the viewport
    * @param y The y coordinate relative to the viewport
    */
-  //void down(int x, int y);
+  void down(int x, int y);
 
   /**
    * Allows the execution of the gesture 'up' on the screen. It is typically the last of a sequence
@@ -44,7 +44,7 @@ public interface TouchScreen {
    * @param x The x coordinate relative to the viewport
    * @param y The y coordinate relative to the viewport
    */
-  //void up(int x, int y);
+  void up(int x, int y);
 
   /**
    * Allows the execution of the gesture 'move' on the screen.
@@ -52,7 +52,7 @@ public interface TouchScreen {
    * @param x The x coordinate relative to the viewport
    * @param y The y coordinate relative to the viewport
    */
-  //void move(int x, int y);
+  void move(int x, int y);
 
   /**
    * Creates a scroll gesture that starts on a particular screen location.
@@ -61,21 +61,21 @@ public interface TouchScreen {
    * @param xOffset The x offset to scroll
    * @param yOffset The y offset to scroll
    */
-  void scroll(Point where, int xOffset, int yOffset);
+  void scroll(Coordinates where, int xOffset, int yOffset);
 
   /**
    * Allows the execution of double tapon the screen, analogous to double click using a Mouse.
    * 
    * @param where The coordinates of the element to double tap
    */
-  //void doubleTap(Point where);
+  void doubleTap(Coordinates where);
 
   /**
    * Allows the execution of long press gestures.
    * 
    * @param where The coordinate of the element to long press
    */
-  //void longPress(Point where);
+  void longPress(Coordinates where);
 
   /**
    * Allows the view to be scrolled by an x and y offset.
@@ -91,7 +91,7 @@ public interface TouchScreen {
    * @param xSpeed The horizontal speed in pixels/second
    * @param ySpeed The vertical speed in pixels/second
    */
-  //void flick(int xSpeed, int ySpeed);
+  void flick(int xSpeed, int ySpeed);
 
   /**
    * Allows the execution of flick gestures starting in a location's element.
@@ -100,5 +100,5 @@ public interface TouchScreen {
    * @param xOffset The x offset relative to the viewport
    * @param yOffset The y offset relative to the viewport
    */
-  //void flick(Point where, int xOffset, int yOffset, int speed);
+  void flick(Coordinates where, int xOffset, int yOffset, int speed);
 }

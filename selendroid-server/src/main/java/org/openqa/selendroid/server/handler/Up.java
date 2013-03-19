@@ -17,33 +17,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.model.AndroidElement;
+import org.openqa.selendroid.server.model.TouchScreen;
+import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
-public class ScrollGesture extends RequestHandler {
+public class Up extends RequestHandler {
 
-  public ScrollGesture(HttpRequest request, String mappedUri) {
+  public Up(HttpRequest request, String mappedUri) {
     super(request, mappedUri);
   }
 
   @Override
   public Response handle() throws JSONException {
-    Long elementId = getElementId();
+    SelendroidLogger.log("up gesture");
     JSONObject payload = getPayload();
-    int xoffset = payload.getInt("xoffset");
-    int yoffset = payload.getInt("yoffset");
-    if (elementId == null) {
-      getSelendroidDriver().getTouch().scroll(xoffset, yoffset);
-    } else {
-      AndroidElement element = getElementFromCache(elementId);
-      if (element == null) {
-        return new Response(getSessionId(), 7, new SelendroidException("Element with id '"
-            + elementId + "' was not found."));
-      }
-      getSelendroidDriver().getTouch().scroll(element.getLocation(), xoffset, yoffset);
-    }
+    int x = payload.getInt("x");
+    int y = payload.getInt("y");
+    TouchScreen touchScreen = getSelendroidDriver().getTouch();
+
+    touchScreen.up(x, y);
+
     return new Response(getSessionId(), "");
   }
-
 }

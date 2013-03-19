@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.openqa.selendroid.android.internal.Point;
+import org.openqa.selendroid.server.model.interactions.Coordinates;
 
 public interface AndroidElement {
   public AndroidElement getParent();
@@ -41,4 +42,6 @@ public interface AndroidElement {
   public void clear();
 
   public Point getLocation();
+  
+  public Coordinates getCoordinates();
 }

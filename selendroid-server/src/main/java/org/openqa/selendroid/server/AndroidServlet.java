@@ -18,11 +18,14 @@ import org.openqa.selendroid.server.handler.CaptureScreenshot;
 import org.openqa.selendroid.server.handler.ClearElement;
 import org.openqa.selendroid.server.handler.ClickElement;
 import org.openqa.selendroid.server.handler.DeleteSession;
+import org.openqa.selendroid.server.handler.DoubleTapOnElement;
+import org.openqa.selendroid.server.handler.Down;
 import org.openqa.selendroid.server.handler.ElementLocation;
 import org.openqa.selendroid.server.handler.FindChildElement;
 import org.openqa.selendroid.server.handler.FindChildElements;
 import org.openqa.selendroid.server.handler.FindElement;
 import org.openqa.selendroid.server.handler.FindElements;
+import org.openqa.selendroid.server.handler.Flick;
 import org.openqa.selendroid.server.handler.GetCapabilities;
 import org.openqa.selendroid.server.handler.GetCurrentUrl;
 import org.openqa.selendroid.server.handler.GetPageTitle;
@@ -31,13 +34,18 @@ import org.openqa.selendroid.server.handler.IsElementSelected;
 import org.openqa.selendroid.server.handler.ListSessions;
 import org.openqa.selendroid.server.handler.LogElement;
 import org.openqa.selendroid.server.handler.LogElementTree;
+import org.openqa.selendroid.server.handler.LongPressOnElement;
+import org.openqa.selendroid.server.handler.Move;
 import org.openqa.selendroid.server.handler.NewSession;
 import org.openqa.selendroid.server.handler.OpenUrl;
+import org.openqa.selendroid.server.handler.Scroll;
 import org.openqa.selendroid.server.handler.SendKeyToActiveElement;
 import org.openqa.selendroid.server.handler.SendKeys;
 import org.openqa.selendroid.server.handler.SetImplicitWaitTimeout;
+import org.openqa.selendroid.server.handler.SingleTapOnElement;
 import org.openqa.selendroid.server.handler.SubmitForm;
 import org.openqa.selendroid.server.handler.SwitchWindow;
+import org.openqa.selendroid.server.handler.Up;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpControl;
@@ -92,6 +100,16 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     getHandler.put("/wd/hub/session/:sessionId/title", GetPageTitle.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/selected", IsElementSelected.class);
     getHandler.put("/wd/hub/session/:sessionId/:id/location", ElementLocation.class);
+    
+    // Advanced Touch API
+    postHandler.put("/wd/hub/session/:sessionId/touch/click", SingleTapOnElement.class);
+    postHandler.put("/wd/hub/session/:sessionId/touch/down", Down.class);
+    postHandler.put("/wd/hub/session/:sessionId/touch/up", Up.class);
+    postHandler.put("/wd/hub/session/:sessionId/touch/move", Move.class);
+    postHandler.put("/wd/hub/session/:sessionId/touch/scroll", Scroll.class);
+    postHandler.put("/wd/hub/session/:sessionId/touch/doubleclick", DoubleTapOnElement.class);
+    postHandler.put("/wd/hub/session/:sessionId/touch/longclick", LongPressOnElement.class);
+    postHandler.put("/wd/hub/session/:sessionId/touch/flick", Flick.class);
   }
 
   public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
