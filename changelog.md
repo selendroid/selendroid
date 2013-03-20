@@ -2,6 +2,11 @@
 ----
 - Moved from google gson library to org.json
 - Added first support of Selenium Advanced User Interactions API
+- Added to the selendroid-gem new commands to support
+   - build-and-start: automatically build the selendroid-server
+     and resigns the given apk with the debug certificate and
+     starts afterwards the selendroid server.
+   - start: Starts the selendroid server on the first available Android device.
 
 0.2 
 ----

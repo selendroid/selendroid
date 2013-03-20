@@ -63,7 +63,7 @@ public class TreeUtil {
     StringBuilder b = new StringBuilder();
     b.append("[" + node.optString("type") + "]-");
 
-    String name = node.getString("name");
+    String name = node.optString("name");
 
     if (name != null) {
       if (name.length() > 18) {

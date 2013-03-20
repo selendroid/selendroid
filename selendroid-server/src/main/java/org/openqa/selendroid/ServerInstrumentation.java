@@ -23,7 +23,9 @@ import org.openqa.selendroid.util.SelendroidLogger;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.view.View;
 
@@ -182,5 +184,14 @@ public class ServerInstrumentation extends Instrumentation {
 
   public void setImplicitWait(long milies) {
     androidWait.setTimeoutInMillis(milies);
+  }
+  
+  public String getSelendroidVersionNumber(){
+    Context context=getContext();
+    String versionName="0.2";
+    try {
+      versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0 ).versionName;
+    } catch (NameNotFoundException e) {}
+    return versionName;
   }
 }

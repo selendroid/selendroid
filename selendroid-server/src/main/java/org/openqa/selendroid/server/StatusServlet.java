@@ -16,6 +16,7 @@ package org.openqa.selendroid.server;
 import java.util.Locale;
 
 import org.json.JSONObject;
+import org.openqa.selendroid.ServerInstrumentation;
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
@@ -23,6 +24,11 @@ import org.webbitserver.HttpResponse;
 
 
 public class StatusServlet implements HttpHandler {
+  private ServerInstrumentation serverInstrumentation;
+
+  public StatusServlet(ServerInstrumentation serverInstrumentation) {
+    this.serverInstrumentation = serverInstrumentation;
+  }
 
   @Override
   public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse,
@@ -34,8 +40,9 @@ public class StatusServlet implements HttpHandler {
     }
     System.out.println("get Status Servlet Called");
     JSONObject build = new JSONObject();
-    build.put("version", "0.2");
-    
+    build.put("version", serverInstrumentation.getSelendroidVersionNumber());
+    build.put("name", "selendroid");
+
     JSONObject os = new JSONObject();
     os.put("arch", android.os.Build.CPU_ABI);
     os.put("name", "Android");
