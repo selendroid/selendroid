@@ -15,33 +15,34 @@ package org.openqa.selendroid.server.handler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openqa.selendroid.android.internal.Point;
+import org.openqa.selendroid.android.internal.Dimension;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
-import org.openqa.selendroid.server.exceptions.NoSuchElementException;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
-import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
-public class ElementLocation extends RequestHandler {
+public class GetElementSize extends RequestHandler {
 
-  public ElementLocation(HttpRequest request, String mappedUri) {
+  public GetElementSize(HttpRequest request, String mappedUri) {
     super(request, mappedUri);
   }
 
   @Override
   public Response handle() throws JSONException {
-    SelendroidLogger.log("Get element location command");
+    System.out.println("get element size command");
     Long id = getElementId();
+
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
-      return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"
-          + id + "' was not found."));
+      return new Response(getSessionId(), 7, new SelendroidException("Element with id '" + id
+          + "' was not found."));
     }
-    Point point = element.getLocation();
-    JSONObject result = new JSONObject();
-    result.put("x", point.x);
-    result.put("y", point.y);
+    Dimension dimension = element.getSize();
+    JSONObject result=new JSONObject();
+    result.put("width", dimension.width);
+    result.put("height", dimension.height);
     return new Response(getSessionId(), result);
   }
+
 }

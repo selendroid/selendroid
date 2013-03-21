@@ -21,6 +21,7 @@ import org.openqa.selendroid.server.handler.DeleteSession;
 import org.openqa.selendroid.server.handler.DoubleTapOnElement;
 import org.openqa.selendroid.server.handler.Down;
 import org.openqa.selendroid.server.handler.ElementLocation;
+import org.openqa.selendroid.server.handler.ExecuteScript;
 import org.openqa.selendroid.server.handler.FindChildElement;
 import org.openqa.selendroid.server.handler.FindChildElements;
 import org.openqa.selendroid.server.handler.FindElement;
@@ -28,6 +29,8 @@ import org.openqa.selendroid.server.handler.FindElements;
 import org.openqa.selendroid.server.handler.Flick;
 import org.openqa.selendroid.server.handler.GetCapabilities;
 import org.openqa.selendroid.server.handler.GetCurrentUrl;
+import org.openqa.selendroid.server.handler.GetElementAttribute;
+import org.openqa.selendroid.server.handler.GetElementSize;
 import org.openqa.selendroid.server.handler.GetPageTitle;
 import org.openqa.selendroid.server.handler.GetText;
 import org.openqa.selendroid.server.handler.IsElementSelected;
@@ -61,6 +64,7 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
   public static final int INTERNAL_SERVER_ERROR = 500;
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
   public static final String ELEMENT_ID_KEY = "ELEMENT_ID_KEY";
+  public static final String NAME_ID_KEY = "NAME_ID_KEY";
   public static final String DRIVER_KEY = "DRIVER_KEY";
   protected BiMap<String, Class<? extends RequestHandler>> getHandler = HashBiMap.create();
   protected BiMap<String, Class<? extends RequestHandler>> postHandler = HashBiMap.create();
@@ -99,7 +103,10 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     postHandler.put("/wd/hub/session/:sessionId/keys", SendKeyToActiveElement.class);
     getHandler.put("/wd/hub/session/:sessionId/title", GetPageTitle.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/selected", IsElementSelected.class);
-    getHandler.put("/wd/hub/session/:sessionId/:id/location", ElementLocation.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/location", ElementLocation.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/attribute/:name", GetElementAttribute.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/size", GetElementSize.class);
+    postHandler.put("/wd/hub/session/:sessionId/execute", ExecuteScript.class);
     
     // Advanced Touch API
     postHandler.put("/wd/hub/session/:sessionId/touch/click", SingleTapOnElement.class);
@@ -173,7 +180,11 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     if (id != null) {
       request.data().put(ELEMENT_ID_KEY, new Long(id));
     }
-
+    String name = getParameter(mappedUri, request.uri(), ":name");
+    if (name != null) {
+      request.data().put(NAME_ID_KEY, name);
+    }
+    
     request.data().put(DRIVER_KEY, driver);
   }
 }

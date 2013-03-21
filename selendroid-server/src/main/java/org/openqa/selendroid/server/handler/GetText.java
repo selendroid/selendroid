@@ -13,8 +13,10 @@
  */
 package org.openqa.selendroid.server.handler;
 
+import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.webbitserver.HttpRequest;
 
@@ -25,11 +27,15 @@ public class GetText extends RequestHandler {
   }
 
   @Override
-  public Response handle() {
+  public Response handle() throws JSONException {
     System.out.println("get text command");
     Long id = getElementId();
 
     AndroidElement element = getElementFromCache(id);
+    if (element == null) {
+      return new Response(getSessionId(), 7, new SelendroidException("Element with id '"
+          + id + "' was not found."));
+    }
     String text = element.getText();
     return new Response(getSessionId(), text);
   }

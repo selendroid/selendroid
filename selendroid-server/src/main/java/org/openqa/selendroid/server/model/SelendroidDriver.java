@@ -48,4 +48,6 @@ public interface SelendroidDriver {
   public void get(String url);
   
   public TouchScreen getTouch();
+  
+  public Object executeScript(String script, Object... args);
 }

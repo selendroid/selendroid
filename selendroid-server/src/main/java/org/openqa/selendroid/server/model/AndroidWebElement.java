@@ -15,11 +15,13 @@ package org.openqa.selendroid.server.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.android.internal.Dimension;
 import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
@@ -169,7 +171,19 @@ public class AndroidWebElement implements AndroidElement {
     try {
       return new Point(result.getInt("x"), result.getInt("y"));
     } catch (JSONException e) {
-      throw new SecurityException(e);
+      throw new SelendroidException(e);
+    }
+  }
+
+  /**
+   * @return a {@link Point} where x is the width, and y is the height.
+   */
+  public Dimension getSize() {
+    JSONObject dimension = (JSONObject) driver.executeAtom(AndroidAtoms.GET_SIZE, this);
+    try {
+      return new Dimension(dimension.getInt("width"), dimension.getInt("height"));
+    } catch (JSONException e) {
+      throw new SelendroidException(e);
     }
   }
 
@@ -279,9 +293,7 @@ public class AndroidWebElement implements AndroidElement {
   public Coordinates getCoordinates() {
     if (coordinates == null) {
       coordinates =
-          new AndroidCoordinates(id, id.equals("0")
-              ? new Point(0, 0)
-              : getCenterCoordinates());
+          new AndroidCoordinates(id, id.equals("0") ? new Point(0, 0) : getCenterCoordinates());
     }
     return coordinates;
   }

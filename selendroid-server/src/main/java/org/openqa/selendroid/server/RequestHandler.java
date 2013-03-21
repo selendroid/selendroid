@@ -48,6 +48,13 @@ public abstract class RequestHandler {
     return null;
   }
 
+  public String getNameAttribute() {
+    if (request.data().containsKey(AndroidServlet.NAME_ID_KEY)) {
+      return (String) request.data().get(AndroidServlet.NAME_ID_KEY);
+    }
+    return null;
+  }
+
   public JSONObject getPayload() throws JSONException {
     String json = request.body();
     if (json != null && !json.isEmpty()) {

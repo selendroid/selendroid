@@ -30,6 +30,7 @@ import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
 import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
@@ -274,16 +275,20 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       // do nothing
     } else {
       this.activeWindowType = type;
-      if (WindowType.WEBVIEW.equals(type)) {
-        this.selendroidWebDriver = new SelendroidWebDriver(serverInstrumentation);
-        webviewSearchScope =
-            new WebviewSearchScope(session.getKnownElements(), selendroidWebDriver.getWebview(),
-                selendroidWebDriver);
-      } else {
-        this.webviewSearchScope = null;
-        this.selendroidWebDriver = null;
-      }
     }
+    if (WindowType.WEBVIEW.equals(type)) {
+      initSelendroidWebDriver();
+    } else {
+      this.webviewSearchScope = null;
+      this.selendroidWebDriver = null;
+    }
+  }
+
+  private void initSelendroidWebDriver() {
+    this.selendroidWebDriver = new SelendroidWebDriver(serverInstrumentation);
+    webviewSearchScope =
+        new WebviewSearchScope(session.getKnownElements(), selendroidWebDriver.getWebview(),
+            selendroidWebDriver);
   }
 
   /*
@@ -413,5 +418,13 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public Object executeScript(String script, Object... args) {
+    if (isNativeWindowMode()) {
+      throw new UnsupportedOperationException("Executing script is only available in web views.");
+    }
+    return selendroidWebDriver.executeScript(script, args);
   }
 }

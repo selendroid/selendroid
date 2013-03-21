@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 selendroid committers.
+ * Copyright 2012 selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,18 +13,18 @@
  */
 package org.openqa.selendroid.server.exceptions;
 
-public class NoSuchElementException extends RuntimeException {
-  private static final long serialVersionUID = -448720026954672628L;
+public class NoSuchElementAttributeException extends RuntimeException {
+  private static final long serialVersionUID = -4526232656079801503L;
 
-  public NoSuchElementException(String message) {
+  public NoSuchElementAttributeException(String message) {
     super(message);
   }
 
-  public NoSuchElementException(Throwable t) {
+  public NoSuchElementAttributeException(Throwable t) {
     super(t);
   }
 
-  public NoSuchElementException(String message, Throwable t) {
+  public NoSuchElementAttributeException(String message, Throwable t) {
     super(message, t);
   }
 }

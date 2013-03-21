@@ -129,8 +129,7 @@ public class SelendroidWebDriver {
     try {
       JSONObject json = new JSONObject(jsResult);
       if (0 != json.optInt("status")) {
-        // TODO improve error handling
-        throw new SelendroidException("Result status != 0");
+        throw new SelendroidException(json.optString("value"));
       }
       if (json.isNull("value")) {
         return null;

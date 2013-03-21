@@ -52,11 +52,11 @@ public class HttpServer extends NanoHTTPD {
       System.out.println("parms: " + parms);
       System.out.println("method: " + method);
       StringBuffer html = new StringBuffer();
-      html.append("<html><head><title>Tell me your name</title></head>");
+      String name = parms.getProperty("name");
+      html.append("<html><head><title>Hello: "+name+"</title></head>");
       html.append("<body>");
       html.append("<h1>This is my way of saying hello</h1>");
       html.append("<h2>Hello !</h2>");
-      String name = parms.getProperty("name");
       html.append("<h3>Your name is:</h3>");
       html.append("&quot;" + name + "&quot;");
       html.append("<br><hr>to start again click <a href='http://localhost:4450/'>here</a>");
@@ -65,7 +65,7 @@ public class HttpServer extends NanoHTTPD {
       return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, html.toString());
     } else {
       StringBuffer html = new StringBuffer();
-      html.append("<html><head>Say Hello</head>");
+      html.append("<html><head><title>Say Hello Demo</title></head>");
       html.append("<body>");
       html.append("Hello, can you please tell me your name?");
       html.append("<form name='myform' action='http://localhost:4450/sayhello' method='get'>");

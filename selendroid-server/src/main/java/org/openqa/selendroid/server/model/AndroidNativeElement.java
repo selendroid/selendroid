@@ -13,6 +13,8 @@
  */
 package org.openqa.selendroid.server.model;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,7 +26,9 @@ import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidKeys;
 import org.openqa.selendroid.android.AndroidWait;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
+import org.openqa.selendroid.android.internal.Dimension;
 import org.openqa.selendroid.android.internal.Point;
+import org.openqa.selendroid.server.exceptions.NoSuchElementAttributeException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.TimeoutException;
 import org.openqa.selendroid.server.model.interactions.AndroidCoordinates;
@@ -41,6 +45,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 public class AndroidNativeElement implements AndroidElement {
@@ -246,15 +251,15 @@ public class AndroidNativeElement implements AndroidElement {
 
     object.put("rect", rect);
     JSONObject origin = new JSONObject();
-    int[] xy = new int[2];
-    view.getLocationOnScreen(xy);
-    origin.put("x", xy[0]);
-    origin.put("y", xy[1]);
+    Point location = getLocation();
+    origin.put("x", location.x);
+    origin.put("y", location.y);
     rect.put("origin", origin);
 
     JSONObject size = new JSONObject();
-    size.put("height", view.getHeight());
-    size.put("width", view.getWidth());
+    Dimension s = getSize();
+    size.put("height", s.getHeight());
+    size.put("width", s.getWidth());
     rect.put("size", size);
 
     object.put("ref", view.getId());
@@ -364,5 +369,52 @@ public class AndroidNativeElement implements AndroidElement {
       if (other.view != null) return false;
     } else if (!view.equals(other.view)) return false;
     return true;
+  }
+
+  @Override
+  public Dimension getSize() {
+    return new Dimension(view.getWidth(), view.getHeight());
+  }
+
+  @Override
+  public String getAttribute(String attribute) {
+    String name=capitalizeFirstLetter(attribute);
+    Method method = getDeclaredMethod("get" + name);
+    if (method == null) {
+      method = getDeclaredMethod("is" + name);
+      if (method == null) {
+        throw new NoSuchElementAttributeException("The attribute with name '" + name
+            + "' was not found.");
+      }
+    }
+    try {
+      Object result = method.invoke(view);
+      return String.valueOf(result);
+    } catch (IllegalArgumentException e) {
+      throw new SelendroidException(e);
+    } catch (IllegalAccessException e) {
+      throw new SelendroidException(e);
+    } catch (InvocationTargetException e) {
+      throw new SelendroidException(e);
+    }
+  }
+
+  private String capitalizeFirstLetter(String name) {
+    return name.substring(0, 1).toUpperCase() + name.substring(1);
+  }
+
+  private Method getDeclaredMethod(String name) {
+    Preconditions.checkNotNull(name);
+
+    System.out.println("method name to look for: " + name);
+
+    Method method = null;
+    try {
+      method = view.getClass().getMethod(name);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+      // can happen
+    }
+    return method;
   }
 }
