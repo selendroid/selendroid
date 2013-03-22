@@ -7,6 +7,13 @@
      and resigns the given apk with the debug certificate and
      starts afterwards the selendroid server.
    - start: Starts the selendroid server on the first available Android device.
+- Fix for bug #6 that solves send key to an element.
+- fixed get capabilities handler that adds now e.g. support for javascript.
+- fixed get element location handler
+- added support for:
+   - get element size
+   - get attribute of element
+   - execute script (only supported for webview mode)
 
 0.2 
 ----
