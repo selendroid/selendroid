@@ -13,12 +13,9 @@
  */
 package org.openqa.selendroid.nativetests;
 
-import static org.openqa.selendroid.webviewdrivertests.waiter.TestWaiter.waitFor;
-
 import java.util.List;
 
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
-import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
@@ -34,12 +31,6 @@ import org.testng.annotations.Test;
 public class NativeChildElementFindingTest extends BaseAndroidTest {
   public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp."
       + "HomeScreenActivity";
-
-  private void openStartActivity() {
-    driver.switchTo().window(NATIVE_APP);
-    driver.get("and-activity://" + ACTIVITY_CLASS);
-    waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://HomeScreenActivity"));
-  }
 
   @Test
   public void testShouldBeAbleToFindChildButtonIdentifiedByText() throws Exception {

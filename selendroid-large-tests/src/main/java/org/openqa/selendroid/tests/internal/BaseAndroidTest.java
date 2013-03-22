@@ -13,6 +13,8 @@
  */
 package org.openqa.selendroid.tests.internal;
 
+import static org.openqa.selendroid.webviewdrivertests.waiter.TestWaiter.waitFor;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -21,6 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -47,6 +50,13 @@ public class BaseAndroidTest {
   @AfterClass
   public void teardown() {
     driver.quit();
+  }
+
+  protected void openStartActivity() {
+    String ACTIVITY_CLASS = "org.openqa.selendroid.testapp." + "HomeScreenActivity";
+    driver.switchTo().window(NATIVE_APP);
+    driver.get("and-activity://" + ACTIVITY_CLASS);
+    waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://HomeScreenActivity"));
   }
 
   protected DesiredCapabilities getDefaultCapabilities() {

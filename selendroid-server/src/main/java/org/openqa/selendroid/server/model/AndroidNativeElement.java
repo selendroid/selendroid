@@ -121,6 +121,7 @@ public class AndroidNativeElement implements AndroidElement {
       }
     });
     click();
+    
     send(Joiner.on("").join(keysToSend));
   }
 
