@@ -17,24 +17,27 @@ To write and run tests with selendroid, first a customized selendroid-server for
 Now you will find your customized selendroid-server. To run the server:
 
 		# start the selendroid server: 
-		adb shell am instrument -e main_activity 'org.openqa.selendroid.testapp.HomeScreenActivity' org.openqa.selendroid.server/org.openqa.selendroid.server.ServerInstrumentation
+		adb shell am instrument -e main_activity 'org.openqa.selendroid.testapp.HomeScreenActivity' org.openqa.selendroid/org.openqa.selendroid.ServerInstrumentation
+		# replace 'org.openqa.selendroid.testapp.HomeScreenActivity' with your app's main activity.
 		# activate port forwarding.
 		adb forward tcp:8080 tcp:8080
 
 A sample test looks like:
 
+```java
 		driver = new AndroidDriver(new URL("http://localhost:8080/wd/hub"), getDefaultCapabilities());
 		driver.findElement(By.id("startUserRegistration")).click();
 		
 		WebDriverWait wait = new WebDriverWait(driver, 5);
 		WebElement inputUsername =
-    	wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
+         	wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
 		inputUsername.sendKeys(user.getUsername());
 		Assert.assertEquals(nameInput.getText(), "Mr. Burns");
 		nameInput.clear();
 		nameInput.sendKeys(user.getName());
 		takeScreenShot("User data entered.");
 		driver.findElement(By.id("btnRegisterUser")).click();
+```
 
 You want more details?
 ----------------------
