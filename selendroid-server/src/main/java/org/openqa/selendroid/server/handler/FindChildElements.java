@@ -22,6 +22,7 @@ import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
@@ -52,6 +53,8 @@ public class FindChildElements extends RequestHandler {
       elements = root.findElements(by);
     } catch (NoSuchElementException e) {
       return new Response(getSessionId(), 7, e);
+    }catch (UnsupportedOperationException e) {
+      return new Response(getSessionId(), 32, e);
     }
 
     JSONArray result = new JSONArray();

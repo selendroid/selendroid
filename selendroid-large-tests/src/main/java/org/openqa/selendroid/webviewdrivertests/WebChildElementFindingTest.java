@@ -69,6 +69,18 @@ public class WebChildElementFindingTest extends BaseAndroidTest {
       // this is expected
     }
   }
+  
+  @Test()
+  public void testShouldNotBeAbleToLocateASingleElementByCssSelectorThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+    WebElement rootElement = driver.findElement(By.id("multi"));
+    try {
+      rootElement.findElement(By.cssSelector("a[id='nonExistantButton']"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
 
   @Test
   public void testShouldNotBeAbleToLocateASingleElementByXPathThatDoesNotExist() {
@@ -136,6 +148,18 @@ public class WebChildElementFindingTest extends BaseAndroidTest {
     WebElement rootElement = driver.findElement(By.id("multi"));
     try {
       rootElement.findElements(By.id("nonExistantButton"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+  
+  @Test()
+  public void testShouldNotBeAbleToLocateMultipleElementsCssSelectorIdThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+    WebElement rootElement = driver.findElement(By.id("multi"));
+    try {
+      rootElement.findElements(By.cssSelector("a[id='nonExistantButton']"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -222,6 +246,15 @@ public class WebChildElementFindingTest extends BaseAndroidTest {
     waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
+  
+  @Test
+  public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedByCssSelector() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement rootElement = driver.findElement(By.className("content"));
+    rootElement.findElement(By.cssSelector("a[id='linkId']")).click();
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
+  }
 
   @Test
   public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedByXPath() {
@@ -273,6 +306,15 @@ public class WebChildElementFindingTest extends BaseAndroidTest {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     WebElement rootElement = driver.findElement(By.className("content"));
     rootElement.findElements(By.id("linkId")).get(0).click();
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
+  }
+  
+  @Test
+  public void testShouldBeAbleToFindElementsAndClickOnLinkIdentifiedByCssSelector() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement rootElement = driver.findElement(By.className("content"));
+    rootElement.findElements(By.cssSelector("a[id='linkId']")).get(0).click();
     waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }

@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
+import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
@@ -46,7 +47,7 @@ public class FindElement extends RequestHandler {
     } catch (NoSuchElementException e) {
       return new Response(getSessionId(), 7, e);
     } catch (UnsupportedOperationException e) {
-      return new Response(getSessionId(), 13, e);
+      return new Response(getSessionId(), 32, e);
     }
     JSONObject result = new JSONObject();
 

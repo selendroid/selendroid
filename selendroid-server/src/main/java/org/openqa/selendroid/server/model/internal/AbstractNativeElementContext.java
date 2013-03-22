@@ -21,6 +21,7 @@ import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.AndroidNativeElement;
 import org.openqa.selendroid.server.model.By;
@@ -118,7 +119,7 @@ public abstract class AbstractNativeElementContext
       return findElementsByName(by.getElementLocator());
     }
 
-    throw new SelendroidException(String.format("By locator %s is curently not supported!", by
+    throw new UnsupportedOperationException(String.format("By locator %s is curently not supported!", by
         .getClass().getSimpleName()));
   }
 
@@ -135,7 +136,7 @@ public abstract class AbstractNativeElementContext
     } else if (by instanceof ByName) {
       return findElementByName(by.getElementLocator());
     }
-    throw new SelendroidException(String.format("By locator %s is curently not supported!", by
+    throw new UnsupportedOperationException(String.format("By locator %s is curently not supported!", by
         .getClass().getSimpleName()));
   }
 

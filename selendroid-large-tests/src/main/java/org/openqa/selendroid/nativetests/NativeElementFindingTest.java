@@ -21,8 +21,8 @@ import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.touch.TouchActions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -86,6 +86,50 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     String buttonText = "Show Progress Bar for a while";
     WebElement clickMe = driver.findElement(By.id("waitingButtonTest"));
     Assert.assertEquals(clickMe.getText(), buttonText);
+  }
+
+  @Test
+  public void testShouldNotBeAbleTofindElementByXpath() throws Exception {
+    openStartActivity();
+    try {
+      driver.findElement(By.xpath("//a[@id='waitingButtonTest']"));
+      Assert.fail("Finding Native elements by css selector is not supported.");
+    } catch (WebDriverException e) {
+      Assert.assertTrue(e.getMessage().contains("By locator ByXPath is curently not supported!"));
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleTofindElementByCssSelector() throws Exception {
+    openStartActivity();
+    try {
+      driver.findElement(By.cssSelector("button[id='linkId']"));
+      Assert.fail("Finding Native elements by css selector is not supported.");
+    } catch (WebDriverException e) {
+      Assert.assertTrue(e.getMessage().contains("By locator ByCssSelector is curently not supported!"));
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleTofindElementsByXpath() throws Exception {
+    openStartActivity();
+    try {
+      driver.findElements(By.xpath("//a[@id='waitingButtonTest']"));
+      Assert.fail("Finding Native elements by css selector is not supported.");
+    } catch (WebDriverException e) {
+      Assert.assertTrue(e.getMessage().contains("By locator ByXPath is curently not supported!"));
+    }
+  }
+
+  @Test
+  public void testShouldNotBeAbleTofindElementsByCssSelector() throws Exception {
+    openStartActivity();
+    try {
+      driver.findElements(By.cssSelector("button[id='linkId']"));
+      Assert.fail("Finding Native elements by css selector is not supported.");
+    } catch (WebDriverException e) {
+      Assert.assertTrue(e.getMessage().contains("By locator ByCssSelector is curently not supported!"));
+    }
   }
 
   @Test

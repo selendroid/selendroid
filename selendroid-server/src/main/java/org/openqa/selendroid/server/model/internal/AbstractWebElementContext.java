@@ -125,9 +125,11 @@ public abstract class AbstractWebElementContext
       return findElementsByClass(by.getElementLocator());
     } else if (by instanceof By.ByName) {
       return findElementsByName(by.getElementLocator());
+    } else if (by instanceof By.ByCssSelector) {
+      return findElementsByCssSelector(by.getElementLocator());
     }
-    throw new SelendroidException(String.format("By locator %s is curently not supported!", by
-        .getClass().getSimpleName()));
+    throw new UnsupportedOperationException(String.format(
+        "By locator %s is curently not supported!", by.getClass().getSimpleName()));
   }
 
   @Override
@@ -142,9 +144,11 @@ public abstract class AbstractWebElementContext
       return findElementByName(by.getElementLocator());
     } else if (by instanceof By.ByClass) {
       return findElementByClass(by.getElementLocator());
-    } else {
-      throw new UnsupportedOperationException();
+    } else if (by instanceof By.ByCssSelector) {
+      return findElementByCssSelector(by.getElementLocator());
     }
+    throw new UnsupportedOperationException(String.format(
+        "By locator %s is curently not supported!", by.getClass().getSimpleName()));
   }
 
   @Override
@@ -183,6 +187,14 @@ public abstract class AbstractWebElementContext
 
   public List<AndroidElement> findElementsByXPath(String using) {
     return lookupElements(LOCATOR_XPATH, using);
+  }
+
+  public AndroidElement findElementByCssSelector(String using) {
+    return lookupElement(LOCATOR_CSS_SELECTOR, using);
+  }
+
+  public List<AndroidElement> findElementsByCssSelector(String using) {
+    return lookupElements(LOCATOR_CSS_SELECTOR, using);
   }
 
   public AndroidElement findElementByName(String using) {
