@@ -39,12 +39,14 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -110,7 +112,7 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   @Override
-  public void enterText(CharSequence text) {
+  public void enterText(CharSequence... keysToSend) {
     final View viewview = view;
     instrumentation.runOnUiThread(new Runnable() {
       @Override
@@ -119,7 +121,7 @@ public class AndroidNativeElement implements AndroidElement {
       }
     });
     click();
-    send(text);
+    send(Joiner.on("").join(keysToSend));
   }
 
   @Override
@@ -264,7 +266,7 @@ public class AndroidNativeElement implements AndroidElement {
 
     object.put("ref", view.getId());
     object.put("type", view.getClass().getName());
-    String value = null;
+    String value = "";
     if (view instanceof TextView) {
       value = String.valueOf(((TextView) view).getText());
     }

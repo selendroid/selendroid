@@ -30,7 +30,7 @@ public interface AndroidElement {
 
   public List<AndroidElement> findElements(By by) throws NoSuchElementException;
 
-  public void enterText(CharSequence text);
+  public void enterText(CharSequence... keysToSend);
 
   public String getText();
 

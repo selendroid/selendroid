@@ -13,13 +13,19 @@
  */
 package org.openqa.selendroid.server;
 
+import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.DefaultSelendroidDriver;
 import org.openqa.selendroid.server.model.KnownElements;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
+
+import com.google.common.collect.Lists;
 
 public abstract class RequestHandler {
   private HttpRequest request = null;
@@ -90,6 +96,20 @@ public abstract class RequestHandler {
       return null;
     }
     return getSelendroidDriver().getSession().getKnownElements();
+  }
+
+  protected String[] extractKeysToSendFromPayload() throws JSONException {
+    JSONArray valueArr = getPayload().getJSONArray("value");
+    if (valueArr == null || valueArr.length() == 0) {
+      throw new SelendroidException("No key to send to an element was found.");
+    }
+    List<CharSequence> temp = Lists.newArrayList();
+
+    for (int i = 0; i < valueArr.length(); i++) {
+      temp.add(valueArr.getString(i));
+    }
+    String[] keysToSend = temp.toArray(new String[0]);
+    return keysToSend;
   }
 
   public abstract Response handle() throws JSONException;

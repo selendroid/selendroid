@@ -15,7 +15,6 @@ package org.openqa.selendroid.server.model;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +36,7 @@ import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.webkit.WebView;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 public class AndroidWebElement implements AndroidElement {
@@ -107,34 +107,22 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   @Override
-  public void enterText(CharSequence text) {
-    sendKeys(text);
+  public void enterText(CharSequence... keysToSend) {
+    sendKeys(Joiner.on("").join(keysToSend));
   }
 
   public void sendKeys(final CharSequence value) {
     if (value == null || value.length() == 0) {
       return;
     }
-    if (!isEnabled()) {
-      // throw new NativeAndroidDriverExcepction("Cannot send keys to disabled element.");
-    }
     // focus on the element
-    // this.click();
-    // driver.waitUntilEditAreaHasFocus();
+    this.click();
+    driver.waitUntilEditAreaHasFocus();
     // Move the cursor to the end of the test input.
     // The trick is to set the value after the cursor
-    // driver.executeScript("arguments[0].focus();arguments[0].value=arguments[0].value;", this);
-    final WebView view = webview;
-    // final Semaphore sem = new Semaphore(0);
-    // ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
-    //
-    // @Override
-    // public void run() {
-    EventSender.sendKeys(view, value);
-    // sem.release();
-    // }
-    // });
+    driver.executeScript("arguments[0].focus();arguments[0].value=arguments[0].value;", this);
 
+    EventSender.sendKeys(webview, value);
   }
 
   public boolean isEnabled() {

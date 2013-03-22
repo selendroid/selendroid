@@ -31,17 +31,19 @@ public class SendKeys extends RequestHandler {
   public Response handle() throws JSONException {
     SelendroidLogger.log("send keys command");
     Long id = getElementId();
-    String text = getPayload().getString("value");
-    if (text == null || text.isEmpty()) {
-      return new Response(getSessionId(), new SelendroidException(
-          "No key to send to an element was found."));
-    }
 
     AndroidElement element = getElementFromCache(id);
-    Long start = System.currentTimeMillis();
-    element.enterText(text);
-    System.out.println("Send keys done in " + (System.currentTimeMillis() - start) / 1000
-        + " seconds");
+    if (element == null) {
+      return new Response(getSessionId(), 7, new SelendroidException("Element with id '" + id
+          + "' was not found."));
+    }
+    String[] keysToSend = null;
+    try {
+      keysToSend = extractKeysToSendFromPayload();
+    } catch (SelendroidException e) {
+      return new Response(getSessionId(), 13, e);
+    }
+    element.enterText(keysToSend);
     return new Response(getSessionId(), "");
   }
 

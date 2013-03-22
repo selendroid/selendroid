@@ -80,7 +80,7 @@ public enum AndroidKeys implements CharSequence {
       return upperCaseKey - 'A' + KeyEvent.KEYCODE_A;
     }
     throw new SelendroidException("Character '" + keyCode + "' is not yet "
-        + "supported by Android NativeDriver.");
+        + "supported by Selendroid.");
   }
 
   /**

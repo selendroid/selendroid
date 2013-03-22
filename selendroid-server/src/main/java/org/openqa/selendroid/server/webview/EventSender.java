@@ -107,7 +107,7 @@ public class EventSender {
         for (CharSequence sequence : text) {
           for (int i = 0; i < sequence.length(); i++) {
             char c = sequence.charAt(i);
-            int code = AndroidKeys.keyCodeFor(c);
+            int code = AndroidWebKeys.getKeyEventFromUnicodeKey(c);
             if (code != -1) {
               webview.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, code));
               webview.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, code));
