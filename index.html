@@ -53,7 +53,8 @@ Selendroid-server in combination with the application under test (aut) must be i
 <p>To run the server:</p>
 
 <pre><code>    # start the selendroid server: 
-    adb shell am instrument -e main_activity 'org.openqa.selendroid.testapp.HomeScreenActivity' org.openqa.selendroid.server/org.openqa.selendroid.server.ServerInstrumentation
+    adb shell am instrument -e main_activity 'org.openqa.selendroid.testapp.HomeScreenActivity' org.openqa.selendroid/org.openqa.selendroid.ServerInstrumentation
+    # replace 'org.openqa.selendroid.testapp.HomeScreenActivity' with your app's main activity.
     # activate port forwarding.
     adb forward tcp:8080 tcp:8080
 </code></pre>
