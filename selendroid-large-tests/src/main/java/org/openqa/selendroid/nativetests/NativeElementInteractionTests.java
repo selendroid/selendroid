@@ -6,7 +6,9 @@ import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selendroid.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -87,5 +89,17 @@ public class NativeElementInteractionTests extends BaseAndroidTest {
     Point location = button.getLocation();
     Assert.assertEquals(location.x, 0);
     Assert.assertEquals(location.y, 247);
+  }
+
+  @Test
+  public void testShouldNotBeAbleToExecuteSimpleJavaScript() {
+    openStartActivity();
+    try {
+      ((JavascriptExecutor) driver).executeScript("return document.title");
+      Assert.fail();
+    } catch (WebDriverException e) {
+      Assert
+          .assertTrue(e.getMessage().contains("Executing script is only available in web views."));
+    }
   }
 }

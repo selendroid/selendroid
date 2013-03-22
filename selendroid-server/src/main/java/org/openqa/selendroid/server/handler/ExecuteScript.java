@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -35,10 +36,14 @@ public class ExecuteScript extends RequestHandler {
     String script = payload.getString("script");
     JSONArray args = payload.optJSONArray("args");
     Object value = null;
-    if (args.length() > 0) {
-      value = getSelendroidDriver().executeScript(script, args);
-    } else {
-      value = getSelendroidDriver().executeScript(script);
+    try {
+      if (args.length() > 0) {
+        value = getSelendroidDriver().executeScript(script, args);
+      } else {
+        value = getSelendroidDriver().executeScript(script);
+      }
+    } catch (UnsupportedOperationException e) {
+      return new Response(getSessionId(), 13, e);
     }
     if (value instanceof String) {
       String result = (String) value;

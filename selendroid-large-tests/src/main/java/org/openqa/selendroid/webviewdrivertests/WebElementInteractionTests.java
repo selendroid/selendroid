@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
@@ -97,5 +98,15 @@ public class WebElementInteractionTests extends BaseAndroidTest {
     Point location = element.getLocation();
     Assert.assertEquals(location.x, 151);
     Assert.assertEquals(location.y, 113);
+  }
+
+  @Test
+  public void testShouldBeAbleToExecuteSimpleJavaScript() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+    waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);
+
+    String name =
+        (String) ((JavascriptExecutor) driver).executeScript("return document.title");
+    Assert.assertEquals(name, "We Leave From Here");
   }
 }
