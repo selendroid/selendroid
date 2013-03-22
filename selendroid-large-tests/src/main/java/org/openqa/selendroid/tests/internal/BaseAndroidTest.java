@@ -13,7 +13,7 @@
  */
 package org.openqa.selendroid.tests.internal;
 
-import static org.openqa.selendroid.webviewdrivertests.waiter.TestWaiter.waitFor;
+import static org.openqa.selendroid.waiter.TestWaiter.waitFor;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,13 +23,18 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
+import org.openqa.selendroid.waiter.WaitingConditions;
+import org.openqa.selendroid.webviewdrivertests.HtmlTestData;
+import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.android.AndroidDriver;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -52,10 +57,32 @@ public class BaseAndroidTest {
     driver.quit();
   }
 
-  protected void openStartActivity() {
-    String ACTIVITY_CLASS = "org.openqa.selendroid.testapp." + "HomeScreenActivity";
+  protected void openWebdriverTestPage(String page) {
+    String activityClass = "org.openqa.selendroid.testapp." + "WebViewActivity";
     driver.switchTo().window(NATIVE_APP);
-    driver.get("and-activity://" + ACTIVITY_CLASS);
+    driver.get("and-activity://" + activityClass);
+    waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://WebViewActivity"));
+    WebDriverWait wait = new WebDriverWait(driver, 10);
+    wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
+    WebElement spinner = driver.findElement(By.id("spinner_webdriver_test_data"));
+    spinner.click();
+    // Hack: to work around the bug that an already open page will not be opened again.
+    driver.findElement(By.linkText(HtmlTestData.ABOUT_BLANK)).click();
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    spinner.click();
+    driver.findElement(By.linkText(page)).click();
+
+    driver.switchTo().window(WEBVIEW);
+  }
+
+  protected void openStartActivity() {
+    String activityClass = "org.openqa.selendroid.testapp." + "HomeScreenActivity";
+    driver.switchTo().window(NATIVE_APP);
+    driver.get("and-activity://" + activityClass);
     waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://HomeScreenActivity"));
   }
 

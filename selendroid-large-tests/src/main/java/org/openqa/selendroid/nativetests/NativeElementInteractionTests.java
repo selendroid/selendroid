@@ -1,9 +1,9 @@
 package org.openqa.selendroid.nativetests;
 
-import static org.openqa.selendroid.webviewdrivertests.waiter.TestWaiter.waitFor;
+import static org.openqa.selendroid.waiter.TestWaiter.waitFor;
 
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
-import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
+import org.openqa.selendroid.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;

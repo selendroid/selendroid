@@ -13,13 +13,13 @@
  */
 package org.openqa.selendroid.webviewdrivertests;
 
-import static org.openqa.selendroid.webviewdrivertests.waiter.TestWaiter.waitFor;
-import static org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions.pageTitleToBe;
+import static org.openqa.selendroid.waiter.TestWaiter.waitFor;
+import static org.openqa.selendroid.waiter.WaitingConditions.pageTitleToBe;
 
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
-import org.openqa.selendroid.webviewdrivertests.waiter.WaitingConditions;
+import org.openqa.selendroid.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -34,30 +34,6 @@ import org.testng.annotations.Test;
  * @author ddary
  */
 public class WebElementFindingTest extends BaseAndroidTest {
-  public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp." + "WebViewActivity";
-
-  private void openWebdriverTestPage(String page) {
-    driver.switchTo().window(NATIVE_APP);
-    driver.get("and-activity://" + ACTIVITY_CLASS);
-    waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://WebViewActivity"));
-    WebDriverWait wait = new WebDriverWait(driver, 10);
-    wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
-    WebElement spinner = driver.findElement(By.id("spinner_webdriver_test_data"));
-    spinner.click();
-    // Hack: to work around the bug that an already open page will not be opened again.
-    driver.findElement(By.linkText(HtmlTestData.ABOUT_BLANK)).click();
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    spinner.click();
-    driver.findElement(By.linkText(page)).click();
-
-    driver.switchTo().window(WEBVIEW);
-  }
-
-
   @Test()
   public void testShouldNotBeAbleToLocateASingleElementByIdThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
