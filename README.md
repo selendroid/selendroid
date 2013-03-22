@@ -17,7 +17,8 @@ To write and run tests with selendroid, first a customized selendroid-server for
 Now you will find your customized selendroid-server. To run the server:
 
 		# start the selendroid server: 
-		adb shell am instrument -e main_activity 'org.openqa.selendroid.testapp.HomeScreenActivity' org.openqa.selendroid.server/org.openqa.selendroid.server.ServerInstrumentation
+		adb shell am instrument -e main_activity 'org.openqa.selendroid.testapp.HomeScreenActivity' org.openqa.selendroid/org.openqa.selendroid.ServerInstrumentation
+		# replace 'org.openqa.selendroid.testapp.HomeScreenActivity' with your app's main activity.
 		# activate port forwarding.
 		adb forward tcp:8080 tcp:8080
 
