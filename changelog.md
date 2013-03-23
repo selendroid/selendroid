@@ -1,4 +1,4 @@
-0.3
+0.3 (under development)
 ----
 - Moved from google gson library to org.json
 - Added first support of Selenium Advanced User Interactions API
@@ -8,11 +8,12 @@
      starts afterwards the selendroid server.
    - start: Starts the selendroid server on the first available Android device.
 - Fix for bug #6 that solves send key to an element.
-- Fixed get capabilities handler that adds now e.g. support for javascript.
-- Fixed get element location handler
+- Fixed a bug in getCapabilities handler that adds now e.g. support for javascript.
+- Fixed a  bug in getElementLocation handler
 - Added support for:
-   - get element size
-   - get attribute of element
+   - Get size of an element
+   - Get attribute of an element
+   - Get the info if an element is displayed or enabled
    - execute script (only supported for webview mode)
 - Added css locator support in webviews
 

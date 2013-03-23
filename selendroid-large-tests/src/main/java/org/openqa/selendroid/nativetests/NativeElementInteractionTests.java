@@ -102,4 +102,30 @@ public class NativeElementInteractionTests extends BaseAndroidTest {
           .assertTrue(e.getMessage().contains("Executing script is only available in web views."));
     }
   }
+
+  @Test
+  public void testShouldBeAbleToGetDisplayedStateOfElement() {
+    openStartActivity();
+    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    Assert.assertEquals(button.isDisplayed(), true);
+  }
+
+  @Test
+  public void testShouldBeAbleToGetEnbledStateOfElement() {
+    openStartActivity();
+    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    Assert.assertEquals(button.isEnabled(), true);
+  }
+
+  @Test
+  public void testShouldNotBeAbleToSubmitAnElement() {
+    openStartActivity();
+    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    try {
+      button.submit();
+      Assert.fail();
+    } catch (WebDriverException e) {
+      Assert.assertTrue(e.getMessage().contains("Submit is not supported for native elements."));
+    }
+  }
 }

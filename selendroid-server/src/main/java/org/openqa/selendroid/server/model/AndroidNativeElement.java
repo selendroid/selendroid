@@ -121,7 +121,7 @@ public class AndroidNativeElement implements AndroidElement {
       }
     });
     click();
-    
+
     send(Joiner.on("").join(keysToSend));
   }
 
@@ -300,22 +300,18 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public void submit() {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("Submit is not supported for native elements.");
   }
 
-  /**
-   * TODO use reflection
-   */
   @Override
   public boolean isSelected() {
-    if (view instanceof CheckBox) {
-      return ((CheckBox) view).isChecked();
+    if (view instanceof CheckBox || view instanceof RadioButton) {
+      String checked = getAttribute("checked");
+      return Boolean.parseBoolean(checked);
     }
-    if (view instanceof RadioButton) {
-      return ((RadioButton) view).isChecked();
-    }
+
     throw new UnsupportedOperationException(
-        "Is seleted is only available for checkboxes and Radio buttons.");
+        "Is selected is only available for view class CheckBox and RadioButton.");
   }
 
   @Override
@@ -381,7 +377,7 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public String getAttribute(String attribute) {
-    String name=capitalizeFirstLetter(attribute);
+    String name = capitalizeFirstLetter(attribute);
     Method method = getDeclaredMethod("get" + name);
     if (method == null) {
       method = getDeclaredMethod("is" + name);
@@ -409,15 +405,17 @@ public class AndroidNativeElement implements AndroidElement {
   private Method getDeclaredMethod(String name) {
     Preconditions.checkNotNull(name);
 
-    System.out.println("method name to look for: " + name);
-
     Method method = null;
     try {
       method = view.getClass().getMethod(name);
     } catch (NoSuchMethodException e) {
-      e.printStackTrace();
       // can happen
     }
     return method;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return view.isEnabled();
   }
 }

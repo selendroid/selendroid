@@ -30,10 +30,12 @@ import org.openqa.selendroid.server.handler.Flick;
 import org.openqa.selendroid.server.handler.GetCapabilities;
 import org.openqa.selendroid.server.handler.GetCurrentUrl;
 import org.openqa.selendroid.server.handler.GetElementAttribute;
+import org.openqa.selendroid.server.handler.GetElementDisplayed;
+import org.openqa.selendroid.server.handler.GetElementEnabled;
+import org.openqa.selendroid.server.handler.GetElementSelected;
 import org.openqa.selendroid.server.handler.GetElementSize;
 import org.openqa.selendroid.server.handler.GetPageTitle;
 import org.openqa.selendroid.server.handler.GetText;
-import org.openqa.selendroid.server.handler.IsElementSelected;
 import org.openqa.selendroid.server.handler.ListSessions;
 import org.openqa.selendroid.server.handler.LogElement;
 import org.openqa.selendroid.server.handler.LogElementTree;
@@ -96,18 +98,19 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     getHandler.put("/wd/hub/session/:sessionId/element/:id/source", LogElement.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/clear", ClearElement.class);
     getHandler.put("/wd/hub/sessions", ListSessions.class);
-    postHandler.put("/wd/hub/session/:sessionId/timeouts/implicit_wait",
-        SetImplicitWaitTimeout.class);
+    postHandler.put("/wd/hub/session/:sessionId/timeouts/implicit_wait",SetImplicitWaitTimeout.class);
     postHandler.put("/wd/hub/session/:sessionId/window", SwitchWindow.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/submit", SubmitForm.class);
     postHandler.put("/wd/hub/session/:sessionId/keys", SendKeyToActiveElement.class);
     getHandler.put("/wd/hub/session/:sessionId/title", GetPageTitle.class);
-    getHandler.put("/wd/hub/session/:sessionId/element/:id/selected", IsElementSelected.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/selected", GetElementSelected.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/location", ElementLocation.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/attribute/:name", GetElementAttribute.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/size", GetElementSize.class);
     postHandler.put("/wd/hub/session/:sessionId/execute", ExecuteScript.class);
-    
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/enabled", GetElementEnabled.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/displayed", GetElementDisplayed.class);
+
     // Advanced Touch API
     postHandler.put("/wd/hub/session/:sessionId/touch/click", SingleTapOnElement.class);
     postHandler.put("/wd/hub/session/:sessionId/touch/down", Down.class);
@@ -184,7 +187,7 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     if (name != null) {
       request.data().put(NAME_ID_KEY, name);
     }
-    
+
     request.data().put(DRIVER_KEY, driver);
   }
 }

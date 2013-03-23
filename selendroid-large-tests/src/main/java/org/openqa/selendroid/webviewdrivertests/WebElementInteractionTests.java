@@ -11,6 +11,8 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -105,8 +107,39 @@ public class WebElementInteractionTests extends BaseAndroidTest {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);
 
-    String name =
-        (String) ((JavascriptExecutor) driver).executeScript("return document.title");
+    String name = (String) ((JavascriptExecutor) driver).executeScript("return document.title");
     Assert.assertEquals(name, "We Leave From Here");
+  }
+
+  @Test
+  public void testShouldBeAbleToGetDisplayedStateOfElement() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+    waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);
+
+    WebElement element = driver.findElement(By.id("checky"));
+    Assert.assertEquals(element.isDisplayed(), true);
+  }
+
+  @Test
+  public void testShouldBeAbleToGetEnbledStateOfElement() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+    waitFor(pageTitleToBe(driver, "We Leave From Here"), 10, TimeUnit.SECONDS);
+
+    WebElement element = driver.findElement(By.id("checky"));
+    Assert.assertEquals(element.isEnabled(), true);
+  }
+
+  @Test
+  public void testShouldBeAbleToSubmitAnElement() {
+    openWebdriverTestPage(HtmlTestData.SAY_HELLO_DEMO);
+
+    WebElement inputField = driver.findElement(By.id("name_input"));
+    Assert.assertNotNull(inputField);
+    inputField.clear();
+    inputField.sendKeys("Selendroid");
+
+    inputField.submit();
+    String name = (String) ((JavascriptExecutor) driver).executeScript("return document.title");
+    Assert.assertEquals(name, "Hello: Selendroid");
   }
 }

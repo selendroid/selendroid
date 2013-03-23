@@ -39,6 +39,10 @@ public interface AndroidElement {
   public void submit();
 
   public boolean isSelected();
+  
+  public boolean isDisplayed();
+  
+  public boolean isEnabled();
 
   public void clear();
 

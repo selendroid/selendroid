@@ -26,11 +26,12 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-  
+
 import com.google.common.base.Throwables;
 
 public class WebViewActivity extends Activity {
@@ -54,11 +55,12 @@ public class WebViewActivity extends Activity {
 
 
     mainWebView = (WebView) findViewById(R.id.mainWebView);
+    mainWebView.setWebViewClient(new MyWebViewClient());
     testDataSpinner = (Spinner) findViewById(R.id.spinner_webdriver_test_data);
     arrayAdapter =
         new ArrayAdapter<SpinnerItem>(this, android.R.layout.simple_spinner_item,
             new ArrayList<SpinnerItem>());
-    arrayAdapter.add(new SpinnerItem("'Say Hello'-Demo", "http://localhost:4450"));
+    arrayAdapter.add(new SpinnerItem("'Say Hello'-Demo", "http://localhost:4450/"));
     arrayAdapter.add(new SpinnerItem("xhtmlTestPage", "file:///android_asset/web/xhtmlTest.html"));
     arrayAdapter.add(new SpinnerItem("formPage", "file:///android_asset/web/formPage.html"));
     arrayAdapter.add(new SpinnerItem("selectableItemsPage", "file:///android_asset/web/selectableItems.html"));
@@ -81,9 +83,7 @@ public class WebViewActivity extends Activity {
 
       @Override
       public void onNothingSelected(AdapterView<?> arg0) {
-        mainWebView.loadUrl("about:blank");
         SpinnerItem item = (SpinnerItem) testDataSpinner.getSelectedItem();
-        System.out.println("Selected Item: " + item.text);
         mainWebView.loadUrl(item.url);
       }
     });
@@ -159,4 +159,11 @@ public class WebViewActivity extends Activity {
       looper.quit();
     }
   }
+  private class MyWebViewClient extends WebViewClient {
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        view.loadUrl(url);
+        return true;
+    }
+}
 }
