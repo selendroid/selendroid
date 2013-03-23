@@ -209,7 +209,12 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
           Display display =
               serverInstrumentation.getCurrentActivity().getWindowManager().getDefaultDisplay();
           Point size = new Point();
-          display.getSize(size);
+          try {
+            display.getSize(size);
+          } catch (NoSuchMethodError ignore) { // Older than api level 13
+            size.x = display.getWidth();
+            size.y = display.getHeight();
+          }
 
           // Get root view
           View view = mainView.getRootView();
