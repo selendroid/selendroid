@@ -39,7 +39,6 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -61,6 +60,8 @@ public class AndroidNativeElement implements AndroidElement {
   private ServerInstrumentation instrumentation;
   private SearchContext nativeElementSearchScope = null;
   private Coordinates coordinates = null;
+  final Object syncObject = new Object();
+  private Boolean done = false;
 
   public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KnownElements ke) {
     this.view = view;
@@ -94,21 +95,27 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   protected void scrollIntoScreenIfNeeded() {
-    // TODO REVIEW: similar to click method
-    int[] location = new int[2];
-    view.getLocationOnScreen(location);
-    final int left = location[0];
-    final int top = location[1];
-    final int right = left + view.getWidth();
-    final int bottom = top + view.getHeight();
-
     instrumentation.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        view.requestRectangleOnScreen(new Rect(left, top, right, bottom));
+        synchronized (syncObject) {
+          view.requestFocus();
+          done = true;
+          syncObject.notify();
+        }
       }
     });
-
+    long end = System.currentTimeMillis() + instrumentation.getAndroidWait().getTimeoutInMillis();
+    synchronized (syncObject) {
+      while (!done && System.currentTimeMillis() < end) {
+        try {
+          syncObject.wait(instrumentation.getAndroidWait().getTimeoutInMillis());
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+          throw new SelendroidException(e);
+        }
+      }
+    }
   }
 
   @Override
@@ -139,9 +146,7 @@ public class AndroidNativeElement implements AndroidElement {
   public void click() {
     waitUntilIsDisplayed();
     scrollIntoScreenIfNeeded();
-    try {
-      Thread.sleep(300);
-    } catch (InterruptedException ignored) {}
+
     int[] xy = new int[2];
     view.getLocationOnScreen(xy);
     final int viewWidth = view.getWidth();
