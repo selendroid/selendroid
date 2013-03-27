@@ -99,6 +99,12 @@ public class AndroidNativeElement implements AndroidElement {
       @Override
       public void run() {
         synchronized (syncObject) {
+          if (!view.isFocusable()) {
+            view.setFocusable(true);
+          }
+          if (!view.isFocusableInTouchMode()) {
+            view.setFocusableInTouchMode(true);
+          }
           view.requestFocus();
           done = true;
           syncObject.notify();
