@@ -95,17 +95,17 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   protected void scrollIntoScreenIfNeeded() {
+    Point leftTopLocation = getLocation();
+    final int left = leftTopLocation.x;
+    final int top = leftTopLocation.y;
+
     instrumentation.runOnUiThread(new Runnable() {
       @Override
       public void run() {
         synchronized (syncObject) {
-          if (!view.isFocusable()) {
-            view.setFocusable(true);
-          }
-          if (!view.isFocusableInTouchMode()) {
-            view.setFocusableInTouchMode(true);
-          }
-          view.requestFocus();
+          Rect r = new Rect(left, top, view.getWidth(), view.getHeight());
+
+          view.requestRectangleOnScreen(r);
           done = true;
           syncObject.notify();
         }
@@ -152,7 +152,10 @@ public class AndroidNativeElement implements AndroidElement {
   public void click() {
     waitUntilIsDisplayed();
     scrollIntoScreenIfNeeded();
-
+    try {
+      //is needed for recalculation of location
+      Thread.sleep(300);
+    } catch (InterruptedException e) {}
     int[] xy = new int[2];
     view.getLocationOnScreen(xy);
     final int viewWidth = view.getWidth();
