@@ -51,7 +51,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateASingleElementByTextThatDoesNotExist() {
     openStartActivity();
     try {
-      driver.findElement(By.linkText("nonExistantButton"));
+      driver.findElement(By.linkText("nonExistentButton"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -61,12 +61,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByTextThatDoesNotExist() {
     openStartActivity();
-    try {
-      driver.findElements(By.linkText("nonExistantButton"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.linkText("nonExistentButton")));
   }
 
   @Test
@@ -95,7 +90,8 @@ public class NativeElementFindingTest extends BaseAndroidTest {
       driver.findElement(By.cssSelector("button[id='linkId']"));
       Assert.fail("Finding Native elements by css selector is not supported.");
     } catch (WebDriverException e) {
-      Assert.assertTrue(e.getMessage().contains("By locator ByCssSelector is curently not supported!"));
+      Assert.assertTrue(e.getMessage().contains(
+          "By locator ByCssSelector is curently not supported!"));
     }
   }
 
@@ -117,7 +113,8 @@ public class NativeElementFindingTest extends BaseAndroidTest {
       driver.findElements(By.cssSelector("button[id='linkId']"));
       Assert.fail("Finding Native elements by css selector is not supported.");
     } catch (WebDriverException e) {
-      Assert.assertTrue(e.getMessage().contains("By locator ByCssSelector is curently not supported!"));
+      Assert.assertTrue(e.getMessage().contains(
+          "By locator ByCssSelector is curently not supported!"));
     }
   }
 
@@ -134,7 +131,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateASingleElementByIdThatDoesNotExist() {
     openStartActivity();
     try {
-      driver.findElement(By.id("nonExistantButton"));
+      driver.findElement(By.id("nonExistentButton"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -144,12 +141,8 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByIdThatDoesNotExist() {
     openStartActivity();
-    try {
-      driver.findElements(By.id("nonExistantButton"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.id("nonExistentButton")));
+
   }
 
   @Test
@@ -165,7 +158,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
     List<WebElement> elements = driver.findElements(By.className("android.widget.Button"));
-    Assert.assertEquals(elements.size(), 2);
+    Assert.assertEquals(elements.size(), 3);
     Assert.assertEquals(elements.get(1).getText(), buttonText);
   }
 
@@ -183,12 +176,11 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByClassThatDoesNotExist() {
     openStartActivity();
-    try {
-      driver.findElements(By.className("de.dary.MyView"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.className("de.dary.MyView")));
+  }
+
+  private void assertListIsEmpty(List<WebElement> elements) {
+    Assert.assertTrue(elements.isEmpty(), "Expecting empty list when no elements are found.");
   }
 
   @Test
@@ -222,12 +214,8 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByL10nKeyThatDoesNotExist() {
     openStartActivity();
-    try {
-      driver.findElements(By.tagName("de.dary.MyView.l10nView"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.tagName("de.dary.MyView.l10nView")));
+
   }
 
   @Test
@@ -261,12 +249,9 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByContentDescriptionThatDoesNotExist() {
     openStartActivity();
-    try {
-      driver.findElements(By.name("cdDoesNotExist"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+
+    assertListIsEmpty(driver.findElements(By.name("cdDoesNotExist")));
+
   }
 
 }

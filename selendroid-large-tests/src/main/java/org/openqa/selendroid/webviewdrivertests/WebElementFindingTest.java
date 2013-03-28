@@ -16,15 +16,13 @@ package org.openqa.selendroid.webviewdrivertests;
 import static org.openqa.selendroid.waiter.TestWaiter.waitFor;
 import static org.openqa.selendroid.waiter.WaitingConditions.pageTitleToBe;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
-import org.openqa.selendroid.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -45,7 +43,7 @@ public class WebElementFindingTest extends BaseAndroidTest {
       // this is expected
     }
   }
-  
+
   @Test()
   public void testShouldNotBeAbleToLocateASingleElementByCssSelctorThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
@@ -122,84 +120,53 @@ public class WebElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateMultipleElementsByIdThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
-    try {
-      driver.findElements(By.id("nonExistantButton"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.id("nonExistantButton")));
   }
-  
+
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByCssSelectorThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
-    try {
-      driver.findElements(By.cssSelector("nonExistantButton"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.cssSelector("nonExistantButton")));
   }
 
   @Test
   public void testShouldNotBeAbleToLocateMultipleElementsByXPathThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
-    try {
-      driver.findElements(By.xpath("//*[@id='notThere']"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.xpath("//*[@id='notThere']")));
   }
 
   @Test
   public void testShouldNotBeAbleToLocateAMultipleElementsByTagNameThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
-    try {
-      driver.findElements(By.tagName("notThere"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.tagName("notThere")));
   }
 
   @Test
   public void testShouldNotBeAbleToLocateMultipleElementsByClassThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
-    try {
-      driver.findElements(By.className("notThere"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.className("notThere")));
+  }
+
+  private void assertListIsEmpty(List<WebElement> elements) {
+    Assert.assertTrue(elements.isEmpty(), "Expecting empty list when no elements are found.");
   }
 
   @Test
   public void testShouldNotBeAbleToLocateMultipleElementsByNameThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
-    try {
-      driver.findElements(By.name("notThere"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.name("notThere")));
   }
 
   @Test
   public void testShouldNotBeAbleToLocateMultipleElementsByTextThatDoesNotExist() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
 
-    try {
-      driver.findElements(By.linkText("notThere"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    assertListIsEmpty(driver.findElements(By.linkText("notThere")));
   }
 
   @Test
@@ -220,7 +187,7 @@ public class WebElementFindingTest extends BaseAndroidTest {
     waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
-  
+
   @Test
   public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedByCssSelector() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
@@ -254,7 +221,7 @@ public class WebElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindElementAndGetTextOnLinkIdentifiedByName() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
-    System.out.println(driver.getPageSource());
+    
     WebElement element = driver.findElement(By.name("nameTest"));
     Assert.assertEquals(element.getText(), "click me");
   }
@@ -277,7 +244,7 @@ public class WebElementFindingTest extends BaseAndroidTest {
     waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
-  
+
   @Test
   public void testShouldBeAbleToFindElementsAndClickOnLinkIdentifiedByCssSelector() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);

@@ -32,10 +32,14 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp."
       + "HomeScreenActivity";
 
+  private void assertListIsEmpty(List<WebElement> elements) {
+    Assert.assertTrue(elements.isEmpty(), "Expecting empty list when no elements are found.");
+  }
+
   @Test
   public void testShouldBeAbleToFindChildButtonIdentifiedByText() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     WebElement clickMe = rootElement.findElement(By.linkText(buttonText));
     Assert.assertEquals(clickMe.getText(), buttonText);
@@ -44,7 +48,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindChildButtonsIdentifiedByText() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     List<WebElement> elements = rootElement.findElements(By.linkText(buttonText));
     Assert.assertEquals(elements.size(), 1);
@@ -54,7 +58,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateASingleChildElementByTextThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     try {
       rootElement.findElement(By.linkText("nonExistantButton"));
       Assert.fail("Should not have succeeded");
@@ -66,19 +70,14 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleChildElementsByTextThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
-    try {
-      rootElement.findElements(By.linkText("nonExistantButton"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+    assertListIsEmpty(rootElement.findElements(By.linkText("nonExistantButton")));
   }
 
   @Test
   public void testShouldBeAbleToFindChildButtonIdentifiedById() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     WebElement clickMe = rootElement.findElement(By.id("buttonTest"));
     Assert.assertEquals(clickMe.getText(), buttonText);
@@ -87,7 +86,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindChildButtonsIdentifiedById() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     List<WebElement> elements = rootElement.findElements(By.id("buttonTest"));
     Assert.assertEquals(elements.size(), 1);
@@ -97,8 +96,8 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateASingleChildElementByIdThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
-    
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+
     try {
       rootElement.findElement(By.id("nonExistantButton"));
       Assert.fail("Should not have succeeded");
@@ -110,19 +109,15 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleChildElementsByIdThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
-    try {
-      rootElement.findElements(By.id("nonExistantButton"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+    assertListIsEmpty(rootElement.findElements(By.id("nonExistantButton")));
+
   }
 
   @Test
   public void testShouldBeAbleToFindChildButtonIdentifiedByClass() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     WebElement clickMe = rootElement.findElement(By.className("android.widget.Button"));
     Assert.assertEquals(clickMe.getText(), buttonText);
@@ -131,7 +126,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindChildButtonsIdentifiedByClass() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     List<WebElement> elements = rootElement.findElements(By.className("android.widget.Button"));
     Assert.assertEquals(elements.size(), 1);
@@ -141,7 +136,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateASingleChildElementByClassThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     try {
       rootElement.findElement(By.className("de.dary.MyView"));
       Assert.fail("Should not have succeeded");
@@ -153,19 +148,14 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleChildElementsByClassThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
-    try {
-      rootElement.findElements(By.className("de.dary.MyView"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+    assertListIsEmpty(rootElement.findElements(By.className("de.dary.MyView")));
   }
 
   @Test
   public void testShouldBeAbleToFindChildButtonIdentifiedByL10nKey() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     WebElement clickMe = rootElement.findElement(By.tagName("button"));
     Assert.assertEquals(clickMe.getText(), buttonText);
@@ -174,7 +164,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindChildButtonsIdentifiedByL10nKey() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     List<WebElement> elements = rootElement.findElements(By.tagName("button"));
     Assert.assertEquals(elements.size(), 1);
@@ -184,7 +174,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateASingleChildElementByL10nKeyThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     try {
       rootElement.findElement(By.tagName("de.dary.MyView.l10nView"));
       Assert.fail("Should not have succeeded");
@@ -196,19 +186,15 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleChildElementsByL10nKeyThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
-    try {
-      rootElement.findElements(By.tagName("de.dary.MyView.l10nView"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+    assertListIsEmpty(rootElement.findElements(By.tagName("de.dary.MyView.l10nView")));
+
   }
-  
+
   @Test
   public void testShouldBeAbleToFindChildButtonIdentifiedByContentDescription() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     WebElement clickMe = rootElement.findElement(By.name("buttonTestCD"));
     Assert.assertEquals(clickMe.getText(), buttonText);
@@ -217,7 +203,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindChildButtonsIdentifiedContentDescription() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
     List<WebElement> elements = rootElement.findElements(By.name("buttonTestCD"));
     Assert.assertEquals(elements.size(), 1);
@@ -227,7 +213,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateASingleChildElementByContentDescriptionThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     try {
       rootElement.findElement(By.name("cdDoesNotExist"));
       Assert.fail("Should not have succeeded");
@@ -239,15 +225,11 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleChildElementsByContentDescriptionThatDoesNotExist() {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
-    try {
-      rootElement.findElements(By.name("cdDoesNotExist"));
-      Assert.fail("Should not have succeeded");
-    } catch (NoSuchElementException e) {
-      // this is expected
-    }
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+    assertListIsEmpty(rootElement.findElements(By.name("cdDoesNotExist")));
+
   }
-  
+
   @Test
   public void testShouldNotBeAbleTofindChildElementByXpath() throws Exception {
     openStartActivity();
@@ -262,19 +244,20 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldNotBeAbleTofindChildElementByCssSelector() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     try {
       rootElement.findElement(By.cssSelector("button[id='waitingButtonTest']"));
       Assert.fail("Finding Native elements by css selector is not supported.");
     } catch (WebDriverException e) {
-      Assert.assertTrue(e.getMessage().contains("By locator ByCssSelector is curently not supported!"));
+      Assert.assertTrue(e.getMessage().contains(
+          "By locator ByCssSelector is curently not supported!"));
     }
   }
 
   @Test
   public void testShouldNotBeAbleTofindChildElementsByXpath() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     try {
       rootElement.findElements(By.xpath("//button[id='waitingButtonTest']"));
       Assert.fail("Finding Native elements by css selector is not supported.");
@@ -286,12 +269,13 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldNotBeAbleTofindChildElementsByCssSelector() throws Exception {
     openStartActivity();
-    WebElement rootElement=driver.findElement(By.id("l10n"));
+    WebElement rootElement = driver.findElement(By.id("l10n"));
     try {
       rootElement.findElements(By.cssSelector("button[id='waitingButtonTest']"));
       Assert.fail("Finding Native elements by css selector is not supported.");
     } catch (WebDriverException e) {
-      Assert.assertTrue(e.getMessage().contains("By locator ByCssSelector is curently not supported!"));
+      Assert.assertTrue(e.getMessage().contains(
+          "By locator ByCssSelector is curently not supported!"));
     }
   }
 
