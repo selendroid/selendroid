@@ -38,7 +38,7 @@ public class Scroll extends RequestHandler {
     } else {
       AndroidElement element = getElementFromCache(elementId);
       if (element == null) {
-        return new Response(getSessionId(), 7, new SelendroidException("Element with id '"
+        return new Response(getSessionId(), 10, new SelendroidException("Element with id '"
             + elementId + "' was not found."));
       }
       getSelendroidDriver().getTouch().scroll(element.getCoordinates(), xoffset, yoffset);
