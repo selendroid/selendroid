@@ -119,8 +119,8 @@ public abstract class AbstractNativeElementContext
       return findElementsByName(by.getElementLocator());
     }
 
-    throw new UnsupportedOperationException(String.format("By locator %s is curently not supported!", by
-        .getClass().getSimpleName()));
+    throw new UnsupportedOperationException(String.format(
+        "By locator %s is curently not supported!", by.getClass().getSimpleName()));
   }
 
   @Override
@@ -136,20 +136,20 @@ public abstract class AbstractNativeElementContext
     } else if (by instanceof ByName) {
       return findElementByName(by.getElementLocator());
     }
-    throw new UnsupportedOperationException(String.format("By locator %s is curently not supported!", by
-        .getClass().getSimpleName()));
+    throw new UnsupportedOperationException(String.format(
+        "By locator %s is curently not supported!", by.getClass().getSimpleName()));
   }
 
   @Override
   public AndroidElement findElementById(String using) {
     Activity currentActivity = instrumentation.getCurrentActivity();
     if (currentActivity == null) {
-      return null;
+      throw new SelendroidException("No open activity found.");
     }
     int intId =
         currentActivity.getResources().getIdentifier(using, "id", currentActivity.getPackageName());
     if (intId == 0) {
-      return null;
+     return null;
     }
     View view = currentActivity.findViewById(intId);
     if (view == null) {

@@ -32,13 +32,12 @@ public class FindElement extends RequestHandler {
   }
 
   @Override
-  public Response handle() throws JSONException{
+  public Response handle() throws JSONException {
     JSONObject payload = getPayload();
     String method = payload.getString("using");
     String selector = payload.getString("value");
     SelendroidLogger.log(String.format("find element command using '%s' with selector '%s'.",
         method, selector));
-
 
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
     AndroidElement element = null;

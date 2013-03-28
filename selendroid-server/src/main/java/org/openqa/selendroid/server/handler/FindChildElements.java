@@ -52,7 +52,7 @@ public class FindChildElements extends RequestHandler {
     try {
       elements = root.findElements(by);
     } catch (NoSuchElementException e) {
-      return new Response(getSessionId(), new JsonArray());
+      return new Response(getSessionId(), new JSONArray());
     }catch (UnsupportedOperationException e) {
       return new Response(getSessionId(), 32, e);
     }

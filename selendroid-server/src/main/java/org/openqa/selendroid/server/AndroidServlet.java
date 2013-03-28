@@ -162,6 +162,8 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     if (result != null) {
       String resultString = result.toString();
       response.content(resultString);
+    }else{
+      System.out.println("no result");
     }
     response.end();
   }

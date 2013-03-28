@@ -46,7 +46,7 @@ public class FindElements extends RequestHandler {
     try {
       elements = getSelendroidDriver().findElements(by);
     } catch (NoSuchElementException e) {
-      return new Response(getSessionId(), 7, e);
+      return new Response(getSessionId(), new JSONArray());
     } catch (UnsupportedOperationException e) {
       return new Response(getSessionId(), 32, e);
     }

@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidTouchScreen;
+import org.openqa.selendroid.android.AndroidWait;
 import org.openqa.selendroid.android.KeySender;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.WindowType;
@@ -81,17 +82,20 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     if (by == null) {
       throw new IllegalArgumentException("By cannot be null.");
     }
-    long start = System.currentTimeMillis();
+
     SearchContext context = getSearchContext();
     AndroidElement found = by.findElement(context);
+    long timeout = getTimeout();
 
-    while (found == null
-        && (System.currentTimeMillis() - start <= serverInstrumentation.getAndroidWait()
-            .getTimeoutInMillis())) {
-      sleepQuietly(400);
+    while (found == null && (System.currentTimeMillis() < timeout)) {
+      sleepQuietly(AndroidWait.DEFAULT_SLEEP_INTERVAL);
       found = by.findElement(context);
     }
     return found;
+  }
+
+  private long getTimeout() {
+    return System.currentTimeMillis() + serverInstrumentation.getAndroidWait().getTimeoutInMillis();
   }
 
   /*
@@ -106,14 +110,12 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     if (by == null) {
       throw new IllegalArgumentException("By cannot be null.");
     }
-    long start = System.currentTimeMillis();
+    long timeout = getTimeout();
     SearchContext context = getSearchContext();
 
     List<AndroidElement> found = by.findElements(context);
-    while (found.isEmpty()
-        && (System.currentTimeMillis() - start <= serverInstrumentation.getAndroidWait()
-            .getTimeoutInMillis())) {
-      sleepQuietly(200);
+    while (found.isEmpty() && (System.currentTimeMillis() < timeout)) {
+      sleepQuietly(AndroidWait.DEFAULT_SLEEP_INTERVAL);
       found = by.findElements(context);
     }
     return found;

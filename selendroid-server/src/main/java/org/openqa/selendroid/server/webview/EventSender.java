@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidKeys;
+import org.openqa.selendroid.android.AndroidWait;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 
 import android.app.Activity;
@@ -76,7 +77,7 @@ public class EventSender {
   private static void waitForNotification(long timeout, String errorMsg) {
     while (!done && (System.currentTimeMillis() < timeout)) {
       try {
-        syncObject.wait(ServerInstrumentation.getInstance().getAndroidWait().getTimeoutInMillis());
+        syncObject.wait(AndroidWait.DEFAULT_SLEEP_INTERVAL);
       } catch (InterruptedException e) {
         throw new SelendroidException(errorMsg, e);
       }

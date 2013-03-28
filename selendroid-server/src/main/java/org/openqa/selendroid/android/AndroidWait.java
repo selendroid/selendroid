@@ -30,8 +30,8 @@ import com.google.common.base.Function;
  * @author Tomohiro Kaizu
  */
 public class AndroidWait implements Wait<Void> {
-  private static final long DEFAULT_SLEEP_INTERVAL = 200;
-  private static final long DEFAULT_TIMEOUT = 2000;
+  public static final long DEFAULT_SLEEP_INTERVAL = 200;
+  private static final long DEFAULT_TIMEOUT = 5000;
 
   private final Clock clock;
   private final long sleepIntervalInMillis;
