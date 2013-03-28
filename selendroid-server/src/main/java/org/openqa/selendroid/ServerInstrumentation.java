@@ -43,16 +43,17 @@ public class ServerInstrumentation extends Instrumentation {
 
   public void startActivity(Class activity) {
     if (activity == null) {
-      SelendroidLogger.logError("activity class is empty", null);
+      SelendroidLogger.log("activity class is empty", null);
       return;
     }
 
     // start now the new activity
     Intent intent = new Intent(getTargetContext(), activity);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT| Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+        | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
     intent.setAction(Intent.ACTION_MAIN);
     intent.addCategory(Intent.CATEGORY_LAUNCHER);
-    Activity a=startActivitySync(intent);
+    Activity a = startActivitySync(intent);
   }
 
   public void finishAllActivities() {
@@ -79,7 +80,7 @@ public class ServerInstrumentation extends Instrumentation {
     try {
       clazz = (Class<? extends Activity>) Class.forName(activityClazzName);
     } catch (ClassNotFoundException exception) {
-      SelendroidLogger.logError("The class with name '" + activityClazzName + "' does not exist.",
+      SelendroidLogger.log("The class with name '" + activityClazzName + "' does not exist.",
           exception);
     }
     mainActivity = clazz;
@@ -96,10 +97,11 @@ public class ServerInstrumentation extends Instrumentation {
       try {
         startServer();
       } catch (Exception e) {
-        SelendroidLogger.logError("Exception when starting selendroid.", e);
+        SelendroidLogger.log("Exception when starting selendroid.", e);
       }
     }
-    SelendroidLogger.log("Selendroid started on port " + server.getPort());
+    // make sure this is always displayed 
+    System.out.println("Selendroid started on port " + server.getPort());
   }
 
   public static synchronized ServerInstrumentation getInstance() {
@@ -144,14 +146,14 @@ public class ServerInstrumentation extends Instrumentation {
     try {
       View decorView = getCurrentActivity().getWindow().getDecorView();
       if (decorView != null) {
-        View rootView = null;//decorView.findViewById(android.R.id.content);
+        View rootView = null;// decorView.findViewById(android.R.id.content);
         if (rootView != null) {
           return rootView;
         }
       }
       return decorView;
     } catch (Exception e) {
-      SelendroidLogger.logError("Error occured while searching for root view: ", e);
+      SelendroidLogger.log("Error occured while searching for root view: ", e);
     }
 
     throw new SelendroidException("Could not find any views");
@@ -162,7 +164,7 @@ public class ServerInstrumentation extends Instrumentation {
     try {
       stopServer();
     } catch (Exception e) {
-      SelendroidLogger.logError("Error occured while shutting down: ", e);
+      SelendroidLogger.log("Error occured while shutting down: ", e);
     }
     instance = null;
   }
@@ -185,12 +187,13 @@ public class ServerInstrumentation extends Instrumentation {
   public void setImplicitWait(long milies) {
     androidWait.setTimeoutInMillis(milies);
   }
-  
-  public String getSelendroidVersionNumber(){
-    Context context=getContext();
-    String versionName="0.2";
+
+  public String getSelendroidVersionNumber() {
+    Context context = getContext();
+    String versionName = "0.2";
     try {
-      versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0 ).versionName;
+      versionName =
+          context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
     } catch (NameNotFoundException e) {}
     return versionName;
   }

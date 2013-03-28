@@ -23,7 +23,7 @@ public class SelendroidLogger {
     // System.out.println(message);
   }
 
-  public static void logError(String message, Exception e) {
+  public static void log(String message, Exception e) {
     System.out.println(message);
     e.printStackTrace(System.out);
   }

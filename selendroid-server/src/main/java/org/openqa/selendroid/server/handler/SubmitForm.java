@@ -35,7 +35,7 @@ public class SubmitForm extends RequestHandler {
     try {
       element.submit();
     } catch (Exception e) {
-      SelendroidLogger.logError("error while submitting the element: ", e);
+      SelendroidLogger.log("error while submitting the element: ", e);
       return new Response(sessionId, 33, e);
     }
     return new Response(sessionId, "");

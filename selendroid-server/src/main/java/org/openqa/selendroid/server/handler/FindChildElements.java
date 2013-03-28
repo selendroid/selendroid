@@ -26,6 +26,7 @@ import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
+import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class FindChildElements extends RequestHandler {
@@ -39,7 +40,7 @@ public class FindChildElements extends RequestHandler {
     JSONObject payload = getPayload();
     String method = payload.getString("using");
     String selector = payload.getString("value");
-    System.out.println(String.format("find child element command using %s with selector %s.",
+    SelendroidLogger.log(String.format("find child element command using %s with selector %s.",
         method, selector));
     Long elementId = getElementId();
     AndroidElement root = getElementFromCache(elementId);

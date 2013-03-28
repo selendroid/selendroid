@@ -34,6 +34,7 @@ import org.openqa.selendroid.server.exceptions.TimeoutException;
 import org.openqa.selendroid.server.model.interactions.AndroidCoordinates;
 import org.openqa.selendroid.server.model.interactions.Coordinates;
 import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
+import org.openqa.selendroid.util.SelendroidLogger;
 
 import android.graphics.Rect;
 import android.os.SystemClock;
@@ -182,7 +183,7 @@ public class AndroidNativeElement implements AndroidElement {
         Thread.sleep(300);
       } catch (InterruptedException ignored) {}
     } catch (SecurityException e) {
-      System.out.println("error while clicking element: " + e);
+      SelendroidLogger.log("error while clicking element", e);
     }
   }
 

@@ -17,6 +17,7 @@ import java.util.Locale;
 
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
@@ -38,7 +39,7 @@ public class StatusServlet implements HttpHandler {
       httpResponse.end();
       return;
     }
-    System.out.println("get Status Servlet Called");
+    SelendroidLogger.log("get Status Servlet Called");
     JSONObject build = new JSONObject();
     build.put("version", serverInstrumentation.getSelendroidVersionNumber());
     build.put("name", "selendroid");

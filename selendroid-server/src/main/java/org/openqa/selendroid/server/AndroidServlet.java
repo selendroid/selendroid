@@ -141,7 +141,7 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
       addHandlerAttributesToRequest(request, handler.getMappedUri());
       result = handler.handle();
     } catch (Exception e) {
-      SelendroidLogger.logError("Error occured while handling reuqest.", e);
+      SelendroidLogger.log("Error occured while handling reuqest.", e);
       replyWithServerError(response);
       return;
     }
@@ -162,8 +162,6 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     if (result != null) {
       String resultString = result.toString();
       response.content(resultString);
-    }else{
-      System.out.println("no result");
     }
     response.end();
   }

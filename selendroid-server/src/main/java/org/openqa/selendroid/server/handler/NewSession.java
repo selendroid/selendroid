@@ -40,7 +40,7 @@ public class NewSession extends RequestHandler {
     try {
       sessionID = getSelendroidDriver().initializeSession(desiredCapabilities);
     } catch (SelendroidException e) {
-      SelendroidLogger.logError("Error while creating new session: ", e);
+      SelendroidLogger.log("Error while creating new session: ", e);
       return new Response("", 33, e);
     }
     return new Response(sessionID, 0, desiredCapabilities);

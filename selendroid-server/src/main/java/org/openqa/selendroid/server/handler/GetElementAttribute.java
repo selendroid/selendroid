@@ -19,6 +19,7 @@ import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementAttributeException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
+import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class GetElementAttribute extends RequestHandler {
@@ -29,7 +30,7 @@ public class GetElementAttribute extends RequestHandler {
 
   @Override
   public Response handle() throws JSONException {
-    System.out.println("get text command");
+    SelendroidLogger.log("get attribute of element command");
     Long id = getElementId();
     String attributeName = getNameAttribute();
     AndroidElement element = getElementFromCache(id);

@@ -208,7 +208,7 @@ public class SelendroidWebDriver {
   }
 
   protected void init() {
-    System.out.println("webdriver init");
+    System.out.println("Selendroid webdriver init");
     long start = System.currentTimeMillis();
     webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebView();
     while (webview == null

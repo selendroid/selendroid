@@ -5,6 +5,7 @@ import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
+import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class GetElementSelected extends RequestHandler {
@@ -15,7 +16,7 @@ public class GetElementSelected extends RequestHandler {
 
   @Override
   public Response handle() throws JSONException {
-    System.out.println("is element selected command");
+    SelendroidLogger.log("is element selected command");
     Long id = getElementId();
 
     AndroidElement element = getElementFromCache(id);

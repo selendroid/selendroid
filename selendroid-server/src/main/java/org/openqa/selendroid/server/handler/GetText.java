@@ -18,6 +18,7 @@ import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
+import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class GetText extends RequestHandler {
@@ -28,7 +29,7 @@ public class GetText extends RequestHandler {
 
   @Override
   public Response handle() throws JSONException {
-    System.out.println("get text command");
+    SelendroidLogger.log("get text command");
     Long id = getElementId();
 
     AndroidElement element = getElementFromCache(id);

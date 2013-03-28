@@ -21,6 +21,7 @@ import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.inspector.InspectorServlet;
 import org.openqa.selendroid.server.inspector.SelendroidInspectorView;
 import org.openqa.selendroid.server.model.SelendroidDriver;
+import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
@@ -41,7 +42,7 @@ public class ResourceView extends SelendroidInspectorView {
       httpResponse.header("Content-Type", "text/html");
       byte[] screenshot = driver.takeScreenshot();
       if (screenshot == null) {
-        System.out.println("screenshot is null");
+        SelendroidLogger.log("screenshot is null");
       }
       httpResponse.content(screenshot);
     } else {

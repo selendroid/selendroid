@@ -43,7 +43,7 @@ public class BaseServlet {
       handler = handlerConstr.newInstance(request, entry.getKey());
     } catch (Exception e) {
       e.printStackTrace();
-      SelendroidLogger.logError("Error occured while creating handler: ", e);
+      SelendroidLogger.log("Error occured while creating handler: ", e);
     }
 
     return handler;

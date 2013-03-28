@@ -39,7 +39,7 @@ public class ClickElement extends RequestHandler {
     try {
       element.click();
     } catch (Exception e) {
-      SelendroidLogger.logError("error while clicking the element: ", e);
+      SelendroidLogger.log("error while clicking the element: ", e);
       return new Response(getSessionId(), 33, e);
     }
     return new Response(getSessionId(), "");
