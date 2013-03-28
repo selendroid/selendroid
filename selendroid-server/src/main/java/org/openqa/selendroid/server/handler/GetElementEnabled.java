@@ -21,8 +21,8 @@ public class GetElementEnabled extends RequestHandler {
 
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
-      return new Response(getSessionId(), 7, new SelendroidException("Element with id '" + id
-          + "' was not found."));
+      return new Response(getSessionId(), 10, new SelendroidException("Element with id '" + id
+          + "' was not found in cache."));
     }
     return new Response(getSessionId(), element.isEnabled());
   }
