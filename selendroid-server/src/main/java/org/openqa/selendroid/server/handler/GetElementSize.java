@@ -36,7 +36,7 @@ public class GetElementSize extends RequestHandler {
 
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
-      return new Response(getSessionId(), 7, new SelendroidException("Element with id '" + id
+      return new Response(getSessionId(), 10, new SelendroidException("Element with id '" + id
           + "' was not found."));
     }
     Dimension dimension = element.getSize();

@@ -35,11 +35,11 @@ public class LogElement extends RequestHandler {
 
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
-      return new Response(getSessionId(), 7, new SelendroidException("Element with id '" + id
+      return new Response(getSessionId(), 10, new SelendroidException("Element with id '" + id
           + "' was not found."));
     }
     if (element instanceof AndroidWebElement) {
-      return new Response(getSessionId(), 7, new SelendroidException(
+      return new Response(getSessionId(), 12, new SelendroidException(
           "Get source of element is only supported for native elements."));
     }
 
