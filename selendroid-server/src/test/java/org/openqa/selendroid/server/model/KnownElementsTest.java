@@ -11,26 +11,28 @@ import org.openqa.selendroid.ServerInstrumentation;
 import android.view.View;
 import android.webkit.WebView;
 
+import java.util.UUID;
+
 public class KnownElementsTest {
   @Test
   public void testAddNativeElement() {
     KnownElements ke = new KnownElements();
-    Long id = ke.add(createNativeElement(ke));
-    Assert.assertEquals(new Long(1), id);
+    String id = ke.add(createNativeElement(ke));
+    Assert.assertEquals("815", id);
   }
 
   @Test
   public void testAddWebElement() {
     KnownElements ke = new KnownElements();
-    Long id = ke.add(createWebElement(":wdc:1234", ke));
-    Assert.assertEquals(new Long(1), id);
+    String id = ke.add(createWebElement(":wdc:1234", ke));
+    Assert.assertTrue(UUID.fromString(id) instanceof UUID);
   }
 
   @Test
   public void testGetIdOfNativeElement() {
     KnownElements ke = new KnownElements();
     AndroidElement element = createNativeElement(ke);
-    Long id = ke.add(element);
+    String id = ke.add(element);
 
     Assert.assertEquals(id, ke.getIdOfElement(element));
   }
@@ -39,7 +41,7 @@ public class KnownElementsTest {
   public void testGetIdOfWebElement() {
     KnownElements ke = new KnownElements();
     AndroidElement element = createWebElement(":wdc:1234", ke);
-    Long id = ke.add(element);
+    String id = ke.add(element);
 
     Assert.assertEquals(id, ke.getIdOfElement(element));
   }
@@ -48,12 +50,14 @@ public class KnownElementsTest {
   public void testGetIdOfWebElementWithMultipleElements() {
     KnownElements ke = new KnownElements();
     AndroidElement nativeElement = createNativeElement(ke);
-    Long nativeId = ke.add(nativeElement);
+    String nativeId = ke.add(nativeElement);
     AndroidElement element = createWebElement(":wdc:1234", ke);
-    Long id = ke.add(element);
+    String id = ke.add(element);
     ke.add(createWebElement(":wdc:1235", ke));
     ke.add(createWebElement(":wdc:1236", ke));
-    ke.add(createNativeElement(ke));
+    // this recreates an element with the same ID and replaces it in cache
+    // which it *should* do in my opinion. commenting out for the purposes of this test now.
+    //ke.add(createNativeElement(ke));
     ke.add(createWebElement(":wdc:1237", ke));
     ke.add(createWebElement(":wdc:1238", ke));
     Assert.assertEquals(nativeId, ke.getIdOfElement(nativeElement));
@@ -65,17 +69,20 @@ public class KnownElementsTest {
   public void testGetIdONativeElementAddedTwice() {
     KnownElements ke = new KnownElements();
     AndroidElement element = createNativeElement(ke);
-    Long id = ke.add(element);
-    ke.add(createNativeElement(ke));
+    String id = ke.add(element);
+    AndroidElement anotherOTheSame = createNativeElement(ke);
+    String anotherId = ke.add(anotherOTheSame);
 
-    Assert.assertEquals(id, ke.getIdOfElement(element));
+    Assert.assertEquals(null, ke.getIdOfElement(element));
+    Assert.assertEquals(anotherId, ke.getIdOfElement(anotherOTheSame));
+    Assert.assertNotSame(id, anotherId);
   }
 
   @Test
   public void testGetIdOfWebElementAddedTwice() {
     KnownElements ke = new KnownElements();
     AndroidElement element = createWebElement(":wdc:1234", ke);
-    Long id = ke.add(element);
+    String id = ke.add(element);
     ke.add(createWebElement(":wdc:1234", ke));
 
     Assert.assertEquals(id, ke.getIdOfElement(element));
@@ -85,14 +92,17 @@ public class KnownElementsTest {
   public void testGetIdONativeElement() {
     KnownElements ke = new KnownElements();
     AndroidElement element = createNativeElement(ke);
-    Long id = ke.add(element);
+    String id = ke.add(element);
 
     Assert.assertEquals(id, ke.getIdOfElement(element));
   }
 
   private AndroidElement createNativeElement(KnownElements ke) {
+    return createNativeElement(ke, 815);
+  }
+  private AndroidElement createNativeElement(KnownElements ke, int id) {
     View view = mock(View.class);
-    when(view.getId()).thenReturn(815);
+    when(view.getId()).thenReturn(id);
 
     ServerInstrumentation instrumentation = mock(ServerInstrumentation.class);
     return new AndroidNativeElement(view, instrumentation, ke);

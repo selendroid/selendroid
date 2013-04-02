@@ -50,7 +50,7 @@ public class FindElement extends RequestHandler {
     }
     JSONObject result = new JSONObject();
 
-    Long id = getIdOfKnownElement(element);
+    String id = getIdOfKnownElement(element);
     if (id == null) {
       return new Response(getSessionId(), 7, new NoSuchElementException("Element was not found."));
     }
