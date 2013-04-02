@@ -44,11 +44,3 @@ You want more details?
 
 Check out our [wiki](https://github.com/DominikDary/selendroid/wiki/).
 
-Current state
--------------
-
-Please keep in mind that this project is in very early stages. Help is appreciated. Reach us out in the issues or via email.
-
-You can track the current progress on the following [link](https://github.com/DominikDary/selendroid/wiki/JSON-Wire-Protocol)
-
-
