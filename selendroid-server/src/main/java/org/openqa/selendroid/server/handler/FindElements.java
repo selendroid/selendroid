@@ -54,7 +54,7 @@ public class FindElements extends RequestHandler {
     JSONArray result = new JSONArray();
     for (AndroidElement element : elements) {
       JSONObject jsonElement = new JSONObject();
-      Long id = getIdOfKnownElement(element);
+      String id = getIdOfKnownElement(element);
       if (id == null) {
         continue;
       }
