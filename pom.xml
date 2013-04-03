@@ -10,7 +10,7 @@
 		<module>selendroid-server</module>
 		<module>selendroid-large-tests</module>
 		<module>selendroid-test-app</module>
-        <module>selendroid-client</module>
+		<module>selendroid-client</module>
 	</modules>
 
 	<properties>
@@ -25,10 +25,36 @@
 			<url>https://github.com/DominikDary</url>
 		</developer>
 	</developers>
-
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+					<artifactId>android-maven-plugin</artifactId>
+					<version>3.4.1</version>
+					<extensions>true</extensions>
+					<configuration>
+						<sdk>
+							<platform>16</platform>
+						</sdk>
+						<undeployBeforeDeploy>true</undeployBeforeDeploy>
+					</configuration>
+				</plugin>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 	<licenses>
 		<license>
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
 		</license>
 	</licenses>
+
 </project>
