@@ -11,6 +11,22 @@ before_install:
   - export ANDROID_HOME=`pwd`/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools  
   - android update sdk --filter platform-tools,android-16,android-10  --no-ui --force
-  - ls -la /home/travis/build/DominikDary/selendroid/android-sdk-linux/platform-tools/aapt 
-  - chmod +x ${ANDROID_HOME}/platform-tools/aapt 
-  - mvn clean install
+  - echo no | android create avd -n emulator16Uk -t android-16 --skin WVGA800 --force
+
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+  - emulator -avd emulator16Uk -prop persist.sys.language=en -prop persist.sys.country=UK -noaudio -no-boot-anim &
+  - ./wait_for_emulator.sh 
+
+script:
+  - mvn install
+  - adb kill-server
+  - adb start-server
+  - adb devices
+  - adb install -r selendroid-server/target/selendroid-server-0.3.apk
+  - adb install -r selendroid-test-app/target/selendroid-test-app-0.3.apk
+  - ./selendroid-server/start-server.sh 
+  - cd selendroid-large-tests
+  - mvn test
