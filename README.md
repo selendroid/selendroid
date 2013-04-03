@@ -1,6 +1,9 @@
 Selendroid
 ==========
 
+[![Build Status](https://api.travis-ci.org/DominikDary/selendroid.png)](https://travis-ci.org/DominikDary/selendroid)
+
+
 Selendroid is an attempt to implement the Selenium JSON Wire Protocol for Android native and hybrid apps.
 
 Getting started
