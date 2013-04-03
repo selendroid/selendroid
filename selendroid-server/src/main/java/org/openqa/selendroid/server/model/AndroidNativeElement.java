@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import android.widget.CompoundButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
@@ -320,9 +321,8 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public boolean isSelected() {
-    if (view instanceof CheckBox || view instanceof RadioButton) {
-      String checked = getAttribute("checked");
-      return Boolean.parseBoolean(checked);
+    if (view instanceof CompoundButton) {
+      return ((CompoundButton) view).isChecked();
     }
 
     throw new UnsupportedOperationException(

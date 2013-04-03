@@ -75,7 +75,7 @@ public abstract class RequestHandler {
     return driver;
   }
 
-  protected Long getIdOfKnownElement(AndroidElement element) {
+  protected String getIdOfKnownElement(AndroidElement element) {
     KnownElements knownElements = getKnownElements();
     if (knownElements == null) {
       return null;

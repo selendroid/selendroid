@@ -20,11 +20,11 @@ public class SelendroidLogger {
 
   public static void log(String message) {
     // currently deactivated
-    // System.out.println(message);
+    System.out.println(message);
   }
 
   public static void log(String message, Exception e) {
     System.out.println(message);
-    e.printStackTrace(System.out);
+    e.printStackTrace();
   }
 }

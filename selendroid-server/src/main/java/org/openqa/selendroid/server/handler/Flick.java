@@ -41,9 +41,9 @@ public class Flick extends RequestHandler {
       int xOffset = payload.getInt("xoffset");
       int yOffset = payload.getInt("yoffset");
       int speed = payload.getInt("speed");
-      AndroidElement element = getKnownElements().get(elementId);
+      AndroidElement element = getElementFromCache(elementId);
       if (element == null) {
-        return new Response(getSessionId(), 7, new SelendroidException("Element with id '"
+        return new Response(getSessionId(), 10, new SelendroidException("Element with id '"
             + elementId + "' was not found."));
       }
       Coordinates elementLocation = element.getCoordinates();

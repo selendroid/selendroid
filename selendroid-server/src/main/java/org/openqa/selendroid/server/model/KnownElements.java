@@ -18,16 +18,23 @@ import android.view.View;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-public class KnownElements {
-  private final BiMap<Long, AndroidElement> cache = HashBiMap.create();
-  private final BiMap<View, AndroidNativeElement> nativeElementsByView = HashBiMap.create();
-  private long nextId = 0L;
+import java.util.UUID;
 
-  public Long add(AndroidElement element) {
+public class KnownElements {
+  private final BiMap<String, AndroidElement> cache = HashBiMap.create();
+  private final BiMap<View, AndroidNativeElement> nativeElementsByView = HashBiMap.create();
+
+  public String add(AndroidElement element) {
     if (cache.containsValue(element)) {
       return cache.inverse().get(element);
     }
-    Long id = nextId();
+    String id;
+    if (element instanceof AndroidNativeElement &&
+        ((AndroidNativeElement)element).getView().getId() >= 0) {
+      id = new Long(((AndroidNativeElement)element).getView().getId()).toString();
+    } else {
+      id = UUID.randomUUID().toString();
+    }
 
     cache.put(id, element);
     if(element instanceof AndroidNativeElement){
@@ -37,22 +44,26 @@ public class KnownElements {
     return id;
   }
 
-  public Long nextId() {
-    return ++nextId;
-  }
-
   /**
-   * Uses the generated Id {@link #nextId()} to look up elements
+   * Uses the generated Id to look up elements
    */
-  public AndroidElement get(Long elementId) {
+  public AndroidElement get(String elementId) {
     return cache.get(elementId);
   }
 
+  public AndroidElement get(Long elementId) {
+    return get(elementId.toString());
+  }
+
   /**
-   * Uses the generated Id {@link #nextId()} to look up elements
+   * Uses the generated Id to look up elements
    */
-  public boolean hasElement(Long elementId) {
+  public boolean hasElement(String elementId) {
     return cache.containsKey(elementId);
+  }
+
+  public boolean hasElement(Long elementId) {
+    return hasElement(elementId.toString());
   }
   
   public AndroidNativeElement getNativeElement(View view) {
@@ -63,7 +74,7 @@ public class KnownElements {
     return nativeElementsByView.containsKey(view);
   }
 
-  public Long getIdOfElement(AndroidElement element) {
+  public String getIdOfElement(AndroidElement element) {
     if (cache.containsValue(element)) {
       return cache.inverse().get(element);
     }
