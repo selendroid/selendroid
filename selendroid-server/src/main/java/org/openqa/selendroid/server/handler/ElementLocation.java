@@ -32,7 +32,7 @@ public class ElementLocation extends RequestHandler {
   @Override
   public Response handle() throws JSONException {
     SelendroidLogger.log("Get element location command");
-    Long id = getElementId();
+    String id = getElementId();
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
       return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"

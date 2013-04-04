@@ -31,7 +31,7 @@ public class LogElement extends RequestHandler {
   @Override
   public Response handle() throws JSONException {
     SelendroidLogger.log("get source of element command");
-    Long id = getElementId();
+    String id = getElementId();
 
     AndroidElement element = getElementFromCache(id);
     if (element == null) {

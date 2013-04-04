@@ -31,7 +31,7 @@ public class ClickElement extends RequestHandler {
   @Override
   public Response handle() throws JSONException{
     SelendroidLogger.log("Click element command");
-    Long id = getElementId();
+    String id = getElementId();
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
       return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"

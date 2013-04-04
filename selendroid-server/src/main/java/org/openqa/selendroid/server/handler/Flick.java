@@ -37,7 +37,7 @@ public class Flick extends RequestHandler {
     JSONObject payload = getPayload();
     TouchScreen touchScreen = getSelendroidDriver().getTouch();
     if (payload.has("element")) {
-      Long elementId=payload.getLong("element");
+      String elementId=payload.getString("element");
       int xOffset = payload.getInt("xoffset");
       int yOffset = payload.getInt("yoffset");
       int speed = payload.getInt("speed");

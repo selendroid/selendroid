@@ -181,7 +181,7 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
 
     String id = getParameter(mappedUri, request.uri(), ":id");
     if (id != null) {
-      request.data().put(ELEMENT_ID_KEY, new Long(id));
+      request.data().put(ELEMENT_ID_KEY, id);
     }
     String name = getParameter(mappedUri, request.uri(), ":name");
     if (name != null) {
