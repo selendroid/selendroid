@@ -18,6 +18,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
   - emulator -avd emulator16Uk -prop persist.sys.language=en -prop persist.sys.country=UK -noaudio -no-boot-anim &
+  - sleep 5 # give the emulator some time to start, otherwise the script will fail
   - ./wait_for_emulator.sh 
 
 script:
