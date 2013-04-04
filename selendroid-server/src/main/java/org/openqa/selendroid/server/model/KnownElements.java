@@ -80,4 +80,10 @@ public class KnownElements {
     }
     return null;
   }
+
+  public void clear() {
+    cache.clear();
+    nativeElementsByView.clear();
+    System.gc();
+  }
 }
