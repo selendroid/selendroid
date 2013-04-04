@@ -44,6 +44,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.Display;
 import android.view.View;
 import android.webkit.WebView;
@@ -51,6 +52,14 @@ import android.webkit.WebView;
 import com.google.common.base.Preconditions;
 
 public class DefaultSelendroidDriver implements SelendroidDriver {
+  public static final String BROWSER_NAME = "browserName";
+  public static final String PLATFORM = "platform";
+  public static final String SUPPORTS_JAVASCRIPT = "javascriptEnabled";
+  public static final String TAKES_SCREENSHOT = "takesScreenshot";
+  public static final String VERSION = "version";
+  public static final String SUPPORTS_ALERTS = "handlesAlerts";
+  public static final String ROTATABLE = "rotatable";
+  public static final String ACCEPT_SSL_CERTS = "acceptSslCerts";
   private boolean done = false;
   private SearchContext nativeSearchScope = null;
   private SearchContext webviewSearchScope = null;
@@ -150,8 +159,25 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   @Override
   public JSONObject getSessionCapabilities(String sessionId) {
     SelendroidLogger.log("session: " + sessionId);
-    SelendroidLogger.log("capabilities: " + session.getCapabilities());
-    return session.getCapabilities();
+
+    JSONObject copy;
+    try {
+      copy =
+          new JSONObject(session.getCapabilities(), session.getCapabilities().names().join(",")
+              .split(","));
+      copy.put(TAKES_SCREENSHOT, true);
+      copy.put(BROWSER_NAME, "selendroid");
+      copy.put(ROTATABLE, false);
+      copy.put(PLATFORM, "android");
+      copy.put(SUPPORTS_ALERTS, false);
+      copy.put(SUPPORTS_JAVASCRIPT, true);
+      copy.put("version", serverInstrumentation.getSelendroidVersionNumber());
+      copy.put(ACCEPT_SSL_CERTS, true);
+      SelendroidLogger.log("capabilities: " + copy);
+      return copy;
+    } catch (JSONException e) {
+      throw new SelendroidException(e);
+    }
   }
 
   public static void sleepQuietly(long ms) {

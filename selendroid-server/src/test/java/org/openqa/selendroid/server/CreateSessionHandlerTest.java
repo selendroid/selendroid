@@ -16,7 +16,7 @@ public class CreateSessionHandlerTest extends BaseTest {
     HttpResponse response = executeCreateSessionRequest();
     SelendroidAssert.assertResponseIsRedirect(response);
     JSONObject json = parseJsonResponse(response);
-    Assert.assertEquals("/wd/hub/session/" + json.getString("sessionId"),
+    Assert.assertEquals("http://localhost:8055/wd/hub/session/" + json.getString("sessionId"),
         response.getFirstHeader("location").getValue());
   }
 

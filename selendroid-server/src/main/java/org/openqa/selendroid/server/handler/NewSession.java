@@ -34,8 +34,7 @@ public class NewSession extends RequestHandler {
     JSONObject payload = getPayload();
 
     JSONObject desiredCapabilities = payload.getJSONObject("desiredCapabilities");
-    //TODO review this 
-    desiredCapabilities.put("version", "0.2");
+
     String sessionID = null;
     try {
       sessionID = getSelendroidDriver().initializeSession(desiredCapabilities);

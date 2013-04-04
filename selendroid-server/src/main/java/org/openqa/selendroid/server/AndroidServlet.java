@@ -98,14 +98,16 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     getHandler.put("/wd/hub/session/:sessionId/element/:id/source", LogElement.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/clear", ClearElement.class);
     getHandler.put("/wd/hub/sessions", ListSessions.class);
-    postHandler.put("/wd/hub/session/:sessionId/timeouts/implicit_wait",SetImplicitWaitTimeout.class);
+    postHandler.put("/wd/hub/session/:sessionId/timeouts/implicit_wait",
+        SetImplicitWaitTimeout.class);
     postHandler.put("/wd/hub/session/:sessionId/window", SwitchWindow.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/submit", SubmitForm.class);
     postHandler.put("/wd/hub/session/:sessionId/keys", SendKeyToActiveElement.class);
     getHandler.put("/wd/hub/session/:sessionId/title", GetPageTitle.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/selected", GetElementSelected.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/location", ElementLocation.class);
-    getHandler.put("/wd/hub/session/:sessionId/element/:id/attribute/:name", GetElementAttribute.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/attribute/:name",
+        GetElementAttribute.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/size", GetElementSize.class);
     postHandler.put("/wd/hub/session/:sessionId/execute", ExecuteScript.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/enabled", GetElementEnabled.class);
@@ -153,8 +155,9 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
       response.status(301);
       String session = result.getSessionId();
 
-      SelendroidLogger.log("new URL: " + request.uri() + "/" + session);
-      response.header("location", request.uri() + "/" + session);
+      String newSessionUri = "http://" + request.header("Host") + request.uri() + "/" + session;
+      SelendroidLogger.log("new Session URL: " + newSessionUri);
+      response.header("location", newSessionUri);
     } else {
       response.status(200);
     }

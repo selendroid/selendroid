@@ -21,18 +21,7 @@ import org.openqa.selendroid.server.Session;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
-import android.os.Build;
-
 public class GetCapabilities extends RequestHandler {
-  String BROWSER_NAME = "browserName";
-  String PLATFORM = "platform";
-  String SUPPORTS_JAVASCRIPT = "javascriptEnabled";
-  String TAKES_SCREENSHOT = "takesScreenshot";
-  String VERSION = "version";
-  String SUPPORTS_ALERTS = "handlesAlerts";
-  String ROTATABLE = "rotatable";
-  String ACCEPT_SSL_CERTS = "acceptSslCerts";
-
   public GetCapabilities(HttpRequest request,String mappedUri) {
     super(request,mappedUri);
   }
@@ -43,16 +32,7 @@ public class GetCapabilities extends RequestHandler {
     Session session = getSelendroidDriver().getSession();
 
     JSONObject caps = getSelendroidDriver().getSessionCapabilities(session.getSessionId());
-    JSONObject copy = new JSONObject(caps,caps.names().join(",").split(","));
-    
-    copy.put(TAKES_SCREENSHOT, true);
-    copy.put(BROWSER_NAME, "selendroid");
-    copy.put(ROTATABLE, false);
-    copy.put(PLATFORM, "android");
-    copy.put(SUPPORTS_ALERTS, true);
-    copy.put(SUPPORTS_JAVASCRIPT, true);
-    copy.put(VERSION, Build.VERSION.SDK);
-    copy.put(ACCEPT_SSL_CERTS, true);
-    return new Response(session.getSessionId(), copy);
+
+    return new Response(session.getSessionId(), caps);
   }
 }

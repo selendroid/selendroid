@@ -16,6 +16,7 @@
    - Get the info if an element is displayed or enabled
    - execute script (only supported for webview mode)
 - Added css locator support in webviews
+- *selendroid-grid-plugin* that adds support to use the selenium grid for parallel testing
 
 0.2 
 ----
@@ -26,7 +27,7 @@
 - Added /sessionId/keys support and a client library that contains already selenium as dependency and the interface SelendroidKeys.
 - The gem contains an interactive shell that starts automatically selendroid-server and a Ruby webdriver client that allows to interactively try commands out.
 - Added locator strategy by class for native and web view context
-- added support for all available locators findElement, findElements and corresponding find child element and din child elements.
+- added support for all available locators findElement, findElements and corresponding find child element and find child elements.
 
 0.1
 -----

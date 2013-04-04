@@ -8,6 +8,7 @@
 	<name>selendroid</name>
 	<modules>
 		<module>selendroid-server</module>
+		<module>selendroid-grid-plugin</module>
 		<module>selendroid-large-tests</module>
 		<module>selendroid-test-app</module>
 		<module>selendroid-client</module>

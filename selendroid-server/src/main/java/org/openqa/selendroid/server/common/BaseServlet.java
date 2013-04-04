@@ -64,6 +64,7 @@ public class BaseServlet {
   }
 
   protected void replyWithServerError(HttpResponse response) {
+    System.out.println("replyWithServerError 500");
     response.status(INTERNAL_SERVER_ERROR);
     response.end();
   }
@@ -78,7 +79,9 @@ public class BaseServlet {
       return false;
     }
     for (int i = 0; i < sections.length; i++) {
-      if (!(sections[i].startsWith(":") || sections[i].equals(allParts[i]))) {
+      // to work around a but in Selenium Grid 2.31.0
+      String sectionElement = sections[i].replaceAll("\\?.*", "");
+      if (!(sectionElement.startsWith(":") || sectionElement.equals(allParts[i]))) {
         return false;
       }
     }

@@ -42,7 +42,7 @@ public class StatusServlet implements HttpHandler {
     SelendroidLogger.log("get Status Servlet Called");
     JSONObject build = new JSONObject();
     build.put("version", serverInstrumentation.getSelendroidVersionNumber());
-    //build.put("browserName", "selendroid");
+    build.put("browserName", "selendroid");
 
     JSONObject os = new JSONObject();
     os.put("arch", android.os.Build.CPU_ABI);
