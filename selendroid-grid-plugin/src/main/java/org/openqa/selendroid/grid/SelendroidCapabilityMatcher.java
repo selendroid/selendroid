@@ -38,7 +38,6 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
   @Override
   public boolean matches(Map<String, Object> nodeCapability, Map<String, Object> requestedCapability) {
     if (nodeCapability == null || requestedCapability == null) {
-      System.out.println("DOES NOT MATCH");
       return false;
     }
     for (String key : requestedCapability.keySet()) {
@@ -46,7 +45,6 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
         if (requestedCapability.get(key) != null) {
           String value = requestedCapability.get(key).toString();
           if (!requestedCapability.get(key).equals(nodeCapability.get(key))) {
-            System.out.println("DOES NOT MATCH");
             return false;
           } else {
             // null value matches anything.
@@ -54,7 +52,6 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
         }
       }
     }
-    System.out.println("DOES MATCH");
     return true;
   }
 
