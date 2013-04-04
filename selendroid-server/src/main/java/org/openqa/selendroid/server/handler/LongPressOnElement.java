@@ -31,7 +31,7 @@ public class LongPressOnElement extends RequestHandler {
   @Override
   public Response handle() throws JSONException {
     SelendroidLogger.log("Long press on element gesture");
-    Long elementId = getElementId();
+    String elementId = getElementId();
 
     AndroidElement element = getElementFromCache(elementId);
     if (element == null) {

@@ -15,6 +15,7 @@ package org.openqa.selendroid.server.model;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.openqa.selendroid.android.AndroidWait;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.Dimension;
 import org.openqa.selendroid.android.internal.Point;
+import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
 import org.openqa.selendroid.server.exceptions.NoSuchElementAttributeException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.TimeoutException;
@@ -92,7 +94,7 @@ public class AndroidNativeElement implements AndroidElement {
         }
       });
     } catch (TimeoutException exception) {
-      throw new SelendroidException("You may only do passive read with element not displayed");
+      throw new ElementNotVisibleException("You may only do passive read with element not displayed");
     }
   }
 
@@ -345,6 +347,10 @@ public class AndroidNativeElement implements AndroidElement {
     @Override
     protected View getRootView() {
       return view;
+    }
+
+    protected List<View> getTopLevelViews() {
+      return Arrays.asList(view);
     }
   }
 

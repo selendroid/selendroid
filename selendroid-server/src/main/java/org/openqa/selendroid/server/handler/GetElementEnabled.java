@@ -17,7 +17,7 @@ public class GetElementEnabled extends RequestHandler {
   @Override
   public Response handle() throws JSONException {
     SelendroidLogger.log("is element enabled command");
-    Long id = getElementId();
+    String id = getElementId();
 
     AndroidElement element = getElementFromCache(id);
     if (element == null) {

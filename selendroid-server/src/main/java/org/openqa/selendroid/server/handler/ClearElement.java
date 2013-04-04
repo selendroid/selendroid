@@ -30,7 +30,7 @@ public class ClearElement extends RequestHandler {
   @Override
   public Response handle()throws JSONException {
     SelendroidLogger.log("Clear element command");
-    Long id = getElementId();
+    String id = getElementId();
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
       return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"

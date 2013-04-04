@@ -47,9 +47,9 @@ public abstract class RequestHandler {
     return null;
   }
 
-  public Long getElementId() {
+  public String getElementId() {
     if (request.data().containsKey(AndroidServlet.ELEMENT_ID_KEY)) {
-      return (Long) request.data().get(AndroidServlet.ELEMENT_ID_KEY);
+      return (String) request.data().get(AndroidServlet.ELEMENT_ID_KEY);
     }
     return null;
   }
@@ -83,7 +83,7 @@ public abstract class RequestHandler {
     return knownElements.getIdOfElement(element);
   }
 
-  protected AndroidElement getElementFromCache(Long id) {
+  protected AndroidElement getElementFromCache(String id) {
     KnownElements knownElements = getKnownElements();
     if (knownElements == null) {
       return null;

@@ -74,6 +74,9 @@ public class BaseServlet {
     if (urlToMatch == null) {
       return sections.length == 0;
     }
+    if (urlToMatch.contains("?")) {
+      urlToMatch = urlToMatch.substring(0, urlToMatch.indexOf("?"));
+    }
     String[] allParts = urlToMatch.split("/");
     if (sections.length != allParts.length) {
       return false;

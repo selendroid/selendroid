@@ -20,6 +20,7 @@ import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.inspector.SelendroidInspectorView;
 import org.openqa.selendroid.server.inspector.TreeUtil;
 import org.openqa.selendroid.server.model.SelendroidDriver;
+import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
@@ -35,7 +36,10 @@ public class TreeView extends SelendroidInspectorView {
     try {
       source = (JSONObject) driver.getWindowSource();
     } catch (SelendroidException e) {
-      source = new JSONObject();
+      SelendroidLogger.log("error getting WindowSource in TreeView", e);
+      response.header("Content-type", "application/x-javascript").charset(Charsets.UTF_8)
+          .content("{}").end();
+      return;
     }
     String convertedTree = TreeUtil.createFromNativeWindowsSource(source).toString();
     response.header("Content-type", "application/x-javascript").charset(Charsets.UTF_8)
