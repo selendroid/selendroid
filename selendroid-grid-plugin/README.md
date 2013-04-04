@@ -12,7 +12,7 @@ Steps to use selendroid together with the Selenium Grid on a local machine:
 Now you can start the Grid with the selendroid-grid-plugin that contains the proxy *org.openqa.selendroid.grid.SelendroidSessionProxy* and a simple capability matcher *org.opqa.selendroid.grid.SelendroidCapabilityMatcher*:
 
 ```
-java -Dfile.encoding=UTF-8 -cp "selendroid-grid-plugin-0.3.jar:selenium-server-standalone-2.31.0.jar" org.openqa.grid.selenium.GridLauncher -capabilityMatcher org.opqa.selendroid.grid.SelendroidCapabilityMatcher -role hub -host 127.0.0.1 -port 4444
+java -Dfile.encoding=UTF-8 -cp "selendroid-grid-plugin-0.3.jar:selenium-server-standalone-2.31.0.jar" org.openqa.grid.selenium.GridLauncher -capabilityMatcher org.openqa.selendroid.grid.SelendroidCapabilityMatcher -role hub -host 127.0.0.1 -port 4444
 ```
 
 Before registering a selendroid-node into the Grid please make sure the emulator and the selendroid test server are already started.
