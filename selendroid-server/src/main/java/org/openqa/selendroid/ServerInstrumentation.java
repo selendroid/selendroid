@@ -43,7 +43,8 @@ public class ServerInstrumentation extends Instrumentation {
 
   public void startActivity(Class activity) {
     if (activity == null) {
-      SelendroidLogger.log("activity class is empty", null);
+      SelendroidLogger.log("activity class is empty", new NullPointerException(
+          "Activity class to start is null."));
       return;
     }
 
@@ -100,7 +101,7 @@ public class ServerInstrumentation extends Instrumentation {
         SelendroidLogger.log("Exception when starting selendroid.", e);
       }
     }
-    // make sure this is always displayed 
+    // make sure this is always displayed
     System.out.println("Selendroid started on port " + server.getPort());
   }
 
