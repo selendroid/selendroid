@@ -16,6 +16,7 @@ package org.openqa.selendroid.server.handler;
 import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
+import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
@@ -30,7 +31,7 @@ public class ClickElement extends RequestHandler {
   @Override
   public Response handle() throws JSONException{
     SelendroidLogger.log("Click element command");
-    Long id = getElementId();
+    String id = getElementId();
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
       return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"
@@ -38,9 +39,11 @@ public class ClickElement extends RequestHandler {
     }
     try {
       element.click();
+    } catch (ElementNotVisibleException ev) {
+      return new Response(getSessionId(), 11, ev);
     } catch (Exception e) {
       SelendroidLogger.log("error while clicking the element: ", e);
-      return new Response(getSessionId(), 33, e);
+      return new Response(getSessionId(), 13, e);
     }
     return new Response(getSessionId(), "");
   }

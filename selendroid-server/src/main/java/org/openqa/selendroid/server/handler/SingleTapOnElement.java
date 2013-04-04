@@ -32,7 +32,7 @@ public class SingleTapOnElement extends RequestHandler {
   @Override
   public Response handle() throws JSONException {
     SelendroidLogger.log("single tap on element gesture");
-    Long elementId = getElementId();
+    String elementId = getElementId();
 
     AndroidElement element = getElementFromCache(elementId);
     if (element == null) {

@@ -142,35 +142,42 @@ public abstract class AbstractNativeElementContext
 
   @Override
   public AndroidElement findElementById(String using) {
-    Activity currentActivity = instrumentation.getCurrentActivity();
-    if (currentActivity == null) {
-      throw new SelendroidException("No open activity found.");
+    List<AndroidElement> elements = findElementsById(using, true);
+    if (!elements.isEmpty()) {
+      return elements.get(0);
     }
-    int intId =
-        currentActivity.getResources().getIdentifier(using, "id", currentActivity.getPackageName());
-    if (intId == 0) {
-     return null;
-    }
-    View view = currentActivity.findViewById(intId);
-    if (view == null) {
-      return null;
-    }
-    return newAndroidElement(view);
+    return null;
   }
 
   @Override
   public List<AndroidElement> findElementsById(String using) {
-    List<AndroidElement> list = new ArrayList<AndroidElement>();
-    for (View view : viewAnalyzer.getViews(getRootView())) {
+    return findElementsById(using, false);
+  }
+
+  private List<AndroidElement> findElementsById(String using, Boolean findJustOne) {
+    List<AndroidElement> elements = new ArrayList<AndroidElement>();
+    for (View view : viewAnalyzer.getViews(getTopLevelViews())) {
       String id = ViewHierarchyAnalyzer.getNativeId(view);
-      if (id.endsWith("id/" + using)) {
-        list.add(newAndroidElement(view));
+      if (id.equalsIgnoreCase("id/" + using)) {
+        elements.add(newAndroidElement(view));
+        if (findJustOne) return elements;
       }
     }
-    if (list.isEmpty()) {
-      throw new NoSuchElementException("No elements were found.");
+    if (elements.isEmpty()) {
+      // didn't find any in the views, check the current activity
+      // haven't seen this happen, just covering my basis / preserving some previous code.
+      Activity currentActivity = instrumentation.getCurrentActivity();
+      if (currentActivity != null) {
+        int intId = currentActivity.getResources().getIdentifier(using, "id", currentActivity.getPackageName());
+        if (intId > 0) {
+          View view = currentActivity.findViewById(intId);
+          if (view != null) {
+            elements.add(newAndroidElement(view));
+          }
+        }
+      }
     }
-    return list;
+    return elements;
   }
 
   @Override
@@ -185,7 +192,7 @@ public abstract class AbstractNativeElementContext
 
   @Override
   public List<AndroidElement> findElementsByName(String using) {
-    Collection<View> currentViews = viewAnalyzer.getViews(getRootView());
+    Collection<View> currentViews = viewAnalyzer.getViews(getTopLevelViews());
     Predicate<View> predicate = new ViewContentDescriptionPredicate(using);
     return filterAndTransformElements(currentViews, predicate);
   }
@@ -254,7 +261,7 @@ public abstract class AbstractNativeElementContext
 
   @Override
   public List<AndroidElement> findElementsByText(String using) {
-    Collection<View> currentViews = viewAnalyzer.getViews(getRootView());
+    Collection<View> currentViews = viewAnalyzer.getViews(getTopLevelViews());
     Predicate<View> predicate = new ViewTextPredicate(using);
     return filterAndTransformElements(currentViews, predicate);
   }
@@ -271,7 +278,7 @@ public abstract class AbstractNativeElementContext
 
   @Override
   public List<AndroidElement> findElementsByClass(String using) {
-    Collection<View> currentViews = viewAnalyzer.getViews(getRootView());
+    Collection<View> currentViews = viewAnalyzer.getViews(getTopLevelViews());
     Class viewClass = null;
     try {
       viewClass = Class.forName(using);
@@ -302,4 +309,5 @@ public abstract class AbstractNativeElementContext
   }
 
   protected abstract View getRootView();
+  protected abstract List<View> getTopLevelViews();
 }

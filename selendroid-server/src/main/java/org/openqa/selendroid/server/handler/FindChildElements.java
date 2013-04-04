@@ -42,7 +42,7 @@ public class FindChildElements extends RequestHandler {
     String selector = payload.getString("value");
     SelendroidLogger.log(String.format("find child element command using %s with selector %s.",
         method, selector));
-    Long elementId = getElementId();
+    String elementId = getElementId();
     AndroidElement root = getElementFromCache(elementId);
     if (root == null) {
       return new Response(getSessionId(), 10, new SelendroidException("The element with Id: "

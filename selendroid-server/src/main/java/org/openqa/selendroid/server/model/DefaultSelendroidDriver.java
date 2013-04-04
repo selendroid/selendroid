@@ -15,6 +15,10 @@ package org.openqa.selendroid.server.model;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -334,6 +338,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   @Override
   public String initializeSession(JSONObject desiredCapabilities) {
     if (this.session != null) {
+      session.getKnownElements().clear();
       return session.getSessionId();
     }
     activeWindowType = WindowType.NATIVE_APP;
@@ -401,6 +406,26 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     @Override
     protected View getRootView() {
       return viewAnalyzer.getRecentDecorView();
+    }
+
+    @Override
+    protected List<View> getTopLevelViews() {
+      List<View> views = new ArrayList<View>();
+      views.addAll(viewAnalyzer.getTopLevelViews());
+      if (instrumentation.getCurrentActivity() != null &&
+          instrumentation.getCurrentActivity().getCurrentFocus() != null) {
+        views.add(instrumentation.getCurrentActivity().getCurrentFocus());
+      }
+      // sort them to have most recently drawn view show up first
+      Collections.sort(views, new Comparator<View>() {
+        @Override
+        public int compare(View view, View view1) {
+          return view.getDrawingTime() < view1.getDrawingTime()? 1 :
+              (view.getDrawingTime() == view1.getDrawingTime() ? 0 : -1);
+        }
+      });
+
+      return views;
     }
   }
 

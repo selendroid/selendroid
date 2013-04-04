@@ -29,7 +29,7 @@ public class Scroll extends RequestHandler {
 
   @Override
   public Response handle() throws JSONException {
-    Long elementId = getElementId();
+    String elementId = getElementId();
     JSONObject payload = getPayload();
     int xoffset = payload.getInt("xoffset");
     int yoffset = payload.getInt("yoffset");

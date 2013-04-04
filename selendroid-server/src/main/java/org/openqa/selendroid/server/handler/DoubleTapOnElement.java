@@ -32,7 +32,7 @@ public class DoubleTapOnElement extends RequestHandler {
   @Override
   public Response handle() throws JSONException {
     SelendroidLogger.log("double tap on element gesture");
-    Long elementId = getElementId();
+    String elementId = getElementId();
     TouchScreen touchScreen = getSelendroidDriver().getTouch();
     AndroidElement element = getElementFromCache(elementId);
     if (element == null) {
