@@ -128,8 +128,8 @@ public class ViewHierarchyAnalyzer {
     @Override
     public boolean apply(View view) {
       // PopupViewContainer can be a top level menu shown
-      return "DecorView".equals(view.getClass().getSimpleName()) ||
-          "PopupViewContainer".equals(view.getClass().getSimpleName());
+      return "DecorView".equals(view.getClass().getSimpleName())
+          || "PopupViewContainer".equals(view.getClass().getSimpleName());
     }
   }
 
@@ -137,7 +137,9 @@ public class ViewHierarchyAnalyzer {
     final List<View> views = new ArrayList<View>();
     for (View rootView : rootViews) {
       Preconditions.checkNotNull(rootView);
-      addAllChilren((ViewGroup) rootView, views);
+      if (rootView instanceof ViewGroup) {
+        addAllChilren((ViewGroup) rootView, views);
+      }
     }
     return views;
   }
