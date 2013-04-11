@@ -13,10 +13,13 @@
  */
 package org.openqa.selendroid.server.model.internal;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
@@ -24,6 +27,7 @@ import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.AndroidNativeElement;
+import org.openqa.selendroid.server.model.AndroidRElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.By.ByClass;
 import org.openqa.selendroid.server.model.By.ById;
@@ -52,6 +56,7 @@ public abstract class AbstractNativeElementContext
       FindsByName,
       FindsById,
       FindsByText,
+      FindsByPartialText,
       FindsByClass {
   protected ServerInstrumentation instrumentation;
   protected KnownElements knownElements;
@@ -73,6 +78,19 @@ public abstract class AbstractNativeElementContext
       knownElements.add(e);
       return e;
     }
+  }
+  AndroidElement newAndroidElement(int id) {
+    if (id < 0) {
+      return null;
+    }
+    String idString = Integer.toString(id);
+    if (knownElements.hasElement(idString)) {
+      return knownElements.get(idString);
+    }
+    AndroidElement e = new AndroidRElement(id);
+    knownElements.add(e);
+    return e;
+
   }
 
   public AndroidNativeElement getElementTree() {
@@ -113,6 +131,8 @@ public abstract class AbstractNativeElementContext
       return findElementsByTagName(by.getElementLocator());
     } else if (by instanceof ByLinkText) {
       return findElementsByText(by.getElementLocator());
+    } else if (by instanceof By.ByPartialLinkText) {
+      return findElementsByPartialText(by.getElementLocator());
     } else if (by instanceof ByClass) {
       return findElementsByClass(by.getElementLocator());
     } else if (by instanceof ByName) {
@@ -131,6 +151,8 @@ public abstract class AbstractNativeElementContext
       return findElementByTagName(by.getElementLocator());
     } else if (by instanceof ByLinkText) {
       return findElementByText(by.getElementLocator());
+    } else if (by instanceof By.ByPartialLinkText) {
+      return findElementByPartialText(by.getElementLocator());
     } else if (by instanceof ByClass) {
       return findElementByClass(by.getElementLocator());
     } else if (by instanceof ByName) {
@@ -173,6 +195,30 @@ public abstract class AbstractNativeElementContext
           View view = currentActivity.findViewById(intId);
           if (view != null) {
             elements.add(newAndroidElement(view));
+          }
+        }
+      }
+    }
+    if (elements.isEmpty()) {
+      // ok, no elements, last ditch effort is to check the R.class for reference id's
+      // current use case is for 'menu' items that don't appear as a View and need to be invoked.
+      Class rClazz;
+      try {
+        rClazz = instrumentation.getTargetContext().getClassLoader().loadClass(
+            instrumentation.getTargetContext().getPackageName() + ".R$id"
+        );
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+        return elements;
+      }
+      for (Field field : rClazz.getFields()) {
+        if (field.getName().equalsIgnoreCase(using)) {
+          System.out.println("Found field for using: " + using);
+          try {
+            System.out.println("looking for view by id: " + field.getInt(null));
+            elements.add(newAndroidElement(field.getInt(null)));
+          } catch (IllegalAccessException e) {
+            e.printStackTrace();
           }
         }
       }
@@ -224,6 +270,25 @@ public abstract class AbstractNativeElementContext
     }
   }
 
+  class ViewPartialTextPredicate implements Predicate<View> {
+    private String text = null;
+
+    ViewPartialTextPredicate(String text) {
+      this.text = text;
+      System.out.println("Finding by partial text: " + text);
+    }
+
+    public boolean apply(View view) {
+      if (view instanceof TextView) {
+        String viewText = ((TextView) view).getText().toString();
+        System.out.println("Comparing text in view " + view.getClass().getName() + " with text: " + viewText);
+        System.out.println("contains: " + viewText.contains(text) + " index: " + viewText.indexOf(text));
+        return viewText.indexOf(text) >= 0;
+      }
+      return false;
+    }
+  }
+
 
   @Override
   public AndroidElement findElementByTagName(String using) {
@@ -263,6 +328,23 @@ public abstract class AbstractNativeElementContext
   public List<AndroidElement> findElementsByText(String using) {
     Collection<View> currentViews = viewAnalyzer.getViews(getTopLevelViews());
     Predicate<View> predicate = new ViewTextPredicate(using);
+    return filterAndTransformElements(currentViews, predicate);
+  }
+
+  @Override
+  public AndroidElement findElementByPartialText(String using) {
+    List<AndroidElement> list = findElementsByPartialText(using);
+
+    if (list != null && !list.isEmpty()) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public List<AndroidElement> findElementsByPartialText(String using) {
+    Collection<View> currentViews = viewAnalyzer.getViews(getTopLevelViews());
+    Predicate<View> predicate = new ViewPartialTextPredicate(using);
     return filterAndTransformElements(currentViews, predicate);
   }
 

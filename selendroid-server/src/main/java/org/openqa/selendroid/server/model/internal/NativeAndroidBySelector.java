@@ -23,6 +23,7 @@ public class NativeAndroidBySelector {
   // TODO review this, not perfect, but main goal is to use default bindings
   public static final String SELECTOR_L10N = "tag name";
   public static final String SELECTOR_TEXT = "link text";
+  public static final String SELECTOR_PARTIAL_TEXT = "partial link text";
   public static final String SELECTOR_XPATH = "xpath";
   public static final String SELECTOR_NAME = "name";
   public static final String SELECTOR_CLASS = "class name";
@@ -37,6 +38,8 @@ public class NativeAndroidBySelector {
       return By.name(selector);
     } else if (SELECTOR_TEXT.equals(method)) {
       return By.linkText(selector);
+    } else if (SELECTOR_PARTIAL_TEXT.equals(method)) {
+      return By.partialLinkText(selector);
     } else if (SELECTOR_XPATH.equals(method)) {
       return By.xpath(selector);
     } else if (SELECTOR_CLASS.equals(method)) {

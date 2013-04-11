@@ -22,6 +22,7 @@ import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.DomWindow;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.util.SelendroidLogger;
 
@@ -129,6 +130,9 @@ public class SelendroidWebDriver {
     try {
       JSONObject json = new JSONObject(jsResult);
       if (0 != json.optInt("status")) {
+        if (json.optString("value").equals("Element does not exist in cache")) {
+          throw new StaleElementReferenceException(json.optString("value"));
+        }
         throw new SelendroidException(json.optString("value"));
       }
       if (json.isNull("value")) {
@@ -178,16 +182,15 @@ public class SelendroidWebDriver {
     long end = System.currentTimeMillis() + UI_TIMEOUT;
     final String[] url = new String[1];
     done = false;
-    serverInstrumentation.runOnUiThread(new Runnable() {
+    Runnable r = new Runnable() {
       public void run() {
-        synchronized (syncObject) {
           url[0] = webview.getUrl();
-          done = true;
-          syncObject.notify();
+        synchronized (this) {
+          this.notify();
         }
       }
-    });
-    waitForDone(end, UI_TIMEOUT, "Failed to get url");
+    };
+    runSynchronously(r, UI_TIMEOUT);
     return url[0];
   }
 
@@ -369,6 +372,17 @@ public class SelendroidWebDriver {
         } catch (InterruptedException e) {
           throw new SelendroidException(error, e);
         }
+      }
+    }
+  }
+
+  private void runSynchronously(Runnable r, long timeout) {
+    synchronized (r) {
+      serverInstrumentation.getCurrentActivity().runOnUiThread(r);
+      try {
+        r.wait(timeout);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
     }
   }

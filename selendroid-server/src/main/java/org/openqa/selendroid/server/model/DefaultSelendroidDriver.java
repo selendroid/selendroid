@@ -15,11 +15,14 @@ package org.openqa.selendroid.server.model;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
@@ -38,6 +41,9 @@ import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
 import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
+import org.openqa.selendroid.server.model.internal.execute_native.FindRId;
+import org.openqa.selendroid.server.model.internal.execute_native.InvokeMenuAction;
+import org.openqa.selendroid.server.model.internal.execute_native.NativeExecuteScript;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.util.SelendroidLogger;
 
@@ -75,6 +81,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   private SelendroidNativeDriver selendroidNativeDriver = null;
   private SelendroidWebDriver selendroidWebDriver = null;
   private WindowType activeWindowType = null;
+
+  private Map<String, NativeExecuteScript> nativeExecuteScriptMap = new HashMap<String, NativeExecuteScript>();
 
 
   public DefaultSelendroidDriver(ServerInstrumentation instrumentation) {
@@ -350,6 +358,10 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
         new SelendroidNativeDriver(serverInstrumentation, (NativeSearchScope) nativeSearchScope);
     serverInstrumentation.startMainActivity();
     SelendroidLogger.log("new s: " + session.getSessionId());
+
+    nativeExecuteScriptMap.put("invokeMenuActionSync", new InvokeMenuAction(session, serverInstrumentation));
+    nativeExecuteScriptMap.put("findRId", new FindRId(serverInstrumentation));
+
     return session.getSessionId();
   }
 
@@ -481,7 +493,14 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   @Override
   public Object executeScript(String script, Object... args) {
     if (isNativeWindowMode()) {
-      throw new UnsupportedOperationException("Executing script is only available in web views.");
+      JSONArray array = null;
+      if (args.length == 1) {
+        array = (JSONArray)args[0];
+      }
+      if (nativeExecuteScriptMap.containsKey(script)) {
+        return nativeExecuteScriptMap.get(script).executeScript(array);
+      }
+      throw new UnsupportedOperationException("Executing arbitrary script is only available in web views.");
     }
     return selendroidWebDriver.executeScript(script, args);
   }
