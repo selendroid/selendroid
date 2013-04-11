@@ -17,6 +17,10 @@
    - execute script (only supported for webview mode)
 - Added css locator support in webviews
 - *selendroid-grid-plugin* that adds support to use the selenium grid for parallel testing
+- Fix for native UI hierarchy handling
+- Several smaller bugfixes with regards to element handling
+- Gem can now be use on Windows
+- Gem source has been added to the main project
 
 0.2 
 ----
