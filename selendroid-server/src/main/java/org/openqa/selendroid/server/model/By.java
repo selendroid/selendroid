@@ -168,6 +168,34 @@ public abstract class By {
     }
   }
 
+  public static class ByPartialLinkText extends By {
+    private final String text;
+
+    public ByPartialLinkText(String text) {
+      this.text = text;
+    }
+
+    @Override
+    public AndroidElement findElement(SearchContext context) {
+      return context.findElement(By.partialLinkText(text));
+    }
+
+    @Override
+    public List<AndroidElement> findElements(SearchContext context) {
+      return context.findElements(By.partialLinkText(text));
+    }
+
+    @Override
+    public String getElementLocator() {
+      return text;
+    }
+
+    @Override
+    public String toString() {
+      return "By.partialText: " + text;
+    }
+  }
+
   public static class ByName extends By {
     private final String name;
 
@@ -242,6 +270,13 @@ public abstract class By {
       throw new IllegalArgumentException("Cannot find elements when text is null.");
 
     return new ByLinkText(text);
+  }
+
+  public static By partialLinkText(final String text) {
+    if (text == null)
+      throw new IllegalArgumentException("Cannot find elements when text is null.");
+
+    return new ByPartialLinkText(text);
   }
 
   public static By name(String name) {

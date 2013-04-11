@@ -13,7 +13,11 @@
  */
 package org.openqa.selendroid.server;
 
+import com.google.common.base.Charsets;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.openqa.selendroid.server.common.BaseServlet;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.handler.CaptureScreenshot;
 import org.openqa.selendroid.server.handler.ClearElement;
 import org.openqa.selendroid.server.handler.ClickElement;
@@ -57,10 +61,6 @@ import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
-
-import com.google.common.base.Charsets;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 
 public class AndroidServlet extends BaseServlet implements HttpHandler {
   public static final int INTERNAL_SERVER_ERROR = 500;
@@ -142,6 +142,15 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     try {
       addHandlerAttributesToRequest(request, handler.getMappedUri());
       result = handler.handle();
+    } catch (StaleElementReferenceException se) {
+      try {
+        String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
+        result = new Response(sessionId, 13, se);
+      } catch (Exception e) {
+        SelendroidLogger.log("Error occured while handling reuqest and got StaleRef.", e);
+        replyWithServerError(response);
+        return;
+      }
     } catch (Exception e) {
       SelendroidLogger.log("Error occured while handling reuqest.", e);
       replyWithServerError(response);

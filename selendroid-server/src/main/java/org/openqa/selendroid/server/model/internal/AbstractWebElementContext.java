@@ -153,7 +153,7 @@ public abstract class AbstractWebElementContext
 
   @Override
   public AndroidElement findElementById(String id) {
-    return findElementByXPath("//*[@id='" + id + "']");
+    return lookupElement(LOCATOR_ID, id);
   }
 
   @Override

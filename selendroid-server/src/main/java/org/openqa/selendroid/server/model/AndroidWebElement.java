@@ -45,6 +45,8 @@ public class AndroidWebElement implements AndroidElement {
   private SelendroidWebDriver driver;
   private SearchContext elementContext = null;
   private Coordinates coordinates = null;
+  private final static long SENDKEYS_TIMEOUT = 5000L;
+  private final static long POLLING_INTERVAL = 50L;
 
 
   private class ElementSearchContext extends AbstractWebElementContext {
@@ -120,9 +122,23 @@ public class AndroidWebElement implements AndroidElement {
     driver.waitUntilEditAreaHasFocus();
     // Move the cursor to the end of the test input.
     // The trick is to set the value after the cursor
-    driver.executeScript("arguments[0].focus();arguments[0].value=arguments[0].value;", this);
+    String originalText = (String) driver.executeScript("arguments[0].focus();" +
+        "arguments[0].value=arguments[0].value;return arguments[0].value", this);
 
     EventSender.sendKeys(webview, value);
+
+    // wait for keys to have been sent to the element
+    long timeout = System.currentTimeMillis() + SENDKEYS_TIMEOUT;
+    while (timeout < System.currentTimeMillis()) {
+      String newValue = (String) driver.executeScript("return arguments[0].value;");
+      if (newValue.length() > originalText.length()) break;
+      try {
+        Thread.sleep(POLLING_INTERVAL);
+      } catch (InterruptedException e) {
+        // being kind to the system, if system is interrupting just break out.
+        break;
+      }
+    }
   }
 
   public boolean isEnabled() {
