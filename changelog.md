@@ -1,4 +1,4 @@
-0.3 (under development)
+0.3 
 ----
 - Moved from google gson library to org.json
 - Added first support of Selenium Advanced User Interactions API
@@ -21,6 +21,8 @@
 - Several smaller bugfixes with regards to element handling
 - Gem can now be use on Windows
 - Gem source has been added to the main project
+- Added FindByPartialLinkText locator support for native and webview elements
+- Adding (experimental) mechanism to add 'executeScript' in Native
 
 0.2 
 ----
