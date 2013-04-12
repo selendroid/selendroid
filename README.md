@@ -6,6 +6,11 @@ Selendroid
 
 Selendroid is an attempt to implement the Selenium JSON Wire Protocol for Android native and hybrid apps.
 
+Latest News:
+------------
+
+* Selendroid Version 0.3 is released [List of Features](https://github.com/DominikDary/selendroid/blob/master/changelog.md))
+
 Getting started
 ---------------
 
