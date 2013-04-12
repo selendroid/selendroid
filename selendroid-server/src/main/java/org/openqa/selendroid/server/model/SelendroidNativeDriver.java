@@ -85,6 +85,7 @@ public class SelendroidNativeDriver {
     }
     root.put("activity", serverInstrumentation.getCurrentActivity().getComponentName()
         .toShortString());
+
     addChildren(root, rootElement);
 
     return root;

@@ -19,12 +19,13 @@ public class SelendroidLogger {
   // private static final Logger logger = LoggerFactory.getLogger(SelendroidLogger.class);
 
   public static void log(String message) {
-    // currently deactivated
     System.out.println(message);
   }
 
   public static void log(String message, Exception e) {
     System.out.println(message);
-    e.printStackTrace();
+    if (e != null) {
+      e.printStackTrace();
+    }
   }
 }

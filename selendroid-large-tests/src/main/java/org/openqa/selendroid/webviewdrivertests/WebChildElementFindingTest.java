@@ -121,6 +121,18 @@ public class WebChildElementFindingTest extends BaseAndroidTest {
       // this is expected
     }
   }
+  
+  @Test
+  public void testShouldNotBeAbleToLocateASingleElementByPartialTextThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+    WebElement rootElement = driver.findElement(By.id("multi"));
+    try {
+      rootElement.findElement(By.partialLinkText("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
 
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByIdThatDoesNotExist() {
@@ -170,12 +182,30 @@ public class WebChildElementFindingTest extends BaseAndroidTest {
     WebElement rootElement = driver.findElement(By.id("multi"));
     assertListIsEmpty(rootElement.findElements(By.linkText("notThere")));
   }
+  
+  @Test
+  public void testShouldNotBeAbleToLocateMultipleElementsByPartialTextThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+    WebElement rootElement = driver.findElement(By.id("multi"));
+    assertListIsEmpty(rootElement.findElements(By.partialLinkText("notThere")));
+  }
 
   @Test
   public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedByText() throws Exception {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     WebElement rootElement = driver.findElement(By.className("content"));
     WebElement clickMe = rootElement.findElement(By.linkText("click me"));
+    clickMe.click();
+
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
+  }
+  
+  @Test
+  public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedByPartialText() throws Exception {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement rootElement = driver.findElement(By.className("content"));
+    WebElement clickMe = rootElement.findElement(By.partialLinkText("click m"));
     clickMe.click();
 
     waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
@@ -239,6 +269,17 @@ public class WebChildElementFindingTest extends BaseAndroidTest {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     WebElement rootElement = driver.findElement(By.className("content"));
     WebElement clickMe = rootElement.findElements(By.linkText("click me")).get(0);
+    clickMe.click();
+
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
+  }
+  
+  @Test
+  public void testShouldBeAbleToFindElementsAndClickOnLinkIdentifiedByPartialText() throws Exception {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement rootElement = driver.findElement(By.className("content"));
+    WebElement clickMe = rootElement.findElements(By.partialLinkText("click m")).get(0);
     clickMe.click();
 
     waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);

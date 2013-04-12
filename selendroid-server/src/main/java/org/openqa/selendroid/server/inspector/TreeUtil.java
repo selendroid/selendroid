@@ -50,9 +50,16 @@ public class TreeUtil {
       JSONArray jstreeChildren = new JSONArray();
       node.put("children", jstreeChildren);
       for (int i = 0; i < children.length(); i++) {
-        JSONObject child = (JSONObject) children.get(i);
-        JSONObject jstreenode = createFromNativeWindowsSource(child);
-        jstreeChildren.put(jstreenode);
+        Object child = null;
+        try {
+          child = children.get(i);
+        } catch (JSONException e) {
+          // ignore
+        }
+        if (child != null) {
+          JSONObject jstreenode = createFromNativeWindowsSource((JSONObject) child);
+          jstreeChildren.put(jstreenode);
+        }
       }
     }
 
@@ -62,9 +69,7 @@ public class TreeUtil {
   private static String getNodeTitle(JSONObject node) throws JSONException {
     StringBuilder b = new StringBuilder();
     b.append("[" + node.optString("type") + "]-");
-
     String name = node.optString("name");
-
     if (name != null) {
       if (name.length() > 18) {
         name = name.substring(0, 15) + "...";

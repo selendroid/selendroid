@@ -26,6 +26,7 @@ import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.By.ByClass;
 import org.openqa.selendroid.server.model.By.ById;
 import org.openqa.selendroid.server.model.By.ByLinkText;
+import org.openqa.selendroid.server.model.By.ByPartialLinkText;
 import org.openqa.selendroid.server.model.By.ByTagName;
 import org.openqa.selendroid.server.model.By.ByXPath;
 import org.openqa.selendroid.server.model.KnownElements;
@@ -41,6 +42,7 @@ public abstract class AbstractWebElementContext
       FindsByName,
       FindsById,
       FindsByText,
+      FindsByPartialText,
       FindsByClass {
   protected static final String LOCATOR_ID = "id";
   protected static final String LOCATOR_LINK_TEXT = "linkText";
@@ -119,6 +121,8 @@ public abstract class AbstractWebElementContext
       return findElementsByTagName(by.getElementLocator());
     } else if (by instanceof ByLinkText) {
       return findElementsByText(by.getElementLocator());
+    } else if (by instanceof ByPartialLinkText) {
+      return findElementsByPartialText(by.getElementLocator());
     } else if (by instanceof ByXPath) {
       return findElementsByXPath(by.getElementLocator());
     } else if (by instanceof ByClass) {
@@ -140,6 +144,8 @@ public abstract class AbstractWebElementContext
       return findElementByXPath(by.getElementLocator());
     } else if (by instanceof By.ByLinkText) {
       return findElementByText(by.getElementLocator());
+    } else if (by instanceof ByPartialLinkText) {
+      return findElementByPartialText(by.getElementLocator());
     } else if (by instanceof By.ByName) {
       return findElementByName(by.getElementLocator());
     } else if (by instanceof By.ByClass) {
@@ -164,6 +170,16 @@ public abstract class AbstractWebElementContext
   @Override
   public AndroidElement findElementByTagName(String using) {
     return lookupElement(LOCATOR_TAG_NAME, using);
+  }
+
+  @Override
+  public AndroidElement findElementByPartialText(String using) {
+    return lookupElement(LOCATOR_PARTIAL_LINK_TEXT, using);
+  }
+
+  @Override
+  public List<AndroidElement> findElementsByPartialText(String using) {
+    return lookupElements(LOCATOR_PARTIAL_LINK_TEXT, using);
   }
 
   @Override

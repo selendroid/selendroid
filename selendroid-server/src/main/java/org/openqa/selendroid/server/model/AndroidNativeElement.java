@@ -94,7 +94,8 @@ public class AndroidNativeElement implements AndroidElement {
         }
       });
     } catch (TimeoutException exception) {
-      throw new ElementNotVisibleException("You may only do passive read with element not displayed");
+      throw new ElementNotVisibleException(
+          "You may only do passive read with element not displayed");
     }
   }
 
@@ -157,7 +158,7 @@ public class AndroidNativeElement implements AndroidElement {
     waitUntilIsDisplayed();
     scrollIntoScreenIfNeeded();
     try {
-      //is needed for recalculation of location
+      // is needed for recalculation of location
       Thread.sleep(300);
     } catch (InterruptedException e) {}
     int[] xy = new int[2];

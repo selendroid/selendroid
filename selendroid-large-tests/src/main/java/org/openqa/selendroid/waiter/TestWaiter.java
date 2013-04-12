@@ -21,6 +21,12 @@ import static org.junit.Assert.fail;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 /**
  * This helper class duplicates the functionality of the Wait class in the support classes. This
  * class is not thread-safe.
@@ -98,5 +104,12 @@ public class TestWaiter {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static WebElement waitForElement(By by, int timeout, WebDriver driver) {
+    WebDriverWait wait = new WebDriverWait(driver, timeout);
+    WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(by));
+
+    return element;
   }
 }

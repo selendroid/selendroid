@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
@@ -72,13 +70,20 @@ public abstract class AbstractNativeElementContext
   AndroidNativeElement newAndroidElement(View view) {
     Preconditions.checkNotNull(view);
     if (knownElements.hasElement(new Long(view.getId()))) {
-      return (AndroidNativeElement) knownElements.get(new Long(view.getId()));
-    } else {
-      AndroidNativeElement e = new AndroidNativeElement(view, instrumentation, knownElements);
-      knownElements.add(e);
-      return e;
+      AndroidNativeElement element =
+          (AndroidNativeElement) knownElements.get(new Long(view.getId()));
+      // Caution: this is needed because e.g.
+      // in spinner lists the items have by default all the same id
+      if (element.getView().equals(view)) {
+        return element;
+      }
     }
+
+    AndroidNativeElement e = new AndroidNativeElement(view, instrumentation, knownElements);
+    knownElements.add(e);
+    return e;
   }
+
   AndroidElement newAndroidElement(int id) {
     if (id < 0) {
       return null;
@@ -190,7 +195,9 @@ public abstract class AbstractNativeElementContext
       // haven't seen this happen, just covering my basis / preserving some previous code.
       Activity currentActivity = instrumentation.getCurrentActivity();
       if (currentActivity != null) {
-        int intId = currentActivity.getResources().getIdentifier(using, "id", currentActivity.getPackageName());
+        int intId =
+            currentActivity.getResources().getIdentifier(using, "id",
+                currentActivity.getPackageName());
         if (intId > 0) {
           View view = currentActivity.findViewById(intId);
           if (view != null) {
@@ -204,9 +211,9 @@ public abstract class AbstractNativeElementContext
       // current use case is for 'menu' items that don't appear as a View and need to be invoked.
       Class rClazz;
       try {
-        rClazz = instrumentation.getTargetContext().getClassLoader().loadClass(
-            instrumentation.getTargetContext().getPackageName() + ".R$id"
-        );
+        rClazz =
+            instrumentation.getTargetContext().getClassLoader()
+                .loadClass(instrumentation.getTargetContext().getPackageName() + ".R$id");
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
         return elements;
@@ -264,7 +271,9 @@ public abstract class AbstractNativeElementContext
 
     public boolean apply(View view) {
       if (view instanceof TextView) {
-        return (text.equals(((TextView) view).getText()));
+        String textFieldText = String.valueOf(((TextView) view).getText());
+        boolean textEqual = text.equals(textFieldText);
+        return textEqual;
       }
       return false;
     }
@@ -281,8 +290,7 @@ public abstract class AbstractNativeElementContext
     public boolean apply(View view) {
       if (view instanceof TextView) {
         String viewText = ((TextView) view).getText().toString();
-        System.out.println("Comparing text in view " + view.getClass().getName() + " with text: " + viewText);
-        System.out.println("contains: " + viewText.contains(text) + " index: " + viewText.indexOf(text));
+        
         return viewText.indexOf(text) >= 0;
       }
       return false;
@@ -391,5 +399,6 @@ public abstract class AbstractNativeElementContext
   }
 
   protected abstract View getRootView();
+
   protected abstract List<View> getTopLevelViews();
 }

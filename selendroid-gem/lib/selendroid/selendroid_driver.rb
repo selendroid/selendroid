@@ -77,7 +77,7 @@ def start_selendroid_server(activity)
     main_activity =activity
   end
   log "Starting selendroid-server with main activity: #{main_activity}"    
-  selendroid_server_start_cmd = "#{adb_command} shell am instrument -e main_activity '#{main_activity}' org.openqa.selendroid/org.openqa.selendroid.ServerInstrumentation"
+  selendroid_server_start_cmd = "#{adb_command} shell am instrument -e main_activity '#{main_activity}' org.openqa.selendroid/.ServerInstrumentation"
   system(selendroid_server_start_cmd)
   unless ENV["SELENDROID_SERVER_PORT"]
     ENV["SELENDROID_SERVER_PORT"] = "8080"
@@ -90,7 +90,7 @@ def wait_for_selendroid_server
   unless ENV["SELENDROID_SERVER_PORT"]
     ENV["SELENDROID_SERVER_PORT"] = "8080"
   end
-  retriable :tries => 5, :interval => 3 do
+  retriable :tries => 10, :interval => 3 do
     url = URI.parse("http://localhost:#{ENV["SELENDROID_SERVER_PORT"]}/wd/hub/status")
     the_request = Net::HTTP::Get.new("#{url.path}")
 

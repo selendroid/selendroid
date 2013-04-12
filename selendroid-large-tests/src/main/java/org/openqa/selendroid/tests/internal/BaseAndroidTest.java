@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selendroid.waiter.TestWaiter;
 import org.openqa.selendroid.waiter.WaitingConditions;
 import org.openqa.selendroid.webviewdrivertests.HtmlTestData;
 import org.openqa.selenium.By;
@@ -36,8 +37,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
 public class BaseAndroidTest {
   protected WebDriver driver = null;
@@ -46,17 +47,18 @@ public class BaseAndroidTest {
   public static final String WEBVIEW = "WEBVIEW";
 
 
-  @BeforeClass
+  @BeforeMethod
   public void setup() throws MalformedURLException {
     driver = new AndroidDriver(new URL("http://localhost:8080/wd/hub"), getDefaultCapabilities());
   }
 
-  @AfterClass
+  @AfterMethod
   public void teardown() {
     driver.quit();
   }
 
   protected void openWebdriverTestPage(String page) {
+    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     String activityClass = "org.openqa.selendroid.testapp." + "WebViewActivity";
     driver.switchTo().window(NATIVE_APP);
     driver.get("and-activity://" + activityClass);
@@ -68,17 +70,20 @@ public class BaseAndroidTest {
     // Hack: to work around the bug that an already open page will not be opened again.
     driver.findElement(By.linkText(HtmlTestData.ABOUT_BLANK)).click();
     try {
-      Thread.sleep(1000);
+      Thread.sleep(500);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
     spinner.click();
-    driver.findElement(By.linkText(page)).click();
+
+    WebElement entry = TestWaiter.waitForElement(By.linkText(page), 10, driver);
+    entry.click();
 
     driver.switchTo().window(WEBVIEW);
   }
 
   protected void openStartActivity() {
+    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     String activityClass = "org.openqa.selendroid.testapp." + "HomeScreenActivity";
     driver.switchTo().window(NATIVE_APP);
     driver.get("and-activity://" + activityClass);

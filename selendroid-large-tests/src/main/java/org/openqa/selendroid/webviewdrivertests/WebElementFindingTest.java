@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
+import org.openqa.selendroid.waiter.TestWaiter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -115,6 +116,18 @@ public class WebElementFindingTest extends BaseAndroidTest {
       // this is expected
     }
   }
+  
+  @Test
+  public void testShouldNotBeAbleToLocateASingleElementByPartialTextThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    try {
+      driver.findElement(By.partialLinkText("notThere"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
 
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByIdThatDoesNotExist() {
@@ -168,6 +181,13 @@ public class WebElementFindingTest extends BaseAndroidTest {
 
     assertListIsEmpty(driver.findElements(By.linkText("notThere")));
   }
+  
+  @Test
+  public void testShouldNotBeAbleToLocateMultipleElementsByPartialTextThatDoesNotExist() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+
+    assertListIsEmpty(driver.findElements(By.partialLinkText("notThere")));
+  }
 
   @Test
   public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedByText() throws Exception {
@@ -179,6 +199,14 @@ public class WebElementFindingTest extends BaseAndroidTest {
     Assert.assertEquals(driver.getTitle(), "We Arrive Here");
   }
 
+  @Test
+  public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedByPartialText() throws Exception {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    TestWaiter.waitForElement(By.partialLinkText("click"),10,driver).click();
+
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
+  }
 
   @Test
   public void testShouldBeAbleToFindElementAndClickOnLinkIdentifiedById() {
@@ -230,6 +258,16 @@ public class WebElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindElementsAndClickOnLinkIdentifiedByText() throws Exception {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     WebElement clickMe = driver.findElements(By.linkText("click me")).get(0);
+    clickMe.click();
+
+    waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);
+    Assert.assertEquals(driver.getTitle(), "We Arrive Here");
+  }
+  
+  @Test
+  public void testShouldBeAbleToFindElementsAndClickOnLinkIdentifiedByPartialText() throws Exception {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement clickMe = driver.findElements(By.partialLinkText("click m")).get(0);
     clickMe.click();
 
     waitFor(pageTitleToBe(driver, "We Arrive Here"), 15, TimeUnit.SECONDS);

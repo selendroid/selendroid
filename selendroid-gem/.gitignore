@@ -1,6 +1,5 @@
 .irb-history
 *.gem
-*.apk
 *.rbc
 *.DS_Store
 .bundle
@@ -9,8 +8,6 @@
 Gemfile.lock
 InstalledFiles
 _yardoc
-selendroid-test-app-0.1-SNAPSHOT.apk
-selendroid-server-0.0.1.apk
 coverage
 doc/
 lib/bundler/man

@@ -35,7 +35,8 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   private void assertListIsEmpty(List<WebElement> elements) {
     Assert.assertTrue(elements.isEmpty(), "Expecting empty list when no elements are found.");
   }
-
+  
+  
   @Test
   public void testShouldBeAbleToFindChildButtonIdentifiedByText() throws Exception {
     openStartActivity();
@@ -43,6 +44,44 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
     String buttonText = "EN Button";
     WebElement clickMe = rootElement.findElement(By.linkText(buttonText));
     Assert.assertEquals(clickMe.getText(), buttonText);
+  }
+
+  @Test
+  public void testShouldBeAbleToFindChildButtonsIdentifiedByPartialText() throws Exception {
+    openStartActivity();
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+    String buttonText = "EN Butto";
+    List<WebElement> elements = rootElement.findElements(By.partialLinkText(buttonText));
+    Assert.assertEquals(elements.size(), 1);
+    Assert.assertTrue(elements.get(0).getText().contains(buttonText));
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateASingleChildElementByPartialTextThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+    try {
+      rootElement.findElement(By.partialLinkText("nonExistantButton"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateMultipleChildElementsByPartialTextThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+    assertListIsEmpty(rootElement.findElements(By.linkText("nonExistantButton")));
+  }
+  
+  @Test
+  public void testShouldBeAbleToFindChildButtonIdentifiedByPartialText() throws Exception {
+    openStartActivity();
+    WebElement rootElement = driver.findElement(By.id("l10n"));
+    String buttonText = "EN Butto";
+    WebElement clickMe = rootElement.findElement(By.partialLinkText(buttonText));
+    Assert.assertTrue(clickMe.getText().contains(buttonText));
   }
 
   @Test

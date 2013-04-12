@@ -55,7 +55,7 @@ public class InspectorView extends SelendroidInspectorView {
     b.append("<div id='mouseOver'></div>");
     b.append("<div id='rotationCenter'>");
     b.append("<div id='frame'>");
-    b.append("<img src='" + getFrame() + "' />");
+    //b.append("<img src='" + getFrame() + "' />");
     b.append("        <div id='screen'>");
     b.append("         <img src='" + getScreen() + "' />");
     b.append("</div>");

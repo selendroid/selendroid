@@ -14,6 +14,7 @@
 package org.openqa.selendroid.nativetests;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
@@ -29,6 +30,39 @@ import org.testng.annotations.Test;
  * @author ddary
  */
 public class NativeElementFindingTest extends BaseAndroidTest {
+  @Test
+  public void testShouldBeAbleToFindButtonIdentifiedByPartialText() throws Exception {
+    openStartActivity();
+    String buttonText = "EN Butto";
+    WebElement clickMe = driver.findElement(By.partialLinkText(buttonText));
+    Assert.assertTrue(clickMe.getText().contains(buttonText));
+  }
+
+  @Test
+  public void testShouldBeAbleToFindButtonsIdentifiedByPartialText() throws Exception {
+    openStartActivity();
+    String buttonText = "EN Butto";
+    List<WebElement> elements = driver.findElements(By.partialLinkText(buttonText));
+    Assert.assertEquals(elements.size(), 1);
+    Assert.assertTrue(elements.get(0).getText().contains(buttonText));
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateASingleElementByPartialTextThatDoesNotExist() {
+    openStartActivity();
+    try {
+      driver.findElement(By.partialLinkText("nonExistentButton"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test()
+  public void testShouldNotBeAbleToLocateMultipleElementsByPartialTextThatDoesNotExist() {
+    openStartActivity();
+    assertListIsEmpty(driver.findElements(By.partialLinkText("nonExistentButton")));
+  }
 
   @Test
   public void testShouldBeAbleToFindButtonIdentifiedByText() throws Exception {

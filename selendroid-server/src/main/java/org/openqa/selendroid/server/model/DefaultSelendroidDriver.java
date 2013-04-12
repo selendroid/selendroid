@@ -15,9 +15,7 @@ package org.openqa.selendroid.server.model;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -54,7 +52,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.Display;
 import android.view.View;
 import android.webkit.WebView;
@@ -82,7 +79,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   private SelendroidWebDriver selendroidWebDriver = null;
   private WindowType activeWindowType = null;
 
-  private Map<String, NativeExecuteScript> nativeExecuteScriptMap = new HashMap<String, NativeExecuteScript>();
+  private Map<String, NativeExecuteScript> nativeExecuteScriptMap =
+      new HashMap<String, NativeExecuteScript>();
 
 
   public DefaultSelendroidDriver(ServerInstrumentation instrumentation) {
@@ -225,17 +223,19 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   @Override
   public byte[] takeScreenshot() {
     ViewHierarchyAnalyzer viewAnalyzer = ViewHierarchyAnalyzer.getDefaultInstance();
-    long drawingTime = 0;
-    View container = null;
-    for (View view : viewAnalyzer.getTopLevelViews()) {
-      if (view != null && view.isShown() && view.hasWindowFocus()
-          && view.getDrawingTime() > drawingTime) {
 
-        container = view;
-        drawingTime = view.getDrawingTime();
-      }
-    }
-    final View mainView = container;
+    // TODO ddary review later, but with getRecentDecorView() it seems to work better
+    // long drawingTime = 0;
+    // View container = null;
+    // for (View view : viewAnalyzer.getTopLevelViews()) {
+    // if (view != null && view.isShown() && view.hasWindowFocus()
+    // && view.getDrawingTime() > drawingTime) {
+    // container = view;
+    // drawingTime = view.getDrawingTime();
+    // }
+    // }
+    // final View mainView = container;
+    final View mainView = viewAnalyzer.getRecentDecorView();
     if (mainView == null) {
       throw new SelendroidException("No open windows.");
     }
@@ -359,7 +359,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     serverInstrumentation.startMainActivity();
     SelendroidLogger.log("new s: " + session.getSessionId());
 
-    nativeExecuteScriptMap.put("invokeMenuActionSync", new InvokeMenuAction(session, serverInstrumentation));
+    nativeExecuteScriptMap.put("invokeMenuActionSync", new InvokeMenuAction(session,
+        serverInstrumentation));
     nativeExecuteScriptMap.put("findRId", new FindRId(serverInstrumentation));
 
     return session.getSessionId();
@@ -424,16 +425,17 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     protected List<View> getTopLevelViews() {
       List<View> views = new ArrayList<View>();
       views.addAll(viewAnalyzer.getTopLevelViews());
-      if (instrumentation.getCurrentActivity() != null &&
-          instrumentation.getCurrentActivity().getCurrentFocus() != null) {
+      if (instrumentation.getCurrentActivity() != null
+          && instrumentation.getCurrentActivity().getCurrentFocus() != null) {
         views.add(instrumentation.getCurrentActivity().getCurrentFocus());
       }
       // sort them to have most recently drawn view show up first
       Collections.sort(views, new Comparator<View>() {
         @Override
         public int compare(View view, View view1) {
-          return view.getDrawingTime() < view1.getDrawingTime()? 1 :
-              (view.getDrawingTime() == view1.getDrawingTime() ? 0 : -1);
+          return view.getDrawingTime() < view1.getDrawingTime()
+              ? 1
+              : (view.getDrawingTime() == view1.getDrawingTime() ? 0 : -1);
         }
       });
 
@@ -495,12 +497,13 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     if (isNativeWindowMode()) {
       JSONArray array = null;
       if (args.length == 1) {
-        array = (JSONArray)args[0];
+        array = (JSONArray) args[0];
       }
       if (nativeExecuteScriptMap.containsKey(script)) {
         return nativeExecuteScriptMap.get(script).executeScript(array);
       }
-      throw new UnsupportedOperationException("Executing arbitrary script is only available in web views.");
+      throw new UnsupportedOperationException(
+          "Executing arbitrary script is only available in web views.");
     }
     return selendroidWebDriver.executeScript(script, args);
   }

@@ -5,6 +5,7 @@ import static org.openqa.selendroid.waiter.TestWaiter.waitFor;
 import org.openqa.selendroid.SelendroidKeys;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selendroid.waiter.WaitingConditions;
+import org.openqa.selenium.By;
 import org.openqa.selenium.HasInputDevices;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -24,13 +25,14 @@ public class SendKeyAndNativeKeyTests extends BaseAndroidTest {
     precondition();
 
     ((HasInputDevices) driver).getKeyboard().sendKeys(SelendroidKeys.SEARCH);
-    
+
 
     ((HasInputDevices) driver).getKeyboard().sendKeys("cars");
 
     ((HasInputDevices) driver).getKeyboard().sendKeys(SelendroidKeys.ENTER);
     waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://SearchUsersActivity"));
-
+    
+    Assert.assertNotNull(driver.findElement(By.linkText("Mercedes Benz")));
     Assert.assertTrue(driver.getPageSource().contains("Mercedes Benz"));
   }
 }

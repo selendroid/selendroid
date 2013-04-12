@@ -75,9 +75,7 @@ public class WebViewActivity extends Activity {
 
       @Override
       public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-        mainWebView.loadUrl("about:blank");
         SpinnerItem item = (SpinnerItem) testDataSpinner.getSelectedItem();
-        System.out.println("Selected Item: " + item.text);
         mainWebView.loadUrl(item.url);
       }
 
