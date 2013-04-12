@@ -1,5 +1,6 @@
 .irb-history
 *.gem
+*.apk
 *.rbc
 *.DS_Store
 .bundle

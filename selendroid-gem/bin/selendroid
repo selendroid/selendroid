@@ -1,0 +1,113 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+require 'selendroid/selendroid_builder'
+require 'selendroid/selendroid_driver'
+require 'rbconfig'
+
+# for ruby 1.9.1 and earlier
+unless defined? RbConfig.ruby
+  def RbConfig.ruby
+    File.join(RbConfig::CONFIG["bindir"], RbConfig::CONFIG["ruby_install_name"] + RbConfig::CONFIG["EXEEXT"])
+  end
+end
+
+def print_comamndline_help
+  puts <<EOF
+  Usage: selendroid <command-name> [parameters]
+  <command-name> can be one of
+    help
+      Prints more detailed help information.
+    build <apk>
+      Builds the selendroid-server for the given apk.
+    build-and-start  <apk>
+      Builds the selendroid-server for the given apk and starts the 
+      selendroid server. The app will be resigned with the debug 
+      certificate and will be installed on the first available An-
+      droid device.
+    start  <apk>
+      Starts the selendroid server on the first available Android device.
+      Commamd expects that the apps are already installed on the device.
+    shell  <apk>
+      Starts the selendroid-server on the device (apps must be already in-
+      stalled) and opens an irb shell with an active WebDriver session.
+    version
+      prints the gem version    
+    To find help, please visit the official selendroid wiki: 
+    http://goo.gl/z30pj    
+EOF
+end
+
+
+def is_apk_file?(file_path)
+  file_path.end_with? ".apk" and File.exist? file_path
+end
+
+def relative_to_full_path(file_path)
+  File.expand_path(file_path)
+end
+
+def raise_if_android_and_java_home_not_set
+  raise "Please set the ANDROID_HOME environment variable" unless ENV["ANDROID_HOME"]
+  raise "Please set the JAVA_HOME environment variable" unless ENV["JAVA_HOME"]
+end
+
+if (ARGV.length == 0)
+  print_comamndline_help
+  exit 0
+end
+cmd = ARGV.shift
+if cmd == 'help'
+  print_comamndline_help
+  exit 0
+elsif cmd == 'shell'
+  raise_if_android_and_java_home_not_set
+  puts "Please specify the app you want to automate!" if (ARGV.empty? or not is_apk_file?(ARGV.first))
+  unless ENV["SELENDROID_SERVER_PORT"]
+    ENV["SELENDROID_SERVER_PORT"] = "8080"
+  end
+  while not ARGV.empty? and is_apk_file?(ARGV.first)
+    ENV["MAIN_ACTIVITY"]  = get_app_main_activity(relative_to_full_path(ARGV.shift))
+    ENV["IRBRC"] = File.join(File.dirname(__FILE__), '..', 'irbrc')
+
+    system "#{RbConfig.ruby} -S irb"
+  end
+
+  exit 0  
+elsif cmd == 'build'
+  raise_if_android_and_java_home_not_set
+  puts "Please specify the app you want to build a selendroid-server for!" if (ARGV.empty? or not is_apk_file?(ARGV.first))
+  while not ARGV.empty? and is_apk_file?(ARGV.first)
+    rebuild_selendroid(relative_to_full_path(ARGV.shift))
+  end
+  exit 0
+elsif cmd=='build-and-start'
+  raise_if_android_and_java_home_not_set  
+  puts "Please specify the app you want to automate!" if (ARGV.empty? or not is_apk_file?(ARGV.first))
+  while not ARGV.empty? and is_apk_file?(ARGV.first)
+    app_apk_under_test = relative_to_full_path(ARGV.shift)
+    prepare_device(app_apk_under_test)
+    main_activity = get_app_main_activity(app_apk_under_test)
+    start_selendroid_server(main_activity)
+    wait_for_selendroid_server
+  end
+  exit 0
+elsif cmd=='start'  
+  raise_if_android_and_java_home_not_set  
+  puts "Please specify the app you want to automate!" if (ARGV.empty? or not is_apk_file?(ARGV.first))
+  while not ARGV.empty? and is_apk_file?(ARGV.first)
+    app_apk_under_test = relative_to_full_path(ARGV.shift)
+    main_activity = get_app_main_activity(app_apk_under_test)
+    start_selendroid_server(main_activity)
+    wait_for_selendroid_server
+  end
+  exit 0
+elsif cmd == 'version'
+  puts Selendroid::VERSION
+  exit 0
+else
+  print_comamndline_help
+  exit 0
+end
+
+
