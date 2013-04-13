@@ -172,9 +172,13 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
     JSONObject copy;
     try {
-      copy =
+      if (session.getCapabilities().names() != null) {
+        copy =
           new JSONObject(session.getCapabilities(), session.getCapabilities().names().join(",")
               .split(","));
+      } else {
+        copy = new JSONObject();
+      }
       copy.put(TAKES_SCREENSHOT, true);
       copy.put(BROWSER_NAME, "selendroid");
       copy.put(ROTATABLE, false);
