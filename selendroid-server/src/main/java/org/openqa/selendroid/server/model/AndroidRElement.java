@@ -79,12 +79,12 @@ public class AndroidRElement implements AndroidElement {
 
   @Override
   public boolean isDisplayed() {
-    throw new RuntimeException(NOT_IMPLEMENTED_ERROR_MSG);
+    return false;
   }
 
   @Override
   public boolean isEnabled() {
-    throw new RuntimeException(NOT_IMPLEMENTED_ERROR_MSG);
+    return false;
   }
 
   @Override
