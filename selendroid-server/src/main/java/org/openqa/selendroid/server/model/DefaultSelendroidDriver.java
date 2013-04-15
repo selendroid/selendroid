@@ -225,6 +225,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
    * @see org.openqa.selenium.android.server.AndroidDriver#takeScreenshot()
    */
   @Override
+  @SuppressWarnings("deprecation")
   public byte[] takeScreenshot() {
     ViewHierarchyAnalyzer viewAnalyzer = ViewHierarchyAnalyzer.getDefaultInstance();
 

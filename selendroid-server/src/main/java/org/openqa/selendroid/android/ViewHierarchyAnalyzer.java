@@ -175,7 +175,7 @@ public class ViewHierarchyAnalyzer {
   public WebView findWebView() {
     final List<View> webViews =
         FluentIterable.from(getViews(Arrays.asList(getRecentDecorView())))
-            .filter(Predicates.instanceOf(WebView.class)).toImmutableList();
+            .filter(Predicates.instanceOf(WebView.class)).toList();
 
     if (webViews.isEmpty()) {
       return null;
@@ -188,17 +188,17 @@ public class ViewHierarchyAnalyzer {
     List<View> container = new ArrayList<View>();
     List<View> listview =
         FluentIterable.from(allViews).filter(Predicates.instanceOf(AbsListView.class))
-            .toImmutableList();
+            .toList();
     if (listview != null && !listview.isEmpty()) {
       container.addAll(listview);
     }
     List<View> scrollview =
         FluentIterable.from(allViews).filter(Predicates.instanceOf(ScrollView.class))
-            .toImmutableList();
+            .toList();
     container.addAll(scrollview);
     List<View> webview =
         FluentIterable.from(allViews).filter(Predicates.instanceOf(WebView.class))
-            .toImmutableList();
+            .toList();
     container.addAll(webview);
     return container;
   }

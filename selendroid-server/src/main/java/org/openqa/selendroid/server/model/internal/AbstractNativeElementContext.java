@@ -397,7 +397,7 @@ public abstract class AbstractNativeElementContext
               public AndroidNativeElement apply(final View view) {
                 return newAndroidElement(view);
               }
-            }).toImmutableList();
+            }).toList();
 
     if (filtered.isEmpty()) {
       throw new NoSuchElementException("No elements were found.");
