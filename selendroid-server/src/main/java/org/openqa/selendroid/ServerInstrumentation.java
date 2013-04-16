@@ -13,14 +13,6 @@
  */
 package org.openqa.selendroid;
 
-import java.util.Set;
-
-import org.openqa.selendroid.android.ActivitiesReporter;
-import org.openqa.selendroid.android.AndroidWait;
-import org.openqa.selendroid.server.AndroidServer;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.util.SelendroidLogger;
-
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -30,8 +22,13 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.view.View;
+import org.openqa.selendroid.android.ActivitiesReporter;
+import org.openqa.selendroid.android.AndroidWait;
+import org.openqa.selendroid.server.AndroidServer;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.util.SelendroidLogger;
 
-import com.google.common.base.Throwables;
+import java.util.Set;
 
 public class ServerInstrumentation extends Instrumentation {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
@@ -209,7 +206,7 @@ public class ServerInstrumentation extends Instrumentation {
     try {
       serverThread.join();
     } catch (InterruptedException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
     serverThread = null;
   }

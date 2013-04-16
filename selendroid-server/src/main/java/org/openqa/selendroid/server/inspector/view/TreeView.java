@@ -24,7 +24,7 @@ import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
-import com.google.common.base.Charsets;
+import java.nio.charset.Charset;
 
 public class TreeView extends SelendroidInspectorView {
   public TreeView(ServerInstrumentation serverInstrumentation, SelendroidDriver driver) {
@@ -37,12 +37,12 @@ public class TreeView extends SelendroidInspectorView {
       source = (JSONObject) driver.getWindowSource();
     } catch (SelendroidException e) {
       SelendroidLogger.log("error getting WindowSource in TreeView", e);
-      response.header("Content-type", "application/x-javascript").charset(Charsets.UTF_8)
+      response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
           .content("{}").end();
       return;
     }
     String convertedTree = TreeUtil.createFromNativeWindowsSource(source).toString();
-    response.header("Content-type", "application/x-javascript").charset(Charsets.UTF_8)
+    response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
         .content(convertedTree).end();
   }
 }

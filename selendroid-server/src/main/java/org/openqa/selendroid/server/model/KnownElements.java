@@ -15,26 +15,19 @@ package org.openqa.selendroid.server.model;
 
 import android.view.View;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class KnownElements {
-  private final BiMap<String, AndroidElement> cache = HashBiMap.create();
-  private final BiMap<View, AndroidNativeElement> nativeElementsByView = HashBiMap.create();
+  private final Map<String, AndroidElement> cache = new HashMap<String, AndroidElement>();
+  private final Map<View, AndroidNativeElement> nativeElementsByView = new HashMap<View, AndroidNativeElement>();
 
   public String add(AndroidElement element) {
     if (cache.containsValue(element)) {
-      return cache.inverse().get(element);
+      return getCacheKey(element);
     }
-    String id;
-    if (element instanceof AndroidNativeElement &&
-        ((AndroidNativeElement)element).getView().getId() >= 0) {
-      id = new Long(((AndroidNativeElement)element).getView().getId()).toString();
-    } else {
-      id = UUID.randomUUID().toString();
-    }
+    String id = UUID.randomUUID().toString();
 
     cache.put(id, element);
     if(element instanceof AndroidNativeElement){
@@ -76,7 +69,7 @@ public class KnownElements {
 
   public String getIdOfElement(AndroidElement element) {
     if (cache.containsValue(element)) {
-      return cache.inverse().get(element);
+      return getCacheKey(element);
     }
     return null;
   }
@@ -85,5 +78,15 @@ public class KnownElements {
     cache.clear();
     nativeElementsByView.clear();
     System.gc();
+  }
+
+
+  private String getCacheKey(AndroidElement element) {
+    for (Map.Entry<String, AndroidElement> entry: cache.entrySet())  {
+      if (entry.getValue().equals(element)) {
+        return entry.getKey();
+      }
+    }
+    return null;
   }
 }

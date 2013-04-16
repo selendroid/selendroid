@@ -13,31 +13,25 @@
  */
 package org.openqa.selendroid.android;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
-
 import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.ScrollView;
+import com.android.internal.util.Predicate;
+import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.util.InstanceOfPredicate;
+import org.openqa.selendroid.util.ListUtil;
+import org.openqa.selendroid.util.Preconditions;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.FluentIterable;
-import org.openqa.selendroid.util.SelendroidLogger;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ViewHierarchyAnalyzer {
   private static final ViewHierarchyAnalyzer INSTANCE = new ViewHierarchyAnalyzer();
@@ -100,7 +94,7 @@ public class ViewHierarchyAnalyzer {
   }
 
   private View getRecentDecorView(Set<View> views) {
-    Collection<View> decorViews = Collections2.filter(views, new DecorViewPredicate());
+    Collection<View> decorViews = (Collection<View>)ListUtil.filter(new ArrayList<View>(views), new DecorViewPredicate());
     View container = null;
     // candidate is to fall back to most recent 'shown' view if none have the 'window focus'
     // this seems to be able to happen with menus
@@ -124,9 +118,9 @@ public class ViewHierarchyAnalyzer {
     return container;
   }
 
-  private static class DecorViewPredicate implements Predicate<View> {
+  private static class DecorViewPredicate<E> implements Predicate<E> {
     @Override
-    public boolean apply(View view) {
+    public boolean apply(E view) {
       // PopupViewContainer can be a top level menu shown
       return "DecorView".equals(view.getClass().getSimpleName())
           || "PopupViewContainer".equals(view.getClass().getSimpleName());
@@ -173,32 +167,32 @@ public class ViewHierarchyAnalyzer {
   }
 
   public WebView findWebView() {
-    final List<View> webViews =
-        FluentIterable.from(getViews(Arrays.asList(getRecentDecorView())))
-            .filter(Predicates.instanceOf(WebView.class)).toList();
+    final List<WebView> webViews =
+        (List<WebView>) ListUtil.filter(getViews(Arrays.asList(getRecentDecorView())),
+            new InstanceOfPredicate(WebView.class));
 
     if (webViews.isEmpty()) {
       return null;
     }
-    return (WebView) webViews.get(0);
+    return webViews.get(0);
   }
 
   public List<View> findScrollableContainer() {
     Collection<View> allViews = getViews(Arrays.asList(getRecentDecorView()));
     List<View> container = new ArrayList<View>();
-    List<View> listview =
-        FluentIterable.from(allViews).filter(Predicates.instanceOf(AbsListView.class))
-            .toList();
+    List<AbsListView> listview =
+        (List<AbsListView>) ListUtil.filter(allViews,
+            new InstanceOfPredicate(AbsListView.class));
     if (listview != null && !listview.isEmpty()) {
       container.addAll(listview);
     }
-    List<View> scrollview =
-        FluentIterable.from(allViews).filter(Predicates.instanceOf(ScrollView.class))
-            .toList();
+    List<ScrollView> scrollview =
+        (List<ScrollView>) ListUtil.filter(allViews,
+            new InstanceOfPredicate(ScrollView.class));
     container.addAll(scrollview);
-    List<View> webview =
-        FluentIterable.from(allViews).filter(Predicates.instanceOf(WebView.class))
-            .toList();
+    List<WebView> webview =
+        (List<WebView>) ListUtil.filter(allViews,
+            new InstanceOfPredicate(WebView.class));
     container.addAll(webview);
     return container;
   }

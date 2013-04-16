@@ -15,6 +15,7 @@
 
 package org.openqa.selendroid.android;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selendroid.ServerInstrumentation;
@@ -30,8 +31,6 @@ import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.ScrollView;
 
-import com.google.common.collect.Lists;
-
 /**
  * Implements touch capabilities of a device.
  * 
@@ -46,7 +45,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
   public void singleTap(Coordinates where) {
     Point toTap = where.getLocationOnScreen();
-    List<MotionEvent> motionEvents = Lists.newArrayList();
+    List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, toTap));
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_UP, toTap));
@@ -54,7 +53,7 @@ public class AndroidTouchScreen implements TouchScreen {
   }
 
   public void down(int x, int y) {
-    List<MotionEvent> event = Lists.newArrayList();
+    List<MotionEvent> event = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
     Point coords = new Point(x, y);
     event.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, coords));
@@ -62,7 +61,7 @@ public class AndroidTouchScreen implements TouchScreen {
   }
 
   public void up(int x, int y) {
-    List<MotionEvent> event = Lists.newArrayList();
+    List<MotionEvent> event = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
     Point coords = new Point(x, y);
     event.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_UP, coords));
@@ -70,7 +69,7 @@ public class AndroidTouchScreen implements TouchScreen {
   }
 
   public void move(int x, int y) {
-    List<MotionEvent> event = Lists.newArrayList();
+    List<MotionEvent> event = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
     Point coords = new Point(x, y);
     event.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_MOVE, coords));
@@ -79,7 +78,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
   public void scroll(Coordinates where, int xOffset, int yOffset) {
     long downTime = SystemClock.uptimeMillis();
-    List<MotionEvent> motionEvents = Lists.newArrayList();
+    List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
     Point origin = where.getLocationOnScreen();
     Point destination = new Point(origin.x + xOffset, origin.y + yOffset);
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, origin));
@@ -100,7 +99,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
   public void doubleTap(Coordinates where) {
     Point toDoubleTap = where.getLocationOnScreen();
-    List<MotionEvent> motionEvents = Lists.newArrayList();
+    List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, toDoubleTap));
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_UP, toDoubleTap));
@@ -111,7 +110,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
   public void longPress(Coordinates where) {
     long downTime = SystemClock.uptimeMillis();
-    List<MotionEvent> motionEvents = Lists.newArrayList();
+    List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
     Point point = where.getLocationOnScreen();
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, point));
     motionEvents.add(getMotionEvent(downTime, (downTime + 3000), MotionEvent.ACTION_UP, point));
@@ -183,7 +182,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
   public void flick(Coordinates where, int xOffset, int yOffset, int speed) {
     long downTime = SystemClock.uptimeMillis();
-    List<MotionEvent> motionEvents = Lists.newArrayList();
+    List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
     Point origin = where.getLocationOnScreen();
     Point destination = new Point(origin.x + xOffset, origin.y + yOffset);
     Flick flick = new Flick(speed);
@@ -201,7 +200,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
   private List<MotionEvent> getMoveEvents(long downTime, long startingEVentTime, Point origin,
       Point destination, int steps, long timeBetweenEvents) {
-    List<MotionEvent> move = Lists.newArrayList();
+    List<MotionEvent> move = new ArrayList<MotionEvent>();
     MotionEvent event = null;
 
     float xStep = (destination.x - origin.x) / steps;

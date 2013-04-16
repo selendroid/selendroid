@@ -13,9 +13,10 @@
  */
 package org.openqa.selendroid.server.model;
 
-import java.util.Collection;
-import java.util.List;
-
+import android.app.Activity;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.webkit.WebView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,13 +32,9 @@ import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.server.webview.EventSender;
 
-import android.app.Activity;
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.webkit.WebView;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class AndroidWebElement implements AndroidElement {
   private final String id;
@@ -110,7 +107,11 @@ public class AndroidWebElement implements AndroidElement {
 
   @Override
   public void enterText(CharSequence... keysToSend) {
-    sendKeys(Joiner.on("").join(keysToSend));
+    StringBuilder sb = new StringBuilder();
+    for (CharSequence keys : keysToSend) {
+      sb.append(keys);
+    }
+    sendKeys(sb.toString());
   }
 
   public void sendKeys(final CharSequence value) {
@@ -229,7 +230,7 @@ public class AndroidWebElement implements AndroidElement {
 
     Point center = getCenterCoordinates();
     long downTime = SystemClock.uptimeMillis();
-    final List<MotionEvent> events = Lists.newArrayList();
+    final List<MotionEvent> events = new ArrayList<MotionEvent>();
 
     MotionEvent downEvent =
         MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, center.x,

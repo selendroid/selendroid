@@ -14,10 +14,7 @@
 
 package org.openqa.selendroid.server.model;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collection;
-
+import android.app.Activity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,9 +22,9 @@ import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
 
-import android.app.Activity;
-
-import com.google.common.base.Strings;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
 
 public class SelendroidNativeDriver {
   public final String ACTIVITY_URL_PREFIX = "and-activity://";
@@ -119,7 +116,7 @@ public class SelendroidNativeDriver {
 
     if (!"and-activity".equals(dest.getScheme())) {
       throw new SelendroidException("Unrecognized scheme in URI: " + dest.toString());
-    } else if (!Strings.isNullOrEmpty(dest.getPath())) {
+    } else if (dest.getPath() != null && !dest.getPath().equals("")) {
       throw new SelendroidException("Unrecognized path in URI: " + dest.toString());
     }
 

@@ -13,8 +13,6 @@
  */
 package org.openqa.selendroid.server;
 
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +23,8 @@ import org.openqa.selendroid.server.model.KnownElements;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class RequestHandler {
   private HttpRequest request = null;
@@ -103,7 +102,7 @@ public abstract class RequestHandler {
     if (valueArr == null || valueArr.length() == 0) {
       throw new SelendroidException("No key to send to an element was found.");
     }
-    List<CharSequence> temp = Lists.newArrayList();
+    List<CharSequence> temp = new ArrayList<CharSequence>();
 
     for (int i = 0; i < valueArr.length(); i++) {
       temp.add(valueArr.getString(i));

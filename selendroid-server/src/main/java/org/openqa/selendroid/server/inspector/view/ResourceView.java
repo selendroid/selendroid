@@ -13,9 +13,6 @@
  */
 package org.openqa.selendroid.server.inspector.view;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.inspector.InspectorServlet;
@@ -25,7 +22,9 @@ import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
-import com.google.common.base.Charsets;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 public class ResourceView extends SelendroidInspectorView {
   public static final String SCREENSHOT = "deviceScreenshot.png";
@@ -36,7 +35,7 @@ public class ResourceView extends SelendroidInspectorView {
 
   @Override
   public void render(HttpRequest request, HttpResponse httpResponse) {
-    httpResponse.charset(Charsets.UTF_8);
+    httpResponse.charset(Charset.forName("UTF-8"));
     httpResponse.status(200);
     if (request.uri().endsWith(SCREENSHOT)) {
       httpResponse.header("Content-Type", "text/html");

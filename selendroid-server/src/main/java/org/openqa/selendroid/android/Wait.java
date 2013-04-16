@@ -14,7 +14,7 @@
 package org.openqa.selendroid.android;
 
 
-import com.google.common.base.Function;
+import org.openqa.selendroid.util.Function;
 
 /**
  * A generic interface for waiting until a condition is true or not null. The condition may take a
@@ -35,7 +35,7 @@ public interface Wait<F> {
    * throw {@link AssertionError}.
    * 
    * @param <T> the return type of the method, which must not be Void
-   * @param isTrue the parameter to pass to the {@link ExpectedCondition}
+   * @param isTrue the parameter to pass to the ExpectedCondition
    */
   <T> T until(Function<F, T> isTrue);
 }

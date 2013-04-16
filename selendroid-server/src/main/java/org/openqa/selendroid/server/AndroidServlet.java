@@ -13,9 +13,6 @@
  */
 package org.openqa.selendroid.server;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import org.openqa.selendroid.server.common.BaseServlet;
 import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.handler.CaptureScreenshot;
@@ -62,15 +59,19 @@ import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+
 public class AndroidServlet extends BaseServlet implements HttpHandler {
   public static final int INTERNAL_SERVER_ERROR = 500;
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
   public static final String ELEMENT_ID_KEY = "ELEMENT_ID_KEY";
   public static final String NAME_ID_KEY = "NAME_ID_KEY";
   public static final String DRIVER_KEY = "DRIVER_KEY";
-  protected BiMap<String, Class<? extends RequestHandler>> getHandler = HashBiMap.create();
-  protected BiMap<String, Class<? extends RequestHandler>> postHandler = HashBiMap.create();
-  protected BiMap<String, Class<? extends RequestHandler>> deleteHandler = HashBiMap.create();
+  protected Map<String, Class<? extends RequestHandler>> getHandler = new HashMap<String, Class<? extends RequestHandler>>();
+  protected Map<String, Class<? extends RequestHandler>> postHandler = new HashMap<String, Class<? extends RequestHandler>>();
+  protected Map<String, Class<? extends RequestHandler>> deleteHandler = new HashMap<String, Class<? extends RequestHandler>>();
 
   protected SelendroidDriver driver = null;
 
@@ -158,7 +159,7 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     }
 
     response.header("Content-Type", "application/json");
-    response.charset(Charsets.UTF_8);
+    response.charset(Charset.forName("UTF-8"));
 
     if (isNewSessionRequest(request)) {
       response.status(301);

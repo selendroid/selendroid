@@ -21,8 +21,8 @@ import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.TimeoutException;
 
 import android.content.res.Resources.NotFoundException;
+import org.openqa.selendroid.util.Function;
 
-import com.google.common.base.Function;
 
 /**
  * An implementation of the Wait interface that makes use of Android Native WebDriver.

@@ -13,14 +13,14 @@
  */
 package org.openqa.selendroid.server.model;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
 
+import android.graphics.Rect;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
@@ -31,25 +31,22 @@ import org.openqa.selendroid.android.internal.Dimension;
 import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
 import org.openqa.selendroid.server.exceptions.NoSuchElementAttributeException;
+import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
 import org.openqa.selendroid.server.exceptions.TimeoutException;
 import org.openqa.selendroid.server.model.interactions.AndroidCoordinates;
 import org.openqa.selendroid.server.model.interactions.Coordinates;
 import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
+import org.openqa.selendroid.util.Function;
+import org.openqa.selendroid.util.Preconditions;
 import org.openqa.selendroid.util.SelendroidLogger;
 
-import android.graphics.Rect;
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public class AndroidNativeElement implements AndroidElement {
   // TODO revisit
@@ -138,7 +135,11 @@ public class AndroidNativeElement implements AndroidElement {
     });
     click();
 
-    send(Joiner.on("").join(keysToSend));
+    StringBuilder sb = new StringBuilder();
+    for (CharSequence keys : keysToSend) {
+      sb.append(keys);
+    }
+    send(sb.toString());
   }
 
   @Override
@@ -265,7 +266,8 @@ public class AndroidNativeElement implements AndroidElement {
     JSONObject l10n = new JSONObject();
     l10n.put("matches", 0);
     object.put("l10n", l10n);
-    object.put("label", Strings.nullToEmpty(String.valueOf(view.getContentDescription())));
+    String label = String.valueOf(view.getContentDescription());
+    object.put("label", label == null ? "": label);
     object.put("name", getNativeId());
     JSONObject rect = new JSONObject();
 

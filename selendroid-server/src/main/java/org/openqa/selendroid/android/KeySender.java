@@ -20,9 +20,6 @@ import org.openqa.selendroid.server.model.Keyboard;
 import android.app.Instrumentation;
 import android.view.KeyEvent;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-
 /**
  * Provides a method to send a string to an application under test. Keys are sent using an
  * {@code Instrumentation} instance. The strings may contain any character in the
@@ -50,7 +47,11 @@ public class KeySender {
 
     @Override
     public void sendKeys(CharSequence... keysToSend) {
-      send(Joiner.on("").join(keysToSend));
+      StringBuilder sb = new StringBuilder();
+      for (CharSequence keys : keysToSend) {
+        sb.append(keys);
+      }
+      send(sb.toString());
     }
   }
 

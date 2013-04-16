@@ -15,6 +15,7 @@ package org.openqa.selendroid.server.model;
 
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selendroid.android.WindowType;
 import org.openqa.selendroid.server.Session;
@@ -49,5 +50,7 @@ public interface SelendroidDriver {
   
   public TouchScreen getTouch();
   
-  public Object executeScript(String script, Object... args);
+  public Object executeScript(String script, JSONArray args);
+
+  public Object executeScript(String script, Object ... args);
 }

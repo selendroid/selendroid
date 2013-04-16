@@ -13,8 +13,6 @@
  */
 package org.openqa.selendroid.server.inspector.view;
 
-import java.util.Iterator;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
@@ -23,7 +21,8 @@ import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
-import com.google.common.base.Charsets;
+import java.nio.charset.Charset;
+import java.util.Iterator;
 
 public class InspectorView extends SelendroidInspectorView {
   public InspectorView(ServerInstrumentation serverInstrumentation, SelendroidDriver driver) {
@@ -32,7 +31,7 @@ public class InspectorView extends SelendroidInspectorView {
 
   @Override
   public void render(HttpRequest request, HttpResponse response) throws JSONException {
-    response.header("Content-Type", "text/html").charset(Charsets.UTF_8).status(200)
+    response.header("Content-Type", "text/html").charset(Charset.forName("UTF-8")).status(200)
         .content(buildHtml()).end();
   }
 

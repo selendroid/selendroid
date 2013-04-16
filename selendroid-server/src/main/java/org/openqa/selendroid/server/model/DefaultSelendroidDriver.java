@@ -43,6 +43,7 @@ import org.openqa.selendroid.server.model.internal.execute_native.FindRId;
 import org.openqa.selendroid.server.model.internal.execute_native.InvokeMenuAction;
 import org.openqa.selendroid.server.model.internal.execute_native.NativeExecuteScript;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
+import org.openqa.selendroid.util.Preconditions;
 import org.openqa.selendroid.util.SelendroidLogger;
 
 import android.app.Activity;
@@ -55,8 +56,6 @@ import android.graphics.drawable.Drawable;
 import android.view.Display;
 import android.view.View;
 import android.webkit.WebView;
-
-import com.google.common.base.Preconditions;
 
 public class DefaultSelendroidDriver implements SelendroidDriver {
   public static final String BROWSER_NAME = "browserName";
@@ -498,18 +497,23 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   @Override
-  public Object executeScript(String script, Object... args) {
+  public Object executeScript(String script, JSONArray args) {
     if (isNativeWindowMode()) {
-      JSONArray array = null;
-      if (args.length == 1) {
-        array = (JSONArray) args[0];
-      }
       if (nativeExecuteScriptMap.containsKey(script)) {
-        return nativeExecuteScriptMap.get(script).executeScript(array);
+        return nativeExecuteScriptMap.get(script).executeScript(args);
       }
       throw new UnsupportedOperationException(
           "Executing arbitrary script is only available in web views.");
     }
     return selendroidWebDriver.executeScript(script, args);
+  }
+
+  @Override
+  public Object executeScript(String script, Object ... args) {
+    JSONArray array = new JSONArray();
+    for (int i = 0; i < args.length; i++) {
+      array.put(args[i]);
+    }
+    return executeScript(script, array);
   }
 }

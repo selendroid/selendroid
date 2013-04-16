@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.android.internal.util.Predicate;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
@@ -40,12 +41,9 @@ import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
+import org.openqa.selendroid.util.InstanceOfPredicate;
+import org.openqa.selendroid.util.ListUtil;
+import org.openqa.selendroid.util.Preconditions;
 
 public abstract class AbstractNativeElementContext
     implements
@@ -385,19 +383,16 @@ public abstract class AbstractNativeElementContext
     } catch (ClassNotFoundException e) {
       throw new NoSuchElementException("The view class '" + using + "' was not found.");
     }
-    return filterAndTransformElements(currentViews, Predicates.instanceOf(viewClass));
+    return filterAndTransformElements(currentViews, new InstanceOfPredicate(viewClass));
   }
 
   private List<AndroidElement> filterAndTransformElements(Collection<View> currentViews,
       Predicate predicate) {
-    final List<AndroidElement> filtered =
-        FluentIterable.from(currentViews).filter(predicate)
-            .transform(new Function<View, AndroidElement>() {
-              @Override
-              public AndroidNativeElement apply(final View view) {
-                return newAndroidElement(view);
-              }
-            }).toList();
+    Collection<?> filteredViews = ListUtil.filter(currentViews, predicate);
+    final List<AndroidElement> filtered = new ArrayList<AndroidElement>();
+    for (Object v : filteredViews) {
+      filtered.add(newAndroidElement((View)v));
+    }
 
     if (filtered.isEmpty()) {
       throw new NoSuchElementException("No elements were found.");

@@ -16,6 +16,7 @@ package org.openqa.selendroid.server.model;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
@@ -71,50 +72,70 @@ public class SelendroidWebDriver {
   }
 
   @SuppressWarnings("unchecked")
-  private String convertToJsArgs(Object... args) {
+  private String convertToJsArgs(JSONArray args) throws JSONException{
     StringBuilder toReturn = new StringBuilder();
 
-    int length = args.length;
+    int length = args.length();
     for (int i = 0; i < length; i++) {
       toReturn.append((i > 0) ? "," : "");
-      if (args[i] instanceof List<?>) {
-        toReturn.append("[");
-        List<Object> aList = (List<Object>) args[i];
-        for (int j = 0; j < aList.size(); j++) {
-          String comma = ((j == 0) ? "" : ",");
-          toReturn.append(comma + convertToJsArgs(aList.get(j)));
-        }
-        toReturn.append("]");
-      } else if (args[i] instanceof Map<?, ?>) {
-        Map<Object, Object> aMap = (Map<Object, Object>) args[i];
-        String toAdd = "{";
-        for (Object key : aMap.keySet()) {
-          toAdd += key + ":" + convertToJsArgs(aMap.get(key)) + ",";
-        }
-        toReturn.append(toAdd.substring(0, toAdd.length() - 1) + "}");
-      } else if (args[i] instanceof AndroidWebElement) {
-        // A WebElement is represented in JavaScript by an Object as
-        // follow: {"ELEMENT":"id"} where "id" refers to the id
-        // of the HTML element in the javascript cache that can
-        // be accessed throught bot.inject.cache.getCache_()
-        toReturn.append("{\"" + ELEMENT_KEY + "\":\"" + ((AndroidWebElement) args[i]).getId()
-            + "\"}");
-      } else if (args[i] instanceof DomWindow) {
-        // A DomWindow is represented in JavaScript by an Object as
-        // follow {"WINDOW":"id"} where "id" refers to the id of the
-        // DOM window in the cache.
-        toReturn.append("{\"" + WINDOW_KEY + "\":\"" + ((DomWindow) args[i]).getKey() + "\"}");
-      } else if (args[i] instanceof Number || args[i] instanceof Boolean) {
-        toReturn.append(String.valueOf(args[i]));
-      } else if (args[i] instanceof String) {
-        toReturn.append(escapeAndQuote((String) args[i]));
-      }
+      toReturn.append(convertToJsArgs(args.get(i)));
     }
     SelendroidLogger.log("convertToJsArgs: " + toReturn.toString());
     return toReturn.toString();
   }
 
-  public Object executeAtom(AndroidAtoms atom, Object... args) {
+  private String convertToJsArgs(Object obj) {
+    StringBuilder toReturn = new StringBuilder();
+    if (obj instanceof List<?>) {
+      toReturn.append("[");
+      List<Object> aList = (List<Object>) obj;
+      for (int j = 0; j < aList.size(); j++) {
+        String comma = ((j == 0) ? "" : ",");
+        toReturn.append(comma + convertToJsArgs(aList.get(j)));
+      }
+      toReturn.append("]");
+    } else if (obj instanceof Map<?, ?>) {
+      Map<Object, Object> aMap = (Map<Object, Object>) obj;
+      String toAdd = "{";
+      for (Object key : aMap.keySet()) {
+        toAdd += key + ":" + convertToJsArgs(aMap.get(key)) + ",";
+      }
+      toReturn.append(toAdd.substring(0, toAdd.length() - 1) + "}");
+    } else if (obj instanceof AndroidWebElement) {
+      // A WebElement is represented in JavaScript by an Object as
+      // follow: {"ELEMENT":"id"} where "id" refers to the id
+      // of the HTML element in the javascript cache that can
+      // be accessed throught bot.inject.cache.getCache_()
+      toReturn.append("{\"" + ELEMENT_KEY + "\":\"" + ((AndroidWebElement) obj).getId()
+          + "\"}");
+    } else if (obj instanceof DomWindow) {
+      // A DomWindow is represented in JavaScript by an Object as
+      // follow {"WINDOW":"id"} where "id" refers to the id of the
+      // DOM window in the cache.
+      toReturn.append("{\"" + WINDOW_KEY + "\":\"" + ((DomWindow) obj).getKey() + "\"}");
+    } else if (obj instanceof Number || obj instanceof Boolean) {
+      toReturn.append(String.valueOf(obj));
+    } else if (obj instanceof String) {
+      toReturn.append(escapeAndQuote((String) obj));
+    }
+    SelendroidLogger.log("convertToJsArgs: " + toReturn.toString());
+    return toReturn.toString();
+  }
+
+  public Object executeAtom(AndroidAtoms atom, Object ... args) {
+    JSONArray array = new JSONArray();
+    for (int i = 0; i < args.length; i++) {
+      array.put(args[i]);
+    }
+    try {
+      return executeAtom(atom, array);
+    } catch (JSONException je) {
+      je.printStackTrace();
+      throw new RuntimeException(je);
+    }
+  }
+
+  public Object executeAtom(AndroidAtoms atom, JSONArray args) throws JSONException {
     final String myScript = atom.getValue();
     String scriptInWindow =
         "(function(){ " + " var win; try{win=window;}catch(e){win=window;}" + "with(win){return ("
@@ -171,8 +192,31 @@ public class SelendroidWebDriver {
     }
   }
 
-  public Object executeScript(String script, Object... args) {
-    return injectJavascript(script, false, args);
+  public Object executeScript(String script) {
+    try {
+      return injectJavascript(script, false, new JSONArray());
+    } catch (JSONException je) {
+      je.printStackTrace();
+      throw new RuntimeException(je);
+    }
+  }
+
+  public Object executeScript(String script, JSONArray args) {
+    try {
+      return injectJavascript(script, false, args);
+    } catch (JSONException je) {
+      je.printStackTrace();
+      throw new RuntimeException(je);
+    }
+  }
+
+  public Object executeScript(String script, Object args) {
+    try {
+      return injectJavascript(script, false, args);
+    } catch (JSONException je) {
+      je.printStackTrace();
+      throw new RuntimeException(je);
+    }
   }
 
   public String getCurrentUrl() {
@@ -264,7 +308,7 @@ public class SelendroidWebDriver {
     });
   }
 
-  Object injectJavascript(String toExecute, boolean isAsync, Object... args) {
+  Object injectJavascript(String toExecute, boolean isAsync, Object args) throws JSONException {
     String executeScript = AndroidAtoms.EXECUTE_SCRIPT.getValue();
     String window = "window;";
     toExecute =
@@ -272,8 +316,13 @@ public class SelendroidWebDriver {
             + "win_context=window;}with(win_context){" + toExecute + "}";
     String wrappedScript =
         "(function(){" + "var win; try{win=" + window + "}catch(e){win=window}"
-            + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", ["
-            + convertToJsArgs(args) + "], true)}})()";
+            + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", [";
+    if (args instanceof JSONArray) {
+      wrappedScript += convertToJsArgs((JSONArray)args);
+    } else {
+      wrappedScript += convertToJsArgs(args);
+    }
+    wrappedScript += "], true)}})()";
     return executeJavascriptInWebView("alert('selendroid:'+" + wrappedScript + ")");
   }
 
