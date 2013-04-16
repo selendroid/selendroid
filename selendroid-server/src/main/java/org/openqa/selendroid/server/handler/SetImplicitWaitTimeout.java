@@ -30,8 +30,9 @@ public class SetImplicitWaitTimeout extends RequestHandler {
     SelendroidLogger.log("set implicit wait timeout called");
 
     Long timeout = getPayload().getLong("ms");
+    
     ServerInstrumentation.getInstance().setImplicitWait(timeout);
 
-    return new Response(getSessionId(), timeout);
+    return new Response(getSessionId(), "");
   }
 }

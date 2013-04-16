@@ -200,13 +200,14 @@ public abstract class AbstractNativeElementContext
                 currentActivity.getPackageName());
         if (intId > 0) {
           View view = currentActivity.findViewById(intId);
-          if (view != null) {
+          if (view != null && view.isShown()) {
             elements.add(newAndroidElement(view));
           }
         }
       }
     }
     if (elements.isEmpty()) {
+      System.out.println("trying to find element via R.class reference.");
       // ok, no elements, last ditch effort is to check the R.class for reference id's
       // current use case is for 'menu' items that don't appear as a View and need to be invoked.
       Class rClazz;
@@ -222,8 +223,17 @@ public abstract class AbstractNativeElementContext
         if (field.getName().equalsIgnoreCase(using)) {
           System.out.println("Found field for using: " + using);
           try {
-            System.out.println("looking for view by id: " + field.getInt(null));
-            elements.add(newAndroidElement(field.getInt(null)));
+            int id = field.getInt(null);
+
+            // Very important to add this check because otherwise always the element is found
+            // if it is declared in any layout xml file.
+            View view = null;
+            if (instrumentation != null && instrumentation.getCurrentActivity() != null) {
+              view = instrumentation.getCurrentActivity().findViewById(id);
+            }
+            if (view != null) {
+              elements.add(newAndroidElement(id));
+            }
           } catch (IllegalAccessException e) {
             e.printStackTrace();
           }
@@ -290,7 +300,7 @@ public abstract class AbstractNativeElementContext
     public boolean apply(View view) {
       if (view instanceof TextView) {
         String viewText = ((TextView) view).getText().toString();
-        
+
         return viewText.indexOf(text) >= 0;
       }
       return false;

@@ -40,11 +40,10 @@ public class WebViewActivity extends Activity {
   private Spinner testDataSpinner = null;
   private Pages webdriverTestPages = null;
   private ArrayAdapter<SpinnerItem> arrayAdapter = null;
-  private HttpdThread serverThread = null;;
+
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
-
     server = HttpServer.getInstance();
     // currently not used
     // serverThread = new HttpdThread();
@@ -63,11 +62,16 @@ public class WebViewActivity extends Activity {
     arrayAdapter.add(new SpinnerItem("'Say Hello'-Demo", "http://localhost:4450/"));
     arrayAdapter.add(new SpinnerItem("xhtmlTestPage", "file:///android_asset/web/xhtmlTest.html"));
     arrayAdapter.add(new SpinnerItem("formPage", "file:///android_asset/web/formPage.html"));
-    arrayAdapter.add(new SpinnerItem("selectableItemsPage", "file:///android_asset/web/selectableItems.html"));
-    arrayAdapter.add(new SpinnerItem("nestedPage", "file:///android_asset/web/nestedElements.html"));
-    arrayAdapter.add(new SpinnerItem("javascriptPage",  "file:///android_asset/web/javascriptPage.html"));
-    arrayAdapter.add(new SpinnerItem("missedJsReferencePage", "file:///android_asset/web/missedJsReference.html"));
-    arrayAdapter.add(new SpinnerItem("actualXhtmlPage", "file:///android_asset/web/actualXhtmlPage.xhtml"));
+    arrayAdapter.add(new SpinnerItem("selectableItemsPage",
+        "file:///android_asset/web/selectableItems.html"));
+    arrayAdapter
+        .add(new SpinnerItem("nestedPage", "file:///android_asset/web/nestedElements.html"));
+    arrayAdapter.add(new SpinnerItem("javascriptPage",
+        "file:///android_asset/web/javascriptPage.html"));
+    arrayAdapter.add(new SpinnerItem("missedJsReferencePage",
+        "file:///android_asset/web/missedJsReference.html"));
+    arrayAdapter.add(new SpinnerItem("actualXhtmlPage",
+        "file:///android_asset/web/actualXhtmlPage.xhtml"));
     arrayAdapter.add(new SpinnerItem("about:blank", "about:blank"));
 
     testDataSpinner.setAdapter(arrayAdapter);
@@ -98,21 +102,19 @@ public class WebViewActivity extends Activity {
     startActivity(nextScreen);
   }
 
-  @Override
-  protected void onDestroy() {
-    server.stop();
-    if (serverThread != null) {
-      serverThread.stopLooping();
-      serverThread.interrupt();
-      try {
-        serverThread.join();
-      } catch (InterruptedException e) {
-        throw Throwables.propagate(e);
-      }
-      serverThread = null;
-    }
-    super.onDestroy();
-  }
+  // @Override
+  // protected void onDestroy() {
+  // if (server != null) {
+  // server.stop();
+  // try {
+  // server.waitUntilShutdown();
+  // } catch (InterruptedException e) {
+  // // TODO Auto-generated catch block
+  // e.printStackTrace();
+  // }
+  // }
+  // super.onDestroy();
+  // }
 
   public class SpinnerItem {
     private String text;
@@ -160,8 +162,8 @@ public class WebViewActivity extends Activity {
   private class MyWebViewClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        view.loadUrl(url);
-        return true;
+      view.loadUrl(url);
+      return true;
     }
-}
+  }
 }

@@ -27,14 +27,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Looper;
+import android.os.PowerManager;
 import android.view.View;
+
+import com.google.common.base.Throwables;
 
 public class ServerInstrumentation extends Instrumentation {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
   private static ServerInstrumentation instance = null;
   public static Class<? extends Activity> mainActivity = null;
-  private AndroidServer server = null;
+  private HttpdThread serverThread = null;
   private AndroidWait androidWait = new AndroidWait();
+  private PowerManager.WakeLock wakeLock;
 
   public void startMainActivity() {
     finishAllActivities();
@@ -102,7 +107,7 @@ public class ServerInstrumentation extends Instrumentation {
       }
     }
     // make sure this is always displayed
-    System.out.println("Selendroid started on port " + server.getPort());
+    System.out.println("Selendroid started on port " + serverThread.getServer().getPort());
   }
 
   public static synchronized ServerInstrumentation getInstance() {
@@ -163,6 +168,10 @@ public class ServerInstrumentation extends Instrumentation {
   @Override
   public void onDestroy() {
     try {
+      if (wakeLock != null) {
+        wakeLock.release();
+        wakeLock = null;
+      }
       stopServer();
     } catch (Exception e) {
       SelendroidLogger.log("Error occured while shutting down: ", e);
@@ -170,16 +179,41 @@ public class ServerInstrumentation extends Instrumentation {
     instance = null;
   }
 
-  void startServer() throws Exception {
-    startMainActivity();
-    server = new AndroidServer(this);
-    server.start();
+
+  public void startServer() {
+    if (serverThread != null && serverThread.isAlive()) {
+      return;
+    }
+
+    if (serverThread != null) {
+      SelendroidLogger.log("Stopping selendroid http server");
+      stopServer();
+    }
+
+    serverThread = new HttpdThread(this);
+    serverThread.start();
   }
 
-  void stopServer() throws Exception {
-    finishAllActivities();
-    server.stop();
+  protected void stopServer() {
+    if (serverThread == null) {
+      return;
+    }
+    if (!serverThread.isAlive()) {
+      serverThread = null;
+      return;
+    }
+
+    SelendroidLogger.log("Stopping selendroid http server");
+    serverThread.stopLooping();
+    serverThread.interrupt();
+    try {
+      serverThread.join();
+    } catch (InterruptedException e) {
+      throw Throwables.propagate(e);
+    }
+    serverThread = null;
   }
+
 
   public AndroidWait getAndroidWait() {
     return androidWait;
@@ -191,11 +225,62 @@ public class ServerInstrumentation extends Instrumentation {
 
   public String getSelendroidVersionNumber() {
     Context context = getContext();
-    String versionName = "0.2";
+    String versionName = "0.3";
     try {
       versionName =
           context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
     } catch (NameNotFoundException e) {}
     return versionName;
+  }
+
+  private class HttpdThread extends Thread {
+
+    private final AndroidServer server;
+    private ServerInstrumentation instrumentation = null;
+    private Looper looper;
+
+    public HttpdThread(ServerInstrumentation instrumentation) {
+      this.instrumentation = instrumentation;
+      // Create the server but absolutely do not start it here
+      server = new AndroidServer(this.instrumentation);
+    }
+
+    @Override
+    public void run() {
+      Looper.prepare();
+      looper = Looper.myLooper();
+      startServer();
+      Looper.loop();
+    }
+
+    public AndroidServer getServer() {
+      return server;
+    }
+
+    private void startServer() {
+      try {
+        // Get a wake lock to stop the cpu going to sleep
+        PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
+        try {
+          wakeLock.acquire();
+        } catch (SecurityException e) {}
+
+        server.start();
+
+        SelendroidLogger.log("Started selendroid http server on port 8080.");
+      } catch (Exception e) {
+        SelendroidLogger.log("Error starting httpd.", e);
+
+        throw new SelendroidException("Httpd failed to start!");
+      }
+    }
+
+    public void stopLooping() {
+      if (looper == null) {
+        return;
+      }
+      looper.quit();
+    }
   }
 }

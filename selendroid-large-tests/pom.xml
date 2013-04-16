@@ -7,6 +7,9 @@
 		<version>0.3</version>
 	</parent>
 	<artifactId>selendroid-large-tests</artifactId>
+	<properties>
+		<skipTests>true</skipTests>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.openqa.selendroid</groupId>
@@ -47,10 +50,9 @@
 				<version>2.14.1</version>
 				<configuration>
 					<suiteXmlFiles>
-						<suiteXmlFile>ElementFindingTests.xml</suiteXmlFile>
-						<suiteXmlFile>ElementInteractionsTests.xml</suiteXmlFile>
+						<suiteXmlFile>src/test/resources/regressionTests.xml</suiteXmlFile>
 					</suiteXmlFiles>
-					<skipTests>true</skipTests>
+					<skipTests>${skipTests}</skipTests>
 				</configuration>
 			</plugin>
 		</plugins>

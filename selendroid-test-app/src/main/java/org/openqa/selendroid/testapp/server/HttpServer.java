@@ -30,7 +30,7 @@ public class HttpServer extends NanoHTTPD {
   private boolean running = true;
   private final Lock lock = new ReentrantLock();
   private final Condition shutdownCondition = lock.newCondition();
-  private static HttpServer instance;
+  private static HttpServer instance = null;
 
   public synchronized static HttpServer getInstance() {
     if (instance == null) {
@@ -41,7 +41,7 @@ public class HttpServer extends NanoHTTPD {
 
   private HttpServer() {
     super(4450, new File("/"));
-    Logger.log("HTTP Server started on port 4450");
+    System.out.println("HTTP Server started on port 4450");
   }
 
   public Response serve(String uri, String method, Properties header, Properties parms,
@@ -53,7 +53,7 @@ public class HttpServer extends NanoHTTPD {
       System.out.println("method: " + method);
       StringBuffer html = new StringBuffer();
       String name = parms.getProperty("name");
-      html.append("<html><head><title>Hello: "+name+"</title></head>");
+      html.append("<html><head><title>Hello: " + name + "</title></head>");
       html.append("<body>");
       html.append("<h1>This is my way of saying hello</h1>");
       html.append("<h2>Hello !</h2>");

@@ -21,7 +21,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import android.widget.CompoundButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
@@ -43,9 +42,8 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.common.base.Function;
@@ -120,7 +118,7 @@ public class AndroidNativeElement implements AndroidElement {
     synchronized (syncObject) {
       while (!done && System.currentTimeMillis() < end) {
         try {
-          syncObject.wait(instrumentation.getAndroidWait().getTimeoutInMillis());
+          syncObject.wait(AndroidWait.DEFAULT_SLEEP_INTERVAL);
         } catch (InterruptedException e) {
           e.printStackTrace();
           throw new SelendroidException(e);

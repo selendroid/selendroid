@@ -1,0 +1,23 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Selendroid regression test suite" parallel="false"
+	verbose="1">
+	<test name="selendroid element finding tests">
+		<classes>
+			<class
+				name="org.openqa.selendroid.nativetests.NativeChildElementFindingTest" />
+			<class name="org.openqa.selendroid.nativetests.NativeElementFindingTest" />
+			<class
+				name="org.openqa.selendroid.webviewdrivertests.WebElementFindingTest" />
+			<class
+				name="org.openqa.selendroid.webviewdrivertests.WebChildElementFindingTest" />
+		</classes>
+	</test>
+	<test name="selendroid element interaction tests">
+		<classes>
+			<class
+				name="org.openqa.selendroid.nativetests.NativeElementInteractionTests" />
+			<class
+				name="org.openqa.selendroid.webviewdrivertests.WebElementInteractionTests" />
+		</classes>
+	</test>
+</suite>
