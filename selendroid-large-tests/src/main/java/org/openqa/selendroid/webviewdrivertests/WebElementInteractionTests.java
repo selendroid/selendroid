@@ -5,6 +5,7 @@ import static org.openqa.selendroid.waiter.WaitingConditions.pageTitleToBe;
 
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selendroid.TestGroups;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -14,6 +15,7 @@ import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+@Test(groups={TestGroups.WEBVIEW})
 public class WebElementInteractionTests extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetTextOfElement() {

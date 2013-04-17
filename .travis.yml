@@ -30,4 +30,5 @@ script:
   - adb install -r selendroid-test-app/target/selendroid-test-app-0.3.apk
   - ./selendroid-server/start-server.sh 
   - cd selendroid-large-tests
-  - mvn install -DskipTests=false
+  - mvn install -DskipTests=falsei -DtestngGroups=native
+  - mvn install -DskipTests=false -DtestngGroups=webview

@@ -1,5 +1,6 @@
 package org.openqa.selendroid.nativetests;
 
+import org.openqa.selendroid.TestGroups;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -7,7 +8,7 @@ import org.testng.annotations.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+@Test(groups={TestGroups.NATIVE})
 public class GetWindowSourceTests extends BaseAndroidTest {
   /**
    * TODO update test, because test app was refactored

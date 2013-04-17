@@ -3,13 +3,14 @@ package org.openqa.selendroid.nativetests;
 import static org.openqa.selendroid.waiter.TestWaiter.waitFor;
 
 import org.openqa.selendroid.SelendroidKeys;
+import org.openqa.selendroid.TestGroups;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selendroid.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.HasInputDevices;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
+@Test(groups={TestGroups.NATIVE})
 public class SendKeyAndNativeKeyTests extends BaseAndroidTest {
   public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp."
       + "HomeScreenActivity";

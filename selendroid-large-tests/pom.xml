@@ -9,6 +9,7 @@
 	<artifactId>selendroid-large-tests</artifactId>
 	<properties>
 		<skipTests>true</skipTests>
+		<testngGroups>native,webview</testngGroups>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -52,6 +53,7 @@
 					<suiteXmlFiles>
 						<suiteXmlFile>src/test/resources/regressionTests.xml</suiteXmlFile>
 					</suiteXmlFiles>
+					<groups>${testngGroups}</groups>
 					<skipTests>${skipTests}</skipTests>
 				</configuration>
 			</plugin>

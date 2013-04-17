@@ -2,6 +2,7 @@ package org.openqa.selendroid.nativetests;
 
 import static org.openqa.selendroid.waiter.TestWaiter.waitFor;
 
+import org.openqa.selendroid.TestGroups;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selendroid.waiter.WaitingConditions;
 import org.openqa.selenium.By;
@@ -12,7 +13,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
+@Test(groups={TestGroups.NATIVE})
 public class NativeElementInteractionTests extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetTextOfElement() {

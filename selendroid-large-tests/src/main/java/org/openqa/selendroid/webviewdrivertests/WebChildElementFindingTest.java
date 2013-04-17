@@ -19,6 +19,7 @@ import static org.openqa.selendroid.waiter.WaitingConditions.pageTitleToBe;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selendroid.TestGroups;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -31,6 +32,7 @@ import org.testng.annotations.Test;
  * 
  * @author ddary
  */
+@Test(groups={TestGroups.WEBVIEW})
 public class WebChildElementFindingTest extends BaseAndroidTest {
   public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp." + "WebViewActivity";
 

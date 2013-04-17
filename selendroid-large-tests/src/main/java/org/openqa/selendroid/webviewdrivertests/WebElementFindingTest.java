@@ -19,6 +19,7 @@ import static org.openqa.selendroid.waiter.WaitingConditions.pageTitleToBe;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selendroid.TestGroups;
 import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selendroid.waiter.TestWaiter;
 import org.openqa.selenium.By;
@@ -32,6 +33,7 @@ import org.testng.annotations.Test;
  * 
  * @author ddary
  */
+@Test(groups={TestGroups.WEBVIEW})
 public class WebElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateASingleElementByIdThatDoesNotExist() {

@@ -47,12 +47,12 @@ public class BaseAndroidTest {
   public static final String WEBVIEW = "WEBVIEW";
 
 
-  @BeforeMethod
+  @BeforeMethod(alwaysRun = true)
   public void setup() throws MalformedURLException {
     driver = new AndroidDriver(new URL("http://localhost:8080/wd/hub"), getDefaultCapabilities());
   }
 
-  @AfterMethod
+  @AfterMethod(alwaysRun = true)
   public void teardown() {
     driver.quit();
   }
