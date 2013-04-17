@@ -25,7 +25,6 @@ script:
   - mvn install
   - adb kill-server
   - adb start-server
-  - adb devices
   - adb install -r selendroid-server/target/selendroid-server-0.3.apk
   - adb install -r selendroid-test-app/target/selendroid-test-app-0.3.apk
   - ./selendroid-server/start-server.sh 
