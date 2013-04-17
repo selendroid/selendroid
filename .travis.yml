@@ -11,7 +11,7 @@ before_install:
   - export ANDROID_HOME=`pwd`/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools  
   - android update sdk --filter platform-tools,android-16,android-10,sysimg-16  --no-ui --force
-  - echo no | android create avd -n emulator16Uk -t android-16 --skin WVGA800 --abi x86 --force
+  - echo no | android create avd -n emulator16Uk -t android-16 --skin 320x480 --abi x86 --force
 
 before_script:
   - "export DISPLAY=:99.0"
@@ -31,4 +31,4 @@ script:
   - ./selendroid-server/start-server.sh 
   - cd selendroid-large-tests
   - mvn install -DskipTests=falsei -DtestngGroups=native
-  - mvn install -DskipTests=false -DtestngGroups=webview
+ # - mvn install -DskipTests=false -DtestngGroups=webview
