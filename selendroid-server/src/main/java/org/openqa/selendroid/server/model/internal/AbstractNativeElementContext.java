@@ -305,17 +305,32 @@ public abstract class AbstractNativeElementContext
     }
   }
 
+  class ViewTagNamePredicate implements Predicate<View> {
+    private String tag;
+
+    ViewTagNamePredicate(String tag) {
+      this.tag = tag;
+    }
+
+    public boolean apply(View view) {
+      return view.getClass().getSimpleName().equals(tag);
+    }
+  }
 
   @Override
   public AndroidElement findElementByTagName(String using) {
-    String localizedString = getLocalizedString(using);
-    return findElementByText(localizedString);
+    List<AndroidElement> elements = findElementsByTagName(using);
+    if (elements != null && elements.size() > 0) {
+      return elements.get(0);
+    }
+    return null;
   }
 
   @Override
   public List<AndroidElement> findElementsByTagName(String using) {
-    String localizedString = getLocalizedString(using);
-    return findElementsByText(localizedString);
+    Collection<View> currentViews = viewAnalyzer.getViews(getTopLevelViews());
+    Predicate<View> predicate = new ViewTagNamePredicate(using);
+    return filterAndTransformElements(currentViews, predicate);
   }
 
   protected String getLocalizedString(String l10nKey) {
