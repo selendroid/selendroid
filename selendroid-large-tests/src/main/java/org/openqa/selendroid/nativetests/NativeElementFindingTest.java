@@ -220,24 +220,24 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToFindButtonIdentifiedByL10nKey() throws Exception {
+  public void testShouldBeAbleToFindButtonIdentifiedByTagName() throws Exception {
     openStartActivity();
     String buttonText = "EN Button";
-    WebElement clickMe = driver.findElement(By.tagName("button"));
+    WebElement clickMe = driver.findElement(By.tagName("Button"));
     Assert.assertEquals(clickMe.getText(), buttonText);
   }
 
   @Test
-  public void testShouldBeAbleToFindButtonsIdentifiedByL10nKey() throws Exception {
+  public void testShouldBeAbleToFindButtonsIdentifiedByTagName() throws Exception {
     openStartActivity();
     String buttonText = "EN Button";
-    List<WebElement> elements = driver.findElements(By.tagName("button"));
-    Assert.assertEquals(elements.size(), 1);
+    List<WebElement> elements = driver.findElements(By.tagName("Button"));
+    Assert.assertEquals(elements.size(), 2);
     Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
 
   @Test()
-  public void testShouldNotBeAbleToLocateASingleElementByL10nKeyThatDoesNotExist() {
+  public void testShouldNotBeAbleToLocateASingleElementByTagNameThatDoesNotExist() {
     openStartActivity();
     try {
       driver.findElement(By.tagName("de.dary.MyView.l10nView"));
@@ -248,7 +248,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   }
 
   @Test()
-  public void testShouldNotBeAbleToLocateMultipleElementsByL10nKeyThatDoesNotExist() {
+  public void testShouldNotBeAbleToLocateMultipleElementsTagNameThatDoesNotExist() {
     openStartActivity();
     assertListIsEmpty(driver.findElements(By.tagName("de.dary.MyView.l10nView")));
 

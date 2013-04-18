@@ -18,7 +18,22 @@ public class KnownElementsTest {
   public void testAddNativeElement() {
     KnownElements ke = new KnownElements();
     String id = ke.add(createNativeElement(ke));
-    Assert.assertEquals("815", id);
+    // verify uuid is used and is valid
+    Assert.assertTrue(isValidUuid(id));
+  }
+
+  public static boolean isValidUuid(String uuid) {
+    if (uuid == null) return false;
+    try {
+      // we have to convert to object and back to string because the built in fromString does not
+      // have
+      // good validation logic.
+      UUID fromStringUUID = UUID.fromString(uuid);
+      String toStringUUID = fromStringUUID.toString();
+      return toStringUUID.equals(uuid);
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
   }
 
   @Test
@@ -57,7 +72,7 @@ public class KnownElementsTest {
     ke.add(createWebElement(":wdc:1236", ke));
     // this recreates an element with the same ID and replaces it in cache
     // which it *should* do in my opinion. commenting out for the purposes of this test now.
-    //ke.add(createNativeElement(ke));
+    // ke.add(createNativeElement(ke));
     ke.add(createWebElement(":wdc:1237", ke));
     ke.add(createWebElement(":wdc:1238", ke));
     Assert.assertEquals(nativeId, ke.getIdOfElement(nativeElement));
@@ -73,7 +88,7 @@ public class KnownElementsTest {
     AndroidElement anotherOTheSame = createNativeElement(ke);
     String anotherId = ke.add(anotherOTheSame);
 
-    Assert.assertEquals(null, ke.getIdOfElement(element));
+    Assert.assertEquals(id, ke.getIdOfElement(element));
     Assert.assertEquals(anotherId, ke.getIdOfElement(anotherOTheSame));
     Assert.assertNotSame(id, anotherId);
   }
@@ -100,6 +115,7 @@ public class KnownElementsTest {
   private AndroidElement createNativeElement(KnownElements ke) {
     return createNativeElement(ke, 815);
   }
+
   private AndroidElement createNativeElement(KnownElements ke, int id) {
     View view = mock(View.class);
     when(view.getId()).thenReturn(id);

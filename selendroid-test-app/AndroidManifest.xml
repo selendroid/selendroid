@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.openqa.selendroid.testapp"
     android:versionCode="1"
-    android:versionName="0.3" >
+    android:versionName="0.4-SNAPSHOT" >
 
     <uses-sdk android:minSdkVersion="10" />
 
@@ -15,6 +15,7 @@
         <activity android:name=".HomeScreenActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -25,12 +26,15 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <meta-data android:name="android.app.default_searchable"
-               android:value=".SearchUsersActivity" />
+
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".SearchUsersActivity" />
 
         <service android:name=".services.impl.UserServiceImpl" />
     </application>

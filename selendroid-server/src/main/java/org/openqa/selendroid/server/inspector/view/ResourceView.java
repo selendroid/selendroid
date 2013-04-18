@@ -13,7 +13,11 @@
  */
 package org.openqa.selendroid.server.inspector.view;
 
-import org.apache.commons.io.IOUtils;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.server.inspector.InspectorServlet;
 import org.openqa.selendroid.server.inspector.SelendroidInspectorView;
@@ -21,10 +25,6 @@ import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 
 public class ResourceView extends SelendroidInspectorView {
   public static final String SCREENSHOT = "deviceScreenshot.png";
@@ -49,12 +49,26 @@ public class ResourceView extends SelendroidInspectorView {
         String filename =
             "inspector" + request.uri().replaceFirst(InspectorServlet.INSPECTOR_RESSOURCE, "");
         InputStream asset = serverInstrumentation.getContext().getAssets().open(filename);
-        httpResponse.content(IOUtils.toByteArray(asset));
+
+        httpResponse.content(toByteArray(asset));
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
 
     httpResponse.end();
+  }
+
+  private byte[] toByteArray(InputStream in) throws IOException {
+    ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+    int next = in.read();
+    while (next > -1) {
+      arrayOutputStream.write(next);
+      next = in.read();
+    }
+    arrayOutputStream.flush();
+    byte[] byteArray = arrayOutputStream.toByteArray();
+    arrayOutputStream.close();
+    return byteArray;
   }
 }

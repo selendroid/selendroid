@@ -194,26 +194,26 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToFindChildButtonIdentifiedByL10nKey() throws Exception {
+  public void testShouldBeAbleToFindChildButtonIdentifiedByTagName() throws Exception {
     openStartActivity();
     WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
-    WebElement clickMe = rootElement.findElement(By.tagName("button"));
+    WebElement clickMe = rootElement.findElement(By.tagName("Button"));
     Assert.assertEquals(clickMe.getText(), buttonText);
   }
 
   @Test
-  public void testShouldBeAbleToFindChildButtonsIdentifiedByL10nKey() throws Exception {
+  public void testShouldBeAbleToFindChildButtonsIdentifiedByTagName() throws Exception {
     openStartActivity();
     WebElement rootElement = driver.findElement(By.id("l10n"));
     String buttonText = "EN Button";
-    List<WebElement> elements = rootElement.findElements(By.tagName("button"));
+    List<WebElement> elements = rootElement.findElements(By.tagName("Button"));
     Assert.assertEquals(elements.size(), 1);
     Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
 
   @Test()
-  public void testShouldNotBeAbleToLocateASingleChildElementByL10nKeyThatDoesNotExist() {
+  public void testShouldNotBeAbleToLocateASingleChildElementByTagNameThatDoesNotExist() {
     openStartActivity();
     WebElement rootElement = driver.findElement(By.id("l10n"));
     try {
@@ -225,7 +225,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   }
 
   @Test()
-  public void testShouldNotBeAbleToLocateMultipleChildElementsByL10nKeyThatDoesNotExist() {
+  public void testShouldNotBeAbleToLocateMultipleChildElementsByTagNameThatDoesNotExist() {
     openStartActivity();
     WebElement rootElement = driver.findElement(By.id("l10n"));
     assertListIsEmpty(rootElement.findElements(By.tagName("de.dary.MyView.l10nView")));

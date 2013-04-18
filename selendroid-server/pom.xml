@@ -4,13 +4,12 @@
 	<parent>
 		<groupId>org.openqa.selendroid</groupId>
 		<artifactId>selendroid</artifactId>
-		<version>0.3</version>
+		<version>0.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>selendroid-server</artifactId>
 	<name>selendroid-server</name>
 	<packaging>apk</packaging>
 	<properties>
-		<com.google.code.gson-version>2.2.2</com.google.code.gson-version>
 		<com.google.android.android-version>4.1.1.4</com.google.android.android-version>
 	</properties>
 	<dependencies>
@@ -23,11 +22,7 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-android</artifactId>
-			<version>1.6.1-RC1</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.android</groupId>
@@ -75,6 +70,8 @@
 				<configuration>
 					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
 					<resourceDirectory>${project.basedir}/res</resourceDirectory>
+					<outputDirectory>bin/classes</outputDirectory>
+					<testOutputDirectory>bin/test-classes</testOutputDirectory>
 					<sdk>
 						<platform>16</platform>
 					</sdk>
@@ -92,7 +89,6 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 </project>

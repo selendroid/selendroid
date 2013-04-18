@@ -1,3 +1,12 @@
+0.4-SNAPSHOT
+-------------
+
+- Removed dependencies: Guava, commons-io, slf4j-android
+- Find By Tag Name refactored to find by the class now, not by text 
+- L10n Locators are now mapped to xpath locator
+
+
+
 0.3 
 ----
 - Moved from google gson library to org.json

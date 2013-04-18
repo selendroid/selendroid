@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openqa.selendroid</groupId>
 	<artifactId>selendroid</artifactId>
-	<version>0.3</version>
+	<version>0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>selendroid</name>
 	<modules>

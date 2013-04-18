@@ -14,6 +14,7 @@
 package org.openqa.selendroid.server.model;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -173,8 +173,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     try {
       if (session.getCapabilities().names() != null) {
         copy =
-          new JSONObject(session.getCapabilities(), session.getCapabilities().names().join(",")
-              .split(","));
+            new JSONObject(session.getCapabilities(), session.getCapabilities().names().join(",")
+                .split(","));
       } else {
         copy = new JSONObject();
       }
@@ -291,7 +291,14 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
           } catch (IOException e) {
             throw new RuntimeException("I/O Error while capturing screenshot: " + e.getMessage());
           } finally {
-            IOUtils.closeQuietly(stream);
+            Closeable closeable = (Closeable) stream;
+            try {
+              if (closeable != null) {
+                closeable.close();
+              }
+            } catch (IOException ioe) {
+              // ignore
+            }
           }
           rawPng[0] = stream.toByteArray();
           mainView.destroyDrawingCache();
@@ -509,7 +516,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   @Override
-  public Object executeScript(String script, Object ... args) {
+  public Object executeScript(String script, Object... args) {
     JSONArray array = new JSONArray();
     for (int i = 0; i < args.length; i++) {
       array.put(args[i]);
