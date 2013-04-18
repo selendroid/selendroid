@@ -13,7 +13,7 @@
  */
 package org.openqa.selendroid.tests;
 
-import org.openqa.selendroid.tests.internal.BaseAndroidTest;
+import org.openqa.selendroid.support.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;

@@ -20,4 +20,9 @@
 				name="org.openqa.selendroid.webviewdrivertests.WebElementInteractionTests" />
 		</classes>
 	</test>
+
+
+	<listeners>
+		<listener class-name="org.openqa.selendroid.support.LargeTestFeedbackListener"></listener>
+	</listeners>
 </suite>

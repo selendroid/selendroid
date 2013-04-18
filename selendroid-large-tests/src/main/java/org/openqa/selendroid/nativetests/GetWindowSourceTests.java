@@ -1,7 +1,7 @@
 package org.openqa.selendroid.nativetests;
 
 import org.openqa.selendroid.TestGroups;
-import org.openqa.selendroid.tests.internal.BaseAndroidTest;
+import org.openqa.selendroid.support.BaseAndroidTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

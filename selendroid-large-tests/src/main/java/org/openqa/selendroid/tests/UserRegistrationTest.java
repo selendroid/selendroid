@@ -14,9 +14,9 @@
 package org.openqa.selendroid.tests;
 
 import org.openqa.selendroid.SelendroidKeys;
+import org.openqa.selendroid.support.BaseAndroidTest;
 import org.openqa.selendroid.tests.domain.PreferedProgrammingLanguage;
 import org.openqa.selendroid.tests.domain.UserDO;
-import org.openqa.selendroid.tests.internal.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.HasInputDevices;
 import org.openqa.selenium.Point;

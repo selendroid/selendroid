@@ -4,7 +4,7 @@ import static org.openqa.selendroid.waiter.TestWaiter.waitFor;
 
 import org.openqa.selendroid.SelendroidKeys;
 import org.openqa.selendroid.TestGroups;
-import org.openqa.selendroid.tests.internal.BaseAndroidTest;
+import org.openqa.selendroid.support.BaseAndroidTest;
 import org.openqa.selendroid.waiter.WaitingConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.HasInputDevices;

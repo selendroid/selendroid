@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selendroid.TestGroups;
-import org.openqa.selendroid.tests.internal.BaseAndroidTest;
+import org.openqa.selendroid.support.BaseAndroidTest;
 import org.openqa.selendroid.waiter.TestWaiter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;

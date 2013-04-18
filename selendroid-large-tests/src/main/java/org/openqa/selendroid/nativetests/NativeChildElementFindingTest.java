@@ -16,7 +16,7 @@ package org.openqa.selendroid.nativetests;
 import java.util.List;
 
 import org.openqa.selendroid.TestGroups;
-import org.openqa.selendroid.tests.internal.BaseAndroidTest;
+import org.openqa.selendroid.support.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
