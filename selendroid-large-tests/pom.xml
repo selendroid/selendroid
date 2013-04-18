@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>org.openqa.selendroid</groupId>
 			<artifactId>selendroid-client</artifactId>
-			<version>0.3</version>
+			<version>0.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
