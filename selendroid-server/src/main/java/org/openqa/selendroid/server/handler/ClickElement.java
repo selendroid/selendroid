@@ -18,6 +18,7 @@ import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -41,6 +42,8 @@ public class ClickElement extends RequestHandler {
       element.click();
     } catch (ElementNotVisibleException ev) {
       return new Response(getSessionId(), 11, ev);
+    } catch (StaleElementReferenceException se) {
+      return new Response(getSessionId(), 10, se);
     } catch (Exception e) {
       SelendroidLogger.log("error while clicking the element: ", e);
       return new Response(getSessionId(), 13, e);
