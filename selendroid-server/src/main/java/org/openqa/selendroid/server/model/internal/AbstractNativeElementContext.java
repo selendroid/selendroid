@@ -333,18 +333,6 @@ public abstract class AbstractNativeElementContext
     return filterAndTransformElements(currentViews, predicate);
   }
 
-  protected String getLocalizedString(String l10nKey) {
-    Activity currentActivity = instrumentation.getCurrentActivity();
-    int resourceId =
-        currentActivity.getResources().getIdentifier(l10nKey, "string",
-            currentActivity.getPackageName());
-    try {
-      return currentActivity.getResources().getString(resourceId);
-    } catch (Resources.NotFoundException e) {
-      throw new NoSuchElementException("The l10n key '" + l10nKey + "' was not found.");
-    }
-  }
-
   @Override
   public AndroidElement findElementByText(String using) {
     List<AndroidElement> list = findElementsByText(using);

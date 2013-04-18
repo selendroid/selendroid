@@ -40,6 +40,7 @@ import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
 import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
 import org.openqa.selendroid.server.model.internal.execute_native.FindRId;
+import org.openqa.selendroid.server.model.internal.execute_native.GetL10nKeyTranslation;
 import org.openqa.selendroid.server.model.internal.execute_native.InvokeMenuAction;
 import org.openqa.selendroid.server.model.internal.execute_native.NativeExecuteScript;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
@@ -373,6 +374,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     nativeExecuteScriptMap.put("invokeMenuActionSync", new InvokeMenuAction(session,
         serverInstrumentation));
     nativeExecuteScriptMap.put("findRId", new FindRId(serverInstrumentation));
+    nativeExecuteScriptMap.put("getL10nKeyTranslation", new GetL10nKeyTranslation(
+        serverInstrumentation));
 
     return session.getSessionId();
   }

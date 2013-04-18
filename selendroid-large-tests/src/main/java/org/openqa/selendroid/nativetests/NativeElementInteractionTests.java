@@ -13,7 +13,8 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-@Test(groups={TestGroups.NATIVE})
+
+@Test(groups = {TestGroups.NATIVE})
 public class NativeElementInteractionTests extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetTextOfElement() {
@@ -92,19 +93,13 @@ public class NativeElementInteractionTests extends BaseAndroidTest {
     Assert.assertEquals(location.y, 247);
   }
 
-  /**
-   * TDOO lukeis refactor test to verify experimental support in native mode is working fine.
-   */
-  @Test(enabled = false)
+  @Test(enabled = true)
   public void testShouldNotBeAbleToExecuteSimpleJavaScript() {
     openStartActivity();
-    try {
-      ((JavascriptExecutor) driver).executeScript("return document.title");
-      Assert.fail();
-    } catch (WebDriverException e) {
-      Assert
-          .assertTrue(e.getMessage().contains("Executing script is only available in web views."));
-    }
+
+    Object translatedText =
+        ((JavascriptExecutor) driver).executeScript("getL10nKeyTranslation", "button");
+    Assert.assertEquals(translatedText, "EN Button");
   }
 
   @Test
