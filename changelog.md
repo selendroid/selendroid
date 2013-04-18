@@ -3,8 +3,7 @@
 
 - Removed dependencies: Guava, commons-io, slf4j-android
 - Find By Tag Name refactored to find by the class now, not by text 
-- L10n Locators are now mapped to xpath locator
-
+- L10n Locators not longer available, the translation can be done executing the script: ((JavascriptExecutor) driver).executeScript("getL10nKeyTranslation", "l10nKey");
 
 
 0.3 
