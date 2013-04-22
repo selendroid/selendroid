@@ -42,7 +42,6 @@ public class SelendroidWebDriver {
   private volatile boolean pageDoneLoading;
   private volatile boolean pageStartedLoading;
   private volatile String result;
-  private volatile boolean resultReady;
   private volatile WebView webview = null;
   private static final String WINDOW_KEY = "WINDOW";
   private volatile boolean editAreaHasFocus;
@@ -151,7 +150,10 @@ public class SelendroidWebDriver {
     try {
       JSONObject json = new JSONObject(jsResult);
       if (0 != json.optInt("status")) {
-        if (json.optString("value").equals("Element does not exist in cache")) {
+        Object value = json.get("value");
+        if ((value instanceof String && value.equals("Element does not exist in cache")) ||
+            (value instanceof JSONObject &&
+                ((JSONObject)value).optString("message").equals("Element does not exist in cache"))) {
           throw new StaleElementReferenceException(json.optString("value"));
         }
         throw new SelendroidException(json.optString("value"));
@@ -168,7 +170,6 @@ public class SelendroidWebDriver {
 
   private String executeJavascriptInWebView(final String script) {
     result = null;
-    resultReady = false;
     ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
       public void run() {
         if (webview.getUrl() == null) {
@@ -178,9 +179,9 @@ public class SelendroidWebDriver {
       }
     });
     long timeout =
-        System.currentTimeMillis() + serverInstrumentation.getAndroidWait().getTimeoutInMillis();
+        System.currentTimeMillis() + 60000; /* how long to wait to allow the script to run? This could be arbitrarily high for some users... setting extremely high for now (1 min) */
     synchronized (syncObject) {
-      while (!resultReady && (System.currentTimeMillis() < timeout)) {
+      while (result == null && (System.currentTimeMillis() < timeout)) {
         try {
           syncObject.wait(2000);
         } catch (InterruptedException e) {
@@ -381,8 +382,7 @@ public class SelendroidWebDriver {
         jsResult.confirm();
 
         synchronized (syncObject) {
-          result = message.replaceFirst("selendroid:", "");;
-          resultReady = true;
+          result = message.replaceFirst("selendroid:", "");
           syncObject.notify();
         }
 

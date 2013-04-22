@@ -62,7 +62,7 @@ public class AndroidWait implements Wait<Void> {
     long end = clock.laterBy(timeoutInMillis);
     NotFoundException lastException = null;
 
-    while (clock.isNowBefore(end)) {
+    do {
       try {
         T value = isTrue.apply(null);
 
@@ -75,7 +75,7 @@ public class AndroidWait implements Wait<Void> {
         lastException = exception;
       }
       sleep();
-    }
+    } while (clock.isNowBefore(end));
 
     throw new TimeoutException(String.format("Timed out after %d seconds",
         SECONDS.convert(timeoutInMillis, MILLISECONDS)), lastException);
