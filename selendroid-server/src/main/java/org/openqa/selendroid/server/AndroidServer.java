@@ -40,9 +40,21 @@ public class AndroidServer {
   protected void init(ServerInstrumentation androidInstrumentation) {
     webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
     SelendroidDriver driver = new DefaultSelendroidDriver(androidInstrumentation);
+    // seems like this must be set first
+    webServer.staleConnectionTimeout(120 * 1000);
     webServer.add("/wd/hub/status", new StatusServlet(androidInstrumentation));
     webServer.add(new InspectorServlet(driver, androidInstrumentation));
     webServer.add(new AndroidServlet(driver));
+  }
+
+  /**
+   * just make sure if the server timeout is set that this method is called as well.
+   * 
+   * @param millies
+   */
+  public void setConnectionTimeout(long millies) {
+    System.out.println("using staleConnectionTimeout: " + millies);
+    webServer.staleConnectionTimeout(millies);
   }
 
   public void start() {

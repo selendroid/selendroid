@@ -13,6 +13,17 @@
  */
 package org.openqa.selendroid;
 
+import java.io.File;
+import java.util.Set;
+
+import org.openqa.selendroid.android.ActivitiesReporter;
+import org.openqa.selendroid.android.AndroidWait;
+import org.openqa.selendroid.server.AndroidServer;
+import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.util.SelendroidLogger;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -22,13 +33,6 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.view.View;
-import org.openqa.selendroid.android.ActivitiesReporter;
-import org.openqa.selendroid.android.AndroidWait;
-import org.openqa.selendroid.server.AndroidServer;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.util.SelendroidLogger;
-
-import java.util.Set;
 
 public class ServerInstrumentation extends Instrumentation {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
@@ -216,8 +220,9 @@ public class ServerInstrumentation extends Instrumentation {
     return androidWait;
   }
 
-  public void setImplicitWait(long milies) {
-    androidWait.setTimeoutInMillis(milies);
+  public void setImplicitWait(long millies) {
+    androidWait.setTimeoutInMillis(millies);
+    serverThread.getServer().setConnectionTimeout(millies);
   }
 
   public String getSelendroidVersionNumber() {

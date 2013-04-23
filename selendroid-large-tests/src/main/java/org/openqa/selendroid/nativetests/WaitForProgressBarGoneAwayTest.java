@@ -48,7 +48,7 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
   private void startTimeOutTest(int timeout) {
     driver.findElement(By.id("waitingButtonTest")).click();
     // TODO should work also without wait
-    WebElement nameInput = TestWaiter.waitForElement(By.id("inputName"), timeout, driver);
+    WebElement nameInput= driver.findElement(By.id("inputName"));
     Assert.assertEquals(nameInput.getText(), "Mr. Burns");
   }
 }
