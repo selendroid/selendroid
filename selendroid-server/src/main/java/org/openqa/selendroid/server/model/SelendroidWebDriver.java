@@ -153,7 +153,7 @@ public class SelendroidWebDriver {
         Object value = json.get("value");
         if ((value instanceof String && value.equals("Element does not exist in cache")) ||
             (value instanceof JSONObject &&
-                ((JSONObject)value).optString("message").equals("Element does not exist in cache"))) {
+                ((JSONObject)value).getString("message").equals("Element does not exist in cache"))) {
           throw new StaleElementReferenceException(json.optString("value"));
         }
         throw new SelendroidException(json.optString("value"));
