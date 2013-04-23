@@ -43,7 +43,7 @@ public class ClickElement extends RequestHandler {
     } catch (ElementNotVisibleException ev) {
       return new Response(getSessionId(), 11, ev);
     } catch (StaleElementReferenceException se) {
-      return new Response(getSessionId(), 10, se);
+      return new Response(getSessionId(), 17, se);
     } catch (Exception e) {
       SelendroidLogger.log("error while clicking the element: ", e);
       return new Response(getSessionId(), 13, e);
