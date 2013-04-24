@@ -15,6 +15,7 @@ Gem::Specification.new do |gem|
   dotfiles = [ '.gitignore']
   gem.files = (Dir["**/*"].reject { |f| File.directory?(f) || ignores.any? { |i| File.fnmatch(i, f) } } + dotfiles+ Dir["selendroid-prebuild"]).sort
 
+  gem.required_ruby_version = '>= 1.9.2'
   gem.executables   = "selendroid"
   gem.require_paths = ["lib"]
   gem.add_dependency( "rubyzip")
