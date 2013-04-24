@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -24,6 +25,10 @@ public class GetElementEnabled extends RequestHandler {
       return new Response(getSessionId(), 10, new SelendroidException("Element with id '" + id
           + "' was not found in cache."));
     }
-    return new Response(getSessionId(), element.isEnabled());
+    try {
+      return new Response(getSessionId(), element.isEnabled());
+    } catch (StaleElementReferenceException se) {
+      return new Response(getSessionId(), 10, se);
+    }
   }
 }

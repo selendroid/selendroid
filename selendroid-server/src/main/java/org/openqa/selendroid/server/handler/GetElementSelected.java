@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -25,6 +26,10 @@ public class GetElementSelected extends RequestHandler {
           + "' was not found."));
     }
     boolean selected=element.isSelected();
-    return new Response(getSessionId(), selected);
+    try {
+      return new Response(getSessionId(), selected);
+    } catch (StaleElementReferenceException se) {
+      return new Response(getSessionId(), 10, se);
+    }
   }
 }

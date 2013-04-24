@@ -18,6 +18,7 @@ import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementAttributeException;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -41,6 +42,8 @@ public class GetElementAttribute extends RequestHandler {
     String text = null;
     try {
       text = element.getAttribute(attributeName);
+    } catch (StaleElementReferenceException se) {
+      return new Response(getSessionId(), 10, se);
     } catch (NoSuchElementAttributeException e) {
       // attribute not found
     }

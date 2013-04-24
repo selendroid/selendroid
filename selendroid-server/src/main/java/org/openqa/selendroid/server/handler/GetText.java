@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -38,7 +39,11 @@ public class GetText extends RequestHandler {
           + id + "' was not found."));
     }
     String text = element.getText();
-    return new Response(getSessionId(), text);
+    try {
+      return new Response(getSessionId(), text);
+    } catch (StaleElementReferenceException se) {
+      return new Response(getSessionId(), 10, se);
+    }
   }
 
 }

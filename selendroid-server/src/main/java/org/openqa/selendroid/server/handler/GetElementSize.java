@@ -19,6 +19,7 @@ import org.openqa.selendroid.android.internal.Dimension;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -43,7 +44,11 @@ public class GetElementSize extends RequestHandler {
     JSONObject result=new JSONObject();
     result.put("width", dimension.width);
     result.put("height", dimension.height);
-    return new Response(getSessionId(), result);
+    try {
+      return new Response(getSessionId(), result);
+    } catch (StaleElementReferenceException se) {
+      return new Response(getSessionId(), 10, se);
+    }
   }
 
 }

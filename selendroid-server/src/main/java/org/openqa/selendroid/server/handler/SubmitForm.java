@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -39,6 +40,8 @@ public class SubmitForm extends RequestHandler {
     String sessionId = getSessionId();
     try {
       element.submit();
+    } catch (StaleElementReferenceException se) {
+      return new Response(getSessionId(), 10, se);
     } catch (Exception e) {
       SelendroidLogger.log("error while submitting the element: ", e);
       return new Response(sessionId, 13, e);

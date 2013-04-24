@@ -19,6 +19,7 @@ import org.openqa.selendroid.android.internal.Point;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -42,6 +43,10 @@ public class ElementLocation extends RequestHandler {
     JSONObject result = new JSONObject();
     result.put("x", point.x);
     result.put("y", point.y);
-    return new Response(getSessionId(), result);
+    try {
+      return new Response(getSessionId(), result);
+    } catch (StaleElementReferenceException se) {
+      return new Response(getSessionId(), 10, se);
+    }
   }
 }

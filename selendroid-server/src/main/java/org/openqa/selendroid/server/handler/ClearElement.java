@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.NoSuchElementException;
+import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -38,6 +39,8 @@ public class ClearElement extends RequestHandler {
     }
     try {
       element.clear();
+    } catch (StaleElementReferenceException se) {
+      return new Response(getSessionId(), 10, se);
     } catch (Exception e) {
       SelendroidLogger.log("error while clearing the element: ", e);
       return new Response(getSelendroidDriver().getSession().getSessionId(), 33, e);
