@@ -20,7 +20,8 @@ Selendroid is based on the Android instrumentation framework, so therefor only t
 Selendroid-server in combination with the application under test (aut) must be installed on the device in order to be able to run automated end-to-end tests.
 
 To write and run tests with selendroid, first a customized selendroid-server for your aut must be created. To simplify this process I have created a Ruby gem:
-
+		
+		# Please note that ruby minimum version 1.9.2 is required
 		sudo gem install selendroid
 		selendroid build-and-start pathToYour.apk
 		
