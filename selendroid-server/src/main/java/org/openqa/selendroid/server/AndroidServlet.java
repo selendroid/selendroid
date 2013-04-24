@@ -13,6 +13,10 @@
  */
 package org.openqa.selendroid.server;
 
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openqa.selendroid.server.common.BaseServlet;
 import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.handler.CaptureScreenshot;
@@ -51,6 +55,7 @@ import org.openqa.selendroid.server.handler.SetImplicitWaitTimeout;
 import org.openqa.selendroid.server.handler.SingleTapOnElement;
 import org.openqa.selendroid.server.handler.SubmitForm;
 import org.openqa.selendroid.server.handler.SwitchWindow;
+import org.openqa.selendroid.server.handler.UnknownCommandHandler;
 import org.openqa.selendroid.server.handler.Up;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.util.SelendroidLogger;
@@ -59,19 +64,18 @@ import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
-
 public class AndroidServlet extends BaseServlet implements HttpHandler {
   public static final int INTERNAL_SERVER_ERROR = 500;
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
   public static final String ELEMENT_ID_KEY = "ELEMENT_ID_KEY";
   public static final String NAME_ID_KEY = "NAME_ID_KEY";
   public static final String DRIVER_KEY = "DRIVER_KEY";
-  protected Map<String, Class<? extends RequestHandler>> getHandler = new HashMap<String, Class<? extends RequestHandler>>();
-  protected Map<String, Class<? extends RequestHandler>> postHandler = new HashMap<String, Class<? extends RequestHandler>>();
-  protected Map<String, Class<? extends RequestHandler>> deleteHandler = new HashMap<String, Class<? extends RequestHandler>>();
+  protected Map<String, Class<? extends RequestHandler>> getHandler =
+      new HashMap<String, Class<? extends RequestHandler>>();
+  protected Map<String, Class<? extends RequestHandler>> postHandler =
+      new HashMap<String, Class<? extends RequestHandler>>();
+  protected Map<String, Class<? extends RequestHandler>> deleteHandler =
+      new HashMap<String, Class<? extends RequestHandler>>();
 
   protected SelendroidDriver driver = null;
 
@@ -123,6 +127,75 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     postHandler.put("/wd/hub/session/:sessionId/touch/doubleclick", DoubleTapOnElement.class);
     postHandler.put("/wd/hub/session/:sessionId/touch/longclick", LongPressOnElement.class);
     postHandler.put("/wd/hub/session/:sessionId/touch/flick", Flick.class);
+
+    // currently not yet supported
+    getHandler.put("/wd/hub/session/:sessionId/orientation", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/orientation", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/timeouts", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/timeouts/async_script", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/window_handle", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/window_handles", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/forward", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/back", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/refresh", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/execute_async", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/ime/available_engines", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/ime/active_engine", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/ime/activated", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/ime/deactivate", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/ime/activate", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/frame", UnknownCommandHandler.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/window", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/size", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/size", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/position",
+        UnknownCommandHandler.class);
+    getHandler
+        .put("/wd/hub/session/:sessionId/window/:windowHandle/position", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/maximize",
+        UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/cookie", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/cookie", UnknownCommandHandler.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/cookie", UnknownCommandHandler.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/cookie/:name", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/element/active", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/name", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/equals/:other", UnknownCommandHandler.class);
+    getHandler
+        .put("/wd/hub/session/:sessionId/element/:id/css/:propertyName", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/alert_text", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/alert_text", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/accept_alert", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/dismiss_alert", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/moveto", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/buttondown", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/buttonup", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/doubleclick", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/location", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/location", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/local_storage", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/local_storage", UnknownCommandHandler.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/local_storage", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/local_storage/key/:key", UnknownCommandHandler.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/local_storage/key/:key", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/local_storage/size", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/location", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/location", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/local_storage", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/local_storage", UnknownCommandHandler.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/local_storage", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/local_storage/key/:key", UnknownCommandHandler.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/local_storage/key/:key", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/local_storage/size", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/session_storage", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/session_storage", UnknownCommandHandler.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/session_storage", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/session_storage/key/:key", UnknownCommandHandler.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/session_storage/key/:key", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/session_storage/size", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/log", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/log/types", UnknownCommandHandler.class);
   }
 
   public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
