@@ -7,13 +7,16 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class SelendroidServerBuilderTest {
-  private static final String apkFile = "src/test/resources/selendroid-test-app.apk";
-  private static final String selendroidPrebuidlServer = "src/test/resources/selendroid-server.apk";
+  private static final String APK_FILE = "src/test/resources/selendroid-test-app.apk";
+  private static final String SELENDROID_PREBUILD_SERVER =
+      "src/test/resources/selendroid-server.apk";
+  public static final String ANDROID_APPLICATION_XML_TEMPLATE = "src/main/resources/AndroidManifest.xml";
 
   @Test
   public void testShouldBeAbleToCreateCustomizedSelendroidServerAndCleantTUp() throws Exception {
-    SelendroidServerBuilder builder = new SelendroidServerBuilder(selendroidPrebuidlServer);
-    builder.init(apkFile);
+    SelendroidServerBuilder builder =
+        new SelendroidServerBuilder(SELENDROID_PREBUILD_SERVER, ANDROID_APPLICATION_XML_TEMPLATE);
+    builder.init(APK_FILE);
     builder.cleanUpPrebuildServer();
 
     // Verify apk, if the files have been removed
@@ -30,6 +33,14 @@ public class SelendroidServerBuilderTest {
     } catch (java.lang.AssertionError e) {
       // expected, file should be there
     }
+  }
+  
+  @Test
+  public void testShouldBeAbleToCreateCustomizedAndroidApplicationXML() throws Exception {
+    SelendroidServerBuilder builder =
+        new SelendroidServerBuilder(SELENDROID_PREBUILD_SERVER, ANDROID_APPLICATION_XML_TEMPLATE);
+    builder.init(APK_FILE);
+    builder.createAndAddCustomizedAndroidManifestToSelendroidServer();
   }
 
   void assertResultDoesNotContainFile(String output, String file) {
