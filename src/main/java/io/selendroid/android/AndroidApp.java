@@ -13,6 +13,8 @@
  */
 package io.selendroid.android;
 
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
 import java.io.File;
@@ -29,7 +31,7 @@ public class AndroidApp {
     this.apkFile = apkFile;
   }
 
-  private String extractApkDetails(String regex) {
+  private String extractApkDetails(String regex) throws ShellCommandException {
     String line = AndroidSdk.aapt() + " dump badging " + apkFile.getAbsolutePath();
     String output = ShellCommand.exec(line);
 
@@ -44,14 +46,25 @@ public class AndroidApp {
 
   public String getBasePackage() {
     if (mainPackage == null) {
-      mainPackage = extractApkDetails("package: name='(.*?)'");
+      try {
+        mainPackage = extractApkDetails("package: name='(.*?)'");
+      } catch (ShellCommandException e) {
+        throw new SelendroidException("The base package name of the apk " + apkFile.getName()
+            + " cannot be extracted.");
+      }
+
     }
     return mainPackage;
   }
 
   public String getMainActivity() {
     if (mainActivity == null) {
-      mainActivity = extractApkDetails("launchable-activity: name='(.*?)'");
+      try {
+        mainActivity = extractApkDetails("launchable-activity: name='(.*?)'");
+      } catch (ShellCommandException e) {
+        throw new SelendroidException("The main activity of the apk " + apkFile.getName()
+            + " cannot be extracted.");
+      }
     }
     return mainActivity;
   }

@@ -11,7 +11,7 @@ import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.PumpStreamHandler;
 
 public class ShellCommand {
-  public static String exec(String command) {
+  public static String exec(String command) throws ShellCommandException {
     System.out.println("executing command: " + command);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
