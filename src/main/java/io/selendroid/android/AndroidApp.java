@@ -68,4 +68,16 @@ public class AndroidApp {
     }
     return mainActivity;
   }
+
+  public void deleteFileFromWithinApk(String file) throws ShellCommandException {
+    String line = AndroidSdk.aapt() + " remove " + apkFile.getAbsolutePath() + " " + file;
+    ShellCommand.exec(line);
+  }
+
+  /**
+   * For testing only
+   */
+  public String getAbsolutePath() {
+    return apkFile.getAbsolutePath();
+  }
 }

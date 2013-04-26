@@ -22,6 +22,7 @@
 			<useProjectArtifact>true</useProjectArtifact>
 			<unpack>false</unpack>
 			<scope>runtime</scope>
+			<destName>selendroid-server.apk</destName>
 			<includes>
 				<include>org.openqa.selendroid:selendroid-server</include>
 			</includes>
