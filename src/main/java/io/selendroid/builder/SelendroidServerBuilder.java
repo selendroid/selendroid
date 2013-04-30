@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -166,7 +167,10 @@ public class SelendroidServerBuilder {
             + file.getAbsolutePath() + " -storepass android -keystore " + androidKeyStore + " "
             + customSelendroidServer.getAbsolutePath() + " androiddebugkey";
     String output = ShellCommand.exec(signApkCommand);
-    log.info("The test server has been signed: " + output);
+    if (log.isLoggable(Level.INFO)) {
+      log.info("Server signing output: " + output);
+    }
+    log.info("The test server has been signed: " + file.getAbsolutePath());
     return file;
   }
 
