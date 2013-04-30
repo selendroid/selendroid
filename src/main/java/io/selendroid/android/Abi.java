@@ -11,20 +11,8 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.exceptions;
+package io.selendroid.android;
 
-public class SelendroidException extends RuntimeException {
-  private static final long serialVersionUID = 268831360479853360L;
-
-  public SelendroidException(String message) {
-    super(message);
-  }
-
-  public SelendroidException(Throwable t) {
-    super(t);
-  }
-
-  public SelendroidException(String message, Throwable t) {
-    super(message, t);
-  }
+public enum Abi {
+  ARM, X86
 }

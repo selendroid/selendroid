@@ -11,20 +11,24 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.exceptions;
+package io.selendroid.server.handler;
 
-public class SelendroidException extends RuntimeException {
-  private static final long serialVersionUID = 268831360479853360L;
+import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 
-  public SelendroidException(String message) {
-    super(message);
+import org.json.JSONException;
+import org.webbitserver.HttpRequest;
+
+public class CreateSessionHandler extends RequestHandler{
+
+  public CreateSessionHandler(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
-  public SelendroidException(Throwable t) {
-    super(t);
+  @Override
+  public Response handle() throws JSONException {
+    // TODO Auto-generated method stub
+    return null;
   }
 
-  public SelendroidException(String message, Throwable t) {
-    super(message, t);
-  }
 }
