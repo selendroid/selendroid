@@ -5,6 +5,11 @@
 - Find By Tag Name refactored to find by the class now, not by text 
 - L10n Locators not longer available, the translation can be done executing the script: ((JavascriptExecutor) driver).executeScript("getL10nKeyTranslation", "l10nKey");
 
+0.3.1
+-----
+- Gem does require Ruby version >= 1.9.2 
+
+
 
 0.3 
 ----
