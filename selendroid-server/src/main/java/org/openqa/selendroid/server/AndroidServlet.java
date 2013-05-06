@@ -223,6 +223,11 @@ public class AndroidServlet extends BaseServlet {
   @Override
   public void handleRequest(HttpRequest request, HttpResponse response,
       BaseRequestHandler handler) {
+        ﻿
+            if (handler == null) {
+      replyWithServerError(response);
+      return;
+    }
     Response result = null;
     try {
       addHandlerAttributesToRequest(request, handler.getMappedUri());
