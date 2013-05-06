@@ -14,7 +14,6 @@
 package org.openqa.selendroid.nativetests;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.openqa.selendroid.TestGroups;
 import org.openqa.selendroid.support.BaseAndroidTest;
@@ -22,6 +21,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +31,7 @@ import org.testng.annotations.Test;
  * 
  * @author ddary
  */
-@Test(groups={TestGroups.NATIVE})
+@Test(groups = {TestGroups.NATIVE})
 public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindButtonIdentifiedByPartialText() throws Exception {
@@ -290,4 +291,19 @@ public class NativeElementFindingTest extends BaseAndroidTest {
 
   }
 
+
+  @Test
+  public void testShouldNotBeAbleToFindElementByIdFromPreviousActivity() {
+    openStartActivity();
+    driver.findElement(By.id("startUserRegistration")).click();
+    new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(By
+        .id("inputUsername")));
+
+    try {
+      driver.findElement(By.id("buttonStartWebview"));
+      Assert.fail("The element from previous screen should not be found.");
+    } catch (NoSuchElementException e) {
+      // // this element is located on previous activity and should not be found
+    }
+  }
 }

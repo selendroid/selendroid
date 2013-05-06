@@ -183,7 +183,7 @@ public abstract class AbstractNativeElementContext
     List<AndroidElement> elements = new ArrayList<AndroidElement>();
     for (View view : viewAnalyzer.getViews(getTopLevelViews())) {
       String id = ViewHierarchyAnalyzer.getNativeId(view);
-      if (id.equalsIgnoreCase("id/" + using)) {
+      if (id.equalsIgnoreCase("id/" + using) && view.isShown()) {
         elements.add(newAndroidElement(view));
         if (findJustOne) return elements;
       }
@@ -394,7 +394,7 @@ public abstract class AbstractNativeElementContext
     Collection<?> filteredViews = ListUtil.filter(currentViews, predicate);
     final List<AndroidElement> filtered = new ArrayList<AndroidElement>();
     for (Object v : filteredViews) {
-      filtered.add(newAndroidElement((View)v));
+      filtered.add(newAndroidElement((View) v));
     }
 
     if (filtered.isEmpty()) {
