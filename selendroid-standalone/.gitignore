@@ -1,0 +1,15 @@
+.classpath
+.settings/
+*.irb-history
+test-output/
+target/
+bin/
+*.DS_Store
+lint.xml
+gen/
+out/
+*.jar
+*.apk
+#intellij
+.idea/
+*.iml
