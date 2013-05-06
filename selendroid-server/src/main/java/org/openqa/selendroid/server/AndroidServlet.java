@@ -65,7 +65,7 @@ import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
-public class AndroidServlet extends BaseServlet implements HttpHandler {
+public class AndroidServlet extends BaseServlet {
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
   public static final String ELEMENT_ID_KEY = "ELEMENT_ID_KEY";
   public static final String NAME_ID_KEY = "NAME_ID_KEY";
@@ -200,23 +200,6 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     getHandler.put("/wd/hub/session/:sessionId/session_storage/size", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/log", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/log/types", UnknownCommandHandler.class);
-  }
-
-  public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
-      throws Exception {
-    BaseRequestHandler handler = null;
-    if ("GET".equals(request.method())) {
-      handler = findMatcher(request, response, getHandler);
-    } else if ("POST".equals(request.method())) {
-      handler = findMatcher(request, response, postHandler);
-    } else if ("DELETE".equals(request.method())) {
-      handler = findMatcher(request, response, deleteHandler);
-    }
-    if (handler == null) {
-      replyWithServerError(response);
-      return;
-    }
-
   }
 
   private void addHandlerAttributesToRequest(HttpRequest request, String mappedUri) {
