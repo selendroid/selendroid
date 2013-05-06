@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 selendroid committers.
+ * Copyright 2013 selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -11,20 +11,27 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.exceptions;
+package org.openqa.selendroid.server;
 
-public class ElementNotVisibleException extends RuntimeException {
-  private static final long serialVersionUID = -5320098709492050871L;
+import org.json.JSONException;
+import org.webbitserver.HttpRequest;
 
-  public ElementNotVisibleException(String message) {
-    super(message);
+public abstract class BaseRequestHandler {
+  protected HttpRequest request = null;
+  protected String mappedUri = null;
+
+  public BaseRequestHandler(HttpRequest request, String mappedUri) {
+    this.request = request;
+    this.mappedUri = mappedUri;
   }
 
-  public ElementNotVisibleException(Throwable t) {
-    super(t);
+  public HttpRequest getHttpRequest() {
+    return request;
   }
 
-  public ElementNotVisibleException(String message, Throwable t) {
-    super(message, t);
+  public String getMappedUri() {
+    return mappedUri;
   }
+
+  public abstract Response handle() throws JSONException;
 }

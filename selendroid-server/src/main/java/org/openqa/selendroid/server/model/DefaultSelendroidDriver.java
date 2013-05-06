@@ -35,10 +35,10 @@ import org.openqa.selendroid.android.AndroidWait;
 import org.openqa.selendroid.android.KeySender;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.WindowType;
+import org.openqa.selendroid.exceptions.NoSuchElementException;
+import org.openqa.selendroid.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.Session;
-import org.openqa.selendroid.server.exceptions.NoSuchElementException;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.internal.AbstractNativeElementContext;
 import org.openqa.selendroid.server.model.internal.AbstractWebElementContext;
 import org.openqa.selendroid.server.model.internal.execute_native.FindRId;
@@ -187,7 +187,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       copy.put(PLATFORM, "android");
       copy.put(SUPPORTS_ALERTS, false);
       copy.put(SUPPORTS_JAVASCRIPT, true);
-      copy.put("version", serverInstrumentation.getSelendroidVersionNumber());
+      copy.put("version", serverInstrumentation.getServerVersion());
       copy.put(ACCEPT_SSL_CERTS, true);
       SelendroidLogger.log("capabilities: " + copy);
       return copy;
@@ -539,7 +539,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     Set<String> windowHandles = new HashSet<String>();
     windowHandles.add(WindowType.NATIVE_APP.name());
     WebView webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebView();
-    if (webview!=null) {
+    if (webview != null) {
       windowHandles.add(WindowType.WEBVIEW.name());
     }
     return windowHandles;

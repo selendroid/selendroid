@@ -11,22 +11,30 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.common;
+package org.openqa.selendroid.server;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.openqa.selendroid.server.RequestHandler;
-import org.openqa.selendroid.util.SelendroidLogger;
+import org.webbitserver.HttpControl;
+import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
-public class BaseServlet {
+public abstract class BaseServlet implements HttpHandler {
   public static final int INTERNAL_SERVER_ERROR = 500;
 
-  protected RequestHandler findMatcher(HttpRequest request, HttpResponse response,
-      Map<String, Class<? extends RequestHandler>> handler) {
-    for (Map.Entry<String, Class<? extends RequestHandler>> entry : handler.entrySet()) {
+  protected Map<String, Class<? extends BaseRequestHandler>> getHandler =
+      new HashMap<String, Class<? extends BaseRequestHandler>>();
+  protected Map<String, Class<? extends BaseRequestHandler>> postHandler =
+      new HashMap<String, Class<? extends BaseRequestHandler>>();
+  protected Map<String, Class<? extends BaseRequestHandler>> deleteHandler =
+      new HashMap<String, Class<? extends BaseRequestHandler>>();
+
+  protected BaseRequestHandler findMatcher(HttpRequest request, HttpResponse response,
+      Map<String, Class<? extends BaseRequestHandler>> handler) {
+    for (Map.Entry<String, Class<? extends BaseRequestHandler>> entry : handler.entrySet()) {
       if (isFor(entry.getKey(), request.uri())) {
         return instantiateHandler(entry, request);
       }
@@ -34,20 +42,42 @@ public class BaseServlet {
     return null;
   }
 
-  protected RequestHandler instantiateHandler(
-      Map.Entry<String, Class<? extends RequestHandler>> entry, HttpRequest request) {
-    RequestHandler handler = null;
+  /**
+   * adds all the handlers to this registry: {@link #getHandler}, {@link #postHandler},
+   * {@link #deleteHandler}
+   */
+  protected abstract void init();
+
+  protected BaseRequestHandler instantiateHandler(
+      Map.Entry<String, Class<? extends BaseRequestHandler>> entry, HttpRequest request) {
+    BaseRequestHandler handler = null;
     try {
-      Constructor<? extends RequestHandler> handlerConstr =
+      Constructor<? extends BaseRequestHandler> handlerConstr =
           entry.getValue().getConstructor(HttpRequest.class, String.class);
       handler = handlerConstr.newInstance(request, entry.getKey());
     } catch (Exception e) {
-      e.printStackTrace();
-      SelendroidLogger.log("Error occured while creating handler: ", e);
+      System.out.println("Error occured while creating handler: " + e);
     }
 
     return handler;
   }
+
+  @Override
+  public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
+      throws Exception {
+    BaseRequestHandler handler = null;
+    if ("GET".equals(request.method())) {
+      handler = findMatcher(request, response, getHandler);
+    } else if ("POST".equals(request.method())) {
+      handler = findMatcher(request, response, postHandler);
+    } else if ("DELETE".equals(request.method())) {
+      handler = findMatcher(request, response, deleteHandler);
+    }
+    handleRequest(request, response, handler);
+  }
+
+  public abstract void handleRequest(HttpRequest request, HttpResponse response,
+      BaseRequestHandler handler);
 
   protected String getParameter(String configuredUri, String actualUri, String param) {
     String[] configuredSections = configuredUri.split("/");
@@ -90,5 +120,12 @@ public class BaseServlet {
     }
 
     return true;
+  }
+
+  protected boolean isNewSessionRequest(HttpRequest request) {
+    if ("POST".equals(request.method()) && "/wd/hub/session".equals(request.uri())) {
+      return true;
+    }
+    return false;
   }
 }

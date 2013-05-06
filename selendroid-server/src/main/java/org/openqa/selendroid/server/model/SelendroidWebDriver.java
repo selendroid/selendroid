@@ -22,8 +22,8 @@ import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.android.internal.DomWindow;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
+import org.openqa.selendroid.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.js.AndroidAtoms;
 import org.openqa.selendroid.util.SelendroidLogger;
 

@@ -11,22 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.inspector;
+package org.openqa.selendroid.exceptions;
 
-import org.openqa.selendroid.exceptions.SelendroidException;
+public class StaleElementReferenceException extends RuntimeException {
+  private static final long serialVersionUID = -5835005031770654071L;
 
-public class SeledroidInspectorException extends SelendroidException {
-  private static final long serialVersionUID = 6848294719850875948L;
-
-  public SeledroidInspectorException(String message, Throwable t) {
-    super(message, t);
+  public StaleElementReferenceException(String message) {
+    super(message);
   }
 
-  public SeledroidInspectorException(Throwable t) {
+  public StaleElementReferenceException(Throwable t) {
     super(t);
   }
 
-  public SeledroidInspectorException(String message) {
-    super(message);
+  public StaleElementReferenceException(String message, Throwable t) {
+    super(message, t);
   }
 }

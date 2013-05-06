@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 selendroid committers.
+ * Copyright 2013 selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -11,20 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.exceptions;
+package org.openqa.selendroid.exceptions;
 
-public class StaleElementReferenceException extends RuntimeException {
-  private static final long serialVersionUID = -5835005031770654071L;
+public class NoSuchElementException extends RuntimeException {
+  private static final long serialVersionUID = -448720026954672628L;
 
-  public StaleElementReferenceException(String message) {
+  public NoSuchElementException(String message) {
     super(message);
   }
 
-  public StaleElementReferenceException(Throwable t) {
+  public NoSuchElementException(Throwable t) {
     super(t);
   }
 
-  public StaleElementReferenceException(String message, Throwable t) {
+  public NoSuchElementException(String message, Throwable t) {
     super(message, t);
   }
 }

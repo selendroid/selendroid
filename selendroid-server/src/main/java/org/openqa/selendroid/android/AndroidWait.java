@@ -17,8 +17,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.openqa.selendroid.android.internal.AndroidSystemClock;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.exceptions.TimeoutException;
+import org.openqa.selendroid.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.TimeoutException;
 
 import android.content.res.Resources.NotFoundException;
 import org.openqa.selendroid.util.Function;

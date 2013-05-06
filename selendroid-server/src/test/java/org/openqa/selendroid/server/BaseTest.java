@@ -18,7 +18,7 @@ import org.junit.After;
 import org.junit.Before;
 import static org.mockito.Mockito.*;
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
 import org.openqa.selendroid.server.handlers.SessionAndPayloadExtractionTestHandler;
 import org.openqa.selendroid.server.internal.Capabilities;
@@ -31,7 +31,7 @@ public class BaseTest {
   @Before
   public void setup() {
     ServerInstrumentation instrumentation = mock(ServerInstrumentation.class);
-    when(instrumentation.getSelendroidVersionNumber()).thenReturn("0.2");
+    when(instrumentation.getServerVersion()).thenReturn("0.2");
     server = new AndroidServer(port, instrumentation);
     server.start();
   }

@@ -16,7 +16,7 @@ package org.openqa.selendroid.server;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.DefaultSelendroidDriver;
 import org.openqa.selendroid.server.model.KnownElements;
@@ -26,19 +26,13 @@ import org.webbitserver.HttpRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RequestHandler {
-  private HttpRequest request = null;
-  private String mappedUri = null;
-
+public abstract class RequestHandler extends BaseRequestHandler {
+  
   public RequestHandler(HttpRequest request, String mappedUri) {
-    this.request = request;
-    this.mappedUri = mappedUri;
+    super(request, mappedUri);
   }
 
-  public String getMappedUri() {
-    return mappedUri;
-  }
-
+  
   public String getSessionId() {
     if (request.data().containsKey(AndroidServlet.SESSION_ID_KEY)) {
       return (String) request.data().get(AndroidServlet.SESSION_ID_KEY);
@@ -111,5 +105,5 @@ public abstract class RequestHandler {
     return keysToSend;
   }
 
-  public abstract Response handle() throws JSONException;
+  
 }

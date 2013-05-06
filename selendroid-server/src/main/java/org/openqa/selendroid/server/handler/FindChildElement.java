@@ -15,12 +15,12 @@ package org.openqa.selendroid.server.handler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selendroid.exceptions.NoSuchElementException;
+import org.openqa.selendroid.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.StaleElementReferenceException;
+import org.openqa.selendroid.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
-import org.openqa.selendroid.server.exceptions.NoSuchElementException;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
-import org.openqa.selendroid.server.exceptions.UnsupportedOperationException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.server.model.internal.NativeAndroidBySelector;
@@ -35,7 +35,6 @@ public class FindChildElement extends RequestHandler {
 
   @Override
   public Response handle() throws JSONException{
-    
     JSONObject payload = getPayload();
     String method = payload.getString("using");
     String selector = payload.getString("value");

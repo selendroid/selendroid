@@ -18,7 +18,7 @@ import java.util.List;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.AndroidKeys;
 import org.openqa.selendroid.android.AndroidWait;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.util.SelendroidLogger;
 
 import android.app.Activity;

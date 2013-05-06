@@ -11,20 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.exceptions;
+package org.openqa.selendroid.exceptions;
 
-public class IllegalLocatorException extends RuntimeException {
-  private static final long serialVersionUID = -7853631126874085084L;
+public class UnsupportedOperationException extends RuntimeException {
+  private static final long serialVersionUID = -4621083916206643180L;
 
-  public IllegalLocatorException(String message) {
+  public UnsupportedOperationException(String message) {
     super(message);
   }
 
-  public IllegalLocatorException(Throwable t) {
+  public UnsupportedOperationException(Throwable t) {
     super(t);
   }
 
-  public IllegalLocatorException(String message, Throwable t) {
+  public UnsupportedOperationException(String message, Throwable t) {
     super(message, t);
   }
 }

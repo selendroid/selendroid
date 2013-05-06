@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.openqa.selendroid.server.exceptions;
+package org.openqa.selendroid.exceptions;
 
 public class SelendroidException extends RuntimeException {
   private static final long serialVersionUID = -1592305571101012889L;

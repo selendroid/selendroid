@@ -19,7 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
 
 import java.net.URI;

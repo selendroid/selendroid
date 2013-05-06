@@ -14,7 +14,7 @@
 package org.openqa.selendroid.server.model.internal;
 
 
-import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.By;
 import org.openqa.selendroid.util.SelendroidLogger;
 

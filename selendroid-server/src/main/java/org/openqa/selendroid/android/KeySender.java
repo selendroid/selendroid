@@ -14,7 +14,7 @@
 
 package org.openqa.selendroid.android;
 
-import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.model.Keyboard;
 
 import android.app.Instrumentation;

@@ -16,7 +16,7 @@ package org.openqa.selendroid.server.inspector.view;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.ServerInstrumentation;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.inspector.SelendroidInspectorView;
 import org.openqa.selendroid.server.inspector.TreeUtil;
 import org.openqa.selendroid.server.model.SelendroidDriver;

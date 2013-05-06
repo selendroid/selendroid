@@ -13,17 +13,15 @@
  */
 package org.openqa.selendroid;
 
-import java.io.File;
 import java.util.Set;
 
 import org.openqa.selendroid.android.ActivitiesReporter;
 import org.openqa.selendroid.android.AndroidWait;
+import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.AndroidServer;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
+import org.openqa.selendroid.server.Versionable;
 import org.openqa.selendroid.util.SelendroidLogger;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -34,7 +32,7 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.view.View;
 
-public class ServerInstrumentation extends Instrumentation {
+public class ServerInstrumentation extends Instrumentation implements Versionable {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
   private static ServerInstrumentation instance = null;
   public static Class<? extends Activity> mainActivity = null;
@@ -225,7 +223,7 @@ public class ServerInstrumentation extends Instrumentation {
     serverThread.getServer().setConnectionTimeout(millies);
   }
 
-  public String getSelendroidVersionNumber() {
+  public String getServerVersion() {
     Context context = getContext();
     String versionName = "0.3";
     try {
@@ -233,6 +231,16 @@ public class ServerInstrumentation extends Instrumentation {
           context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
     } catch (NameNotFoundException e) {}
     return versionName;
+  }
+
+  @Override
+  public String getCpuArch() {
+    return android.os.Build.CPU_ABI;
+  }
+
+  @Override
+  public String getOsVersion() {
+    return String.valueOf(android.os.Build.VERSION.SDK_INT);
   }
 
   private class HttpdThread extends Thread {

@@ -14,10 +14,10 @@
 package org.openqa.selendroid.server.handler;
 
 import org.json.JSONException;
+import org.openqa.selendroid.exceptions.SelendroidException;
+import org.openqa.selendroid.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
-import org.openqa.selendroid.server.exceptions.SelendroidException;
-import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
