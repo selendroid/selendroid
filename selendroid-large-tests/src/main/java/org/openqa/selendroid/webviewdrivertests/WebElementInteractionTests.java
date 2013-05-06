@@ -129,7 +129,7 @@ public class WebElementInteractionTests extends BaseAndroidTest {
     Assert.assertEquals(element.isEnabled(), true);
   }
 
-  @Test
+  @Test(enabled=false)
   public void testShouldBeAbleToSubmitAnElement() {
     openWebdriverTestPage(HtmlTestData.SAY_HELLO_DEMO);
 

@@ -14,6 +14,7 @@
 package org.openqa.selendroid.server.model;
 
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,10 +48,14 @@ public interface SelendroidDriver {
   public String getTitle();
 
   public void get(String url);
-  
+
   public TouchScreen getTouch();
-  
+
   public Object executeScript(String script, JSONArray args);
 
-  public Object executeScript(String script, Object ... args);
+  public Object executeScript(String script, Object... args);
+
+  public String getWindowHandle();
+
+  public Set<String> getWindowHandles();
 }

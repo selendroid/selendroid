@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.json.JSONArray;
@@ -525,5 +527,21 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       array.put(args[i]);
     }
     return executeScript(script, array);
+  }
+
+  @Override
+  public String getWindowHandle() {
+    return activeWindowType.name();
+  }
+
+  @Override
+  public Set<String> getWindowHandles() {
+    Set<String> windowHandles = new HashSet<String>();
+    windowHandles.add(WindowType.NATIVE_APP.name());
+    WebView webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebView();
+    if (webview!=null) {
+      windowHandles.add(WindowType.WEBVIEW.name());
+    }
+    return windowHandles;
   }
 }

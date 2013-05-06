@@ -41,6 +41,8 @@ import org.openqa.selendroid.server.handler.GetElementSelected;
 import org.openqa.selendroid.server.handler.GetElementSize;
 import org.openqa.selendroid.server.handler.GetPageTitle;
 import org.openqa.selendroid.server.handler.GetText;
+import org.openqa.selendroid.server.handler.GetWindowHandle;
+import org.openqa.selendroid.server.handler.GetWindowHandles;
 import org.openqa.selendroid.server.handler.ListSessions;
 import org.openqa.selendroid.server.handler.LogElement;
 import org.openqa.selendroid.server.handler.LogElementTree;
@@ -127,14 +129,14 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     postHandler.put("/wd/hub/session/:sessionId/touch/doubleclick", DoubleTapOnElement.class);
     postHandler.put("/wd/hub/session/:sessionId/touch/longclick", LongPressOnElement.class);
     postHandler.put("/wd/hub/session/:sessionId/touch/flick", Flick.class);
-
+    getHandler.put("/wd/hub/session/:sessionId/window_handle", GetWindowHandle.class);
+    getHandler.put("/wd/hub/session/:sessionId/window_handles", GetWindowHandles.class);
+    
     // currently not yet supported
     getHandler.put("/wd/hub/session/:sessionId/orientation", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/orientation", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/timeouts", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/timeouts/async_script", UnknownCommandHandler.class);
-    getHandler.put("/wd/hub/session/:sessionId/window_handle", UnknownCommandHandler.class);
-    getHandler.put("/wd/hub/session/:sessionId/window_handles", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/forward", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/back", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/refresh", UnknownCommandHandler.class);
