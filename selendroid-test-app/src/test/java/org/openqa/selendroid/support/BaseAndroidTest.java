@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selendroid.waiter.TestWaiter;
 import org.openqa.selendroid.waiter.WaitingConditions;
-import org.openqa.selendroid.webviewdrivertests.HtmlTestData;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -54,7 +53,9 @@ public class BaseAndroidTest {
 
   @AfterMethod(alwaysRun = true)
   public void teardown() {
-    driver.quit();
+    if (driver != null) {
+      driver.quit();
+    }
   }
 
   protected void openWebdriverTestPage(String page) {
@@ -67,15 +68,6 @@ public class BaseAndroidTest {
     wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
     WebElement spinner = driver.findElement(By.id("spinner_webdriver_test_data"));
     spinner.click();
-    // Hack: to work around the bug that an already open page will not be opened again.
-//    driver.findElement(By.linkText(HtmlTestData.ABOUT_BLANK)).click();
-//    try {
-//      Thread.sleep(500);
-//    } catch (InterruptedException e) {
-//      e.printStackTrace();
-//    }
-//    spinner.click();
-
     WebElement entry = TestWaiter.waitForElement(By.linkText(page), 10, driver);
     entry.click();
 
