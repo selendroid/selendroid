@@ -19,6 +19,7 @@ import org.openqa.selendroid.TestGroups;
 import org.openqa.selendroid.support.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -305,5 +306,35 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     } catch (NoSuchElementException e) {
       // // this element is located on previous activity and should not be found
     }
+  }
+
+  @Test
+  public void testShouldNotBeAbleToInteractWithElementFromPreviousActivity() {
+    openStartActivity();
+    WebElement textfield = driver.findElement(By.id("my_text_field"));
+    Assert.assertNotNull(textfield, "textfield should be found.");
+    driver.findElement(By.id("startUserRegistration")).click();
+    new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(By
+        .id("inputUsername")));
+
+    try {
+      textfield.sendKeys("Hello");
+      Assert.fail("The element from previous screen should not be found.");
+    } catch (StaleElementReferenceException e) {
+      // // this element is located on previous activity and should not be found
+    }
+  }
+
+  @Test
+  public void testShouldBeAbleToFindElementAndEnterTextWhereScrollingMustBeDone() {
+    openStartActivity();
+    
+    driver.findElement(By.id("startUserRegistration")).click();
+    new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(By
+        .id("inputUsername")));
+    WebElement acceptAddsCheckbox = driver.findElement(By.id("input_adds"));
+    Assert.assertEquals(acceptAddsCheckbox.isSelected(), false);
+    acceptAddsCheckbox.click();
+    Assert.assertEquals(acceptAddsCheckbox.isSelected(), true);
   }
 }

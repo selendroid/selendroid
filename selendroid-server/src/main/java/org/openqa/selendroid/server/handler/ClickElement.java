@@ -17,7 +17,6 @@ import org.json.JSONException;
 import org.openqa.selendroid.server.RequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.openqa.selendroid.server.exceptions.ElementNotVisibleException;
-import org.openqa.selendroid.server.exceptions.NoSuchElementException;
 import org.openqa.selendroid.server.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.model.AndroidElement;
 import org.openqa.selendroid.util.SelendroidLogger;
@@ -25,18 +24,18 @@ import org.webbitserver.HttpRequest;
 
 public class ClickElement extends RequestHandler {
 
-  public ClickElement(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public ClickElement(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException{
+  public Response handle() throws JSONException {
     SelendroidLogger.log("Click element command");
     String id = getElementId();
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
-      return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"
-          + id + "' was not found."));
+      return new Response(getSessionId(), 10, new StaleElementReferenceException(
+          "The element with id '" + id + "' was not found."));
     }
     try {
       element.click();

@@ -13,15 +13,16 @@
  */
 package org.openqa.selendroid.server.model;
 
-import android.view.View;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import android.view.View;
+
 public class KnownElements {
   private final Map<String, AndroidElement> cache = new HashMap<String, AndroidElement>();
-  private final Map<View, AndroidNativeElement> nativeElementsByView = new HashMap<View, AndroidNativeElement>();
+  private final Map<View, AndroidNativeElement> nativeElementsByView =
+      new HashMap<View, AndroidNativeElement>();
 
   public String add(AndroidElement element) {
     if (cache.containsValue(element)) {
@@ -30,8 +31,8 @@ public class KnownElements {
     String id = UUID.randomUUID().toString();
 
     cache.put(id, element);
-    if(element instanceof AndroidNativeElement){
-      AndroidNativeElement nativeElement=(AndroidNativeElement)element;
+    if (element instanceof AndroidNativeElement) {
+      AndroidNativeElement nativeElement = (AndroidNativeElement) element;
       nativeElementsByView.put(nativeElement.getView(), nativeElement);
     }
     return id;
@@ -41,7 +42,13 @@ public class KnownElements {
    * Uses the generated Id to look up elements
    */
   public AndroidElement get(String elementId) {
-    return cache.get(elementId);
+    AndroidElement element = cache.get(elementId);
+    if (element instanceof AndroidNativeElement) {
+      if (!((AndroidNativeElement) element).isDisplayed()) {
+        return null;
+      }
+    }
+    return element;
   }
 
   public AndroidElement get(Long elementId) {
@@ -58,7 +65,7 @@ public class KnownElements {
   public boolean hasElement(Long elementId) {
     return hasElement(elementId.toString());
   }
-  
+
   public AndroidNativeElement getNativeElement(View view) {
     return nativeElementsByView.get(view);
   }
@@ -82,7 +89,7 @@ public class KnownElements {
 
 
   private String getCacheKey(AndroidElement element) {
-    for (Map.Entry<String, AndroidElement> entry: cache.entrySet())  {
+    for (Map.Entry<String, AndroidElement> entry : cache.entrySet()) {
       if (entry.getValue().equals(element)) {
         return entry.getKey();
       }
