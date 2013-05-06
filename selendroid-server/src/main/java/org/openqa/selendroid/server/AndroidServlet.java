@@ -14,8 +14,6 @@
 package org.openqa.selendroid.server;
 
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.openqa.selendroid.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.handler.CaptureScreenshot;
@@ -60,8 +58,6 @@ import org.openqa.selendroid.server.handler.UnknownCommandHandler;
 import org.openqa.selendroid.server.handler.Up;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpControl;
-import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
@@ -221,10 +217,8 @@ public class AndroidServlet extends BaseServlet {
   }
 
   @Override
-  public void handleRequest(HttpRequest request, HttpResponse response,
-      BaseRequestHandler handler) {
-        ﻿
-            if (handler == null) {
+  public void handleRequest(HttpRequest request, HttpResponse response, BaseRequestHandler handler) {
+    if (handler == null) {
       replyWithServerError(response);
       return;
     }
