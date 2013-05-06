@@ -1,2 +1,2 @@
-selendroid-server
+selendroid-standalone
 =================
