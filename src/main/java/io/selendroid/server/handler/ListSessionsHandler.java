@@ -13,13 +13,12 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
-import io.selendroid.server.Response;
-
 import org.json.JSONException;
+import org.openqa.selendroid.server.BaseRequestHandler;
+import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
-public class ListSessionsHandler extends RequestHandler {
+public class ListSessionsHandler extends BaseRequestHandler {
 
   public ListSessionsHandler(HttpRequest request, String mappedUri) {
     super(request, mappedUri);

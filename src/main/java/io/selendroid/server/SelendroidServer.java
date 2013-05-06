@@ -14,35 +14,38 @@
 package io.selendroid.server;
 
 import io.selendroid.SelendroidConfiguration;
+import io.selendroid.server.model.SelendroidDriver;
 
 import java.util.concurrent.Executors;
 
+import org.openqa.selendroid.server.StatusServlet;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
-
-import com.beust.jcommander.JCommander;
 
 public class SelendroidServer {
   private int driverPort = 4444;
   private WebServer webServer;
+  private SelendroidConfiguration configuration;
 
   /** for testing only */
   protected SelendroidServer(int port, SelendroidConfiguration configuration) {
     this.driverPort = port;
+    this.configuration = configuration;
 
-    init(configuration);
+    init();
   }
 
 
-  
+
   public SelendroidServer(SelendroidConfiguration configuration) {
-    init(configuration);
+    init();
   }
 
-  protected void init(SelendroidConfiguration configuration) {
+  protected void init() {
     webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
-    webServer.add("/wd/hub/status", new StatusServlet());
-    webServer.add(new SelendroidServlet(configuration));
+    SelendroidDriver driver = new SelendroidDriver();
+    webServer.add("/wd/hub/status", new StatusServlet(driver));
+    webServer.add(new SelendroidServlet(configuration, driver));
   }
 
   public void start() {

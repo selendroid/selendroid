@@ -13,15 +13,14 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
-import io.selendroid.server.Response;
-
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selendroid.server.BaseRequestHandler;
+import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
-public class RequestRedirectHandler extends RequestHandler {
+public class RequestRedirectHandler extends BaseRequestHandler {
   private DefaultHttpClient httpClient;
   private String hostname;
   private int port;

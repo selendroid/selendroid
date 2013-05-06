@@ -8,7 +8,8 @@ bin/
 lint.xml
 gen/
 out/
-
+*.jar
+*.apk
 #intellij
 .idea/
 *.iml

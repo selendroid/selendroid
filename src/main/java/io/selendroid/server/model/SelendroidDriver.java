@@ -11,27 +11,31 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.server;
+package io.selendroid.server.model;
 
-import org.json.JSONException;
-import org.webbitserver.HttpRequest;
+import org.openqa.selendroid.server.Versionable;
 
-public abstract class RequestHandler {
-  private HttpRequest request = null;
-  private String mappedUri = null;
 
-  public RequestHandler(HttpRequest request, String mappedUri) {
-    this.request = request;
-    this.mappedUri = mappedUri;
+public class SelendroidDriver implements Versionable{
+
+  @Override
+  public String getServerVersion() {
+    String version="dev";
+//TODO ddary read version number from jar
+    return version;
   }
 
-  public HttpRequest getHttpRequest() {
-    return request;
+  @Override
+  public String getCpuArch() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
-  public String getMappedUri() {
-    return mappedUri;
+  @Override
+  public String getOsVersion() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
-  public abstract Response handle() throws JSONException;
+  
 }

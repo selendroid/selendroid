@@ -18,31 +18,28 @@ import io.selendroid.server.handler.CreateSessionHandler;
 import io.selendroid.server.handler.DeleteSessionHandler;
 import io.selendroid.server.handler.ListSessionsHandler;
 import io.selendroid.server.handler.RequestRedirectHandler;
+import io.selendroid.server.model.SelendroidDriver;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.webbitserver.HttpControl;
-import org.webbitserver.HttpHandler;
+import org.json.JSONException;
+import org.openqa.selendroid.server.BaseRequestHandler;
+import org.openqa.selendroid.server.BaseServlet;
+import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
-public class SelendroidServlet implements HttpHandler {
-  public static final int INTERNAL_SERVER_ERROR = 500;
-  protected Map<String, Class<? extends RequestHandler>> getHandler =
-      new HashMap<String, Class<? extends RequestHandler>>();
-  protected Map<String, Class<? extends RequestHandler>> postHandler =
-      new HashMap<String, Class<? extends RequestHandler>>();
-  protected Map<String, Class<? extends RequestHandler>> deleteHandler =
-      new HashMap<String, Class<? extends RequestHandler>>();
-  protected Map<String, Class<? extends RequestHandler>> redirectHandler =
-      new HashMap<String, Class<? extends RequestHandler>>();
+public class SelendroidServlet extends BaseServlet {
+  protected Map<String, Class<? extends BaseRequestHandler>> redirectHandler =
+      new HashMap<String, Class<? extends BaseRequestHandler>>();
 
   private SelendroidConfiguration configuration;
+  private SelendroidDriver driver;
 
-  public SelendroidServlet(SelendroidConfiguration configuration) {
+  public SelendroidServlet(SelendroidConfiguration configuration, SelendroidDriver driver) {
     this.configuration = configuration;
+    this.driver = driver;
   }
 
   protected void init() {
@@ -53,21 +50,19 @@ public class SelendroidServlet implements HttpHandler {
   }
 
   @Override
-  public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
-      throws Exception {
-    RequestHandler handler = null;
-    if ("GET".equals(request.method())) {
-      handler = findMatcher(request, response, getHandler);
-    } else if ("POST".equals(request.method())) {
-      handler = findMatcher(request, response, postHandler);
-    } else if ("DELETE".equals(request.method())) {
-      handler = findMatcher(request, response, deleteHandler);
-    }
+  public void handleRequest(HttpRequest request, HttpResponse response, BaseRequestHandler handler) {
     if (handler == null) {
       replyWithServerError(response);
       return;
     }
-    Response result = handler.handle();
+
+    Response result;
+    try {
+      result = handler.handle();
+    } catch (JSONException e) {
+      replyWithServerError(response);
+      return;
+    }
     if (isNewSessionRequest(request)) {
       response.status(301);
       String session = result.getSessionId();
@@ -78,67 +73,6 @@ public class SelendroidServlet implements HttpHandler {
     } else {
       response.status(200);
     }
+
   }
-
-  private boolean isNewSessionRequest(HttpRequest request) {
-    if ("POST".equals(request.method()) && "/wd/hub/session".equals(request.uri())) {
-      return true;
-    }
-    return false;
-  }
-
-  protected void replyWithServerError(HttpResponse response) {
-    System.out.println("replyWithServerError 500");
-    response.status(INTERNAL_SERVER_ERROR);
-    response.end();
-  }
-
-  protected RequestHandler findMatcher(HttpRequest request, HttpResponse response,
-      Map<String, Class<? extends RequestHandler>> handler) {
-    for (Map.Entry<String, Class<? extends RequestHandler>> entry : handler.entrySet()) {
-      if (isFor(entry.getKey(), request.uri())) {
-        return instantiateHandler(entry, request);
-      }
-    }
-    return null;
-  }
-
-  protected RequestHandler instantiateHandler(
-      Map.Entry<String, Class<? extends RequestHandler>> entry, HttpRequest request) {
-    RequestHandler handler = null;
-    try {
-      Constructor<? extends RequestHandler> handlerConstr =
-          entry.getValue().getConstructor(HttpRequest.class, String.class);
-      handler = handlerConstr.newInstance(request, entry.getKey());
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("Error occured while creating handler: " + e);
-    }
-
-    return handler;
-  }
-
-  protected boolean isFor(String mapperUrl, String urlToMatch) {
-    String[] sections = mapperUrl.split("/");
-    if (urlToMatch == null) {
-      return sections.length == 0;
-    }
-    if (urlToMatch.contains("?")) {
-      urlToMatch = urlToMatch.substring(0, urlToMatch.indexOf("?"));
-    }
-    String[] allParts = urlToMatch.split("/");
-    if (sections.length != allParts.length) {
-      return false;
-    }
-    for (int i = 0; i < sections.length; i++) {
-      // to work around a but in Selenium Grid 2.31.0
-      String sectionElement = sections[i].replaceAll("\\?.*", "");
-      if (!(sectionElement.startsWith(":") || sectionElement.equals(allParts[i]))) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
 }
