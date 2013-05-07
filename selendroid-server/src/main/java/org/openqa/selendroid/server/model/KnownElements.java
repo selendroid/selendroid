@@ -17,6 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.openqa.selendroid.ServerInstrumentation;
+import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
+
+import android.app.Activity;
 import android.view.View;
 
 public class KnownElements {
@@ -43,8 +47,10 @@ public class KnownElements {
    */
   public AndroidElement get(String elementId) {
     AndroidElement element = cache.get(elementId);
+
     if (element instanceof AndroidNativeElement) {
-      if (!((AndroidNativeElement) element).isDisplayed()) {
+      if (!ViewHierarchyAnalyzer.getDefaultInstance().isViewChieldOfCurrentRootView(
+          ((AndroidNativeElement) element).getView())) {
         return null;
       }
     }

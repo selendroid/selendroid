@@ -27,7 +27,7 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToPassWithCorrectTimeout() {
     precondition();
-    int timeout = 25;
+    int timeout = 32;
     driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
     startTimeOutTest(timeout);
   }
@@ -47,8 +47,7 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
 
   private void startTimeOutTest(int timeout) {
     driver.findElement(By.id("waitingButtonTest")).click();
-    // TODO should work also without wait
-    WebElement nameInput= driver.findElement(By.id("inputName"));
-    Assert.assertEquals(nameInput.getText(), "Mr. Burns");
+    //the popup dialog wait for some time until then the user registration page is opened
+    Assert.assertEquals(driver.findElement(By.id("inputName")).getText(), "Mr. Burns");
   }
 }

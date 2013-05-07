@@ -86,4 +86,27 @@
             android:checked="true"
             android:text="@string/label_acceptAdds" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/visibleTestArea"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="visibleTestAreaCD" >
+
+        <Button
+            android:id="@+id/visibleButtonTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="visibleButtonTestCD"
+            android:onClick="displayTextView"
+            android:text="Display text view" />
+
+        <TextView
+            android:id="@+id/visibleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Text is sometimes displayed"
+            android:visibility="invisible" />
+    </LinearLayout>
+
 </LinearLayout>

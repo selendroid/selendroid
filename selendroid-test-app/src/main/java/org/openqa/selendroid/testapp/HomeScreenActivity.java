@@ -14,20 +14,18 @@
 package org.openqa.selendroid.testapp;
 
 
-import java.util.concurrent.ExecutionException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -48,6 +46,19 @@ public class HomeScreenActivity extends Activity {
     Log.i(TAG, "onCreate");
     setContentView(R.layout.homescreen);
   }
+
+
+
+  @Override
+  protected void onResume() {
+    TextView textview = ((TextView) findViewById(R.id.visibleTextView));
+
+    textview.setVisibility(View.INVISIBLE);
+
+    super.onResume();
+  }
+
+
 
   public void showL10nDialog(View view) {
     showDialog(DIALOG_ALERT);
@@ -70,6 +81,15 @@ public class HomeScreenActivity extends Activity {
   public void showUserRegistrationDialog(View view) {
     Intent nextScreen = new Intent(getApplicationContext(), RegisterUserActivity.class);
     startActivity(nextScreen);
+  }
+
+  public void displayTextView(View view) {
+    TextView textview = ((TextView) findViewById(R.id.visibleTextView));
+    if (textview.isShown()) {
+      textview.setVisibility(View.INVISIBLE);
+    } else {
+      textview.setVisibility(View.VISIBLE);
+    }
   }
 
   @Override
@@ -119,15 +139,14 @@ public class HomeScreenActivity extends Activity {
     @Override
     protected String doInBackground(String... params) {
       try {
-        Thread.sleep(4000);
+        Thread.sleep(8000);
         progressDialog.setProgress(25);
-        Thread.sleep(4000);
+        Thread.sleep(8000);
         progressDialog.setProgress(50);
-        Thread.sleep(4000);
+        Thread.sleep(8000);
         progressDialog.setProgress(75);
-        Thread.sleep(4000);
+        Thread.sleep(8000);
         progressDialog.setProgress(100);
-        Thread.sleep(1000);
       } catch (Exception e) {}
       return null;
     }

@@ -14,8 +14,6 @@
 package org.openqa.selendroid.server;
 
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.openqa.selendroid.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.handler.CaptureScreenshot;
@@ -60,12 +58,10 @@ import org.openqa.selendroid.server.handler.UnknownCommandHandler;
 import org.openqa.selendroid.server.handler.Up;
 import org.openqa.selendroid.server.model.SelendroidDriver;
 import org.openqa.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpControl;
-import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
-public class AndroidServlet extends BaseServlet implements HttpHandler {
+public class AndroidServlet extends BaseServlet {
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
   public static final String ELEMENT_ID_KEY = "ELEMENT_ID_KEY";
   public static final String NAME_ID_KEY = "NAME_ID_KEY";
@@ -202,23 +198,6 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
     getHandler.put("/wd/hub/session/:sessionId/log/types", UnknownCommandHandler.class);
   }
 
-  public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
-      throws Exception {
-    BaseRequestHandler handler = null;
-    if ("GET".equals(request.method())) {
-      handler = findMatcher(request, response, getHandler);
-    } else if ("POST".equals(request.method())) {
-      handler = findMatcher(request, response, postHandler);
-    } else if ("DELETE".equals(request.method())) {
-      handler = findMatcher(request, response, deleteHandler);
-    }
-    if (handler == null) {
-      replyWithServerError(response);
-      return;
-    }
-
-  }
-
   private void addHandlerAttributesToRequest(HttpRequest request, String mappedUri) {
     String sessionId = getParameter(mappedUri, request.uri(), ":sessionId");
     if (sessionId != null) {
@@ -238,8 +217,11 @@ public class AndroidServlet extends BaseServlet implements HttpHandler {
   }
 
   @Override
-  public void handleRequest(HttpRequest request, HttpResponse response,
-      BaseRequestHandler handler) {
+  public void handleRequest(HttpRequest request, HttpResponse response, BaseRequestHandler handler) {
+    if (handler == null) {
+      replyWithServerError(response);
+      return;
+    }
     Response result = null;
     try {
       addHandlerAttributesToRequest(request, handler.getMappedUri());

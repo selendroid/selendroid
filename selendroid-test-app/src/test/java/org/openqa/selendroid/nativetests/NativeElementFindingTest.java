@@ -196,7 +196,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
     List<WebElement> elements = driver.findElements(By.className("android.widget.Button"));
-    Assert.assertEquals(elements.size(), 3);
+    Assert.assertEquals(elements.size(), 4);
     Assert.assertEquals(elements.get(1).getText(), buttonText);
   }
 
@@ -234,7 +234,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     openStartActivity();
     String buttonText = "EN Button";
     List<WebElement> elements = driver.findElements(By.tagName("Button"));
-    Assert.assertEquals(elements.size(), 2);
+    Assert.assertEquals(elements.size(), 3);
     Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
 
@@ -328,7 +328,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindElementAndEnterTextWhereScrollingMustBeDone() {
     openStartActivity();
-    
+
     driver.findElement(By.id("startUserRegistration")).click();
     new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(By
         .id("inputUsername")));
@@ -336,5 +336,26 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     Assert.assertEquals(acceptAddsCheckbox.isSelected(), false);
     acceptAddsCheckbox.click();
     Assert.assertEquals(acceptAddsCheckbox.isSelected(), true);
+  }
+
+  @Test
+  public void testShouldBeAbleToFindInvisibleElemenById() throws Exception {
+    openStartActivity();
+    WebElement textview = driver.findElement(By.id("visibleTextView"));
+    Assert.assertEquals(textview.isDisplayed(), false);
+    driver.findElement(By.id("visibleButtonTest")).click();
+    Thread.sleep(1000);
+    Assert.assertEquals(textview.getAttribute("shown"), "true");
+    Assert.assertEquals(textview.isDisplayed(), true);
+  }
+
+  @Test
+  public void testShouldBeAbleToFindInvisibleElemenByText() throws Exception {
+    openStartActivity();
+    WebElement textview = driver.findElement(By.linkText("Text is sometimes displayed"));
+    Assert.assertEquals(textview.isDisplayed(), false);
+    driver.findElement(By.id("visibleButtonTest")).click();
+    Thread.sleep(1000);
+    Assert.assertEquals(textview.isDisplayed(), true);
   }
 }
