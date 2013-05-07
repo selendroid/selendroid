@@ -1,14 +1,26 @@
 package org.openqa.selendroid.nativetests;
 
+import java.io.StringReader;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
+import org.json.JSONObject;
 import org.openqa.selendroid.TestGroups;
 import org.openqa.selendroid.support.BaseAndroidTest;
+import org.openqa.selendroid.util.JsonXmlUtil;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-@Test(groups={TestGroups.NATIVE})
+
+@Test(groups = {TestGroups.NATIVE})
 public class GetWindowSourceTests extends BaseAndroidTest {
   /**
    * TODO update test, because test app was refactored
@@ -66,5 +78,23 @@ public class GetWindowSourceTests extends BaseAndroidTest {
     Assert.assertEquals(textview.get("type").getAsString(), "TextView");
     Assert.assertEquals(textview.get("value").getAsString(),
         "Hello Default Locale, Selendroid-test-app!");
+  }
+
+  @Test
+  public void testShouldBeAbleToFindHiddenElementAndGetShowState() throws Exception {
+    Element textView =
+        findElementByXpath("//TextView[@name='id/visibleTextView']", driver.getPageSource());
+
+    Assert.assertEquals(textView.getAttribute("shown"), "false");
+  }
+
+  private Element findElementByXpath(String expr, String source) throws Exception {
+    String xml = JsonXmlUtil.toXml(new JSONObject(source));
+    InputSource is = new InputSource(new StringReader(xml));
+    XPath xPath = XPathFactory.newInstance().newXPath();
+
+
+    XPathExpression xpathExpr = xPath.compile(expr);
+    return (Element) xpathExpr.evaluate(is, XPathConstants.NODE);
   }
 }
