@@ -35,6 +35,7 @@ public class TreeUtil {
     metadata.put("name", from.getString("name"));
     metadata.put("value", from.opt("value"));
     metadata.put("l10n", from.getJSONObject("l10n"));
+    metadata.put("shown", from.getBoolean("shown"));
 
     node.put("metadata", metadata);
     JSONObject rect = new JSONObject();
