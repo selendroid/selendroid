@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -45,6 +46,19 @@ public class HomeScreenActivity extends Activity {
     Log.i(TAG, "onCreate");
     setContentView(R.layout.homescreen);
   }
+
+
+
+  @Override
+  protected void onResume() {
+    TextView textview = ((TextView) findViewById(R.id.visibleTextView));
+
+    textview.setVisibility(View.INVISIBLE);
+
+    super.onResume();
+  }
+
+
 
   public void showL10nDialog(View view) {
     showDialog(DIALOG_ALERT);
@@ -67,6 +81,15 @@ public class HomeScreenActivity extends Activity {
   public void showUserRegistrationDialog(View view) {
     Intent nextScreen = new Intent(getApplicationContext(), RegisterUserActivity.class);
     startActivity(nextScreen);
+  }
+
+  public void displayTextView(View view) {
+    TextView textview = ((TextView) findViewById(R.id.visibleTextView));
+    if (textview.isShown()) {
+      textview.setVisibility(View.INVISIBLE);
+    } else {
+      textview.setVisibility(View.VISIBLE);
+    }
   }
 
   @Override

@@ -13,12 +13,10 @@
  */
 package org.openqa.selendroid.server.model.internal;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.android.internal.util.Predicate;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.android.ViewHierarchyAnalyzer;
 import org.openqa.selendroid.exceptions.NoSuchElementException;
@@ -35,15 +33,16 @@ import org.openqa.selendroid.server.model.By.ByName;
 import org.openqa.selendroid.server.model.By.ByTagName;
 import org.openqa.selendroid.server.model.KnownElements;
 import org.openqa.selendroid.server.model.SearchContext;
-
-import android.app.Activity;
-import android.content.res.Resources;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import org.openqa.selendroid.util.InstanceOfPredicate;
 import org.openqa.selendroid.util.ListUtil;
 import org.openqa.selendroid.util.Preconditions;
+
+import android.app.Activity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.android.internal.util.Predicate;
 
 public abstract class AbstractNativeElementContext
     implements
@@ -183,7 +182,7 @@ public abstract class AbstractNativeElementContext
     List<AndroidElement> elements = new ArrayList<AndroidElement>();
     for (View view : viewAnalyzer.getViews(getTopLevelViews())) {
       String id = ViewHierarchyAnalyzer.getNativeId(view);
-      if (id.equalsIgnoreCase("id/" + using) && view.isShown()) {
+      if (id.equalsIgnoreCase("id/" + using) && viewAnalyzer.isViewChieldOfCurrentRootView(view)) {
         elements.add(newAndroidElement(view));
         if (findJustOne) return elements;
       }
@@ -198,46 +197,14 @@ public abstract class AbstractNativeElementContext
                 currentActivity.getPackageName());
         if (intId > 0) {
           View view = currentActivity.findViewById(intId);
-          if (view != null && view.isShown()) {
+          
+          if (viewAnalyzer.isViewChieldOfCurrentRootView(view)) {
             elements.add(newAndroidElement(view));
           }
         }
       }
     }
-    if (elements.isEmpty()) {
-      System.out.println("trying to find element via R.class reference.");
-      // ok, no elements, last ditch effort is to check the R.class for reference id's
-      // current use case is for 'menu' items that don't appear as a View and need to be invoked.
-      Class rClazz;
-      try {
-        rClazz =
-            instrumentation.getTargetContext().getClassLoader()
-                .loadClass(instrumentation.getTargetContext().getPackageName() + ".R$id");
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
-        return elements;
-      }
-      for (Field field : rClazz.getFields()) {
-        if (field.getName().equalsIgnoreCase(using)) {
-          System.out.println("Found field for using: " + using);
-          try {
-            int id = field.getInt(null);
 
-            // Very important to add this check because otherwise always the element is found
-            // if it is declared in any layout xml file.
-            View view = null;
-            if (instrumentation != null && instrumentation.getCurrentActivity() != null) {
-              view = instrumentation.getCurrentActivity().findViewById(id);
-            }
-            if (view != null) {
-              elements.add(newAndroidElement(id));
-            }
-          } catch (IllegalAccessException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }
     return elements;
   }
 

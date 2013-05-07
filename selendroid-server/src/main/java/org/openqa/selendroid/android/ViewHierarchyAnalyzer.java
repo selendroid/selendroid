@@ -94,7 +94,8 @@ public class ViewHierarchyAnalyzer {
   }
 
   private View getRecentDecorView(Set<View> views) {
-    Collection<View> decorViews = (Collection<View>)ListUtil.filter(new ArrayList<View>(views), new DecorViewPredicate());
+    Collection<View> decorViews =
+        (Collection<View>) ListUtil.filter(new ArrayList<View>(views), new DecorViewPredicate());
     View container = null;
     // candidate is to fall back to most recent 'shown' view if none have the 'window focus'
     // this seems to be able to happen with menus
@@ -181,19 +182,24 @@ public class ViewHierarchyAnalyzer {
     Collection<View> allViews = getViews(Arrays.asList(getRecentDecorView()));
     List<View> container = new ArrayList<View>();
     List<AbsListView> listview =
-        (List<AbsListView>) ListUtil.filter(allViews,
-            new InstanceOfPredicate(AbsListView.class));
+        (List<AbsListView>) ListUtil.filter(allViews, new InstanceOfPredicate(AbsListView.class));
     if (listview != null && !listview.isEmpty()) {
       container.addAll(listview);
     }
     List<ScrollView> scrollview =
-        (List<ScrollView>) ListUtil.filter(allViews,
-            new InstanceOfPredicate(ScrollView.class));
+        (List<ScrollView>) ListUtil.filter(allViews, new InstanceOfPredicate(ScrollView.class));
     container.addAll(scrollview);
     List<WebView> webview =
-        (List<WebView>) ListUtil.filter(allViews,
-            new InstanceOfPredicate(WebView.class));
+        (List<WebView>) ListUtil.filter(allViews, new InstanceOfPredicate(WebView.class));
     container.addAll(webview);
     return container;
+  }
+
+  public boolean isViewChieldOfCurrentRootView(View view) {
+    if (view == null) {
+      return false;
+    }
+    View rootView = ViewHierarchyAnalyzer.getDefaultInstance().getRecentDecorView();
+    return view.getRootView().equals(rootView);
   }
 }
