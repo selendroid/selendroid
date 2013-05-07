@@ -291,6 +291,7 @@ public class AndroidNativeElement implements AndroidElement {
       value = String.valueOf(((TextView) view).getText());
     }
     object.put("value", value);
+    object.put("shown", view.isShown());
 
     return object;
   }
