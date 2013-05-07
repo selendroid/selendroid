@@ -14,14 +14,11 @@
 package org.openqa.selendroid.testapp;
 
 
-import java.util.concurrent.ExecutionException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -119,15 +116,14 @@ public class HomeScreenActivity extends Activity {
     @Override
     protected String doInBackground(String... params) {
       try {
-        Thread.sleep(4000);
+        Thread.sleep(8000);
         progressDialog.setProgress(25);
-        Thread.sleep(4000);
+        Thread.sleep(8000);
         progressDialog.setProgress(50);
-        Thread.sleep(4000);
+        Thread.sleep(8000);
         progressDialog.setProgress(75);
-        Thread.sleep(4000);
+        Thread.sleep(8000);
         progressDialog.setProgress(100);
-        Thread.sleep(1000);
       } catch (Exception e) {}
       return null;
     }
