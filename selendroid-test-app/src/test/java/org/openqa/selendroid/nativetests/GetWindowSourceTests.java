@@ -81,7 +81,7 @@ public class GetWindowSourceTests extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToFindHiddenElementAndGetShowState() throws Exception {
+  public void testShouldBeAbleToFindHiddenElementAndGetShownState() throws Exception {
     Element textView =
         findElementByXpath("//TextView[@name='id/visibleTextView']", driver.getPageSource());
 
