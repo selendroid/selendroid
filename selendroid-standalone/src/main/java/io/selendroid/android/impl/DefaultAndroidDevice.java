@@ -45,7 +45,17 @@ public class DefaultAndroidDevice implements AndroidDevice {
 
   @Override
   public boolean isDeviceReady() {
-    // TODO Auto-generated method stub
+    List<String> command = new ArrayList<String>();
+    command.add(AndroidSdk.adb());
+    command.add("-s");
+    command.add(serial);
+
+    command.add("shell");
+    command.add("getprop init.svc.bootanim");
+    String bootAnimDisplayed = executeCommand(command);
+    if (bootAnimDisplayed != null && bootAnimDisplayed.contains("stopped")) {
+      return true;
+    }
     return false;
   }
 

@@ -46,6 +46,7 @@ public class DefaultAndroidDeviceTests {
   @Test
   public void testShouldBeAbleToStartSelendroid() throws Exception {
     AndroidDevice emulator = new DefaultAndroidDevice(serial);
+    Assert.assertTrue(emulator.isDeviceReady());
     cleanUpDevice(emulator);
 
     // install apps
@@ -58,8 +59,7 @@ public class DefaultAndroidDeviceTests {
     // start selendroid
     emulator.startSelendroid(aut, port);
     String url = "http://localhost:" + port + "/wd/hub/status";
-    HttpResponse response = HttpClientUtil.executeRequest(url,
-            HttpMethod.GET);
+    HttpResponse response = HttpClientUtil.executeRequest(url, HttpMethod.GET);
     SelendroidAssert.assertResponseIsOk(response);
     Assert.assertTrue(emulator.isSelendroidRunning());
   }
