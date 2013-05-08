@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +39,8 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openqa.selendroid.exceptions.SelendroidException;
+
+import com.beust.jcommander.internal.Lists;
 
 public class SelendroidServerBuilder {
   public static final String SELENDROID_TEST_APP_PACKAGE = "org.openqa.selendroid.testapp";
@@ -113,10 +116,15 @@ public class SelendroidServerBuilder {
     IOUtils.closeQuietly(outputStream);
 
     // adding the xml to an empty apk
-    String createManifestApk =
-        AndroidSdk.aapt() + " package -M " + customizedManifest.getAbsolutePath() + "  -I "
-            + AndroidSdk.androidJar() + " -F " + tempdir.getAbsolutePath() + File.separatorChar
-            + "manifest.apk -f";
+    List<String> createManifestApk = Lists.newArrayList();
+    createManifestApk.add(AndroidSdk.aapt());
+    createManifestApk.add("package -M");
+    createManifestApk.add(customizedManifest.getAbsolutePath());
+    createManifestApk.add("-I");
+    createManifestApk.add(AndroidSdk.androidJar());
+    createManifestApk.add("-F");
+    createManifestApk.add(tempdir.getAbsolutePath() + File.separatorChar + "manifest.apk");
+    createManifestApk.add("-f");
     log.info(ShellCommand.exec(createManifestApk));
 
     ZipFile manifestApk =
@@ -150,12 +158,19 @@ public class SelendroidServerBuilder {
 
     if (androidKeyStore.isFile() == false) {
       // create a new keystore
-      String createKeyStore =
-          JavaSdk.keytool()
-              + " -genkey -v -keystore "
-              + androidKeyStore
-              + " -storepass android -alias androiddebugkey -keypass android "
-              + "-dname \"CN=Android Debug,O=Android,C=US\" -storetype JKS -sigalg MD5withRSA  -keyalg RSA";
+      List<String> createKeyStore = Lists.newArrayList();
+      createKeyStore.add(JavaSdk.keytool());
+      createKeyStore.add("-genkey");
+      createKeyStore.add("-v");
+      createKeyStore.add("-keystore");
+      createKeyStore.add(androidKeyStore.toString());
+      createKeyStore.add("-storepass android");
+      createKeyStore.add("-alias androiddebugkey");
+      createKeyStore.add("-keypass android");
+      createKeyStore.add("-dname \"CN=Android Debug,O=Android,C=US\"");
+      createKeyStore.add("-storetype JKS");
+      createKeyStore.add("-sigalg MD5withRSA");
+      createKeyStore.add("-keyalg RSA");
       String output = ShellCommand.exec(createKeyStore);
       log.info("A new keystore has been created: " + output);
     }
@@ -163,10 +178,17 @@ public class SelendroidServerBuilder {
         new File(getCurrentDir() + "selendroid-server-" + applicationUnderTest.getBasePackage()
             + "-0.4.0.apk");
     // Sign the jar
-    String signApkCommand =
-        JavaSdk.jarsigner() + " -sigalg MD5withRSA -digestalg SHA1 -signedjar "
-            + file.getAbsolutePath() + " -storepass android -keystore " + androidKeyStore + " "
-            + customSelendroidServer.getAbsolutePath() + " androiddebugkey";
+    List<String> signApkCommand = Lists.newArrayList();
+    signApkCommand.add(JavaSdk.jarsigner());
+    signApkCommand.add("-sigalg MD5withRSA");
+    signApkCommand.add("-digestalg SHA1");
+    signApkCommand.add("-signedjar");
+    signApkCommand.add(file.getAbsolutePath());
+    signApkCommand.add("-storepass android");
+    signApkCommand.add("-keystore");
+    signApkCommand.add(androidKeyStore.toString());
+    signApkCommand.add(customSelendroidServer.getAbsolutePath());
+    signApkCommand.add("androiddebugkey");
     String output = ShellCommand.exec(signApkCommand);
     if (log.isLoggable(Level.INFO)) {
       log.info("Server signing output: " + output);
