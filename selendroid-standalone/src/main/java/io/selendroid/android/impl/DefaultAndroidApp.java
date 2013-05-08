@@ -32,6 +32,7 @@ public class DefaultAndroidApp implements AndroidApp {
   private File apkFile;
   private String mainPackage = null;
   private String mainActivity = null;
+  private String versionName = null;
 
   public DefaultAndroidApp(File apkFile) {
     this.apkFile = apkFile;
@@ -115,5 +116,22 @@ public class DefaultAndroidApp implements AndroidApp {
   @Override
   public String getAbsolutePath() {
     return apkFile.getAbsolutePath();
+  }
+
+  @Override
+  public String getVersionName() {
+    if (versionName == null) {
+      try {
+        versionName = extractApkDetails("versionName='(.*?)'");
+      } catch (ShellCommandException e) {
+        throw new SelendroidException("The versionName of the apk " + apkFile.getName()
+            + " cannot be extracted.");
+      }
+    }
+    return versionName;
+  }
+
+  public String getAppId() {
+    return getBasePackage() + ":" + getVersionName();
   }
 }

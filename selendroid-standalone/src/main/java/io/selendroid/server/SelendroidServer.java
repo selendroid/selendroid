@@ -17,12 +17,14 @@ import io.selendroid.SelendroidConfiguration;
 import io.selendroid.server.model.SelendroidDriver;
 
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import org.openqa.selendroid.server.StatusServlet;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
 
 public class SelendroidServer {
+  private static final Logger log = Logger.getLogger(SelendroidServer.class.getName());
   private int driverPort = 4444;
   private WebServer webServer;
   private SelendroidConfiguration configuration;
@@ -35,24 +37,24 @@ public class SelendroidServer {
     init();
   }
 
-
-
   public SelendroidServer(SelendroidConfiguration configuration) {
     init();
   }
 
   protected void init() {
     webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
-    SelendroidDriver driver = new SelendroidDriver();
+    SelendroidDriver driver = new SelendroidDriver(configuration);
     webServer.add("/wd/hub/status", new StatusServlet(driver));
-    webServer.add(new SelendroidServlet(configuration, driver));
+    webServer.add(new SelendroidServlet(driver));
   }
 
   public void start() {
     webServer.start();
+    log.info("selendroid-standalone server has been started on port: " + driverPort);
   }
 
   public void stop() {
+    log.info("About to stop selendroid-standalone server");
     webServer.stop();
   }
 

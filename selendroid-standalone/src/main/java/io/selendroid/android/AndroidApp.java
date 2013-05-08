@@ -17,15 +17,18 @@ import io.selendroid.exceptions.ShellCommandException;
 
 public interface AndroidApp {
 
-  public abstract String getBasePackage();
+  public String getBasePackage();
 
-  public abstract String getMainActivity();
+  public String getMainActivity();
 
-  public abstract void deleteFileFromWithinApk(String file) throws ShellCommandException;
+  public String getVersionName();
+
+  public void deleteFileFromWithinApk(String file) throws ShellCommandException;
 
   /**
    * For testing only
    */
-  public abstract String getAbsolutePath();
+  public String getAbsolutePath();
 
+  public String getAppId();
 }

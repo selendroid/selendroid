@@ -30,6 +30,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openqa.selendroid</groupId>
+			<artifactId>selendroid-common</artifactId>
+			<version>0.4-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openqa.selendroid</groupId>
 			<artifactId>selendroid-server-common</artifactId>
 			<version>0.4-SNAPSHOT</version>
 		</dependency>

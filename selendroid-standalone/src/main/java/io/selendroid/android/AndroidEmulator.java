@@ -15,8 +15,8 @@ package io.selendroid.android;
 
 public interface AndroidEmulator {
 
-  public abstract String createEmulator();
+  public String createEmulator();
 
-  public abstract boolean isEmulatorAlreadyExistent();
+  public boolean isEmulatorAlreadyExistent();
 
 }

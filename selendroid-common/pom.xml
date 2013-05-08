@@ -6,18 +6,13 @@
 		<artifactId>selendroid</artifactId>
 		<version>0.4-SNAPSHOT</version>
 	</parent>
-	<artifactId>selendroid-client</artifactId>
-	<name>selendroid-client</name>
+	<artifactId>selendroid-common</artifactId>
+	<name>selendroid-common</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openqa.selendroid</groupId>
-			<artifactId>selendroid-common</artifactId>
-			<version>0.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>

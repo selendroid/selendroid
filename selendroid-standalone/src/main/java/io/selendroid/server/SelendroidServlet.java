@@ -13,7 +13,6 @@
  */
 package io.selendroid.server;
 
-import io.selendroid.SelendroidConfiguration;
 import io.selendroid.server.handler.CreateSessionHandler;
 import io.selendroid.server.handler.DeleteSessionHandler;
 import io.selendroid.server.handler.ListSessionsHandler;
@@ -33,12 +32,9 @@ import org.webbitserver.HttpResponse;
 public class SelendroidServlet extends BaseServlet {
   protected Map<String, Class<? extends BaseRequestHandler>> redirectHandler =
       new HashMap<String, Class<? extends BaseRequestHandler>>();
-
-  private SelendroidConfiguration configuration;
   private SelendroidDriver driver;
 
-  public SelendroidServlet(SelendroidConfiguration configuration, SelendroidDriver driver) {
-    this.configuration = configuration;
+  public SelendroidServlet(SelendroidDriver driver) {
     this.driver = driver;
   }
 

@@ -13,6 +13,7 @@
 		<module>selendroid-client</module>
 		<module>selendroid-server-common</module>
                 <module>selendroid-standalone</module>
+                <module>selendroid-common</module>
 	</modules>
 
 	<properties>

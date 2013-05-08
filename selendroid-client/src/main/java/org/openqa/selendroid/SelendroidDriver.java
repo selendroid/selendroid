@@ -1,5 +1,3 @@
-package org.openqa.selendroid;
-
 /*
  * Copyright 2012 selendroid committers.
  * 
@@ -13,6 +11,8 @@ package org.openqa.selendroid;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+package org.openqa.selendroid;
+
 import java.net.URL;
 
 import org.openqa.selenium.Capabilities;

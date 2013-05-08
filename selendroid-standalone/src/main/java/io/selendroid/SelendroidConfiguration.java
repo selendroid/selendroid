@@ -23,9 +23,6 @@ public class SelendroidConfiguration {
   @Parameter(description = "port the server will listen on.", names = "-port")
   private int port = 5555;
 
-  @Parameter(description = "android api used for creating emulators", names = "-androidApi")
-  private int androidApi;
-
   @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
       "-app", "-aut"}, required = true)
   private List<String> supportedApps = new ArrayList<String>();
@@ -50,13 +47,5 @@ public class SelendroidConfiguration {
 
   public int getPort() {
     return this.port;
-  }
-
-  public int getAndroidApi() {
-    return androidApi;
-  }
-
-  public void setAndroidApi(int androidApi) {
-    this.androidApi = androidApi;
   }
 }
