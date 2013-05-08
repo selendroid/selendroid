@@ -16,10 +16,16 @@ package io.selendroid.android.impl;
 import io.selendroid.android.Abi;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.exceptions.ShellCommandException;
+import io.selendroid.io.ShellCommand;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selendroid.exceptions.SelendroidException;
+
+import com.beust.jcommander.internal.Lists;
 
 public class DefaultAndroidEmulator implements AndroidEmulator {
   private String screenSize;
@@ -55,22 +61,28 @@ public class DefaultAndroidEmulator implements AndroidEmulator {
    */
   @Override
   public String createEmulator() {
+    String avdName = getAvdName();
     if (!isEmulatorAlreadyExistent()) {
-      StringBuffer createEmulator = new StringBuffer();
-      createEmulator.append("echo no | ");
-      createEmulator.append(AndroidSdk.android());
-      createEmulator.append(" create avd -n ");
-      createEmulator.append(getAvdName());
-      createEmulator.append("-t android");
-      createEmulator.append(getApi());
-      createEmulator.append("--skin");
-      createEmulator.append(getScreenSize());
-      createEmulator.append("--abi");
-      createEmulator.append(getApi());
-      createEmulator.append("--force");
-      return createEmulator.toString();
+      List<String> createEmulator = Lists.newArrayList();
+
+      createEmulator.add("echo no |");
+      createEmulator.add(AndroidSdk.android());
+      createEmulator.add("create avd -n");
+      createEmulator.add(avdName);
+      createEmulator.add("-t android");
+      createEmulator.add(getApi());
+      createEmulator.add("--skin");
+      createEmulator.add(getScreenSize());
+      createEmulator.add("--abi");
+      createEmulator.add(getApi());
+      createEmulator.add("--force");
+      try {
+        ShellCommand.exec(createEmulator);
+      } catch (ShellCommandException e) {
+        throw new SelendroidException(e);
+      }
     }
-    return null;
+    return avdName;
   }
 
   /*
