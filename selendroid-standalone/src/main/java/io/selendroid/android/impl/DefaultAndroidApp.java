@@ -19,10 +19,13 @@ import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
 import java.io.File;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openqa.selendroid.exceptions.SelendroidException;
+
+import com.beust.jcommander.internal.Lists;
 
 
 public class DefaultAndroidApp implements AndroidApp {
@@ -35,7 +38,11 @@ public class DefaultAndroidApp implements AndroidApp {
   }
 
   private String extractApkDetails(String regex) throws ShellCommandException {
-    String line = AndroidSdk.aapt() + " dump badging " + apkFile.getAbsolutePath();
+    List<String> line = Lists.newArrayList();
+    line.add(AndroidSdk.aapt());
+    line.add("dump");
+    line.add("badging");
+    line.add(apkFile.getAbsolutePath());
     String output = ShellCommand.exec(line);
 
     Pattern pattern = Pattern.compile(regex);
@@ -47,7 +54,9 @@ public class DefaultAndroidApp implements AndroidApp {
     return null;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see io.selendroid.android.impl.AndroidAppA#getBasePackage()
    */
   @Override
@@ -64,7 +73,9 @@ public class DefaultAndroidApp implements AndroidApp {
     return mainPackage;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see io.selendroid.android.impl.AndroidAppA#getMainActivity()
    */
   @Override
@@ -80,16 +91,25 @@ public class DefaultAndroidApp implements AndroidApp {
     return mainActivity;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see io.selendroid.android.impl.AndroidAppA#deleteFileFromWithinApk(java.lang.String)
    */
   @Override
   public void deleteFileFromWithinApk(String file) throws ShellCommandException {
-    String line = AndroidSdk.aapt() + " remove " + apkFile.getAbsolutePath() + " " + file;
+    List<String> line = Lists.newArrayList();
+    line.add(AndroidSdk.aapt());
+    line.add("remove");
+    line.add(apkFile.getAbsolutePath());
+    line.add(file);
+
     ShellCommand.exec(line);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see io.selendroid.android.impl.AndroidAppA#getAbsolutePath()
    */
   @Override
