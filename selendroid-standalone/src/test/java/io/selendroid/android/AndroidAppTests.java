@@ -1,5 +1,7 @@
 package io.selendroid.android;
 
+import io.selendroid.android.impl.DefaultAndroidApp;
+
 import java.io.File;
 
 import org.junit.Assert;
@@ -12,21 +14,21 @@ public class AndroidAppTests {
 
 	@Test
 	public void testShouldBeAbleToExtractBasePackage() throws Exception {
-		AndroidApp app = new AndroidApp(new File(apkFile));
+		AndroidApp app = new DefaultAndroidApp(new File(apkFile));
 		Assert.assertEquals(app.getBasePackage(),
 				"org.openqa.selendroid.testapp");
 	}
 
 	@Test
 	public void testShouldBeAbleToExtractMainAcivity() throws Exception {
-		AndroidApp app = new AndroidApp(new File(apkFile));
+		AndroidApp app = new DefaultAndroidApp(new File(apkFile));
 		Assert.assertEquals(app.getMainActivity(),
 				"org.openqa.selendroid.testapp.HomeScreenActivity");
 	}
 
 	@Test()
 	public void testShouldNotBeAbleToExtractBasePackage() throws Exception {
-		AndroidApp app = new AndroidApp(new File(inValidApkFile));
+		AndroidApp app = new DefaultAndroidApp(new File(inValidApkFile));
 		try {
 			app.getBasePackage();
 			Assert.fail("On an invalid apk the base package should not be found.");
@@ -37,7 +39,7 @@ public class AndroidAppTests {
 
 	@Test()
 	public void testShouldNotBeAbleToExtractMainAcivity() throws Exception {
-		AndroidApp app = new AndroidApp(new File(inValidApkFile));
+		AndroidApp app = new DefaultAndroidApp(new File(inValidApkFile));
 		try {
 			app.getMainActivity();
 			Assert.fail("On an invalid apk the main activity should not be found.");

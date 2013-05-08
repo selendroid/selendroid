@@ -13,15 +13,21 @@
  */
 package io.selendroid.server.model;
 
+import io.selendroid.android.AndroidApp;
+import io.selendroid.android.AndroidDevice;
+
 import org.openqa.selendroid.server.Versionable;
 
 
-public class SelendroidDriver implements Versionable{
+public class SelendroidDriver implements Versionable {
+  private AndroidApp appUnderTest;
+  private AndroidDevice device;
+
 
   @Override
   public String getServerVersion() {
-    String version="dev";
-//TODO ddary read version number from jar
+    String version = "dev";
+    // TODO ddary read version number from jar
     return version;
   }
 
@@ -37,5 +43,5 @@ public class SelendroidDriver implements Versionable{
     return null;
   }
 
-  
+
 }

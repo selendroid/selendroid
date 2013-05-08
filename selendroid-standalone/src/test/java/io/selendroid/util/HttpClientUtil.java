@@ -1,4 +1,5 @@
-package io.selendroid.server.support;
+package io.selendroid.util;
+
 
 
 import org.apache.commons.io.IOUtils;

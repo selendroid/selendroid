@@ -1,7 +1,7 @@
 package io.selendroid.server;
 
-import io.selendroid.server.support.HttpClientUtil;
-import io.selendroid.server.support.SelendroidAssert;
+import io.selendroid.util.HttpClientUtil;
+import io.selendroid.util.SelendroidAssert;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;

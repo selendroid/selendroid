@@ -14,71 +14,18 @@
 package io.selendroid.android;
 
 import io.selendroid.exceptions.ShellCommandException;
-import io.selendroid.io.ShellCommand;
 
-import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+public interface AndroidApp {
 
-import org.openqa.selendroid.exceptions.SelendroidException;
+  public abstract String getBasePackage();
 
+  public abstract String getMainActivity();
 
-public class AndroidApp {
-  private File apkFile;
-  private String mainPackage = null;
-  private String mainActivity = null;
-
-  public AndroidApp(File apkFile) {
-    this.apkFile = apkFile;
-  }
-
-  private String extractApkDetails(String regex) throws ShellCommandException {
-    String line = AndroidSdk.aapt() + " dump badging " + apkFile.getAbsolutePath();
-    String output = ShellCommand.exec(line);
-
-    Pattern pattern = Pattern.compile(regex);
-    Matcher matcher = pattern.matcher(output);
-    if (matcher.find()) {
-      return matcher.group(1);
-    }
-
-    return null;
-  }
-
-  public String getBasePackage() {
-    if (mainPackage == null) {
-      try {
-        mainPackage = extractApkDetails("package: name='(.*?)'");
-      } catch (ShellCommandException e) {
-        throw new SelendroidException("The base package name of the apk " + apkFile.getName()
-            + " cannot be extracted.");
-      }
-
-    }
-    return mainPackage;
-  }
-
-  public String getMainActivity() {
-    if (mainActivity == null) {
-      try {
-        mainActivity = extractApkDetails("launchable-activity: name='(.*?)'");
-      } catch (ShellCommandException e) {
-        throw new SelendroidException("The main activity of the apk " + apkFile.getName()
-            + " cannot be extracted.");
-      }
-    }
-    return mainActivity;
-  }
-
-  public void deleteFileFromWithinApk(String file) throws ShellCommandException {
-    String line = AndroidSdk.aapt() + " remove " + apkFile.getAbsolutePath() + " " + file;
-    ShellCommand.exec(line);
-  }
+  public abstract void deleteFileFromWithinApk(String file) throws ShellCommandException;
 
   /**
    * For testing only
    */
-  public String getAbsolutePath() {
-    return apkFile.getAbsolutePath();
-  }
+  public abstract String getAbsolutePath();
+
 }

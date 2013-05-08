@@ -13,10 +13,18 @@
  */
 package io.selendroid.android;
 
-public interface AndroidEmulator {
+public interface AndroidDevice {
+  public boolean isDeviceReady();
 
-  public abstract String createEmulator();
+  public void install(AndroidApp app);
 
-  public abstract boolean isEmulatorAlreadyExistent();
+  public void uninstall(AndroidApp app);
 
+  public void clearUserData(AndroidApp app);
+
+  public void startSelendroid(AndroidApp aut, int port);
+  
+  public boolean isSelendroidRunning();
+  
+  public int getSelendroidsPort();
 }

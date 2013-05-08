@@ -16,6 +16,7 @@ package io.selendroid.builder;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.JavaSdk;
+import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
@@ -65,7 +66,7 @@ public class SelendroidServerBuilder {
   }
 
   /* package */void init(String apkName) throws IOException, ShellCommandException {
-    applicationUnderTest = new AndroidApp(new File(apkName));
+    applicationUnderTest = new DefaultAndroidApp(new File(apkName));
     File customizedServer = File.createTempFile("selendroid-server", ".apk");
 
     log.info("Creating customized Selendroid-server: " + customizedServer.getAbsolutePath());
@@ -73,7 +74,7 @@ public class SelendroidServerBuilder {
 
     IOUtils.copy(is, new FileOutputStream(customizedServer));
     IOUtils.closeQuietly(is);
-    selendroidServer = new AndroidApp(customizedServer);
+    selendroidServer = new DefaultAndroidApp(customizedServer);
   }
 
   public void createSelendroidServer(String apkName) throws IOException, ShellCommandException {

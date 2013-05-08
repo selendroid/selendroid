@@ -17,11 +17,13 @@ import io.selendroid.exceptions.ShellCommandException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.util.StringUtils;
 
 public class ShellCommand {
   private static final Logger log = Logger.getLogger(ShellCommand.class.getName());
@@ -41,5 +43,11 @@ public class ShellCommand {
           + outputStream.toString());
     }
     return (outputStream.toString());
+  }
+
+  public static String exec(List<String> command) throws ShellCommandException {
+    String cmd = StringUtils.toString(command.toArray(new String[command.size()]), " ");
+
+    return exec(cmd);
   }
 }
