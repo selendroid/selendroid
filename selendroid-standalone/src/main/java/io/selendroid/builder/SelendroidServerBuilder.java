@@ -16,7 +16,6 @@ package io.selendroid.builder;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.JavaSdk;
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
@@ -37,6 +36,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.openqa.selendroid.exceptions.SelendroidException;
 
 public class SelendroidServerBuilder {
   public static final String SELENDROID_TEST_APP_PACKAGE = "org.openqa.selendroid.testapp";

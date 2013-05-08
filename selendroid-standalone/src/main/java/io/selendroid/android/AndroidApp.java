@@ -13,13 +13,14 @@
  */
 package io.selendroid.android;
 
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.openqa.selendroid.exceptions.SelendroidException;
 
 
 public class AndroidApp {

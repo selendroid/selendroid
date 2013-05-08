@@ -12,6 +12,7 @@
 		<module>selendroid-test-app</module>
 		<module>selendroid-client</module>
 		<module>selendroid-server-common</module>
+                <module>selendroid-standalone</module>
 	</modules>
 
 	<properties>

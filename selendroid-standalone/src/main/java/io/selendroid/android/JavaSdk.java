@@ -13,10 +13,11 @@
  */
 package io.selendroid.android;
 
-import io.selendroid.exceptions.SelendroidException;
 import static io.selendroid.android.AndroidSdk.platformExecutableSuffix;
 
 import java.io.File;
+
+import org.openqa.selendroid.exceptions.SelendroidException;
 
 public class JavaSdk {
   public static String javaHome() {

@@ -40,9 +40,9 @@
 			<type>apk</type>
 		</dependency>
 		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>6.2.1</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
