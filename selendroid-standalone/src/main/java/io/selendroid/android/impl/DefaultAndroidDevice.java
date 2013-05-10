@@ -59,7 +59,10 @@ public class DefaultAndroidDevice implements AndroidDevice {
     }
     command.add("shell");
     command.add("getprop init.svc.bootanim");
-    String bootAnimDisplayed = executeCommand(command);
+    String bootAnimDisplayed = null;
+    try {
+      bootAnimDisplayed = ShellCommand.exec(command);
+    } catch (ShellCommandException e) {}
     if (bootAnimDisplayed != null && bootAnimDisplayed.contains("stopped")) {
       return true;
     }

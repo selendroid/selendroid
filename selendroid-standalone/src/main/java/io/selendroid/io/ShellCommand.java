@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteResultHandler;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.exec.util.StringUtils;
 
@@ -50,4 +52,19 @@ public class ShellCommand {
 
     return exec(cmd);
   }
+
+  public static void execAsync(List<String> command) throws ShellCommandException {
+    String cmd = StringUtils.toString(command.toArray(new String[command.size()]), " ");
+
+    log.info("executing async command: " + command);
+    CommandLine commandline = CommandLine.parse(cmd);
+    DefaultExecutor exec = new DefaultExecutor();
+    ExecuteResultHandler handler = new DefaultExecuteResultHandler();
+    try {
+      exec.execute(commandline, handler);
+    } catch (Exception e) {
+      throw new ShellCommandException("An error occured while executing shell command: ");
+    }
+  }
+
 }

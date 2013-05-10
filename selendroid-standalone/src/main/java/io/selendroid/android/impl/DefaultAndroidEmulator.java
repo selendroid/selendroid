@@ -23,6 +23,8 @@ import io.selendroid.io.ShellCommand;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +36,7 @@ import org.openqa.selendroid.exceptions.SelendroidException;
 import com.beust.jcommander.internal.Lists;
 
 public class DefaultAndroidEmulator extends DefaultAndroidDevice implements AndroidEmulator {
+  private static final Logger log = Logger.getLogger(DefaultAndroidEmulator.class.getName());
   public static final String ANDROID_EMULATOR_HARDWARE_CONFIG = "hardware-qemu.ini";
   public static final String FILE_LOCKING_SUFIX = ".lock";
   private String screenSize;
@@ -53,7 +56,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
     }
 
     this.screenSize = screenSize;
-
+    this.avdRootFolder = avdFilePath;
     this.targetPlatform = DeviceTargetPlatform.fromInt(target);
   }
 
@@ -117,7 +120,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
   public boolean isEmulatorAlreadyExistent() {
     File emulatorFolder =
         new File(FileUtils.getUserDirectory(), File.separator + ".android" + File.separator + "avd"
-            + File.separator + getAvdName());
+            + File.separator + getAvdName() + ".avd");
     return emulatorFolder.exists();
   }
 
@@ -185,5 +188,34 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
   public String toString() {
     return "DefaultAndroidEmulator [screenSize=" + screenSize + ", targetPlatform="
         + targetPlatform + ", avdName=" + avdName + "]";
+  }
+
+  @Override
+  public void startEmulator(Locale locale) {
+    if (isEmulatorStarted()) {
+      throw new SelendroidException("Error - Android emulator is already started " + this);
+    }
+    List<String> cmd = Lists.newArrayList();
+
+    cmd.add(AndroidSdk.emulator());
+    cmd.add("-avd");
+    cmd.add(avdName);
+    cmd.add("-prop");
+    cmd.add("persist.sys.language=" + locale.getLanguage());
+    cmd.add("-prop");
+    cmd.add("persist.sys.country=" + locale.getCountry());
+    long start = System.currentTimeMillis();
+    try {
+      ShellCommand.execAsync(cmd);
+    } catch (ShellCommandException e) {
+      throw new SelendroidException("unable to start the emulator: " + this);
+    }
+    while (isDeviceReady() == false) {
+      try {
+        Thread.sleep(2000);
+      } catch (InterruptedException e) {}
+    }
+    log.info("Emulator start took: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
+    log.info("Please have in mind, starting an emulator takes usually about 45 seconds.");
   }
 }

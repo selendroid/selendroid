@@ -16,6 +16,7 @@ package io.selendroid.android;
 import io.selendroid.exceptions.AndroidDeviceException;
 
 import java.io.File;
+import java.util.Locale;
 
 import org.openqa.selendroid.device.DeviceTargetPlatform;
 
@@ -36,4 +37,6 @@ public interface AndroidEmulator {
   public String getScreenSize();
 
   public DeviceTargetPlatform getTargetPlatform();
+  
+  public void startEmulator(Locale locale);
 }
