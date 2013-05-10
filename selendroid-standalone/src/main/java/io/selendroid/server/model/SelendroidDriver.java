@@ -15,28 +15,45 @@ package io.selendroid.server.model;
 
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
+import io.selendroid.android.AndroidDevice;
+import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.impl.DefaultAndroidApp;
+import io.selendroid.android.impl.DefaultAndroidEmulator;
+import io.selendroid.exceptions.AndroidDeviceException;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.xerces.impl.dtd.models.DFAContentModel;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selendroid.SelendroidCapabilities;
+import org.openqa.selendroid.device.DeviceTargetPlatform;
 import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.Versionable;
+import org.openqa.selenium.SessionNotCreatedException;
 
 public class SelendroidDriver implements Versionable {
   private static final Logger log = Logger.getLogger(SelendroidDriver.class.getName());
   private Map<String, AndroidApp> apps = new HashMap<String, AndroidApp>();
+  private Map<String, AndroidApp> selendroidServes = new HashMap<String, AndroidApp>();
   private Map<String, ActiveSession> sessions = new HashMap<String, ActiveSession>();
+  private DeviceStore deviceStore = null;
 
   public SelendroidDriver(SelendroidConfiguration serverConfiguration) {
-    init(serverConfiguration);
+    initApplicationsUnderTest(serverConfiguration);
   }
 
-  /* package */void init(SelendroidConfiguration serverConfiguration) {
+  /**
+   * For testing only
+   */
+  /* package */SelendroidDriver() {}
+
+  /* package */void initApplicationsUnderTest(SelendroidConfiguration serverConfiguration) {
     if (serverConfiguration.getSupportedApps() == null
         || serverConfiguration.getSupportedApps().isEmpty()) {
       throw new SelendroidException("Configuration error - no apps has been configured.");
@@ -67,6 +84,12 @@ public class SelendroidDriver implements Versionable {
     }
   }
 
+  /* package */void initAndroidDevices() throws AndroidDeviceException {
+    deviceStore = new DeviceStore();
+    List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
+    deviceStore.addEmulators(emulators);
+  }
+
   @Override
   public String getServerVersion() {
     String version = "dev";
@@ -86,8 +109,44 @@ public class SelendroidDriver implements Versionable {
     return null;
   }
 
-  public String createNewTestSession(JSONObject desiredCapabilities) {
+  public String createNewTestSession(JSONObject caps) {
+    SelendroidCapabilities desiredCapabilities = null;
+    try {
+      desiredCapabilities = new SelendroidCapabilities(caps);
+    } catch (JSONException e) {
+      throw new SelendroidException("Desired capabilities cannot be parsed.");
+    }
+    AndroidApp app = apps.get(desiredCapabilities.getAut());
+    if (app == null) {
+      throw new SessionNotCreatedException(
+          "The requested application under test is not configured in selendroid server.");
+    }
+    try {
+      AndroidDevice device = getAndroidDevice(desiredCapabilities);
+    } catch (AndroidDeviceException e) {
+      SessionNotCreatedException error =
+          new SessionNotCreatedException("Error occured while finding android device: "
+              + e.getMessage());
+      log.severe(error.getMessage());
+      throw error;
+    }
+
     return null;
+  }
+
+  /* package */AndroidDevice getAndroidDevice(SelendroidCapabilities caps)
+      throws AndroidDeviceException {
+    AndroidDevice device = null;
+    if (caps.getEmulator()) {
+      device = deviceStore.findAndroidDevice(caps);
+      if (!device.isDeviceReady()) {
+        log.severe("Error - Emulator that should be switched off seems to run; " + device);
+      }
+    } else {
+      throw new AndroidDeviceException(
+          "Currently only emulators are supported in selendroid standalone.");
+    }
+    return device;
   }
 
   /**

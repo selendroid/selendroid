@@ -19,7 +19,8 @@ public class SelendroidDriverTests {
   public void testShouldBeAbleToInitDriver() throws Exception {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
-    SelendroidDriver driver = new SelendroidDriver(conf);
+    SelendroidDriver driver = new SelendroidDriver();
+    driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
 
@@ -28,14 +29,16 @@ public class SelendroidDriverTests {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
-    SelendroidDriver driver = new SelendroidDriver(conf);
+    SelendroidDriver driver = new SelendroidDriver();
+    driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
 
   @Test
   public void testShouldNotbBeAbleInitDriverWithoutAnyConfig() {
+    SelendroidDriver driver = new SelendroidDriver();
     try {
-      new SelendroidDriver(new SelendroidConfiguration());
+      driver.initApplicationsUnderTest(new SelendroidConfiguration());
     } catch (SelendroidException e) {
       Assert.assertEquals("Configuration error - no apps has been configured.", e.getMessage());
     }
@@ -45,8 +48,9 @@ public class SelendroidDriverTests {
   public void testShouldnotBeAbleToInitDriverIfNoValidAppIsAvailable() throws Exception {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
+    SelendroidDriver driver = new SelendroidDriver();
     try {
-      new SelendroidDriver(conf);
+      driver.initApplicationsUnderTest(conf);
       Assert
           .fail("With complete invalid app configuration the driver should not be able to initialize.");
     } catch (SelendroidException e) {

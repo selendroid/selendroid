@@ -11,29 +11,19 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.android;
+package org.openqa.selendroid.device;
 
-import io.selendroid.exceptions.AndroidDeviceException;
+public enum DeviceType {
+  PHONE, EMULATOR;
 
-import java.io.File;
-
-import org.openqa.selendroid.device.DeviceTargetPlatform;
-
-public interface AndroidEmulator {
-
-  public String createEmulator() throws AndroidDeviceException;
-
-  public boolean isEmulatorAlreadyExistent() throws AndroidDeviceException;
-
-  public boolean isEmulatorStarted() throws AndroidDeviceException;
-
-  public Abi getAbi();
-
-  public String getAvdName();
-
-  public File getAvdRootFolder();
-
-  public String getScreenSize();
-
-  public DeviceTargetPlatform getTargetPlatform();
+  public static DeviceType fromString(String text) {
+    if (text != null) {
+      for (DeviceType b : DeviceType.values()) {
+        if (text.equalsIgnoreCase(b.name())) {
+          return b;
+        }
+      }
+    }
+    return null;
+  }
 }

@@ -11,29 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.android;
+package io.selendroid.exceptions;
 
-import io.selendroid.exceptions.AndroidDeviceException;
+public class AndroidDeviceException extends Exception {
+  private static final long serialVersionUID = 5431510243540521938L;
 
-import java.io.File;
+  public AndroidDeviceException(String message) {
+    super(message);
+  }
 
-import org.openqa.selendroid.device.DeviceTargetPlatform;
+  public AndroidDeviceException(Throwable t) {
+    super(t);
+  }
 
-public interface AndroidEmulator {
-
-  public String createEmulator() throws AndroidDeviceException;
-
-  public boolean isEmulatorAlreadyExistent() throws AndroidDeviceException;
-
-  public boolean isEmulatorStarted() throws AndroidDeviceException;
-
-  public Abi getAbi();
-
-  public String getAvdName();
-
-  public File getAvdRootFolder();
-
-  public String getScreenSize();
-
-  public DeviceTargetPlatform getTargetPlatform();
+  public AndroidDeviceException(String message, Throwable t) {
+    super(message, t);
+  }
 }

@@ -36,20 +36,27 @@ import com.beust.jcommander.internal.Lists;
 
 public class DefaultAndroidDevice implements AndroidDevice {
   public static final String WD_STATUS_ENDPOINT = "http://127.0.0.1:8080/wd/hub/status";
-  protected String serial;
+  protected String serial = null;
   protected Integer port = null;
 
   public DefaultAndroidDevice(String serial) {
     this.serial = serial;
   }
 
+  protected DefaultAndroidDevice() {}
+
+  protected boolean isSerialConfigured() {
+    return serial != null && serial.isEmpty() == false;
+  }
+
   @Override
   public boolean isDeviceReady() {
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
-    command.add("-s");
-    command.add(serial);
-
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
     command.add("shell");
     command.add("getprop init.svc.bootanim");
     String bootAnimDisplayed = executeCommand(command);
@@ -63,8 +70,10 @@ public class DefaultAndroidDevice implements AndroidDevice {
   public void install(AndroidApp app) {
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
-    command.add("-s");
-    command.add(serial);
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
     command.add("install");
     command.add("-r");
     command.add(app.getAbsolutePath());
@@ -85,8 +94,10 @@ public class DefaultAndroidDevice implements AndroidDevice {
   public void uninstall(AndroidApp app) {
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
-    command.add("-s");
-    command.add(serial);
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
     command.add("uninstall");
     command.add(app.getBasePackage());
 
@@ -97,8 +108,10 @@ public class DefaultAndroidDevice implements AndroidDevice {
   public void clearUserData(AndroidApp app) {
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
-    command.add("-s");
-    command.add(serial);
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
     command.add("shell");
     command.add("pm");
     command.add("clear");
@@ -111,8 +124,10 @@ public class DefaultAndroidDevice implements AndroidDevice {
     this.port = port;
     List<String> command = Lists.newArrayList();
     command.add(AndroidSdk.adb());
-    command.add("-s");
-    command.add(serial);
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
     command.add("shell");
     command.add("am");
     command.add("instrument");
@@ -128,8 +143,10 @@ public class DefaultAndroidDevice implements AndroidDevice {
   private void forwardSelendroidPort(int port) {
     List<String> command = Lists.newArrayList();
     command.add(AndroidSdk.adb());
-    command.add("-s");
-    command.add(serial);
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
     command.add("forward");
     command.add("tcp:" + port);
     command.add("tcp:8080");
@@ -169,4 +186,18 @@ public class DefaultAndroidDevice implements AndroidDevice {
     return port;
   }
 
+  public Integer getDeviceTargetPlatform() {
+    List<String> command = Lists.newArrayList();
+    command.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
+    command.add("shell");
+    command.add("getprop");
+    command.add("ro.build.version.sdk");
+
+    String output = executeCommand(command);
+    return Integer.parseInt(output);
+  }
 }
