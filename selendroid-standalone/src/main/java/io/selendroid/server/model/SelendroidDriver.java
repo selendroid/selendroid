@@ -18,6 +18,7 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.impl.DefaultAndroidApp;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -38,20 +39,31 @@ public class SelendroidDriver implements Versionable {
   /* package */void init(SelendroidConfiguration serverConfiguration) {
     if (serverConfiguration.getSupportedApps() == null
         || serverConfiguration.getSupportedApps().isEmpty()) {
-      throw new SelendroidException("Configuration error.");
+      throw new SelendroidException("Configuration error - no apps has been configured.");
     }
     for (String appPath : serverConfiguration.getSupportedApps()) {
       File file = new File(appPath);
       if (file.exists()) {
         AndroidApp app = new DefaultAndroidApp(file);
-        String appId = app.getAppId();
-        if (!apps.containsKey(appId)) {
+        String appId = null;
+        try {
+          appId = app.getAppId();
+        } catch (SelendroidException e) {
+          log.info("Ignoring app because an error occured reading the app details: "
+              + file.getAbsolutePath());
+          log.info(e.getMessage());
+        }
+        if (appId != null && !apps.containsKey(appId)) {
           apps.put(appId, app);
           log.info("App " + appId + " has been added to selendroid standalone server.");
         }
       } else {
-        throw new SelendroidException("Provided app was not found: " + file.getAbsolutePath());
+        log.info("Ignoring app because it was not found: " + file.getAbsolutePath());
       }
+    }
+    if (apps.isEmpty()) {
+      throw new SelendroidException(
+          "Fatal error initializing SelendroidDriver: configured app(s) were not been found.");
     }
   }
 
@@ -78,5 +90,10 @@ public class SelendroidDriver implements Versionable {
     return null;
   }
 
-
+  /**
+   * For testing only
+   */
+  /* package */Map<String, AndroidApp> getConfiguredApps() {
+    return Collections.unmodifiableMap(apps);
+  }
 }
