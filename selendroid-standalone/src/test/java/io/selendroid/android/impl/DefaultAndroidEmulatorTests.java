@@ -23,11 +23,13 @@ public class DefaultAndroidEmulatorTests {
         new DefaultAndroidEmulator("l10n", "X86", "320x480", "16", new File(
             FileUtils.getUserDirectory(), ".android" + File.separator + "avd" + File.separator
                 + "l10n.avd"));
-    
-    System.out.println(emulator.getAvdRootFolder().getAbsolutePath());
+
+
     Assert.assertTrue("expecting emulators exists: ", emulator.isEmulatorAlreadyExistent());
     Assert.assertFalse("expecting emulator is not yet started: ", emulator.isEmulatorStarted());
     emulator.startEmulator(new Locale("en_GB"));
     Assert.assertTrue(emulator.isEmulatorStarted());
+    emulator.stopEmulator();
+    Assert.assertFalse(emulator.isEmulatorStarted());
   }
 }

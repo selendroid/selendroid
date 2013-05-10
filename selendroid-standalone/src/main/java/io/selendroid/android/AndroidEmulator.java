@@ -37,6 +37,8 @@ public interface AndroidEmulator {
   public String getScreenSize();
 
   public DeviceTargetPlatform getTargetPlatform();
-  
+
   public void startEmulator(Locale locale);
+
+  public void stopEmulator() throws AndroidDeviceException;
 }

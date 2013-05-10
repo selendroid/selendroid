@@ -218,4 +218,22 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
     log.info("Emulator start took: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
     log.info("Please have in mind, starting an emulator takes usually about 45 seconds.");
   }
+
+  @Override
+  public void stopEmulator() throws AndroidDeviceException {
+    List<String> command = new ArrayList<String>();
+    command.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
+    command.add("emu");
+    command.add("kill");
+
+    try {
+      ShellCommand.exec(command);
+    } catch (ShellCommandException e) {
+      throw new AndroidDeviceException(e);
+    }
+  }
 }
