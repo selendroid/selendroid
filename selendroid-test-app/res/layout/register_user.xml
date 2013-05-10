@@ -16,8 +16,10 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/label_username"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:contentDescription="label_usernameCD"
             android:text="@string/label_username"
             android:textStyle="bold" />
 
