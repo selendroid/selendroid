@@ -197,7 +197,7 @@ public abstract class AbstractNativeElementContext
                 currentActivity.getPackageName());
         if (intId > 0) {
           View view = currentActivity.findViewById(intId);
-          
+
           if (viewAnalyzer.isViewChieldOfCurrentRootView(view)) {
             elements.add(newAndroidElement(view));
           }
@@ -364,13 +364,7 @@ public abstract class AbstractNativeElementContext
       filtered.add(newAndroidElement((View) v));
     }
 
-    if (filtered.isEmpty()) {
-      throw new NoSuchElementException("No elements were found.");
-    }
-
     return filtered;
-
-
   }
 
   protected abstract View getRootView();

@@ -2,6 +2,10 @@ language: java
 
 notifications:
   email: false
+  
+branches:
+  only:
+    - master  
 
 before_install:
   - sudo apt-get update -qq
