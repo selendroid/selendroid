@@ -54,6 +54,7 @@ public class SelendroidServer {
     webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
     webServer.add("/wd/hub/status", new StatusServlet(driver));
     webServer.add(new SelendroidServlet(driver));
+    webServer.staleConnectionTimeout(5 * 60 * 1000);
   }
 
   protected SelendroidDriver initializeSelendroidServer() throws AndroidSdkException {
