@@ -5,34 +5,34 @@ notifications:
   
 branches:
   only:
-    - master  
+    - master
 
 before_install:
   - sudo apt-get update -qq
   - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch > /dev/null; fi
-  - wget http://dl.google.com/android/android-sdk_r22-linux.tgz
+  - wget http://dl.google.com/android/android-sdk_r21-linux.tgz
   - tar -zxf android-sdk_r21-linux.tgz
   - export ANDROID_HOME=`pwd`/android-sdk-linux
-  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/build-tools:${ANDROID_HOME}/platform-tools  
-  - android update sdk --filter platform-tools,build-tools,android-16  --no-ui --force #,android-10,sysimg-16
-#  - echo no | android create avd -n emulator16Uk -t android-16 --skin 320x480 --abi x86 --force
+  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
+  - android update sdk --filter platform-tools,android-16 --no-ui --force #,android-10,sysimg-16
+# - echo no | android create avd -n emulator16Uk -t android-16 --skin 320x480 --abi x86 --force
 
 before_script:
-#  - "export DISPLAY=:99.0"
-#  - "sh -e /etc/init.d/xvfb start"
-#  - sleep 3 # give xvfb some time to start
-#  - emulator -avd emulator16Uk -prop persist.sys.language=en -prop persist.sys.country=UK -noaudio -no-boot-anim &
-#  - sleep 5 # give the emulator some time to start, otherwise the script will fail
-#  - ./wait_for_emulator.sh 
+# - "export DISPLAY=:99.0"
+# - "sh -e /etc/init.d/xvfb start"
+# - sleep 3 # give xvfb some time to start
+# - emulator -avd emulator16Uk -prop persist.sys.language=en -prop persist.sys.country=UK -noaudio -no-boot-anim &
+# - sleep 5 # give the emulator some time to start, otherwise the script will fail
+# - ./wait_for_emulator.sh
 
 #script:
-#  - mvn install
-#  - adb kill-server
-#  - adb start-server
-#  - adb devices
-#  - adb install selendroid-server/target/selendroid-server-0.4-SNAPSHOT.apk
-#  - adb install selendroid-test-app/target/selendroid-test-app-0.4-SNAPSHOT.apk
-#  - ./selendroid-server/start-server.sh 
-#  - cd selendroid-test-app
-#  - mvn install -DskipTests=false -DtestngGroups=native
+# - mvn install
+# - adb kill-server
+# - adb start-server
+# - adb devices
+# - adb install selendroid-server/target/selendroid-server-0.4-SNAPSHOT.apk
+# - adb install selendroid-test-app/target/selendroid-test-app-0.4-SNAPSHOT.apk
+# - ./selendroid-server/start-server.sh
+# - cd selendroid-test-app
+# - mvn install -DskipTests=false -DtestngGroups=native
  # - mvn install -DskipTests=false -DtestngGroups=webview
