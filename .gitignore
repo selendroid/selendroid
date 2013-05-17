@@ -1,5 +1,6 @@
 .classpath
 .settings/
+*.project
 .metadata
 *.irb-history
 test-output/

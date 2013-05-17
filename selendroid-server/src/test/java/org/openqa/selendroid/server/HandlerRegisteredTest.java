@@ -40,7 +40,7 @@ public class HandlerRegisteredTest extends BaseTest {
     payload.put("using", "id");
     payload.put("value", "my_button_bar");
 
-    String url = "http://localhost:" + port + "/wd/hub/session/1234567890/element";
+    String url = "http://" + host + ":" + port + "/wd/hub/session/1234567890/element";
     HttpResponse response = executeRequestWithPayload(url, HttpMethod.GET, payload.toString());
     SelendroidAssert.assertResponseIsOk(response);
     Assert.assertEquals(
@@ -50,7 +50,7 @@ public class HandlerRegisteredTest extends BaseTest {
 
   @Test
   public void postClickHandlerRegistered() throws Exception {
-    String url = "http://localhost:" + port + "/wd/hub/session/12345/element/815/click";
+    String url = "http://" + host + ":" + port + "/wd/hub/session/12345/element/815/click";
     HttpResponse response = executeRequest(url, HttpMethod.POST);
     SelendroidAssert.assertResponseIsOk(response);
     Assert.assertEquals("{\"status\":0,\"value\":\"sessionId#12345 elementId#815\"}",
@@ -59,7 +59,7 @@ public class HandlerRegisteredTest extends BaseTest {
 
   @Test
   public void postStatusHandlerNotRegistered() throws Exception {
-    String url = "http://localhost:" + port + "/wd/hub/session/1234567890/element";
+    String url = "http://" + host + ":" + port + "/wd/hub/session/1234567890/element";
     HttpResponse response = executeRequest(url, HttpMethod.POST);
     SelendroidAssert.assertResponseIsServerError(response);
   }

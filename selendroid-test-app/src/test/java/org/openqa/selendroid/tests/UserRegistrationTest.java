@@ -41,32 +41,32 @@ public class UserRegistrationTest extends BaseAndroidTest {
     verifyUser(user);
   }
 
+
+  // ((HasInputDevices) driver).getKeyboard().sendKeys(SelendroidKeys.MENU);
+  // Thread.sleep(500);
+  // driver.findElement(By.linkText("User Registration Settings")).click();
+  // driver.findElement(By.linkText("I agree")).click();
   private void registerUser(UserDO user) throws Exception {
     WebElement button = driver.findElement(By.id("startUserRegistration"));
     takeScreenShot("Main Activity started.");
     button.click();
-
-    WebDriverWait wait = new WebDriverWait(driver, 5);
-    WebElement inputUsername =
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
-
-    ((HasInputDevices) driver).getKeyboard().sendKeys(SelendroidKeys.MENU);
-    Thread.sleep(500);
-    driver.findElement(By.linkText("User Registration Settings")).click();
-    driver.findElement(By.linkText("I agree")).click();
-    inputUsername.sendKeys(user.getUsername());
-    driver.findElement(By.id("inputEmail")).sendKeys(user.getEmail());
-    driver.findElement(By.id("inputPassword")).sendKeys(user.getPassword());
+    driver.findElement(By.id("inputUsername")).sendKeys(user.getUsername());
     WebElement nameInput = driver.findElement(By.id("inputName"));
     Assert.assertEquals(nameInput.getText(), "Mr. Burns");
     nameInput.clear();
+    nameInput.sendKeys(user.getName());
+    driver.findElement(By.id("btnRegisterUser")).click();
+
+
+    driver.findElement(By.id("inputEmail")).sendKeys(user.getEmail());
+    driver.findElement(By.id("inputPassword")).sendKeys(user.getPassword());
     try {
       nameInput.submit();
       Assert.fail("submit is not supported by SelendroidNativeDriver");
     } catch (WebDriverException e) {
       // expected behavior
     }
-    nameInput.sendKeys(user.getName());
+
     driver.findElement(By.id("input_preferedProgrammingLanguage")).click();
     driver.findElement(By.linkText(user.getProgrammingLanguage().getValue())).click();
     WebElement acceptAddsCheckbox = driver.findElement(By.id("input_adds"));

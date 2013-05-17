@@ -13,6 +13,8 @@
  */
 package io.selendroid.android;
 
+import io.selendroid.exceptions.AndroidSdkException;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
@@ -34,59 +36,79 @@ public class AndroidSdk {
     return adbCommand.toString();
   }
 
-  public static String aapt() {
-    StringBuffer adbCommand = new StringBuffer();
-    adbCommand.append(platformToolsHome());
-    adbCommand.append("aapt");
-    adbCommand.append(platformExecutableSuffix());
-    return adbCommand.toString();
+  public static String aapt() throws AndroidSdkException {
+    StringBuffer command = new StringBuffer();
+    command.append("aapt");
+    command.append(platformExecutableSuffix());
+    File platformToolsAapt = new File(platformToolsHome() + command.toString());
+    if (platformToolsAapt.exists()) {
+      return platformToolsAapt.getAbsolutePath();
+    }
+    File buildToolsAapt = new File(buildToolsHome() + command.toString());
+    if (buildToolsAapt.exists()) {
+      return buildToolsAapt.getAbsolutePath();
+    }
+
+    throw new AndroidSdkException(
+        "Command 'aapt' was not found inside the Android SDK. Please update to the latest development tools and try again.");
   }
 
   public static String android() {
-    StringBuffer adbCommand = new StringBuffer();
-    adbCommand.append(toolsHome());
-    adbCommand.append("android");
-    adbCommand.append(platformExecutableSuffix());
-    return adbCommand.toString();
+    StringBuffer command = new StringBuffer();
+    command.append(toolsHome());
+    command.append("android");
+    command.append(platformExecutableSuffix());
+    return command.toString();
   }
 
   public static String emulator() {
-    StringBuffer adbCommand = new StringBuffer();
-    adbCommand.append(toolsHome());
-    adbCommand.append("emulator");
-    adbCommand.append(platformExecutableSuffix());
-    return adbCommand.toString();
+    StringBuffer command = new StringBuffer();
+    command.append(toolsHome());
+    command.append("emulator");
+    command.append(platformExecutableSuffix());
+    return command.toString();
   }
 
   private static String toolsHome() {
-    StringBuffer adbCommand = new StringBuffer();
-    adbCommand.append(androidHome());
-    adbCommand.append(File.separator);
-    adbCommand.append("tools");
-    adbCommand.append(File.separator);
-    return adbCommand.toString();
+    StringBuffer command = new StringBuffer();
+    command.append(androidHome());
+    command.append(File.separator);
+    command.append("tools");
+    command.append(File.separator);
+    return command.toString();
+  }
+
+  private static String buildToolsHome() {
+    StringBuffer command = new StringBuffer();
+    command.append(androidHome());
+    command.append(File.separator);
+    command.append("build-tools");
+    command.append(File.separator);
+    command.append("17.0.0");
+    command.append(File.separator);
+
+    return command.toString();
   }
 
   private static String platformToolsHome() {
-    StringBuffer adbCommand = new StringBuffer();
-    adbCommand.append(androidHome());
-    adbCommand.append(File.separator);
-    adbCommand.append("platform-tools");
-    adbCommand.append(File.separator);
-    return adbCommand.toString();
+    StringBuffer command = new StringBuffer();
+    command.append(androidHome());
+    command.append(File.separator);
+    command.append("platform-tools");
+    command.append(File.separator);
+    return command.toString();
   }
 
   public static String androidHome() {
     String androidHome = System.getenv(ANDROID_HOME);
 
     if (androidHome == null) {
-      throw new SelendroidException("Environment variable '" + ANDROID_HOME
-          + "' was not found!");
+      throw new SelendroidException("Environment variable '" + ANDROID_HOME + "' was not found!");
     }
     return androidHome;
   }
 
-  /* package*/ static String platformExecutableSuffix() {
+  /* package */static String platformExecutableSuffix() {
     boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
     return isWindows ? ".exe" : "";
   }

@@ -15,6 +15,7 @@ package io.selendroid.android.impl;
 
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
@@ -38,7 +39,7 @@ public class DefaultAndroidApp implements AndroidApp {
     this.apkFile = apkFile;
   }
 
-  private String extractApkDetails(String regex) throws ShellCommandException {
+  private String extractApkDetails(String regex) throws ShellCommandException, AndroidSdkException {
     List<String> line = Lists.newArrayList();
     line.add(AndroidSdk.aapt());
     line.add("dump");
@@ -61,7 +62,7 @@ public class DefaultAndroidApp implements AndroidApp {
    * @see io.selendroid.android.impl.AndroidAppA#getBasePackage()
    */
   @Override
-  public String getBasePackage() {
+  public String getBasePackage() throws AndroidSdkException {
     if (mainPackage == null) {
       try {
         mainPackage = extractApkDetails("package: name='(.*?)'");
@@ -80,7 +81,7 @@ public class DefaultAndroidApp implements AndroidApp {
    * @see io.selendroid.android.impl.AndroidAppA#getMainActivity()
    */
   @Override
-  public String getMainActivity() {
+  public String getMainActivity() throws AndroidSdkException {
     if (mainActivity == null) {
       try {
         mainActivity = extractApkDetails("launchable-activity: name='(.*?)'");
@@ -98,7 +99,7 @@ public class DefaultAndroidApp implements AndroidApp {
    * @see io.selendroid.android.impl.AndroidAppA#deleteFileFromWithinApk(java.lang.String)
    */
   @Override
-  public void deleteFileFromWithinApk(String file) throws ShellCommandException {
+  public void deleteFileFromWithinApk(String file) throws ShellCommandException, AndroidSdkException {
     List<String> line = Lists.newArrayList();
     line.add(AndroidSdk.aapt());
     line.add("remove");
@@ -119,7 +120,7 @@ public class DefaultAndroidApp implements AndroidApp {
   }
 
   @Override
-  public String getVersionName() {
+  public String getVersionName() throws AndroidSdkException {
     if (versionName == null) {
       try {
         versionName = extractApkDetails("versionName='(.*?)'");
@@ -131,7 +132,7 @@ public class DefaultAndroidApp implements AndroidApp {
     return versionName;
   }
 
-  public String getAppId() {
+  public String getAppId() throws AndroidSdkException {
     return getBasePackage() + ":" + getVersionName();
   }
 }

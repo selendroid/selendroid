@@ -1,0 +1,161 @@
+package io.selendroid.server.support;
+
+import io.selendroid.android.Abi;
+import io.selendroid.android.AndroidApp;
+import io.selendroid.android.AndroidDevice;
+import io.selendroid.android.AndroidEmulator;
+import io.selendroid.exceptions.AndroidDeviceException;
+import io.selendroid.exceptions.AndroidSdkException;
+import io.selendroid.server.util.HttpClientUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+
+import org.apache.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.json.JSONObject;
+import org.openqa.selendroid.device.DeviceTargetPlatform;
+
+public class DeviceForTest implements AndroidEmulator, AndroidDevice {
+  public boolean deviceReady = false;
+  public SelendroidDeviceServerStub selendroidDeviceServerStub = null;
+  private final String screenSize;
+  private final DeviceTargetPlatform platform;
+  public TestSessionListener testSessionListener = null;
+
+  public DeviceForTest(DeviceTargetPlatform platform) {
+    screenSize = "320x480";
+    this.platform = platform;
+  }
+
+  public DeviceForTest(DeviceTargetPlatform platform, String screenSize) {
+    this.screenSize = screenSize;
+    this.platform = platform;
+  }
+
+  @Override
+  public boolean isDeviceReady() {
+    return deviceReady;
+  }
+
+  @Override
+  public void install(AndroidApp app) {
+    // do nothing
+  }
+
+  @Override
+  public void uninstall(AndroidApp app) throws AndroidSdkException {
+    // do nothing
+  }
+
+  @Override
+  public void clearUserData(AndroidApp app) throws AndroidSdkException {
+    if (selendroidDeviceServerStub != null) {
+      selendroidDeviceServerStub.stop();
+    }
+  }
+
+  @Override
+  public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
+    try {
+      selendroidDeviceServerStub = new SelendroidDeviceServerStub(port, testSessionListener);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public boolean isSelendroidRunning() {
+    if (selendroidDeviceServerStub == null) {
+      return false;
+    }
+    int status;
+
+    try {
+      HttpResponse r =
+          HttpClientUtil.executeRequest("http://localhost:" + selendroidDeviceServerStub.getPort()
+              + "/wd/hub/status", HttpMethod.GET);
+      JSONObject response = HttpClientUtil.parseJsonResponse(r);
+      status = response.getInt("status");
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    return 0 == status ? true : false;
+  }
+
+  @Override
+  public int getSelendroidsPort() {
+    if (selendroidDeviceServerStub != null) {
+      return selendroidDeviceServerStub.getPort();
+    }
+    return 0;
+  }
+
+  @Override
+  public String createEmulator() throws AndroidDeviceException {
+    return null;
+  }
+
+  @Override
+  public boolean isEmulatorAlreadyExistent() throws AndroidDeviceException {
+    return true;
+  }
+
+  @Override
+  public boolean isEmulatorStarted() throws AndroidDeviceException {
+    return false;
+  }
+
+  @Override
+  public Abi getAbi() {
+    return Abi.X86;
+  }
+
+  @Override
+  public String getAvdName() {
+    return "emulatorStub";
+  }
+
+  @Override
+  public File getAvdRootFolder() {
+    return null;
+  }
+
+  @Override
+  public String getScreenSize() {
+    return screenSize;
+  }
+
+  @Override
+  public DeviceTargetPlatform getTargetPlatform() {
+    return platform;
+  }
+
+  @Override
+  public void startEmulator(Locale locale) {
+    try {
+      Thread.sleep(500);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    deviceReady = true;
+  }
+
+  @Override
+  public void stopEmulator() throws AndroidDeviceException {
+    deviceReady = false;
+    selendroidDeviceServerStub.stop();
+    selendroidDeviceServerStub = null;
+  }
+
+  public boolean screenSizeMatches(String requestedScreenSize) {
+    // if screen size is not requested, just ignore it
+    if (requestedScreenSize == null || requestedScreenSize.isEmpty()) {
+      return true;
+    }
+
+    return getScreenSize().equals(requestedScreenSize);
+  }
+}

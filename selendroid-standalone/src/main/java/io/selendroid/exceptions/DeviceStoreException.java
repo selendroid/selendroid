@@ -11,26 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.android;
+package io.selendroid.exceptions;
 
-import io.selendroid.exceptions.AndroidSdkException;
+public class DeviceStoreException extends Exception {
+  private static final long serialVersionUID = 5431510243540521938L;
 
-public interface AndroidDevice {
-  public boolean isDeviceReady();
+  public DeviceStoreException(String message) {
+    super(message);
+  }
 
-  public void install(AndroidApp app);
+  public DeviceStoreException(Throwable t) {
+    super(t);
+  }
 
-  public void uninstall(AndroidApp app) throws AndroidSdkException;
-
-  public void clearUserData(AndroidApp app) throws AndroidSdkException;
-
-  public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException;
-
-  public boolean isSelendroidRunning();
-
-  public int getSelendroidsPort();
-
-  public String getScreenSize();
-
-  public boolean screenSizeMatches(String requestedScreenSize);
+  public DeviceStoreException(String message, Throwable t) {
+    super(message, t);
+  }
 }

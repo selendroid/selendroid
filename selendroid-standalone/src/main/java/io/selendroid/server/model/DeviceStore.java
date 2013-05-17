@@ -16,6 +16,7 @@ package io.selendroid.server.model;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.exceptions.AndroidDeviceException;
+import io.selendroid.exceptions.DeviceStoreException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import org.openqa.selendroid.exceptions.SelendroidException;
 
 public class DeviceStore {
   private static final Logger log = Logger.getLogger(DeviceStore.class.getName());
-  private Map<String, AndroidDevice> devicesInUse = new HashMap<String, AndroidDevice>();
+  private List<AndroidDevice> devicesInUse = new ArrayList<AndroidDevice>();
   private Map<DeviceTargetPlatform, List<AndroidDevice>> androidDevices =
       new HashMap<DeviceTargetPlatform, List<AndroidDevice>>();
 
@@ -69,14 +70,39 @@ public class DeviceStore {
     }
   }
 
-  public AndroidDevice findAndroidDevice(SelendroidCapabilities caps) {
-    throw new SelendroidException("NOT IMPLEMENTED YET");
+
+  public synchronized AndroidDevice findAndroidDevice(SelendroidCapabilities caps)
+      throws DeviceStoreException {
+    if (caps == null) {
+      throw new IllegalArgumentException("Error: capabilities are null");
+    }
+    if (androidDevices.isEmpty()) {
+      throw new DeviceStoreException(
+          "Fatal Error: Device Store does not contain any Android Device.");
+    }
+    DeviceTargetPlatform platform = DeviceTargetPlatform.valueOf(caps.getAndroidTarget());
+    if (!androidDevices.containsKey(platform)) {
+      throw new DeviceStoreException(
+          "Device store does not contain a device of requested platform: " + platform);
+    }
+    for (AndroidDevice device : androidDevices.get(platform)) {
+      if (device.isDeviceReady() == false && device.screenSizeMatches(caps.getScreenSize())) {
+        if (devicesInUse.contains(device)) {
+          continue;
+        }
+        devicesInUse.add(device);
+        return device;
+      }
+    }
+    throw new DeviceStoreException("No devices are found. " +
+    		"This can happen if the devices are in use or no device screen " +
+    		"matches the required capabilities.");
   }
 
   /**
    * For testing only
    */
-  /* package */Map<String, AndroidDevice> getDevicesInUse() {
+  /* package */List<AndroidDevice> getDevicesInUse() {
     return devicesInUse;
   }
 

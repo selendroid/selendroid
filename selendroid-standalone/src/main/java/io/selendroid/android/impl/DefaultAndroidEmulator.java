@@ -167,15 +167,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
     return avds;
   }
 
-  private static String extractValue(String regex, String output) {
-    Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-    Matcher matcher = pattern.matcher(output);
-    if (matcher.find()) {
-      return matcher.group(1);
-    }
 
-    return null;
-  }
 
   @Override
   public boolean isEmulatorStarted() {

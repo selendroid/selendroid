@@ -26,7 +26,7 @@ public class FindElementHandlerTest extends BaseTest {
     payload.put("using", "id");
     payload.put("value", "my_button_bar");
 
-    String url = "http://localhost:" + port + "/wd/hub/session/" + sessionId + "/element";
+    String url = "http://"+host+":" + port + "/wd/hub/session/" + sessionId + "/element";
     HttpResponse element = executeRequestWithPayload(url, HttpMethod.POST, payload.toString());
     SelendroidAssert.assertResponseIsOk(element);
   }

@@ -20,44 +20,66 @@ import org.json.JSONObject;
 import org.openqa.selendroid.server.Response;
 
 /**
- * Implementations are able to listen to the {@link SelendroidDeviceServerStub}
- * lifecycle.
+ * Implementations are able to listen to the {@link SelendroidDeviceServerStub} lifecycle.
  * 
  * @author ddary
  * 
  */
 public abstract class TestSessionListener {
-	public final String sessionId;
-	public final JSONObject status;
-	public final String uriMapping;
+  public static final String BROWSER_NAME = "browserName";
+  public static final String PLATFORM = "platform";
+  public static final String TAKES_SCREENSHOT = "takesScreenshot";
+  public static final String VERSION = "version";
+  public static final String ROTATABLE = "rotatable";
 
-	public TestSessionListener(String sessionId,String uriMapping) throws JSONException {
-		this.sessionId = sessionId;
-		status = new JSONObject(
-				"{build:{browserName:'selendroid',version:'0.4-SNAPSHOT'},"
-						+ "os:{arch:'x86',locale:'en_US',version:16,name:'Android'}");
-		this.uriMapping=uriMapping;
-	}
+  public final String sessionId;
+  public final JSONObject status;
+  public final String uriMapping;
 
-	public Response deleteSession(Properties params) {
-		return defaultResponseWithMessage("");
-	}
+  public TestSessionListener(String sessionId, String uriMapping) throws JSONException {
+    this.sessionId = sessionId;
+    status = new JSONObject();
+    JSONObject build = new JSONObject();
+    build.put("browserName", "selendroid");
+    build.put("version", "dev");
 
-	public Response status(Properties params) throws JSONException {
-		return defaultResponseWithMessage(status);
-	}
-	
-	public Response createSession(Properties params) throws JSONException {
-		return defaultResponseWithMessage("");
-	}
+    JSONObject os = new JSONObject();
+    os.put("arch", "x86");
+    os.put("locale", "en_US");
+    os.put("version", 16);
+    os.put("name", "Android");
+    status.put("build", build);
+    status.put("os", os);
 
-	public abstract Response executeSelendroidRequest(Properties params);
+    this.uriMapping = uriMapping;
+  }
 
-	protected Response defaultResponseWithMessage(Object message) {
-		return new Response(sessionId, message);
-	}
+  public Response deleteSession(Properties params) {
+    return defaultResponseWithMessage("");
+  }
 
-	protected Response defaultResponse() {
-		return defaultResponseWithMessage("");
-	}
+  public Response status(Properties params) throws JSONException {
+    return defaultResponseWithMessage(status);
+  }
+
+  public Response createSession(Properties params) throws JSONException {
+
+    JSONObject sessionCap = new JSONObject();
+    sessionCap.put(TAKES_SCREENSHOT, true);
+    sessionCap.put(BROWSER_NAME, "selendroid");
+    sessionCap.put(ROTATABLE, false);
+    sessionCap.put(PLATFORM, "android");
+    sessionCap.put(VERSION, "16");
+    return defaultResponseWithMessage(sessionCap);
+  }
+
+  public abstract Response executeSelendroidRequest(Properties params);
+
+  protected Response defaultResponseWithMessage(Object message) {
+    return new Response(sessionId, message);
+  }
+
+  protected Response defaultResponse() {
+    return defaultResponseWithMessage("");
+  }
 }

@@ -18,66 +18,55 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class SelendroidDeviceServerStub extends NanoHTTPD {
-	private TestSessionListener testSessionListener;
+  private final TestSessionListener testSessionListener;
+  private int port;
 
-	public SelendroidDeviceServerStub(int port) throws IOException {
-		super(port, new File("."));
-		System.out
-				.println("SelendroidDeviceServerStub is started on the following port: "
-						+ port);
-	}
+  public SelendroidDeviceServerStub(int port,TestSessionListener testSessionListener) throws IOException {
+    super(port, new File("."));
+    this.port = port;
+    System.out.println("SelendroidDeviceServerStub is started on the following port: " + port);
+    this.testSessionListener = testSessionListener;
+  }
 
-	public void registerTestSessionListener(
-			TestSessionListener testSessionListener) {
-		if (testSessionListener == null) {
-			throw new IllegalArgumentException(
-					"The testSessionListener must not be null.");
-		}
-		if (this.testSessionListener != null) {
-			throw new IllegalStateException(
-					"Server does only support one listener and there is already one registered.");
-		}
-		this.testSessionListener = testSessionListener;
-	}
+  public int getPort() {
+    return port;
+  }
 
-	public Response serve(String uri, String method, Properties header,
-			Properties params, Properties files) {
-		if (this.testSessionListener == null) {
-			throw new IllegalStateException(
-					"Server must have one test session listener registered.");
-		}
-		try {
-			if (uri.endsWith("/wd/hub/status") && isGet(method)) {
-				return respond(testSessionListener.status(params));
-			} else if (uri.endsWith("/wd/hub/session") && isPost(method)) {
-				return respond(testSessionListener.createSession(params));
-			} else if (uri.endsWith("/wd/hub/session/:sessionId")
-					&& isDelete(method)) {
-				return respond(testSessionListener.deleteSession(params));
-			} else if (uri.endsWith(testSessionListener.uriMapping)) {
-				return respond(testSessionListener
-						.executeSelendroidRequest(params));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+  public Response serve(String uri, String method, Properties header, Properties params,
+      Properties files) {
+    if (this.testSessionListener == null) {
+      throw new IllegalStateException("Server must have one test session listener registered.");
+    }
+    try {
+      if (uri.endsWith("/wd/hub/status") && isGet(method)) {
+        return respond(testSessionListener.status(params));
+      } else if (uri.endsWith("/wd/hub/session") && isPost(method)) {
+        return respond(testSessionListener.createSession(params));
+      } else if (uri.endsWith("/wd/hub/session/:sessionId") && isDelete(method)) {
+        return respond(testSessionListener.deleteSession(params));
+      } else if (uri.endsWith(testSessionListener.uriMapping)) {
+        return respond(testSessionListener.executeSelendroidRequest(params));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-		return new Response(HTTP_INTERNALERROR, MIME_PLAINTEXT, "ERROR OCCURED");
-	}
+    return new Response(HTTP_INTERNALERROR, MIME_PLAINTEXT, "ERROR OCCURED");
+  }
 
-	private boolean isGet(String method) {
-		return "GET".equals(method);
-	}
+  private boolean isGet(String method) {
+    return "GET".equals(method);
+  }
 
-	private boolean isPost(String method) {
-		return "POST".equals(method);
-	}
+  private boolean isPost(String method) {
+    return "POST".equals(method);
+  }
 
-	private boolean isDelete(String method) {
-		return "DELETE".equals(method);
-	}
+  private boolean isDelete(String method) {
+    return "DELETE".equals(method);
+  }
 
-	private Response respond(org.openqa.selendroid.server.Response response) {
-		return new Response(HTTP_OK, "application/json", response.toString());
-	}
+  private Response respond(org.openqa.selendroid.server.Response response) {
+    return new Response(HTTP_OK, "application/json", response.toString());
+  }
 }

@@ -16,12 +16,15 @@ package io.selendroid.android.impl;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -94,7 +97,7 @@ public class DefaultAndroidDevice implements AndroidDevice {
   }
 
   @Override
-  public void uninstall(AndroidApp app) {
+  public void uninstall(AndroidApp app) throws AndroidSdkException {
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
     if (isSerialConfigured()) {
@@ -108,7 +111,7 @@ public class DefaultAndroidDevice implements AndroidDevice {
   }
 
   @Override
-  public void clearUserData(AndroidApp app) {
+  public void clearUserData(AndroidApp app) throws AndroidSdkException {
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
     if (isSerialConfigured()) {
@@ -123,7 +126,7 @@ public class DefaultAndroidDevice implements AndroidDevice {
   }
 
   @Override
-  public void startSelendroid(AndroidApp aut, int port) {
+  public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
     this.port = port;
     List<String> command = Lists.newArrayList();
     command.add(AndroidSdk.adb());
@@ -202,5 +205,29 @@ public class DefaultAndroidDevice implements AndroidDevice {
 
     String output = executeCommand(command);
     return Integer.parseInt(output);
+  }
+
+  protected static String extractValue(String regex, String output) {
+    Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+    Matcher matcher = pattern.matcher(output);
+    if (matcher.find()) {
+      return matcher.group(1);
+    }
+
+    return null;
+  }
+
+  @Override
+  public String getScreenSize() {
+    throw new RuntimeException("NOT YET IMPLEMENTED");
+  }
+
+  public boolean screenSizeMatches(String requestedScreenSize) {
+    // if screen size is not requested, just ignore it
+    if (requestedScreenSize == null || requestedScreenSize.isEmpty()) {
+      return true;
+    }
+
+    return getScreenSize().equals(requestedScreenSize);
   }
 }

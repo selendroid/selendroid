@@ -104,6 +104,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public SelendroidCapabilities() {
     setEmulator(true);
+    setLocale("en_US");
   }
 
   /**

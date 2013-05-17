@@ -14,6 +14,7 @@
 package io.selendroid.server;
 
 import io.selendroid.SelendroidConfiguration;
+import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.model.SelendroidDriver;
 
 import java.util.concurrent.Executors;
@@ -28,24 +29,35 @@ public class SelendroidServer {
   private int driverPort = 4444;
   private WebServer webServer;
   private SelendroidConfiguration configuration;
+  private SelendroidDriver driver = null;
 
-  /** for testing only */
-  protected SelendroidServer(int port, SelendroidConfiguration configuration) {
+  /**
+   * for testing only
+   * 
+   * @throws AndroidSdkException
+   */
+  protected SelendroidServer(int port, SelendroidConfiguration configuration,
+      SelendroidDriver driver) throws AndroidSdkException {
     this.driverPort = port;
     this.configuration = configuration;
-
+    this.driver = driver;
     init();
   }
 
-  public SelendroidServer(SelendroidConfiguration configuration) {
+  public SelendroidServer(SelendroidConfiguration configuration) throws AndroidSdkException {
+    this.configuration = configuration;
+    driver = initializeSelendroidServer();
     init();
   }
 
-  protected void init() {
+  protected void init() throws AndroidSdkException {
     webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
-    SelendroidDriver driver = new SelendroidDriver(configuration);
     webServer.add("/wd/hub/status", new StatusServlet(driver));
     webServer.add(new SelendroidServlet(driver));
+  }
+
+  protected SelendroidDriver initializeSelendroidServer() throws AndroidSdkException {
+    return new SelendroidDriver(configuration);
   }
 
   public void start() {

@@ -17,6 +17,7 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.JavaSdk;
 import io.selendroid.android.impl.DefaultAndroidApp;
+import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
@@ -80,16 +81,17 @@ public class SelendroidServerBuilder {
     selendroidServer = new DefaultAndroidApp(customizedServer);
   }
 
-  public void createSelendroidServer(String apkName) throws IOException, ShellCommandException {
-    log.info("create SelendroidServer for apk: " + apkName);
-    init(apkName);
+  public AndroidApp createSelendroidServer(String autFilePath) throws IOException,
+      ShellCommandException, AndroidSdkException {
+    log.info("create SelendroidServer for apk: " + autFilePath);
+    init(autFilePath);
     cleanUpPrebuildServer();
     File file = createAndAddCustomizedAndroidManifestToSelendroidServer();
-    signTestServer(file);
+    return new DefaultAndroidApp(signTestServer(file));
   }
 
   /* package */File createAndAddCustomizedAndroidManifestToSelendroidServer() throws IOException,
-      ShellCommandException {
+      ShellCommandException, AndroidSdkException {
     String targetPackageName = applicationUnderTest.getBasePackage();
     File tempdir =
         new File(FileUtils.getTempDirectoryPath() + targetPackageName + System.currentTimeMillis());
@@ -153,7 +155,7 @@ public class SelendroidServerBuilder {
     return finalSelendroidServerFile;
   }
 
-  /* package */File signTestServer(File customSelendroidServer) throws ShellCommandException {
+  /* package */File signTestServer(File customSelendroidServer) throws ShellCommandException, AndroidSdkException {
     File androidKeyStore = androidDebugKeystore();
 
     if (androidKeyStore.isFile() == false) {
@@ -212,8 +214,9 @@ public class SelendroidServerBuilder {
    * Precondition: {@link #init(String)} must be called upfront for initialization
    * 
    * @throws ShellCommandException
+   * @throws AndroidSdkException 
    */
-  /* package */void cleanUpPrebuildServer() throws ShellCommandException {
+  /* package */void cleanUpPrebuildServer() throws ShellCommandException, AndroidSdkException {
     selendroidServer.deleteFileFromWithinApk("META-INF/CERT.RSA");
     selendroidServer.deleteFileFromWithinApk("META-INF/CERT.SF");
     selendroidServer.deleteFileFromWithinApk("AndroidManifest.xml");

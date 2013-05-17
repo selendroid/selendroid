@@ -1,5 +1,8 @@
 package org.openqa.selendroid.server;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -16,7 +19,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
-import static org.mockito.Mockito.*;
 import org.openqa.selendroid.ServerInstrumentation;
 import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
@@ -25,6 +27,7 @@ import org.openqa.selendroid.server.internal.Capabilities;
 
 public class BaseTest {
   public static final int port = 8055;
+  public static final String host = "127.0.0.1";
   protected AndroidServer server;
   public static final String ANY_STRING = "ANY-STRING";
 
@@ -94,7 +97,7 @@ public class BaseTest {
   }
 
   protected HttpResponse executeCreateSessionRequest() throws Exception {
-    String url = "http://localhost:" + port + "/wd/hub/session";
+    String url = "http://" + host + ":" + port + "/wd/hub/session";
     HttpResponse response =
         executeRequestWithPayload(url, HttpMethod.POST, getCapabilityPayload().toString());
     return response;

@@ -14,6 +14,7 @@
 package io.selendroid;
 
 import io.selendroid.builder.SelendroidServerBuilder;
+import io.selendroid.exceptions.AndroidSdkException;
 
 import java.util.logging.Logger;
 
@@ -37,6 +38,10 @@ public class SelendroidLauncher {
       String aut = config.getSupportedApps().get(0);
       System.out.println("using aut: " + aut);
       builder.createSelendroidServer(aut);
+    } catch (AndroidSdkException e) {
+      log.severe("Selendroid was not able to interact with the Android SDK: " + e.getMessage());
+      log.severe("Please make sure you have the lastest version with the latest updates installed: ");
+      log.severe("http://developer.android.com/sdk/index.html");
     } catch (Exception e) {
       log.severe("Error occured while building server: " + e.getMessage());
     }

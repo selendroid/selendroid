@@ -28,12 +28,13 @@ public class CreateSessionHandlerTest extends BaseTest {
 
     // Get capabilities of session
     HttpResponse getCapaResp =
-        executeRequest("http://localhost:" + port + "/wd/hub/session/" + sessionId, HttpMethod.GET);
+        executeRequest("http://" + host + ":" + port + "/wd/hub/session/" + sessionId,
+            HttpMethod.GET);
     SelendroidAssert.assertResponseIsOk(getCapaResp);
     JSONObject capa = parseJsonResponse(getCapaResp);
     Assert.assertEquals(sessionId, capa.getString("sessionId"));
     Assert.assertEquals(0, capa.getInt("status"));
-    
+
     Assert.assertEquals("selendroid", capa.getJSONObject("value").getString(Capabilities.NAME));
   }
 }

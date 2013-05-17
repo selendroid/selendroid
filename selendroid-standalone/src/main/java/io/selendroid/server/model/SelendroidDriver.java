@@ -19,42 +19,55 @@ import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
+import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
+import io.selendroid.exceptions.AndroidSdkException;
+import io.selendroid.exceptions.DeviceStoreException;
+import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.xerces.impl.dtd.models.DFAContentModel;
+import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.SelendroidCapabilities;
-import org.openqa.selendroid.device.DeviceTargetPlatform;
 import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.Versionable;
 import org.openqa.selenium.SessionNotCreatedException;
 
 public class SelendroidDriver implements Versionable {
+  public static final String WD_RESP_KEY_VALUE = "value";
+  public static final String WD_RESP_KEY_STATUS = "status";
+  public static final String WD_RESP_KEY_SESSION_ID = "sessionId";
+  private static int selendroidServerPort = 38080;
   private static final Logger log = Logger.getLogger(SelendroidDriver.class.getName());
-  private Map<String, AndroidApp> apps = new HashMap<String, AndroidApp>();
-  private Map<String, AndroidApp> selendroidServes = new HashMap<String, AndroidApp>();
+  private Map<String, AndroidApp> appsStore = new HashMap<String, AndroidApp>();
+  private Map<String, AndroidApp> selendroidServers = new HashMap<String, AndroidApp>();
   private Map<String, ActiveSession> sessions = new HashMap<String, ActiveSession>();
   private DeviceStore deviceStore = null;
+  private SelendroidServerBuilder selendroidApkBuilder = null;
 
-  public SelendroidDriver(SelendroidConfiguration serverConfiguration) {
+  public SelendroidDriver(SelendroidConfiguration serverConfiguration) throws AndroidSdkException {
+    selendroidApkBuilder = new SelendroidServerBuilder();
     initApplicationsUnderTest(serverConfiguration);
   }
 
   /**
    * For testing only
    */
-  /* package */SelendroidDriver() {}
+  /* package */SelendroidDriver(SelendroidServerBuilder builder) {
+    this.selendroidApkBuilder = builder;
+  }
 
-  /* package */void initApplicationsUnderTest(SelendroidConfiguration serverConfiguration) {
-    if (serverConfiguration.getSupportedApps() == null
+  /* package */void initApplicationsUnderTest(SelendroidConfiguration serverConfiguration)
+      throws AndroidSdkException {
+    if (serverConfiguration == null || serverConfiguration.getSupportedApps() == null
         || serverConfiguration.getSupportedApps().isEmpty()) {
       throw new SelendroidException("Configuration error - no apps has been configured.");
     }
@@ -70,15 +83,15 @@ public class SelendroidDriver implements Versionable {
               + file.getAbsolutePath());
           log.info(e.getMessage());
         }
-        if (appId != null && !apps.containsKey(appId)) {
-          apps.put(appId, app);
+        if (appId != null && !appsStore.containsKey(appId)) {
+          appsStore.put(appId, app);
           log.info("App " + appId + " has been added to selendroid standalone server.");
         }
       } else {
         log.info("Ignoring app because it was not found: " + file.getAbsolutePath());
       }
     }
-    if (apps.isEmpty()) {
+    if (appsStore.isEmpty()) {
       throw new SelendroidException(
           "Fatal error initializing SelendroidDriver: configured app(s) were not been found.");
     }
@@ -109,20 +122,21 @@ public class SelendroidDriver implements Versionable {
     return null;
   }
 
-  public String createNewTestSession(JSONObject caps) {
+  public String createNewTestSession(JSONObject caps) throws AndroidSdkException, JSONException {
     SelendroidCapabilities desiredCapabilities = null;
     try {
       desiredCapabilities = new SelendroidCapabilities(caps);
     } catch (JSONException e) {
       throw new SelendroidException("Desired capabilities cannot be parsed.");
     }
-    AndroidApp app = apps.get(desiredCapabilities.getAut());
+    AndroidApp app = appsStore.get(desiredCapabilities.getAut());
     if (app == null) {
       throw new SessionNotCreatedException(
           "The requested application under test is not configured in selendroid server.");
     }
+    AndroidDevice device = null;
     try {
-      AndroidDevice device = getAndroidDevice(desiredCapabilities);
+      device = getAndroidDevice(desiredCapabilities);
     } catch (AndroidDeviceException e) {
       SessionNotCreatedException error =
           new SessionNotCreatedException("Error occured while finding android device: "
@@ -130,17 +144,82 @@ public class SelendroidDriver implements Versionable {
       log.severe(error.getMessage());
       throw error;
     }
+    if (device instanceof AndroidEmulator) {
+      AndroidEmulator emulator = (AndroidEmulator) device;
+      try {
+        if (emulator.isEmulatorStarted()) {
+          throw new SessionNotCreatedException("The Emulator '" + emulator
+              + "' is already started even though it should be switched off.");
+        } else {
+          Locale locale = parseLocale(desiredCapabilities);
+          emulator.startEmulator(locale);
+        }
+      } catch (AndroidDeviceException e) {
+        throw new SessionNotCreatedException("Error occured while interacting with the emulator: "
+            + emulator + ": " + e.getMessage());
+      }
+    }
+    AndroidApp selendroidServer = createSelendroidServerApk(app);
 
-    return null;
+    device.install(app);
+    device.install(selendroidServer);
+    int port = getNextSelendroidServerPort();
+    device.startSelendroid(app, port);
+    JSONObject response = null;
+
+    try {
+      HttpResponse r = HttpClientUtil.executeCreateSessionRequest(port, desiredCapabilities);
+      response = HttpClientUtil.parseJsonResponse(r);
+    } catch (Exception e) {
+      throw new SessionNotCreatedException(
+          "Error occured while creating session on Android device", e);
+    }
+
+    if (response.getInt(WD_RESP_KEY_STATUS) != 0) {
+      throw new SessionNotCreatedException(
+          "Error occured while initilizing wd session on android device.");
+    }
+    String sessionId = response.optString(WD_RESP_KEY_SESSION_ID);
+    SelendroidCapabilities requiredCapabilities =
+        new SelendroidCapabilities(response.getJSONObject(WD_RESP_KEY_VALUE));
+    ActiveSession session = new ActiveSession(sessionId, requiredCapabilities, app, device, port);
+
+    this.sessions.put(sessionId, session);
+
+    return sessionId;
+  }
+
+  private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkException {
+    if (!selendroidServers.containsKey(aut.getAppId())) {
+      try {
+        AndroidApp selendroidServer =
+            selendroidApkBuilder.createSelendroidServer(aut.getAbsolutePath());
+        selendroidServers.put(aut.getAppId(), selendroidServer);
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new SessionNotCreatedException(
+            "An error occured while building the selendroid-server.apk for aut '" + aut + "': "
+                + e.getMessage());
+      }
+    }
+    return selendroidServers.get(aut.getAppId());
+  }
+
+  private Locale parseLocale(SelendroidCapabilities capa) {
+    String[] localeStr = capa.getLocale().split("_");
+    Locale locale = new Locale(localeStr[0], localeStr[1]);
+
+    return locale;
   }
 
   /* package */AndroidDevice getAndroidDevice(SelendroidCapabilities caps)
       throws AndroidDeviceException {
     AndroidDevice device = null;
     if (caps.getEmulator()) {
-      device = deviceStore.findAndroidDevice(caps);
-      if (!device.isDeviceReady()) {
-        log.severe("Error - Emulator that should be switched off seems to run; " + device);
+      try {
+        device = deviceStore.findAndroidDevice(caps);
+      } catch (DeviceStoreException e) {
+        throw new AndroidDeviceException("Error occured while looking for emulators.", e);
       }
     } else {
       throw new AndroidDeviceException(
@@ -153,6 +232,17 @@ public class SelendroidDriver implements Versionable {
    * For testing only
    */
   /* package */Map<String, AndroidApp> getConfiguredApps() {
-    return Collections.unmodifiableMap(apps);
+    return Collections.unmodifiableMap(appsStore);
+  }
+
+  /**
+   * For testing only
+   */
+  /* package */void setDeviceStore(DeviceStore store) {
+    this.deviceStore = store;
+  }
+
+  private synchronized int getNextSelendroidServerPort() {
+    return selendroidServerPort++;
   }
 }

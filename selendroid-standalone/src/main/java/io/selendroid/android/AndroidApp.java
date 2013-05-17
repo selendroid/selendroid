@@ -13,22 +13,26 @@
  */
 package io.selendroid.android;
 
+import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.ShellCommandException;
 
 public interface AndroidApp {
 
-  public String getBasePackage();
+  public String getBasePackage() throws AndroidSdkException;
 
-  public String getMainActivity();
+  public String getMainActivity() throws AndroidSdkException;
 
-  public String getVersionName();
+  public String getVersionName() throws AndroidSdkException;
 
-  public void deleteFileFromWithinApk(String file) throws ShellCommandException;
+  public void deleteFileFromWithinApk(String file) throws ShellCommandException,
+      AndroidSdkException;
+
+  public String getAppId() throws AndroidSdkException;
 
   /**
    * For testing only
    */
   public String getAbsolutePath();
 
-  public String getAppId();
+
 }

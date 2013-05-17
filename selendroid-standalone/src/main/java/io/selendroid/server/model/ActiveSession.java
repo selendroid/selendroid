@@ -16,16 +16,18 @@ package io.selendroid.server.model;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 
-import org.json.JSONObject;
+import org.openqa.selendroid.SelendroidCapabilities;
 
 public class ActiveSession {
   private final String sessionKey;
   private AndroidApp aut;
   private AndroidDevice device;
-  private JSONObject desiredCapabilities;
+  private SelendroidCapabilities desiredCapabilities;
+  private final int selendroidServerPort;
 
-  ActiveSession(String sessionKey, JSONObject desiredCapabilities, AndroidApp aut,
-      AndroidDevice device) {
+  ActiveSession(String sessionKey, SelendroidCapabilities desiredCapabilities, AndroidApp aut,
+      AndroidDevice device, int selendroidPort) {
+    this.selendroidServerPort = selendroidPort;
     this.sessionKey = sessionKey;
     this.aut = aut;
     this.device = device;
@@ -48,7 +50,11 @@ public class ActiveSession {
     return aut;
   }
 
-  public JSONObject getDesiredCapabilities() {
+  public int getSelendroidServerPort() {
+    return selendroidServerPort;
+  }
+
+  public SelendroidCapabilities getDesiredCapabilities() {
     return desiredCapabilities;
   }
 
