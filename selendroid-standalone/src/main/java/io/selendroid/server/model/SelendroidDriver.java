@@ -34,12 +34,15 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selendroid.SelendroidCapabilities;
 import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.Versionable;
 import org.openqa.selenium.SessionNotCreatedException;
+
+import com.beust.jcommander.internal.Lists;
 
 public class SelendroidDriver implements Versionable {
   public static final String WD_RESP_KEY_VALUE = "value";
@@ -244,5 +247,49 @@ public class SelendroidDriver implements Versionable {
 
   private synchronized int getNextSelendroidServerPort() {
     return selendroidServerPort++;
+  }
+
+  /** FOR TESTING ONLY */
+  public List<ActiveSession> getActiceSessions() {
+    return Lists.newArrayList(sessions.values());
+  }
+
+  public boolean isValidSession(String sessionId) {
+    if (sessionId != null && sessionId.isEmpty() == false) {
+      return sessions.containsKey(sessionId);
+    }
+    return false;
+  }
+
+  public void stopSession(String sessionId) throws AndroidDeviceException {
+    if (isValidSession(sessionId)) {
+      ActiveSession session = sessions.get(sessionId);
+      try {
+        HttpClientUtil.executeRequest("http://localhost:" + session.getSelendroidServerPort()
+            + "/wd/hub/sessions/" + sessionId, HttpMethod.DELETE);
+      } catch (Exception e) {
+        throw new SelendroidException(e);
+      }
+      if (session.getDevice() instanceof AndroidEmulator) {
+        ((AndroidEmulator) session.getDevice()).stopEmulator();
+      }
+      // remove session
+      sessions.remove(session);
+      session = null;
+    }
+  }
+
+  public void quitSelendroid() {
+    List<String> sessionsToQuit = Lists.newArrayList(sessions.keySet());
+    if (sessionsToQuit != null && sessionsToQuit.isEmpty() == false) {
+      for (String sessionId : sessionsToQuit) {
+        try {
+          stopSession(sessionId);
+        } catch (AndroidDeviceException e) {
+          log.severe("Error occured while stopping session: " + e.getMessage());
+          e.printStackTrace();
+        }
+      }
+    }
   }
 }

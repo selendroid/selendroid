@@ -52,6 +52,12 @@ public class SelendroidServlet extends BaseServlet {
       return;
     }
 
+    String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
+    if (sessionId != null) {
+      request.data().put(SESSION_ID_KEY, sessionId);
+    }
+    request.data().put(DRIVER_KEY, driver);
+
     Response result;
     try {
       result = handler.handle();
@@ -59,16 +65,6 @@ public class SelendroidServlet extends BaseServlet {
       replyWithServerError(response);
       return;
     }
-    if (isNewSessionRequest(request)) {
-      response.status(301);
-      String session = result.getSessionId();
-
-      String newSessionUri = "http://" + request.header("Host") + request.uri() + "/" + session;
-      System.out.println("new Session URL: " + newSessionUri);
-      response.header("location", newSessionUri);
-    } else {
-      response.status(200);
-    }
-
+    handleResponse(request, response, result);
   }
 }

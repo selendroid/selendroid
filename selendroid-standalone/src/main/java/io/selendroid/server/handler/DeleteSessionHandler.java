@@ -13,12 +13,18 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.exceptions.AndroidDeviceException;
+import io.selendroid.server.BaseSelendroidServerHandler;
+import io.selendroid.server.model.SelendroidDriver;
+
+import java.util.logging.Logger;
+
 import org.json.JSONException;
-import org.openqa.selendroid.server.BaseRequestHandler;
 import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
-public class DeleteSessionHandler  extends BaseRequestHandler{
+public class DeleteSessionHandler extends BaseSelendroidServerHandler {
+  private static final Logger log = Logger.getLogger(DeleteSessionHandler.class.getName());
 
   public DeleteSessionHandler(HttpRequest request, String mappedUri) {
     super(request, mappedUri);
@@ -26,8 +32,15 @@ public class DeleteSessionHandler  extends BaseRequestHandler{
 
   @Override
   public Response handle() throws JSONException {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    log.info("delete session command");
+    SelendroidDriver driver = getSelendroidDriver();
+    String sessionId = getSessionId();
+    try {
+      driver.stopSession(sessionId);
+    } catch (AndroidDeviceException e) {
+      log.severe("Error occured while stopping the emulator.");
+    }
 
+    return new Response(sessionId, "");
+  }
 }

@@ -13,12 +13,17 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.server.BaseSelendroidServerHandler;
+
+import java.util.logging.Logger;
+
 import org.json.JSONException;
-import org.openqa.selendroid.server.BaseRequestHandler;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
-public class CreateSessionHandler extends BaseRequestHandler{
+public class CreateSessionHandler extends BaseSelendroidServerHandler {
+  private static final Logger log = Logger.getLogger(CreateSessionHandler.class.getName());
 
   public CreateSessionHandler(HttpRequest request, String mappedUri) {
     super(request, mappedUri);
@@ -26,8 +31,18 @@ public class CreateSessionHandler extends BaseRequestHandler{
 
   @Override
   public Response handle() throws JSONException {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    log.info("new session command");
+    JSONObject payload = getPayload();
 
+    JSONObject desiredCapabilities = payload.getJSONObject("desiredCapabilities");
+
+    String sessionID = null;
+    try {
+      sessionID = getSelendroidDriver().createNewTestSession(desiredCapabilities);
+    } catch (Exception e) {
+      log.severe("Error while creating new session: " + e.getMessage());
+      return new Response("", 33, e);
+    }
+    return new Response(sessionID, 0, desiredCapabilities);
+  }
 }

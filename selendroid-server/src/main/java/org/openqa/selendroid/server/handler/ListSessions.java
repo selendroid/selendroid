@@ -22,14 +22,13 @@ import org.webbitserver.HttpRequest;
 
 public class ListSessions extends RequestHandler {
 
-  public ListSessions(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public ListSessions(HttpRequest request, String mappedUri) {
+    super(request, mappedUri);
   }
 
   @Override
   public Response handle() throws JSONException {
-
-    JSONArray sessions = new     JSONArray();
+    JSONArray sessions = new JSONArray();
     if (getSelendroidDriver().getSession() != null) {
       JSONObject sessionResponse = new JSONObject();
       sessionResponse.put("id", getSelendroidDriver().getSession().getSessionId());

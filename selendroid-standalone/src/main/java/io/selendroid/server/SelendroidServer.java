@@ -67,6 +67,7 @@ public class SelendroidServer {
 
   public void stop() {
     log.info("About to stop selendroid-standalone server");
+    driver.quitSelendroid();
     webServer.stop();
   }
 

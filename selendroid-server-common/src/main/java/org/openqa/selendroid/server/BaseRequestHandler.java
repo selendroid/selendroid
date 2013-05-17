@@ -14,6 +14,7 @@
 package org.openqa.selendroid.server;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
 public abstract class BaseRequestHandler {
@@ -33,5 +34,34 @@ public abstract class BaseRequestHandler {
     return mappedUri;
   }
 
+  public String getSessionId() {
+    if (request.data().containsKey(BaseServlet.SESSION_ID_KEY)) {
+      return (String) request.data().get(BaseServlet.SESSION_ID_KEY);
+    }
+    return null;
+  }
+
+  public String getElementId() {
+    if (request.data().containsKey(BaseServlet.ELEMENT_ID_KEY)) {
+      return (String) request.data().get(BaseServlet.ELEMENT_ID_KEY);
+    }
+    return null;
+  }
+
+  public String getNameAttribute() {
+    if (request.data().containsKey(BaseServlet.NAME_ID_KEY)) {
+      return (String) request.data().get(BaseServlet.NAME_ID_KEY);
+    }
+    return null;
+  }
+
+  public JSONObject getPayload() throws JSONException {
+    String json = request.body();
+    if (json != null && !json.isEmpty()) {
+      return new JSONObject(json);
+    }
+    return new JSONObject();
+  }
+  
   public abstract Response handle() throws JSONException;
 }

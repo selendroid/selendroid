@@ -13,12 +13,20 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.server.BaseSelendroidServerHandler;
+import io.selendroid.server.model.ActiveSession;
+
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.openqa.selendroid.server.BaseRequestHandler;
+import org.json.JSONObject;
 import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
-public class ListSessionsHandler extends BaseRequestHandler {
+public class ListSessionsHandler extends BaseSelendroidServerHandler {
+  private static final Logger log = Logger.getLogger(ListSessionsHandler.class.getName());
 
   public ListSessionsHandler(HttpRequest request, String mappedUri) {
     super(request, mappedUri);
@@ -26,8 +34,20 @@ public class ListSessionsHandler extends BaseRequestHandler {
 
   @Override
   public Response handle() throws JSONException {
-    // TODO Auto-generated method stub
-    return null;
+    log.info("list sessions command");
+    JSONArray sessions = new JSONArray();
+    List<ActiveSession> activeSessions = getSelendroidDriver().getActiceSessions();
+    if (activeSessions != null && activeSessions.isEmpty() == false) {
+      for (ActiveSession session : activeSessions) {
+        JSONObject sessionResponse = new JSONObject();
+        sessionResponse.put("id", session.getSessionKey());
+        sessionResponse.put("capabilities",
+            new JSONObject(session.getDesiredCapabilities().asMap()));
+        sessions.put(sessionResponse);
+      }
+    }
+    return new Response(null, sessions);
+
   }
 
 }

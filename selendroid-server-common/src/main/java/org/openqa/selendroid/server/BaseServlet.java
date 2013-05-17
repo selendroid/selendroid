@@ -14,6 +14,7 @@
 package org.openqa.selendroid.server;
 
 import java.lang.reflect.Constructor;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,10 @@ import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
 public abstract class BaseServlet implements HttpHandler {
+  public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
+  public static final String ELEMENT_ID_KEY = "ELEMENT_ID_KEY";
+  public static final String NAME_ID_KEY = "NAME_ID_KEY";
+  public static final String DRIVER_KEY = "DRIVER_KEY";
   public static final int INTERNAL_SERVER_ERROR = 500;
 
   protected Map<String, Class<? extends BaseRequestHandler>> getHandler =
@@ -127,5 +132,27 @@ public abstract class BaseServlet implements HttpHandler {
       return true;
     }
     return false;
+  }
+
+  protected void handleResponse(HttpRequest request, HttpResponse response, Response result) {
+    response.header("Content-Type", "application/json");
+    response.charset(Charset.forName("UTF-8"));
+
+    if (isNewSessionRequest(request)) {
+      response.status(301);
+      String session = result.getSessionId();
+
+      String newSessionUri = "http://" + request.header("Host") + request.uri() + "/" + session;
+      System.out.println("new Session URL: " + newSessionUri);
+      response.header("location", newSessionUri);
+    } else {
+      response.status(200);
+    }
+
+    if (result != null) {
+      String resultString = result.toString();
+      response.content(resultString);
+    }
+    response.end();
   }
 }

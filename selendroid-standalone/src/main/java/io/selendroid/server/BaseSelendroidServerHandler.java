@@ -11,29 +11,21 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.server.handler;
+package io.selendroid.server;
 
-import java.util.logging.Logger;
+import io.selendroid.server.model.SelendroidDriver;
 
-import io.selendroid.server.BaseSelendroidServerHandler;
-
-import org.json.JSONException;
-import org.openqa.selendroid.server.Response;
+import org.openqa.selendroid.server.BaseRequestHandler;
+import org.openqa.selendroid.server.BaseServlet;
 import org.webbitserver.HttpRequest;
 
-public class RequestRedirectHandler extends BaseSelendroidServerHandler {
-  private static final Logger log = Logger.getLogger(RequestRedirectHandler.class.getName());
-  
-
-  public RequestRedirectHandler(HttpRequest request, String mappedUri) {
+public abstract class BaseSelendroidServerHandler extends BaseRequestHandler {
+  public BaseSelendroidServerHandler(HttpRequest request, String mappedUri) {
     super(request, mappedUri);
   }
 
-  @Override
-  public Response handle() throws JSONException {
-    log.info("forward request command");
-    
-    return null;
+  protected SelendroidDriver getSelendroidDriver() {
+    SelendroidDriver driver = (SelendroidDriver) request.data().get(BaseServlet.DRIVER_KEY);
+    return driver;
   }
-
 }

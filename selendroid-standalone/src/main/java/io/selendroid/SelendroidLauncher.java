@@ -13,8 +13,8 @@
  */
 package io.selendroid;
 
-import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidSdkException;
+import io.selendroid.server.SelendroidServer;
 
 import java.util.logging.Logger;
 
@@ -23,6 +23,7 @@ import com.beust.jcommander.ParameterException;
 
 public class SelendroidLauncher {
   private static final Logger log = Logger.getLogger(SelendroidLauncher.class.getName());
+  private static SelendroidServer server = null;
 
   public static void main(String[] args) {
     log.info("################# Selendroid #################");
@@ -33,11 +34,11 @@ public class SelendroidLauncher {
       log.severe("An errror occured while starting selendroid: " + e.getMessage());
       System.exit(0);
     }
-    SelendroidServerBuilder builder = new SelendroidServerBuilder();
+
     try {
-      String aut = config.getSupportedApps().get(0);
-      System.out.println("using aut: " + aut);
-      builder.createSelendroidServer(aut);
+      log.info("Starting selendroid-server port " + config.getPort());
+      server = new SelendroidServer(config);
+      server.start();
     } catch (AndroidSdkException e) {
       log.severe("Selendroid was not able to interact with the Android SDK: " + e.getMessage());
       log.severe("Please make sure you have the lastest version with the latest updates installed: ");
@@ -45,8 +46,11 @@ public class SelendroidLauncher {
     } catch (Exception e) {
       log.severe("Error occured while building server: " + e.getMessage());
     }
-    // log.info("Starting selendroid-server port " + config.getPort());
-    // SelendroidServer server = new SelendroidServer(config);
-    // server.start();
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        log.info("Shutting down Selendroid standalone");
+        server.stop();
+      }
+    });
   }
 }

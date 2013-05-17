@@ -62,12 +62,7 @@ import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
 public class AndroidServlet extends BaseServlet {
-  public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
-  public static final String ELEMENT_ID_KEY = "ELEMENT_ID_KEY";
-  public static final String NAME_ID_KEY = "NAME_ID_KEY";
-  public static final String DRIVER_KEY = "DRIVER_KEY";
-
-  protected SelendroidDriver driver = null;
+  private SelendroidDriver driver = null;
 
   public AndroidServlet(SelendroidDriver driver) {
     this.driver = driver;
@@ -241,25 +236,6 @@ public class AndroidServlet extends BaseServlet {
       return;
     }
 
-    response.header("Content-Type", "application/json");
-    response.charset(Charset.forName("UTF-8"));
-
-    if (isNewSessionRequest(request)) {
-      response.status(301);
-      String session = result.getSessionId();
-
-      String newSessionUri = "http://" + request.header("Host") + request.uri() + "/" + session;
-      SelendroidLogger.log("new Session URL: " + newSessionUri);
-      response.header("location", newSessionUri);
-    } else {
-      response.status(200);
-    }
-
-    if (result != null) {
-      String resultString = result.toString();
-      response.content(resultString);
-    }
-    response.end();
-
+    handleResponse(request, response, result);
   }
 }

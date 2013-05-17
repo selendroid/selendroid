@@ -33,35 +33,6 @@ public abstract class RequestHandler extends BaseRequestHandler {
   }
 
   
-  public String getSessionId() {
-    if (request.data().containsKey(AndroidServlet.SESSION_ID_KEY)) {
-      return (String) request.data().get(AndroidServlet.SESSION_ID_KEY);
-    }
-    return null;
-  }
-
-  public String getElementId() {
-    if (request.data().containsKey(AndroidServlet.ELEMENT_ID_KEY)) {
-      return (String) request.data().get(AndroidServlet.ELEMENT_ID_KEY);
-    }
-    return null;
-  }
-
-  public String getNameAttribute() {
-    if (request.data().containsKey(AndroidServlet.NAME_ID_KEY)) {
-      return (String) request.data().get(AndroidServlet.NAME_ID_KEY);
-    }
-    return null;
-  }
-
-  public JSONObject getPayload() throws JSONException {
-    String json = request.body();
-    if (json != null && !json.isEmpty()) {
-      return new JSONObject(json);
-    }
-    return new JSONObject();
-  }
-
   protected SelendroidDriver getSelendroidDriver() {
     DefaultSelendroidDriver driver =
         (DefaultSelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);

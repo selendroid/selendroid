@@ -16,8 +16,6 @@ package org.openqa.selendroid.util;
 
 // TODO ddary rethink logging concept that works also on jvm
 public class SelendroidLogger {
-  // private static final Logger logger = LoggerFactory.getLogger(SelendroidLogger.class);
-
   public static void log(String message) {
     System.out.println(message);
   }
