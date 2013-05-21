@@ -14,13 +14,13 @@
 package io.selendroid.server;
 
 import io.selendroid.SelendroidConfiguration;
+import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.model.SelendroidDriver;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
@@ -50,7 +50,8 @@ public class SelendroidServer {
     init();
   }
 
-  public SelendroidServer(SelendroidConfiguration configuration) throws AndroidSdkException {
+  public SelendroidServer(SelendroidConfiguration configuration) throws AndroidSdkException,
+      AndroidDeviceException {
     this.configuration = configuration;
     webServer =
         WebServers.createWebServer(Executors.newCachedThreadPool(), new InetSocketAddress(
@@ -61,24 +62,25 @@ public class SelendroidServer {
 
   private static URI remotelUri(int port) {
     try {
+      InetAddress address = InetAddress.getByName("0.0.0.0");
+
       URI remoteUri =
-          URI.create("http://" + InetAddress.getLocalHost().getHostAddress()
-              + (port == 80 ? "" : (":" + port)) + "/");
+          new URI("http://" + address.getHostAddress() + (port == 80 ? "" : (":" + port)) + "/");
       return remoteUri;
-    } catch (UnknownHostException e) {
-      throw new RuntimeException(
-          "can not create URI from localhost hostname - use constructor to pass an explicit URI", e);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("can not create URI from HostAddress", e);
     }
   }
 
   protected void init() throws AndroidSdkException {
-
+    webServer.staleConnectionTimeout(300000);
     webServer.add("/wd/hub/status", new StatusServlet(driver));
     webServer.add(new SelendroidServlet(driver));
-    webServer.staleConnectionTimeout(5 * 60 * 1000);
   }
 
-  protected SelendroidDriver initializeSelendroidServer() throws AndroidSdkException {
+  protected SelendroidDriver initializeSelendroidServer() throws AndroidSdkException,
+      AndroidDeviceException {
     return new SelendroidDriver(configuration);
   }
 

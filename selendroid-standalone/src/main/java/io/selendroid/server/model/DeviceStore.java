@@ -33,8 +33,19 @@ public class DeviceStore {
   private List<AndroidDevice> devicesInUse = new ArrayList<AndroidDevice>();
   private Map<DeviceTargetPlatform, List<AndroidDevice>> androidDevices =
       new HashMap<DeviceTargetPlatform, List<AndroidDevice>>();
+  private static final int ANDROID_EMULATOR_PORT = 5554;
+  private Integer nextEmulatorPort = null;
 
   public DeviceStore() {}
+
+  public Integer nextEmulatorPort() {
+    if (nextEmulatorPort == null) {
+      nextEmulatorPort = ANDROID_EMULATOR_PORT;
+    }else{
+     nextEmulatorPort += 2;
+    }
+    return nextEmulatorPort;
+  }
 
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
     if (emulators == null || emulators.isEmpty()) {
@@ -49,6 +60,7 @@ public class DeviceStore {
         log.info("Skipping emulator because it is already in use: " + emulator);
         continue;
       }
+      log.info("Adding: " + emulator);
       addAndroidEmulator(emulator);
     }
     if (androidDevices.isEmpty()) {
@@ -94,9 +106,9 @@ public class DeviceStore {
         return device;
       }
     }
-    throw new DeviceStoreException("No devices are found. " +
-    		"This can happen if the devices are in use or no device screen " +
-    		"matches the required capabilities.");
+    throw new DeviceStoreException("No devices are found. "
+        + "This can happen if the devices are in use or no device screen "
+        + "matches the required capabilities.");
   }
 
   /**

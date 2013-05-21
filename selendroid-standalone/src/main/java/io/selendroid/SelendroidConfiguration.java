@@ -21,7 +21,7 @@ import com.beust.jcommander.Parameter;
 
 public class SelendroidConfiguration {
   @Parameter(description = "port the server will listen on.", names = "-port")
-  private int port = 5555;
+  public int port = 5555;
 
   @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
       "-app", "-aut"}, required = true)

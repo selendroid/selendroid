@@ -50,6 +50,7 @@ public class SelendroidServerBuilder {
   public static final String PREBUILD_SELENDROID_SERVER_PATH =
       "/prebuild/selendroid-server-0.4-SNAPSHOT.apk";
   public static final String ANDROID_APPLICATION_XML_TEMPLATE = "/AndroidManifest.xml";
+  public static final String ICON = "android:icon=\"@drawable/selenium_icon\"";
   private String selendroidPrebuildServerPath = null;
   private String selendroidApplicationXmlTemplate = null;
   private AndroidApp selendroidServer = null;
@@ -112,6 +113,11 @@ public class SelendroidServerBuilder {
     String content = IOUtils.toString(inputStream, Charset.defaultCharset().displayName());
 
     content = content.replaceAll(SELENDROID_TEST_APP_PACKAGE, targetPackageName);
+    // Seems like this needs to be done
+    if (content.contains(ICON)) {
+      content = content.replaceAll(ICON, "");
+    }
+
     OutputStream outputStream = new FileOutputStream(customizedManifest);
     IOUtils.write(content, outputStream, Charset.defaultCharset().displayName());
     IOUtils.closeQuietly(inputStream);
@@ -155,7 +161,8 @@ public class SelendroidServerBuilder {
     return finalSelendroidServerFile;
   }
 
-  /* package */File signTestServer(File customSelendroidServer) throws ShellCommandException, AndroidSdkException {
+  /* package */File signTestServer(File customSelendroidServer) throws ShellCommandException,
+      AndroidSdkException {
     File androidKeyStore = androidDebugKeystore();
 
     if (androidKeyStore.isFile() == false) {
@@ -214,7 +221,7 @@ public class SelendroidServerBuilder {
    * Precondition: {@link #init(String)} must be called upfront for initialization
    * 
    * @throws ShellCommandException
-   * @throws AndroidSdkException 
+   * @throws AndroidSdkException
    */
   /* package */void cleanUpPrebuildServer() throws ShellCommandException, AndroidSdkException {
     selendroidServer.deleteFileFromWithinApk("META-INF/CERT.RSA");

@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +37,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
   private static final Logger log = Logger.getLogger(DefaultAndroidEmulator.class.getName());
   public static final String ANDROID_EMULATOR_HARDWARE_CONFIG = "hardware-qemu.ini";
   public static final String FILE_LOCKING_SUFIX = ".lock";
+  public final int EMULATOR_START_TIMEOUT = 60000;
   private String screenSize;
   private DeviceTargetPlatform targetPlatform;
   // TODO ddary just use this as default
@@ -178,37 +177,69 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
 
   @Override
   public String toString() {
-    return "DefaultAndroidEmulator [screenSize=" + screenSize + ", targetPlatform="
-        + targetPlatform + ", avdName=" + avdName + "]";
+    return "AndroidEmulator [screenSize=" + screenSize + ", targetPlatform=" + targetPlatform
+        + ", avdName=" + avdName + "]";
+  }
+
+  private void setSerial(int port) {
+    serial = "emulator-" + port;
   }
 
   @Override
-  public void startEmulator(Locale locale) {
+  public void startEmulator(Locale locale, int emulatorPort) throws AndroidDeviceException {
     if (isEmulatorStarted()) {
       throw new SelendroidException("Error - Android emulator is already started " + this);
     }
     List<String> cmd = Lists.newArrayList();
-
     cmd.add(AndroidSdk.emulator());
     cmd.add("-avd");
     cmd.add(avdName);
+    cmd.add("-ports");
+    cmd.add(emulatorPort + "," + (emulatorPort + 1));
     cmd.add("-prop");
     cmd.add("persist.sys.language=" + locale.getLanguage());
     cmd.add("-prop");
     cmd.add("persist.sys.country=" + locale.getCountry());
     long start = System.currentTimeMillis();
+    long timemoutEnd = start + EMULATOR_START_TIMEOUT;
     try {
       ShellCommand.execAsync(cmd);
     } catch (ShellCommandException e) {
       throw new SelendroidException("unable to start the emulator: " + this);
     }
+    setSerial(emulatorPort);
     while (isDeviceReady() == false) {
-      try {
-        Thread.sleep(2000);
-      } catch (InterruptedException e) {}
+      if (timemoutEnd >= System.currentTimeMillis()) {
+        try {
+          Thread.sleep(2000);
+        } catch (InterruptedException e) {}
+      } else {
+        throw new AndroidDeviceException("The emulator with avd '" + getAvdName()
+            + "' was not started after " + EMULATOR_START_TIMEOUT / 60 + " seconds.");
+      }
     }
+
     log.info("Emulator start took: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
     log.info("Please have in mind, starting an emulator takes usually about 45 seconds.");
+    unlockEmulatorScreen();
+  }
+
+  private void unlockEmulatorScreen() throws AndroidDeviceException {
+    List<String> command = new ArrayList<String>();
+    command.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
+    command.add("shell");
+    command.add("input");
+    command.add("82");
+
+    try {
+      ShellCommand.exec(command);
+    } catch (ShellCommandException e) {
+      throw new AndroidDeviceException(e);
+    }
   }
 
   @Override

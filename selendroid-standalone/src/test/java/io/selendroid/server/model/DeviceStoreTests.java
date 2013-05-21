@@ -44,6 +44,14 @@ public class DeviceStoreTests {
   }
 
   @Test
+  public void testShouldBeAbleToIncrementEmulatorPortsByTwo() {
+    DeviceStore deviceStore = new DeviceStore();
+    Assert.assertEquals(5554, deviceStore.nextEmulatorPort().intValue());
+    Assert.assertEquals(5556, deviceStore.nextEmulatorPort().intValue());
+    Assert.assertEquals(5558, deviceStore.nextEmulatorPort().intValue());
+  }
+
+  @Test
   public void testShouldBeAbleToRegisterMultipleNotStatedEmulators() throws Exception {
     AndroidEmulator deEmulator10 = anEmulator("de", DeviceTargetPlatform.ANDROID10, false);
     AndroidEmulator enEmulator10 = anEmulator("en", DeviceTargetPlatform.ANDROID10, false);

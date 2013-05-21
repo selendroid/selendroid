@@ -85,10 +85,17 @@ public abstract class BaseServlet implements HttpHandler {
       BaseRequestHandler handler);
 
   protected String getParameter(String configuredUri, String actualUri, String param) {
+    return getParameter(configuredUri, actualUri, param, true);
+  }
+
+  protected String getParameter(String configuredUri, String actualUri, String param,
+      boolean sectionLengthValidation) {
     String[] configuredSections = configuredUri.split("/");
     String[] currentSections = actualUri.split("/");
-    if (configuredSections.length != currentSections.length) {
-      return null;
+    if (sectionLengthValidation == true) {
+      if (configuredSections.length != currentSections.length) {
+        return null;
+      }
     }
     for (int i = 0; i < currentSections.length; i++) {
       if (configuredSections[i].contains(param)) {

@@ -15,6 +15,7 @@ package io.selendroid.server;
 
 import io.selendroid.server.handler.CreateSessionHandler;
 import io.selendroid.server.handler.DeleteSessionHandler;
+import io.selendroid.server.handler.GetCapabilities;
 import io.selendroid.server.handler.ListSessionsHandler;
 import io.selendroid.server.handler.RequestRedirectHandler;
 import io.selendroid.server.model.SelendroidDriver;
@@ -36,20 +37,42 @@ public class SelendroidServlet extends BaseServlet {
 
   public SelendroidServlet(SelendroidDriver driver) {
     this.driver = driver;
+    init();
   }
 
   protected void init() {
     postHandler.put("/wd/hub/session", CreateSessionHandler.class);
     getHandler.put("/wd/hub/sessions", ListSessionsHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId", GetCapabilities.class);
     deleteHandler.put("/wd/hub/session/:sessionId", DeleteSessionHandler.class);
-    redirectHandler.put("/wd/hub/session/:sessionId", RequestRedirectHandler.class);
+    redirectHandler.put("/wd/hub/session/", RequestRedirectHandler.class);
   }
 
   @Override
-  public void handleRequest(HttpRequest request, HttpResponse response, BaseRequestHandler handler) {
-    if (handler == null) {
-      replyWithServerError(response);
-      return;
+  public void handleRequest(HttpRequest request, HttpResponse response,
+      BaseRequestHandler foundHandler) {
+    BaseRequestHandler handler = null;
+    if (foundHandler == null) {
+      if (redirectHandler.isEmpty() == false) {
+        // trying to find an redirect handler
+        for (Map.Entry<String, Class<? extends BaseRequestHandler>> entry : redirectHandler
+            .entrySet()) {
+          if (request.uri().startsWith(entry.getKey())) {
+            String sessionId =
+                getParameter("/wd/hub/session/:sessionId", request.uri(), ":sessionId", false);
+            if (driver.isValidSession(sessionId)) {
+              handler = instantiateHandler(entry, request);
+              request.data().put(SESSION_ID_KEY, sessionId);
+            }
+          }
+        }
+      }
+      if (handler == null) {
+        replyWithServerError(response);
+        return;
+      }
+    } else {
+      handler = foundHandler;
     }
 
     String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");

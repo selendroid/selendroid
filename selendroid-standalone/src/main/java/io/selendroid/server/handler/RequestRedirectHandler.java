@@ -13,17 +13,22 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.server.BaseSelendroidServerHandler;
+import io.selendroid.server.model.ActiveSession;
+import io.selendroid.server.util.HttpClientUtil;
+
 import java.util.logging.Logger;
 
-import io.selendroid.server.BaseSelendroidServerHandler;
-
+import org.apache.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.openqa.selendroid.exceptions.SelendroidException;
 import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
 public class RequestRedirectHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(RequestRedirectHandler.class.getName());
-  
 
   public RequestRedirectHandler(HttpRequest request, String mappedUri) {
     super(request, mappedUri);
@@ -31,9 +36,57 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 
   @Override
   public Response handle() throws JSONException {
-    log.info("forward request command");
-    
-    return null;
+    String sessionId = getSessionId();
+    log.info("forward request command: for session " + sessionId);
+
+
+    ActiveSession session = getSelendroidDriver().getActiveSession(sessionId);
+    if (session == null) {
+      return new Response(sessionId, 13, new SelendroidException(
+          "No session found for given sessionId: " + sessionId));
+    }
+    String url = "http://localhost:" + session.getSelendroidServerPort() + request.uri();
+    log.info("requested forward url: " + url);
+
+    String method = request.method();
+
+    JSONObject response = null;
+
+    try {
+      response = redirectRequest(session, url, method);
+    } catch (Exception e) {
+      return new Response(sessionId, 13, new SelendroidException(
+          "Error occured while communicating with selendroid server on the device: ", e));
+    }
+    Object value = response.get("value");
+    int status = response.getInt("status");
+    log.info("return value from selendroid android server: " + value);
+    log.info("return status from selendroid android server: " + status);
+    if (0 != status) {
+      return new Response(sessionId, status, new SelendroidException((String) value));
+    } else {
+      return new Response(sessionId, value);
+    }
   }
 
+  private JSONObject redirectRequest(ActiveSession session, String url, String method)
+      throws Exception, JSONException {
+    HttpResponse r = null;
+    if ("get".equalsIgnoreCase(method)) {
+      r = HttpClientUtil.executeRequest(url, HttpMethod.GET);
+
+    } else if ("post".equalsIgnoreCase(method)) {
+      JSONObject payload = getPayload();
+      log.info("Payload? " + payload);
+      r =
+          HttpClientUtil.executeRequestWithPayload(url, session.getSelendroidServerPort(),
+              HttpMethod.POST, payload.toString());
+
+    } else if ("delete".equalsIgnoreCase(method)) {
+      r = HttpClientUtil.executeRequest(url, HttpMethod.DELETE);
+    } else {
+      throw new SelendroidException("Http method not supported.");
+    }
+    return HttpClientUtil.parseJsonResponse(r);
+  }
 }

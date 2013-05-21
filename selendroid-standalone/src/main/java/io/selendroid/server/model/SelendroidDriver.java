@@ -56,9 +56,11 @@ public class SelendroidDriver implements Versionable {
   private DeviceStore deviceStore = null;
   private SelendroidServerBuilder selendroidApkBuilder = null;
 
-  public SelendroidDriver(SelendroidConfiguration serverConfiguration) throws AndroidSdkException {
+  public SelendroidDriver(SelendroidConfiguration serverConfiguration) throws AndroidSdkException,
+      AndroidDeviceException {
     selendroidApkBuilder = new SelendroidServerBuilder();
     initApplicationsUnderTest(serverConfiguration);
+    initAndroidDevices();
   }
 
   /**
@@ -155,7 +157,7 @@ public class SelendroidDriver implements Versionable {
               + "' is already started even though it should be switched off.");
         } else {
           Locale locale = parseLocale(desiredCapabilities);
-          emulator.startEmulator(locale);
+          emulator.startEmulator(locale, deviceStore.nextEmulatorPort());
         }
       } catch (AndroidDeviceException e) {
         throw new SessionNotCreatedException("Error occured while interacting with the emulator: "
@@ -177,7 +179,7 @@ public class SelendroidDriver implements Versionable {
       throw new SessionNotCreatedException(
           "Error occured while creating session on Android device", e);
     }
-
+    System.out.println("Create new session response: " + response.toString(2));
     if (response.getInt(WD_RESP_KEY_STATUS) != 0) {
       throw new SessionNotCreatedException(
           "Error occured while initilizing wd session on android device.");
@@ -292,4 +294,20 @@ public class SelendroidDriver implements Versionable {
       }
     }
   }
+
+  public SelendroidCapabilities getSessionCapabilities(String sessionId) {
+    if (sessions.containsKey(sessionId)) {
+      return sessions.get(sessionId).getDesiredCapabilities();
+    }
+    return null;
+  }
+
+  public ActiveSession getActiveSession(String sessionId) {
+    if (sessionId != null && sessions.containsKey(sessionId)) {
+      return sessions.get(sessionId);
+    }
+
+    return null;
+  }
+
 }

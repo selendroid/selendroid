@@ -13,8 +13,6 @@
  */
 package org.openqa.selendroid.server;
 
-import java.nio.charset.Charset;
-
 import org.openqa.selendroid.exceptions.StaleElementReferenceException;
 import org.openqa.selendroid.server.handler.CaptureScreenshot;
 import org.openqa.selendroid.server.handler.ClearElement;
