@@ -32,7 +32,7 @@ public class BaseTest {
   public static final String ANY_STRING = "ANY-STRING";
 
   @Before
-  public void setup() {
+  public void setup() throws Exception{
     ServerInstrumentation instrumentation = mock(ServerInstrumentation.class);
     when(instrumentation.getServerVersion()).thenReturn("0.2");
     server = new AndroidServer(port, instrumentation);

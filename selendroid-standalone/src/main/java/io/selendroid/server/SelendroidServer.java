@@ -17,6 +17,10 @@ import io.selendroid.SelendroidConfiguration;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.model.SelendroidDriver;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
@@ -26,7 +30,6 @@ import org.webbitserver.WebServers;
 
 public class SelendroidServer {
   private static final Logger log = Logger.getLogger(SelendroidServer.class.getName());
-  private int driverPort = 4444;
   private WebServer webServer;
   private SelendroidConfiguration configuration;
   private SelendroidDriver driver = null;
@@ -36,22 +39,40 @@ public class SelendroidServer {
    * 
    * @throws AndroidSdkException
    */
-  protected SelendroidServer(int port, SelendroidConfiguration configuration,
-      SelendroidDriver driver) throws AndroidSdkException {
-    this.driverPort = port;
+  protected SelendroidServer(SelendroidConfiguration configuration, SelendroidDriver driver)
+      throws AndroidSdkException {
     this.configuration = configuration;
     this.driver = driver;
+    webServer =
+        WebServers.createWebServer(Executors.newCachedThreadPool(), new InetSocketAddress(
+            configuration.getPort()), URI.create("http://127.0.0.1"
+            + (configuration.getPort() == 80 ? "" : (":" + configuration.getPort())) + "/"));
     init();
   }
 
   public SelendroidServer(SelendroidConfiguration configuration) throws AndroidSdkException {
     this.configuration = configuration;
+    webServer =
+        WebServers.createWebServer(Executors.newCachedThreadPool(), new InetSocketAddress(
+            configuration.getPort()), remotelUri(configuration.getPort()));
     driver = initializeSelendroidServer();
     init();
   }
 
+  private static URI remotelUri(int port) {
+    try {
+      URI remoteUri =
+          URI.create("http://" + InetAddress.getLocalHost().getHostAddress()
+              + (port == 80 ? "" : (":" + port)) + "/");
+      return remoteUri;
+    } catch (UnknownHostException e) {
+      throw new RuntimeException(
+          "can not create URI from localhost hostname - use constructor to pass an explicit URI", e);
+    }
+  }
+
   protected void init() throws AndroidSdkException {
-    webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
+
     webServer.add("/wd/hub/status", new StatusServlet(driver));
     webServer.add(new SelendroidServlet(driver));
     webServer.staleConnectionTimeout(5 * 60 * 1000);
@@ -63,7 +84,7 @@ public class SelendroidServer {
 
   public void start() {
     webServer.start();
-    log.info("selendroid-standalone server has been started on port: " + driverPort);
+    log.info("selendroid-standalone server has been started on port: " + configuration.getPort());
   }
 
   public void stop() {

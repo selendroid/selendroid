@@ -49,7 +49,9 @@ public class SelendroidLauncher {
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
         log.info("Shutting down Selendroid standalone");
-        server.stop();
+        if (server != null) {
+          server.stop();
+        }
       }
     });
   }

@@ -13,6 +13,11 @@
  */
 package org.openqa.selendroid.server;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.util.concurrent.Executors;
+
 import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
@@ -28,8 +33,15 @@ public class HandlerRegisteredTest extends BaseTest {
   private WebServer server = null;
 
   @Override
-  public void setup() {
-    server = WebServers.createWebServer(port);
+  public void setup() throws Exception {
+    //server = WebServers.createWebServer(port);
+    URI remoteUri =
+        URI.create("http://127.0.0.1"
+            + (port == 80 ? "" : (":" + port)) + "/");
+
+    server =
+        WebServers.createWebServer(Executors.newSingleThreadExecutor(),
+            new InetSocketAddress(port), remoteUri);
     server.add(new AndroidTestServlet());
     server.start();
   }

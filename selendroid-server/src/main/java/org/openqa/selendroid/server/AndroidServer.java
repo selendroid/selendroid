@@ -13,6 +13,9 @@
  */
 package org.openqa.selendroid.server;
 
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 
 import org.openqa.selendroid.ServerInstrumentation;
@@ -27,18 +30,25 @@ public class AndroidServer {
   private WebServer webServer;
 
   /** for testing only */
-  protected AndroidServer(int port, ServerInstrumentation androidInstrumentation) {
+  protected AndroidServer(int port, ServerInstrumentation androidInstrumentation)
+      throws UnknownHostException {
     this.driverPort = port;
 
+    URI remoteUri =
+        URI.create("http://127.0.0.1" + (driverPort == 80 ? "" : (":" + driverPort)) + "/");
+
+    webServer =
+        WebServers.createWebServer(Executors.newCachedThreadPool(), new InetSocketAddress(
+            driverPort), remoteUri);
     init(androidInstrumentation);
   }
 
   public AndroidServer(ServerInstrumentation androidInstrumentation) {
+    webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
     init(androidInstrumentation);
   }
 
   protected void init(ServerInstrumentation androidInstrumentation) {
-    webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
     SelendroidDriver driver = new DefaultSelendroidDriver(androidInstrumentation);
     // seems like this must be set first
     webServer.staleConnectionTimeout(120 * 1000);
