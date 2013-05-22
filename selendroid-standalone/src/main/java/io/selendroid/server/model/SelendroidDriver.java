@@ -161,7 +161,7 @@ public class SelendroidDriver implements Versionable {
         }
       } catch (AndroidDeviceException e) {
         try {
-          emulator.stopEmulator();
+          deviceStore.release(device);
         } catch (AndroidDeviceException e1) {}
         throw new SessionNotCreatedException("Error occured while interacting with the emulator: "
             + emulator + ": " + e.getMessage());
@@ -275,9 +275,8 @@ public class SelendroidDriver implements Versionable {
       } catch (Exception e) {
         throw new SelendroidException(e);
       }
-      if (session.getDevice() instanceof AndroidEmulator) {
-        ((AndroidEmulator) session.getDevice()).stopEmulator();
-      }
+      deviceStore.release(session.getDevice());
+
       // remove session
       sessions.remove(session);
       session = null;

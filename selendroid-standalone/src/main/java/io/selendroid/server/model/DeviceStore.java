@@ -41,10 +41,27 @@ public class DeviceStore {
   public Integer nextEmulatorPort() {
     if (nextEmulatorPort == null) {
       nextEmulatorPort = ANDROID_EMULATOR_PORT;
-    }else{
-     nextEmulatorPort += 2;
+    } else {
+      nextEmulatorPort += 2;
     }
     return nextEmulatorPort;
+  }
+
+  /**
+   * After a test session a device should be released. That means id will be removed from the list
+   * of devices in use and in case of an emulator it will be stopped.
+   * 
+   * @param device The device to release
+   * @throws AndroidDeviceException
+   * @see {@link #findAndroidDevice(SelendroidCapabilities)}
+   */
+  public void release(AndroidDevice device) throws AndroidDeviceException {
+    if (devicesInUse.contains(device)) {
+      if (device instanceof AndroidEmulator) {
+        ((AndroidEmulator) device).stopEmulator();
+      }
+      devicesInUse.remove(device);
+    }
   }
 
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
@@ -82,7 +99,15 @@ public class DeviceStore {
     }
   }
 
-
+  /**
+   * Finds a device for the requested capabilities. <b>important note:</b> if the device is not any
+   * longer used, call the {@link #release(AndroidDevice)} method.
+   * 
+   * @param caps The desired test session capabilities.
+   * @return Matching device for a test session.
+   * @throws DeviceStoreException
+   * @see {@link #release(AndroidDevice)}
+   */
   public synchronized AndroidDevice findAndroidDevice(SelendroidCapabilities caps)
       throws DeviceStoreException {
     if (caps == null) {
@@ -98,7 +123,7 @@ public class DeviceStore {
           "Device store does not contain a device of requested platform: " + platform);
     }
     for (AndroidDevice device : androidDevices.get(platform)) {
-      if (device.isDeviceReady() == false && device.screenSizeMatches(caps.getScreenSize())) {
+      if (isEmulatorSwitchedOff(device) == false && device.screenSizeMatches(caps.getScreenSize())) {
         if (devicesInUse.contains(device)) {
           continue;
         }
@@ -109,6 +134,17 @@ public class DeviceStore {
     throw new DeviceStoreException("No devices are found. "
         + "This can happen if the devices are in use or no device screen "
         + "matches the required capabilities.");
+  }
+
+  private boolean isEmulatorSwitchedOff(AndroidDevice device) throws DeviceStoreException {
+    if (device instanceof AndroidEmulator) {
+      try {
+        return ((AndroidEmulator) device).isEmulatorStarted();
+      } catch (AndroidDeviceException e) {
+        throw new DeviceStoreException(e);
+      }
+    }
+    return false;
   }
 
   /**

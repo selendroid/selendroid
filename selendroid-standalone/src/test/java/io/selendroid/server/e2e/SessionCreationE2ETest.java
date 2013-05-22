@@ -17,12 +17,21 @@ public class SessionCreationE2ETest {
   final int port = 5555;
 
   @Test
-  public void assertThatSessionCanBeStartedAndStopped() throws Exception {
+  public void assertThatSessionCanBeStartedAndStopped1() throws Exception {
+    testMethod();
+  }
+
+  @Test
+  public void assertThatSessionCanBeStartedAndStopped2() throws Exception {
+    testMethod();
+  }
+
+  private void testMethod() throws Exception {
     SelendroidCapabilities capa =
         SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16,
             SelendroidDriverTests.TEST_APP_ID);
 
-    WebDriver driver = new SelendroidDriver("http://localhost:" + port + "/wd/hub", capa);
+    WebDriver driver = new SelendroidDriver("http://10.243.80.142:" + port + "/wd/hub", capa);
     WebElement inputField = driver.findElement(By.id("my_text_field"));
     Assert.assertEquals(inputField.getAttribute("enabled"), "true");
 

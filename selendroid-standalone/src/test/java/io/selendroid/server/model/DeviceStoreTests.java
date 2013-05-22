@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
@@ -49,6 +51,24 @@ public class DeviceStoreTests {
     Assert.assertEquals(5554, deviceStore.nextEmulatorPort().intValue());
     Assert.assertEquals(5556, deviceStore.nextEmulatorPort().intValue());
     Assert.assertEquals(5558, deviceStore.nextEmulatorPort().intValue());
+  }
+
+  @Test
+  public void testShouldBeAbleToReleaseActiveEmulators() throws Exception {
+    AndroidEmulator deEmulator = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
+
+
+    DeviceStore deviceStore = new DeviceStore();
+    deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator}));
+    Assert.assertEquals(deviceStore.getDevicesInUse().size(), 0);
+    AndroidDevice foundDevice = deviceStore.findAndroidDevice(withDefaultCapabilities());
+    Assert.assertEquals(deEmulator, foundDevice);
+    Assert.assertEquals(deviceStore.getDevicesInUse().size(), 1);
+    deviceStore.release(foundDevice);
+    // make sure the emulator has been stopped
+    verify(deEmulator, times(1)).stopEmulator();
+    // Make sure the device has been removed from devices in use
+    Assert.assertEquals(deviceStore.getDevicesInUse().size(), 0);
   }
 
   @Test

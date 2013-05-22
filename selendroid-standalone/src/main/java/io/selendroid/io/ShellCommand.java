@@ -51,8 +51,7 @@ public class ShellCommand {
     try {
       exec.execute(commandline);
     } catch (Exception e) {
-      throw new ShellCommandException("An error occured while executing shell command: "
-          + outputStream.toString());
+      throw new ShellCommandException("An error occured while executing shell command: " + cmd, e);
     }
     return (outputStream.toString());
   }
@@ -67,7 +66,7 @@ public class ShellCommand {
     try {
       exec.execute(commandline, handler);
     } catch (Exception e) {
-      throw new ShellCommandException("An error occured while executing shell command: ");
+      throw new ShellCommandException("An error occured while executing shell command: " + cmd, e);
     }
   }
 

@@ -215,7 +215,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
         } catch (InterruptedException e) {}
       } else {
         throw new AndroidDeviceException("The emulator with avd '" + getAvdName()
-            + "' was not started after " + EMULATOR_START_TIMEOUT / 60 + " seconds.");
+            + "' was not started after " + EMULATOR_START_TIMEOUT / 1000 + " seconds.");
       }
     }
 
