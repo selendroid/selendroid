@@ -24,18 +24,28 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteResultHandler;
+import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.exec.util.StringUtils;
 
 public class ShellCommand {
   private static final Logger log = Logger.getLogger(ShellCommand.class.getName());
 
-  public static String exec(String command) throws ShellCommandException {
-    log.info("executing command: " + command);
+
+  public static String exec(List<String> command) throws ShellCommandException {
+    return exec(command, 20000);
+  }
+
+  public static String exec(List<String> command, long timeoutInMillies)
+      throws ShellCommandException {
+    String cmd = StringUtils.toString(command.toArray(new String[command.size()]), " ");
+
+    log.info("executing command: " + cmd);
     OutputStream outputStream = new ByteArrayOutputStream();
 
-    CommandLine commandline = CommandLine.parse(command);
+    CommandLine commandline = CommandLine.parse(cmd);
     DefaultExecutor exec = new DefaultExecutor();
+    exec.setWatchdog(new ExecuteWatchdog(timeoutInMillies));
     PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
     exec.setStreamHandler(streamHandler);
     try {
@@ -45,12 +55,6 @@ public class ShellCommand {
           + outputStream.toString());
     }
     return (outputStream.toString());
-  }
-
-  public static String exec(List<String> command) throws ShellCommandException {
-    String cmd = StringUtils.toString(command.toArray(new String[command.size()]), " ");
-
-    return exec(cmd);
   }
 
   public static void execAsync(List<String> command) throws ShellCommandException {

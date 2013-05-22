@@ -4,6 +4,8 @@ import io.selendroid.android.AndroidSdk;
 import io.selendroid.io.ShellCommand;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -24,8 +26,10 @@ public class SelendroidServerBuilderTest {
     builder.cleanUpPrebuildServer();
 
     // Verify apk, if the files have been removed
-    String line = AndroidSdk.aapt() + " list " + builder.getSelendroidServer().getAbsolutePath();
-    String output = ShellCommand.exec(line);
+    List<String> cmd =
+        Arrays.asList(new String[] {AndroidSdk.aapt(), "list",
+            builder.getSelendroidServer().getAbsolutePath()});
+    String output = ShellCommand.exec(cmd);
 
     assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");
     assertResultDoesNotContainFile(output, "META-INF/CERT.SF");
@@ -47,8 +51,10 @@ public class SelendroidServerBuilderTest {
     Assert.assertTrue("Expecting non empty AndroidManifest.xml file", entry.getSize() > 700);
 
     // Verify that apk is not yet signed
-    String line = AndroidSdk.aapt() + " list " + builder.getSelendroidServer().getAbsolutePath();
-    String output = ShellCommand.exec(line);
+    List<String> cmd =
+        Arrays.asList(new String[] {AndroidSdk.aapt(), "list",
+            builder.getSelendroidServer().getAbsolutePath()});
+    String output = ShellCommand.exec(cmd);
 
     assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");
     assertResultDoesNotContainFile(output, "META-INF/CERT.SF");
@@ -63,8 +69,9 @@ public class SelendroidServerBuilderTest {
         builder.signTestServer(builder.createAndAddCustomizedAndroidManifestToSelendroidServer());
 
     // Verify that apk is not yet signed
-    String line = AndroidSdk.aapt() + " list " + file.getAbsolutePath();
-    String output = ShellCommand.exec(line);
+    List<String> cmd =
+        Arrays.asList(new String[] {AndroidSdk.aapt(), "list", file.getAbsolutePath()});
+    String output = ShellCommand.exec(cmd);
 
     assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");
     assertResultDoesNotContainFile(output, "META-INF/CERT.SF");
