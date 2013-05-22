@@ -17,13 +17,23 @@ Getting started
 ---------------
 
 Selendroid is based on the Android instrumentation framework, so therefor only testing one specific app is supported.
-Selendroid-server in combination with the application under test (aut) must be installed on the device in order to be able to run automated end-to-end tests.
 
-To write and run tests with selendroid, first a customized selendroid-server for your aut must be created. To simplify this process I have created a Ruby gem:
-		
-		# Please note that ruby minimum version 1.9.2 is required
-		sudo gem install selendroid
-		selendroid build-and-start pathToYour.apk
+Like Selenium we offer as well a standalone server.
+
+Please follow this steps to setup your machine:
+
+1) Install Java and configure JAVA_HOME
+
+2) Install [Android-Sdk](http://developer.android.com/sdk/index.html) and configure ANDROID_HOME
+
+3) create the emulators that you want to use
+
+4) Download Selendroid standalone [here](here)
+
+5) start the selendroid server:
+   ```java -jar selendroid-standalone-0.4-standalone.jar -app selendroid-test-app-0.4.apk```
+   
+Selendroid-standalone is able to start already existing Android emulators during the test session. 
 		
 Run your tests
 --------------
@@ -31,19 +41,17 @@ Run your tests
 A sample test looks like:
 
 ```java
-		driver = new AndroidDriver(new URL("http://localhost:8080/wd/hub"), getDefaultCapabilities());
-		driver.findElement(By.id("startUserRegistration")).click();
-		
-		WebDriverWait wait = new WebDriverWait(driver, 5);
-		WebElement inputUsername =
-         	wait.until(ExpectedConditions.presenceOfElementLocated(By.id("inputUsername")));
-		inputUsername.sendKeys(user.getUsername());
-		Assert.assertEquals(nameInput.getText(), "Mr. Burns");
-		nameInput.clear();
-		nameInput.sendKeys(user.getName());
-		takeScreenShot("User data entered.");
-		driver.findElement(By.id("btnRegisterUser")).click();
+    SelendroidCapabilities capa =
+        SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16, "org.openqa.selendroid.testapp:0.4");
+
+    WebDriver driver = new SelendroidDriver("http://localhost:5555/wd/hub", capa);
+    WebElement inputField = driver.findElement(By.id("my_text_field"));
+    Assert.assertEquals("true", inputField.getAttribute("enabled"));
+    inputField.sendKeys("Selendroid");
+    Assert.assertEquals("Selendroid", inputField.getText());
+    driver.quit();
 ```
+When running the test selendroid standalone is starting an Android emulator, the apps are installed on the device and the tests are executed and when the test is over the emulator will be closed.
 
 You want more details?
 ----------------------
