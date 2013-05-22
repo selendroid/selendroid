@@ -233,6 +233,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
     }
     event82.add("shell");
     event82.add("input");
+    event82.add("keyevent");
     event82.add("82");
 
     try {
@@ -249,6 +250,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
     }
     event4.add("shell");
     event4.add("input");
+    event82.add("keyevent");
     event4.add("4");
 
     try {
