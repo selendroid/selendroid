@@ -22,16 +22,16 @@ Like Selenium we offer as well a standalone server.
 
 Please follow this steps to setup your machine:
 
-1) Install Java and configure JAVA_HOME
+1. Install Java and configure JAVA_HOME
 
-2) Install [Android-Sdk](http://developer.android.com/sdk/index.html) and configure ANDROID_HOME
+2. Install [Android-Sdk](http://developer.android.com/sdk/index.html) and configure ANDROID_HOME
 
-3) create the emulators that you want to use
+3. Create the emulators that you want to use
 
-4) Download Selendroid standalone [here](here)
+4. Download Selendroid standalone [here](here)
 
-5) start the selendroid server:
-   ```java -jar selendroid-standalone-0.4-standalone.jar -app selendroid-test-app-0.4.apk```
+5. start the selendroid server:
+   - `java -jar selendroid-standalone-0.4-standalone.jar -app selendroid-test-app-0.4.apk`
    
 Selendroid-standalone is able to start already existing Android emulators during the test session. 
 		
