@@ -38,7 +38,9 @@ public interface AndroidEmulator {
 
   public DeviceTargetPlatform getTargetPlatform();
 
-  public void startEmulator(Locale locale, int port) throws AndroidDeviceException;
+  public void start(Locale locale, int port) throws AndroidDeviceException;
 
-  public void stopEmulator() throws AndroidDeviceException;
+  public void stop() throws AndroidDeviceException;
+
+  public Integer getPort();
 }

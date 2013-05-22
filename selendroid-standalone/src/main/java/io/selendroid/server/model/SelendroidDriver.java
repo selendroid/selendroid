@@ -157,7 +157,7 @@ public class SelendroidDriver implements Versionable {
               + "' is already started even though it should be switched off.");
         } else {
           Locale locale = parseLocale(desiredCapabilities);
-          emulator.startEmulator(locale, deviceStore.nextEmulatorPort());
+          emulator.start(locale, deviceStore.nextEmulatorPort());
         }
       } catch (AndroidDeviceException e) {
         try {

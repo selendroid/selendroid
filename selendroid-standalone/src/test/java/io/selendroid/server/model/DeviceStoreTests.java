@@ -1,3 +1,16 @@
+/*
+ * Copyright 2013 selendroid committers.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.selendroid.server.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,9 +69,11 @@ public class DeviceStoreTests {
   @Test
   public void testShouldBeAbleToReleaseActiveEmulators() throws Exception {
     AndroidEmulator deEmulator = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
-
-
-    DeviceStore deviceStore = new DeviceStore();
+    when(deEmulator.getPort()).thenReturn(5554);
+    
+    EmulatorPortFinder finder = mock(EmulatorPortFinder.class);
+    when(finder.next()).thenReturn(5554);
+    DeviceStore deviceStore = new DeviceStore(finder);
     deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator}));
     Assert.assertEquals(deviceStore.getDevicesInUse().size(), 0);
     AndroidDevice foundDevice = deviceStore.findAndroidDevice(withDefaultCapabilities());
@@ -66,7 +81,8 @@ public class DeviceStoreTests {
     Assert.assertEquals(deviceStore.getDevicesInUse().size(), 1);
     deviceStore.release(foundDevice);
     // make sure the emulator has been stopped
-    verify(deEmulator, times(1)).stopEmulator();
+    verify(deEmulator, times(1)).stop();
+    verify(finder, times(1)).release(5554);
     // Make sure the device has been removed from devices in use
     Assert.assertEquals(deviceStore.getDevicesInUse().size(), 0);
   }

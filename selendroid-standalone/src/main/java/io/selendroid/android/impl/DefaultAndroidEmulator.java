@@ -34,6 +34,7 @@ import org.openqa.selendroid.exceptions.SelendroidException;
 import com.beust.jcommander.internal.Lists;
 
 public class DefaultAndroidEmulator extends DefaultAndroidDevice implements AndroidEmulator {
+  private static final String EMULATOR_SERIAL_PREFIX = "emulator-";
   private static final Logger log = Logger.getLogger(DefaultAndroidEmulator.class.getName());
   public static final String ANDROID_EMULATOR_HARDWARE_CONFIG = "hardware-qemu.ini";
   public static final String FILE_LOCKING_SUFIX = ".lock";
@@ -182,11 +183,18 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
   }
 
   private void setSerial(int port) {
-    serial = "emulator-" + port;
+    serial = EMULATOR_SERIAL_PREFIX + port;
+  }
+
+  public Integer getPort() {
+    if (isSerialConfigured()) {
+      return Integer.parseInt(serial.replace(EMULATOR_SERIAL_PREFIX, ""));
+    }
+    return null;
   }
 
   @Override
-  public void startEmulator(Locale locale, int emulatorPort) throws AndroidDeviceException {
+  public void start(Locale locale, int emulatorPort) throws AndroidDeviceException {
     if (isEmulatorStarted()) {
       throw new SelendroidException("Error - Android emulator is already started " + this);
     }
@@ -261,7 +269,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
   }
 
   @Override
-  public void stopEmulator() throws AndroidDeviceException {
+  public void stop() throws AndroidDeviceException {
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
     if (isSerialConfigured()) {

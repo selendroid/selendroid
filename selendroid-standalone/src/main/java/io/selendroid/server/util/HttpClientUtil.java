@@ -13,8 +13,6 @@
  */
 package io.selendroid.server.util;
 
-
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;

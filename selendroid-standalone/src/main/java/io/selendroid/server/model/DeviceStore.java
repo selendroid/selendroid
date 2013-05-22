@@ -17,6 +17,7 @@ import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.DeviceStoreException;
+import io.selendroid.server.model.impl.DefaultPortFinder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,18 +34,18 @@ public class DeviceStore {
   private List<AndroidDevice> devicesInUse = new ArrayList<AndroidDevice>();
   private Map<DeviceTargetPlatform, List<AndroidDevice>> androidDevices =
       new HashMap<DeviceTargetPlatform, List<AndroidDevice>>();
-  private static final int ANDROID_EMULATOR_PORT = 5554;
-  private Integer nextEmulatorPort = null;
+  private EmulatorPortFinder androidEmulatorPortFinder = null;
 
-  public DeviceStore() {}
+  public DeviceStore() {
+    androidEmulatorPortFinder = new DefaultPortFinder();
+  }
+
+  public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder) {
+    this.androidEmulatorPortFinder = androidEmulatorPortFinder;
+  }
 
   public Integer nextEmulatorPort() {
-    if (nextEmulatorPort == null) {
-      nextEmulatorPort = ANDROID_EMULATOR_PORT;
-    } else {
-      nextEmulatorPort += 2;
-    }
-    return nextEmulatorPort;
+    return androidEmulatorPortFinder.next();
   }
 
   /**
@@ -58,7 +59,9 @@ public class DeviceStore {
   public void release(AndroidDevice device) throws AndroidDeviceException {
     if (devicesInUse.contains(device)) {
       if (device instanceof AndroidEmulator) {
-        ((AndroidEmulator) device).stopEmulator();
+        AndroidEmulator emulator = (AndroidEmulator) device;
+        emulator.stop();
+        androidEmulatorPortFinder.release(emulator.getPort());
       }
       devicesInUse.remove(device);
     }
