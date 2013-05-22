@@ -38,7 +38,7 @@ Selendroid-standalone is able to start already existing Android emulators during
 Run your tests
 --------------
 
-A sample test looks like:
+A test in Java using JUnit4 looks like this:
 
 ```java
     SelendroidCapabilities capa =
