@@ -225,18 +225,34 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
   }
 
   private void unlockEmulatorScreen() throws AndroidDeviceException {
-    List<String> command = new ArrayList<String>();
-    command.add(AndroidSdk.adb());
+    List<String> event82 = new ArrayList<String>();
+    event82.add(AndroidSdk.adb());
     if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+      event82.add("-s");
+      event82.add(serial);
     }
-    command.add("shell");
-    command.add("input");
-    command.add("82");
+    event82.add("shell");
+    event82.add("input");
+    event82.add("82");
 
     try {
-      ShellCommand.exec(command);
+      ShellCommand.exec(event82);
+    } catch (ShellCommandException e) {
+      throw new AndroidDeviceException(e);
+    }
+
+    List<String> event4 = new ArrayList<String>();
+    event4.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      event4.add("-s");
+      event4.add(serial);
+    }
+    event4.add("shell");
+    event4.add("input");
+    event4.add("4");
+
+    try {
+      ShellCommand.exec(event4);
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
     }
