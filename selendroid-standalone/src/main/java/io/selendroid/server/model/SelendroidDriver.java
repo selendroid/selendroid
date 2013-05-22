@@ -160,6 +160,9 @@ public class SelendroidDriver implements Versionable {
           emulator.startEmulator(locale, deviceStore.nextEmulatorPort());
         }
       } catch (AndroidDeviceException e) {
+        try {
+          emulator.stopEmulator();
+        } catch (AndroidDeviceException e1) {}
         throw new SessionNotCreatedException("Error occured while interacting with the emulator: "
             + emulator + ": " + e.getMessage());
       }
