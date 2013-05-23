@@ -21,7 +21,11 @@ import com.beust.jcommander.Parameter;
 
 public class SelendroidConfiguration {
   @Parameter(description = "port the server will listen on.", names = "-port")
-  public int port = 5555;
+  private int port = 5555;
+
+  @Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
+  private long timeoutEmulatorStart = 120000;
+
 
   @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
       "-app", "-aut"}, required = true)
@@ -48,4 +52,13 @@ public class SelendroidConfiguration {
   public int getPort() {
     return this.port;
   }
+
+  public long getTimeoutEmulatorStart() {
+    return timeoutEmulatorStart;
+  }
+
+  public void setTimeoutEmulatorStart(long timeoutEmulatorStart) {
+    this.timeoutEmulatorStart = timeoutEmulatorStart;
+  }
+
 }

@@ -146,7 +146,7 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   }
 
   @Override
-  public void start(Locale locale, int number) {
+  public void start(Locale locale, int number, long timeout) {
     try {
       Thread.sleep(500);
     } catch (InterruptedException e) {

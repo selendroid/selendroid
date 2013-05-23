@@ -55,9 +55,11 @@ public class SelendroidDriver implements Versionable {
   private Map<String, ActiveSession> sessions = new HashMap<String, ActiveSession>();
   private DeviceStore deviceStore = null;
   private SelendroidServerBuilder selendroidApkBuilder = null;
+  private SelendroidConfiguration serverConfiguration = null;
 
   public SelendroidDriver(SelendroidConfiguration serverConfiguration) throws AndroidSdkException,
       AndroidDeviceException {
+    this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder();
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
@@ -157,7 +159,8 @@ public class SelendroidDriver implements Versionable {
               + "' is already started even though it should be switched off.");
         } else {
           Locale locale = parseLocale(desiredCapabilities);
-          emulator.start(locale, deviceStore.nextEmulatorPort());
+          emulator.start(locale, deviceStore.nextEmulatorPort(),
+              serverConfiguration.getTimeoutEmulatorStart());
         }
       } catch (AndroidDeviceException e) {
         try {

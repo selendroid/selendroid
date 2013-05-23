@@ -38,7 +38,6 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
   private static final Logger log = Logger.getLogger(DefaultAndroidEmulator.class.getName());
   public static final String ANDROID_EMULATOR_HARDWARE_CONFIG = "hardware-qemu.ini";
   public static final String FILE_LOCKING_SUFIX = ".lock";
-  public final int EMULATOR_START_TIMEOUT = 60000;
   private String screenSize;
   private DeviceTargetPlatform targetPlatform;
   // TODO ddary just use this as default
@@ -194,7 +193,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
   }
 
   @Override
-  public void start(Locale locale, int emulatorPort) throws AndroidDeviceException {
+  public void start(Locale locale, int emulatorPort, long timeout) throws AndroidDeviceException {
     if (isEmulatorStarted()) {
       throw new SelendroidException("Error - Android emulator is already started " + this);
     }
@@ -209,7 +208,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
     cmd.add("-prop");
     cmd.add("persist.sys.country=" + locale.getCountry());
     long start = System.currentTimeMillis();
-    long timemoutEnd = start + EMULATOR_START_TIMEOUT;
+    long timemoutEnd = start + timeout;
     try {
       ShellCommand.execAsync(cmd);
     } catch (ShellCommandException e) {
@@ -223,7 +222,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
         } catch (InterruptedException e) {}
       } else {
         throw new AndroidDeviceException("The emulator with avd '" + getAvdName()
-            + "' was not started after " + EMULATOR_START_TIMEOUT / 1000 + " seconds.");
+            + "' was not started after " + timemoutEnd / 1000 + " seconds.");
       }
     }
 

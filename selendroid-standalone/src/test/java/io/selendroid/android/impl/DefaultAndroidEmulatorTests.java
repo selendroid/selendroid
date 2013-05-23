@@ -40,7 +40,7 @@ public class DefaultAndroidEmulatorTests {
 
     Assert.assertTrue("expecting emulators exists: ", emulator.isEmulatorAlreadyExistent());
     Assert.assertFalse("expecting emulator is not yet started: ", emulator.isEmulatorStarted());
-    emulator.start(new Locale("en_GB"), 5554);
+    emulator.start(new Locale("en_GB"), 5554, 120000);
     Assert.assertTrue(emulator.isEmulatorStarted());
     emulator.stop();
     Assert.assertFalse(emulator.isEmulatorStarted());
