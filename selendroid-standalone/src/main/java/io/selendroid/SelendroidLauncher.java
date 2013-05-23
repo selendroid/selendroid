@@ -16,16 +16,26 @@ package io.selendroid;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.SelendroidServer;
 
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 public class SelendroidLauncher {
+  public static final String LOGGER_NAME = "io.selendroid";
   private static final Logger log = Logger.getLogger(SelendroidLauncher.class.getName());
   private static SelendroidServer server = null;
 
   public static void main(String[] args) {
+    try {
+      configureLogging();
+    } catch (Exception e1) {
+      System.out.println("Error occured while registering loggin file handler.");
+    }
+
     log.info("################# Selendroid #################");
     SelendroidConfiguration config = new SelendroidConfiguration();
     try {
@@ -54,5 +64,11 @@ public class SelendroidLauncher {
         }
       }
     });
+  }
+
+  private static void configureLogging() throws Exception {
+    Handler fh = new FileHandler("selendroid.log");
+    fh.setFormatter(new SimpleFormatter());
+    Logger.getLogger(LOGGER_NAME).addHandler(fh);
   }
 }
