@@ -17,7 +17,7 @@ import static io.selendroid.android.AndroidSdk.platformExecutableSuffix;
 
 import java.io.File;
 
-import org.openqa.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.SelendroidException;
 
 public class JavaSdk {
   public static String javaHome() {

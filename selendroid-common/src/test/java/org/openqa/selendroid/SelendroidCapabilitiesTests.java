@@ -1,5 +1,6 @@
 package org.openqa.selendroid;
 
+import io.selendroid.SelendroidCapabilities;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;

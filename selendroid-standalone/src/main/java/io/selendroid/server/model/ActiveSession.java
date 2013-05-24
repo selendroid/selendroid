@@ -16,7 +16,7 @@ package io.selendroid.server.model;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 
-import org.openqa.selendroid.SelendroidCapabilities;
+import io.selendroid.SelendroidCapabilities;
 
 public class ActiveSession {
   private final String sessionKey;

@@ -34,9 +34,9 @@ import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selendroid.SelendroidCapabilities;
-import org.openqa.selendroid.device.DeviceTargetPlatform;
-import org.openqa.selendroid.exceptions.SelendroidException;
+import io.selendroid.SelendroidCapabilities;
+import io.selendroid.device.DeviceTargetPlatform;
+import io.selendroid.exceptions.SelendroidException;
 
 /**
  * @author ddary

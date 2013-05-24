@@ -24,7 +24,6 @@ import java.net.URI;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import org.openqa.selendroid.server.StatusServlet;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
 

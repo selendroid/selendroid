@@ -28,7 +28,7 @@ import java.util.Locale;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
-import org.openqa.selendroid.device.DeviceTargetPlatform;
+import io.selendroid.device.DeviceTargetPlatform;
 
 public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   public boolean deviceReady = false;

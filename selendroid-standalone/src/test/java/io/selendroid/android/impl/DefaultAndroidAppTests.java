@@ -19,7 +19,7 @@ import java.io.File;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.SelendroidException;
 
 public class DefaultAndroidAppTests {
   private static final String APK_FILE = "src/test/resources/selendroid-test-app.apk";

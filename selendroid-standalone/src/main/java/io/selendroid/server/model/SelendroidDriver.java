@@ -37,9 +37,9 @@ import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openqa.selendroid.SelendroidCapabilities;
-import org.openqa.selendroid.exceptions.SelendroidException;
-import org.openqa.selendroid.server.Versionable;
+import io.selendroid.SelendroidCapabilities;
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.Versionable;
 import org.openqa.selenium.SessionNotCreatedException;
 
 import com.beust.jcommander.internal.Lists;

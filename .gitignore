@@ -12,5 +12,7 @@ gen/
 out/
 
 #intellij
+selendroid.ipr
+selendroid.iws
 .idea/
 *.iml

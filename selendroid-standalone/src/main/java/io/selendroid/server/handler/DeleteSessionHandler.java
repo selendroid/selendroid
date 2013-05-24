@@ -20,7 +20,7 @@ import io.selendroid.server.model.SelendroidDriver;
 import java.util.logging.Logger;
 
 import org.json.JSONException;
-import org.openqa.selendroid.server.Response;
+import io.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
 public class DeleteSessionHandler extends BaseSelendroidServerHandler {

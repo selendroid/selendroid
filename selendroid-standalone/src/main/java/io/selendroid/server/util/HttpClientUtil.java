@@ -26,7 +26,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
-import org.openqa.selendroid.SelendroidCapabilities;
+import io.selendroid.SelendroidCapabilities;
 
 public class HttpClientUtil {
   public static HttpClient getHttpClient() {

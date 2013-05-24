@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openqa.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.SelendroidException;
 
 import com.beust.jcommander.internal.Lists;
 

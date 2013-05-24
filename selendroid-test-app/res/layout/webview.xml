@@ -27,7 +27,7 @@
             android:id="@+id/spinner_webdriver_test_data"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            class="org.openqa.selendroid.testapp.view.SelendroidSpinner"
+            class="io.selendroid.testapp.view.SelendroidSpinner"
             android:prompt="@string/prompt_webdriverHtmlTestFile" />
         <!-- android:entries="@array/arrays_webdriverHtmlTestFile" -->
 

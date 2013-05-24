@@ -7,7 +7,7 @@
     <uses-sdk android:minSdkVersion="10" />
 
     <instrumentation
-        android:name="org.openqa.selendroid.ServerInstrumentation"
+        android:name="ServerInstrumentation"
         android:targetPackage="org.openqa.selendroid.testapp" />
 
     <uses-permission android:name="android.permission.INTERNET" />

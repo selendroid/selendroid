@@ -19,9 +19,9 @@ import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openqa.selendroid.SelendroidCapabilities;
-import org.openqa.selendroid.exceptions.SelendroidException;
-import org.openqa.selendroid.server.Response;
+import io.selendroid.SelendroidCapabilities;
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
 public class GetCapabilities extends BaseSelendroidServerHandler {

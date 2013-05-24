@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.openqa.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.SelendroidException;
 
 public class AndroidSdk {
   public static final String ANDROID_FOLDER_PREFIX = "android-";

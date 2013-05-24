@@ -42,7 +42,7 @@ A test in Java using JUnit4 looks like this:
 
 ```java
     SelendroidCapabilities capa =
-        SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16, "org.openqa.selendroid.testapp:0.4");
+        SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16, "io.selendroid.testapp:0.4");
 
     WebDriver driver = new SelendroidDriver("http://localhost:5555/wd/hub", capa);
     WebElement inputField = driver.findElement(By.id("my_text_field"));

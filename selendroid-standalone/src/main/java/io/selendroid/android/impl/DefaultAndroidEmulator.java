@@ -28,8 +28,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selendroid.device.DeviceTargetPlatform;
-import org.openqa.selendroid.exceptions.SelendroidException;
+import io.selendroid.device.DeviceTargetPlatform;
+import io.selendroid.exceptions.SelendroidException;
 
 import com.beust.jcommander.internal.Lists;
 

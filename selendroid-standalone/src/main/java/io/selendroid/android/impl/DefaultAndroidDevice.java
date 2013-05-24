@@ -33,7 +33,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.openqa.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.SelendroidException;
 
 import com.beust.jcommander.internal.Lists;
 

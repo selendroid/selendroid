@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openqa.selendroid.server.Response;
+import io.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
 public class CreateSessionHandler extends BaseSelendroidServerHandler {

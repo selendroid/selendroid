@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.openqa.selendroid.SelendroidCapabilities;
-import org.openqa.selendroid.device.DeviceTargetPlatform;
-import org.openqa.selendroid.exceptions.SelendroidException;
+import io.selendroid.SelendroidCapabilities;
+import io.selendroid.device.DeviceTargetPlatform;
+import io.selendroid.exceptions.SelendroidException;
 
 public class DeviceStore {
   private static final Logger log = Logger.getLogger(DeviceStore.class.getName());

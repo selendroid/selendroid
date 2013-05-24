@@ -24,9 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONException;
-import org.openqa.selendroid.server.BaseRequestHandler;
-import org.openqa.selendroid.server.BaseServlet;
-import org.openqa.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 

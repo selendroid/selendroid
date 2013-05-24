@@ -17,9 +17,9 @@ import io.selendroid.server.model.SelendroidDriverTests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selendroid.SelendroidCapabilities;
+import io.selendroid.SelendroidCapabilities;
 import org.openqa.selendroid.SelendroidDriver;
-import org.openqa.selendroid.device.DeviceTargetPlatform;
+import io.selendroid.device.DeviceTargetPlatform;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

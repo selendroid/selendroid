@@ -40,7 +40,7 @@ Registering nodes to this grid can be done using this registration request (file
         "hubHost": "localhost",
         "hubPort": 4444,
         "remoteHost":"http://localhost:8080",
-        "proxy":"org.openqa.selendroid.grid.SelendroidSessionProxy"
+        "proxy":"io.selendroid.grid.SelendroidSessionProxy"
 	}
 }
 ```

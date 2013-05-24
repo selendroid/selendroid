@@ -33,10 +33,10 @@ import java.util.UUID;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selendroid.SelendroidCapabilities;
-import org.openqa.selendroid.device.DeviceTargetPlatform;
-import org.openqa.selendroid.exceptions.SelendroidException;
-import org.openqa.selendroid.server.Response;
+import io.selendroid.SelendroidCapabilities;
+import io.selendroid.device.DeviceTargetPlatform;
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.Response;
 
 public class SelendroidDriverTests {
   public static final String TEST_APP_ID = "org.openqa.selendroid.testapp:0.4-SNAPSHOT";

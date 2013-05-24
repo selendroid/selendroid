@@ -66,7 +66,7 @@ public class SelendroidDeviceServerStub extends NanoHTTPD {
     return "DELETE".equals(method);
   }
 
-  private Response respond(org.openqa.selendroid.server.Response response) {
+  private Response respond(io.selendroid.server.Response response) {
     return new Response(HTTP_OK, "application/json", response.toString());
   }
 }

@@ -23,8 +23,8 @@ import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openqa.selendroid.exceptions.SelendroidException;
-import org.openqa.selendroid.server.Response;
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
 public class RequestRedirectHandler extends BaseSelendroidServerHandler {

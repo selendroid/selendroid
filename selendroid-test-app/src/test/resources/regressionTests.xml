@@ -4,25 +4,25 @@
 	<test name="selendroid element finding tests">
 		<classes>
 			<class
-				name="org.openqa.selendroid.nativetests.NativeChildElementFindingTest" />
-			<class name="org.openqa.selendroid.nativetests.NativeElementFindingTest" />
+				name="io.selendroid.nativetests.NativeChildElementFindingTest" />
+			<class name="io.selendroid.nativetests.NativeElementFindingTest" />
 			<class
-				name="org.openqa.selendroid.webviewdrivertests.WebElementFindingTest" />
+				name="io.selendroid.webviewdrivertests.WebElementFindingTest" />
 			<class
-				name="org.openqa.selendroid.webviewdrivertests.WebChildElementFindingTest" />
+				name="io.selendroid.webviewdrivertests.WebChildElementFindingTest" />
 		</classes>
 	</test>
 	<test name="selendroid element interaction tests">
 		<classes>
 			<class
-				name="org.openqa.selendroid.nativetests.NativeElementInteractionTests" />
+				name="io.selendroid.nativetests.NativeElementInteractionTests" />
 			<class
-				name="org.openqa.selendroid.webviewdrivertests.WebElementInteractionTests" />
+				name="io.selendroid.webviewdrivertests.WebElementInteractionTests" />
 		</classes>
 	</test>
 
 
 	<listeners>
-		<listener class-name="org.openqa.selendroid.support.LargeTestFeedbackListener"></listener>
+		<listener class-name="io.selendroid.support.LargeTestFeedbackListener"></listener>
 	</listeners>
 </suite>

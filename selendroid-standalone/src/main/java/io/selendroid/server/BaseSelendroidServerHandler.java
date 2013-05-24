@@ -15,8 +15,6 @@ package io.selendroid.server;
 
 import io.selendroid.server.model.SelendroidDriver;
 
-import org.openqa.selendroid.server.BaseRequestHandler;
-import org.openqa.selendroid.server.BaseServlet;
 import org.webbitserver.HttpRequest;
 
 public abstract class BaseSelendroidServerHandler extends BaseRequestHandler {

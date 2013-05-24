@@ -17,7 +17,7 @@ import java.util.Properties;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openqa.selendroid.server.Response;
+import io.selendroid.server.Response;
 
 /**
  * Implementations are able to listen to the {@link SelendroidDeviceServerStub} lifecycle.
