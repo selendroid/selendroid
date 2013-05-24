@@ -32,7 +32,7 @@
 				<plugin>
 					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 					<artifactId>android-maven-plugin</artifactId>
-					<version>3.5.2</version>
+					<version>3.6.0</version>
 					<extensions>true</extensions>
 					<configuration>
 						<sdk>
@@ -53,20 +53,20 @@
 		</pluginManagement>
 	</build>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-java</artifactId>
-                <version>2.32.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-server</artifactId>
-                <version>2.32.0</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-java</artifactId>
+				<version>2.32.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-server</artifactId>
+				<version>2.32.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<licenses>
 		<license>
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
