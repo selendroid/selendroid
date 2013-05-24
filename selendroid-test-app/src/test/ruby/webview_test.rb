@@ -11,7 +11,7 @@ class ExampleTest < Test::Unit::TestCase
     
     wait = Selenium::WebDriver::Wait.new(:timeout => 10) # seconds
     wait.until { @driver.find_element(:link_text => 'Go to home screen') }
-    @driver.switchToWindow('WEBVIEW')
+    @driver.switch_to.window('WEBVIEW')
     inputField = @driver.find_element(:id, 'name_input')
     inputField.clear();
     inputField.sendKeys("Dominik");
