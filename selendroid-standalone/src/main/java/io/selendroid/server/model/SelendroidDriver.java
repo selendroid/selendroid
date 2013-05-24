@@ -13,6 +13,7 @@
  */
 package io.selendroid.server.model;
 
+import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
@@ -23,6 +24,8 @@ import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.DeviceStoreException;
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.Versionable;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
@@ -37,9 +40,6 @@ import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.SelendroidCapabilities;
-import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Versionable;
 import org.openqa.selenium.SessionNotCreatedException;
 
 import com.beust.jcommander.internal.Lists;
@@ -226,6 +226,11 @@ public class SelendroidDriver implements Versionable {
   /* package */AndroidDevice getAndroidDevice(SelendroidCapabilities caps)
       throws AndroidDeviceException {
     AndroidDevice device = null;
+    Boolean emulator = caps.getEmulator();
+    if (emulator == null) {
+      emulator = Boolean.TRUE;
+      log.warning("'emualtor' capability in desired capabilities. Assuming an emulator was meant.");
+    }
     if (caps.getEmulator()) {
       try {
         device = deviceStore.findAndroidDevice(caps);

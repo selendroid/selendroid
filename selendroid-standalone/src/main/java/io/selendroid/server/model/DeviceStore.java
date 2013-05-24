@@ -13,10 +13,13 @@
  */
 package io.selendroid.server.model;
 
+import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
+import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.DeviceStoreException;
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.impl.DefaultPortFinder;
 
 import java.util.ArrayList;
@@ -24,10 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import io.selendroid.SelendroidCapabilities;
-import io.selendroid.device.DeviceTargetPlatform;
-import io.selendroid.exceptions.SelendroidException;
 
 public class DeviceStore {
   private static final Logger log = Logger.getLogger(DeviceStore.class.getName());
@@ -120,7 +119,11 @@ public class DeviceStore {
       throw new DeviceStoreException(
           "Fatal Error: Device Store does not contain any Android Device.");
     }
-    DeviceTargetPlatform platform = DeviceTargetPlatform.valueOf(caps.getAndroidTarget());
+    String androidTarget = caps.getAndroidTarget();
+    if (androidTarget == null || androidTarget.isEmpty()) {
+      throw new DeviceStoreException("'androidTarget' is missing in desired capabilities.");
+    }
+    DeviceTargetPlatform platform = DeviceTargetPlatform.valueOf(androidTarget);
     if (!androidDevices.containsKey(platform)) {
       throw new DeviceStoreException(
           "Device store does not contain a device of requested platform: " + platform);

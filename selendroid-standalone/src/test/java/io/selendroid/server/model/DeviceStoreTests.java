@@ -22,11 +22,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
+import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.DeviceStoreException;
+import io.selendroid.exceptions.SelendroidException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,9 +37,6 @@ import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
-import io.selendroid.SelendroidCapabilities;
-import io.selendroid.device.DeviceTargetPlatform;
-import io.selendroid.exceptions.SelendroidException;
 
 /**
  * @author ddary
@@ -70,7 +70,7 @@ public class DeviceStoreTests {
   public void testShouldBeAbleToReleaseActiveEmulators() throws Exception {
     AndroidEmulator deEmulator = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
     when(deEmulator.getPort()).thenReturn(5554);
-    
+
     EmulatorPortFinder finder = mock(EmulatorPortFinder.class);
     when(finder.next()).thenReturn(5554);
     DeviceStore deviceStore = new DeviceStore(finder);
@@ -190,6 +190,22 @@ public class DeviceStoreTests {
     assertThat(device, equalTo((AndroidDevice) deEmulator16));
     // the device is in use when found
     assertThat(deviceStore.getDevicesInUse(), contains((AndroidDevice) deEmulator16));
+  }
+
+  @Test
+  public void storeShouldThrowAnExceptionIfTargetPlatformIsMissingInCapabilities() throws Exception {
+    // prepare device store
+    DefaultAndroidEmulator deEmulator16 = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
+    DeviceStore deviceStore = new DeviceStore();
+    deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator16}));
+
+    SelendroidCapabilities capa = new SelendroidCapabilities();
+    try {
+      deviceStore.findAndroidDevice(capa);
+      Assert.fail();
+    } catch (DeviceStoreException e) {
+      Assert.assertEquals("'androidTarget' is missing in desired capabilities.", e.getMessage());
+    }
   }
 
   @Test
