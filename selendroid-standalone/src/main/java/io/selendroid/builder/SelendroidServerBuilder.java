@@ -18,6 +18,7 @@ import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.JavaSdk;
 import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.exceptions.AndroidSdkException;
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
@@ -39,12 +40,11 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import io.selendroid.exceptions.SelendroidException;
 
 import com.beust.jcommander.internal.Lists;
 
 public class SelendroidServerBuilder {
-  public static final String SELENDROID_TEST_APP_PACKAGE = "org.openqa.selendroid.testapp";
+  public static final String SELENDROID_TEST_APP_PACKAGE = "io.selendroid.testapp";
   private static final Logger log = Logger.getLogger(SelendroidServerBuilder.class.getName());
   public static final String SELENDROID_FINAL_NAME = "selendroid-server.apk";
   public static final String PREBUILD_SELENDROID_SERVER_PATH =
@@ -87,8 +87,39 @@ public class SelendroidServerBuilder {
     log.info("create SelendroidServer for apk: " + autFilePath);
     init(autFilePath);
     cleanUpPrebuildServer();
-    File file = createAndAddCustomizedAndroidManifestToSelendroidServer();
-    return new DefaultAndroidApp(signTestServer(file));
+    File selendroidServer = createAndAddCustomizedAndroidManifestToSelendroidServer();
+    File outputFile =
+        new File(getCurrentDir() + "selendroid-server-" + applicationUnderTest.getBasePackage()
+            + "-0.4.0.apk");
+
+    return signTestServer(selendroidServer, outputFile);
+  }
+
+  private void deleteFileFromAppSilently(AndroidApp app, String file) {
+    if (app == null) {
+      throw new IllegalArgumentException("Required parameter 'app' is null.");
+    }
+    if (file == null || file.isEmpty()) {
+      throw new IllegalArgumentException("Required parameter 'file' is null or empty.");
+    }
+    try {
+      app.deleteFileFromWithinApk(file);
+    } catch (Exception e) {
+      // don't care, can happen if file does not exist
+    }
+  }
+
+  public AndroidApp resignApp(AndroidApp app) throws ShellCommandException, AndroidSdkException {
+    // Delete existing certificates
+    deleteFileFromAppSilently(app, "META-INF/MANIFEST.MF");
+    deleteFileFromAppSilently(app, "META-INF/CERT.RSA");
+    deleteFileFromAppSilently(app, "META-INF/CERT.SF");
+    deleteFileFromAppSilently(app, "META-INF/ANDROIDD.SF");
+    deleteFileFromAppSilently(app, "META-INF/ANDROIDD.RSA");
+
+    File appFile = new File(app.getAbsolutePath());
+    File outputFile = new File(appFile.getParentFile(), "resigned-" + appFile.getName());
+    return signTestServer(appFile, outputFile);
   }
 
   /* package */File createAndAddCustomizedAndroidManifestToSelendroidServer() throws IOException,
@@ -161,8 +192,11 @@ public class SelendroidServerBuilder {
     return finalSelendroidServerFile;
   }
 
-  /* package */File signTestServer(File customSelendroidServer) throws ShellCommandException,
-      AndroidSdkException {
+  /* package */AndroidApp signTestServer(File customSelendroidServer, File outputFileName)
+      throws ShellCommandException, AndroidSdkException {
+    if (outputFileName == null) {
+      throw new IllegalArgumentException("outputFileName parameter is null.");
+    }
     File androidKeyStore = androidDebugKeystore();
 
     if (androidKeyStore.isFile() == false) {
@@ -183,16 +217,14 @@ public class SelendroidServerBuilder {
       String output = ShellCommand.exec(createKeyStore);
       log.info("A new keystore has been created: " + output);
     }
-    File file =
-        new File(getCurrentDir() + "selendroid-server-" + applicationUnderTest.getBasePackage()
-            + "-0.4.0.apk");
+
     // Sign the jar
     List<String> signApkCommand = Lists.newArrayList();
     signApkCommand.add(JavaSdk.jarsigner());
     signApkCommand.add("-sigalg MD5withRSA");
     signApkCommand.add("-digestalg SHA1");
     signApkCommand.add("-signedjar");
-    signApkCommand.add(file.getAbsolutePath());
+    signApkCommand.add(outputFileName.getAbsolutePath());
     signApkCommand.add("-storepass android");
     signApkCommand.add("-keystore");
     signApkCommand.add(androidKeyStore.toString());
@@ -200,11 +232,13 @@ public class SelendroidServerBuilder {
     signApkCommand.add("androiddebugkey");
     String output = ShellCommand.exec(signApkCommand);
     if (log.isLoggable(Level.INFO)) {
-      log.info("Server signing output: " + output);
+      log.info("App signing output: " + output);
     }
-    log.info("The test server has been signed: " + file.getAbsolutePath());
-    return file;
+    log.info("The app has been signed: " + outputFileName.getAbsolutePath());
+    return new DefaultAndroidApp(outputFileName);
   }
+
+
 
   private File androidDebugKeystore() {
     return new File(FileUtils.getUserDirectory(), File.separatorChar + ".android"

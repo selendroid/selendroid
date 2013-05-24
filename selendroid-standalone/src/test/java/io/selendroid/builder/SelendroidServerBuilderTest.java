@@ -13,7 +13,9 @@
  */
 package io.selendroid.builder;
 
+import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.io.ShellCommand;
 
 import java.io.File;
@@ -22,6 +24,7 @@ import java.util.List;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -74,14 +77,34 @@ public class SelendroidServerBuilderTest {
   }
 
   @Test
+  public void testShouldBeAbleToResignAnSignedApp() throws Exception {
+    SelendroidServerBuilder builder = getDefaultBuilder();
+    File androidApp = File.createTempFile("testapp", ".apk");
+    FileUtils.copyFile(new File(APK_FILE), androidApp);
+    AndroidApp app = builder.resignApp(new DefaultAndroidApp(androidApp));
+    Assert.assertEquals("resigned-" + androidApp.getName(),
+        new File(app.getAbsolutePath()).getName());
+    // Verify that apk is signed
+    List<String> cmd =
+        Arrays.asList(new String[] {AndroidSdk.aapt(), "list", app.getAbsolutePath()});
+    String output = ShellCommand.exec(cmd);
+
+    assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");
+    assertResultDoesNotContainFile(output, "META-INF/CERT.SF");
+    assertResultDoesContainFile(output, "META-INF/ANDROIDD.SF");
+    assertResultDoesContainFile(output, "META-INF/ANDROIDD.RSA");
+    assertResultDoesContainFile(output, "AndroidManifest.xml");
+  }
+
+  @Test
   public void testShouldBeAbleToCreateASignedSelendroidServer() throws Exception {
     SelendroidServerBuilder builder = getDefaultBuilder();
     builder.init(APK_FILE);
     builder.cleanUpPrebuildServer();
-    File file =
-        builder.signTestServer(builder.createAndAddCustomizedAndroidManifestToSelendroidServer());
+    File file = File.createTempFile("testserver", "apk");
+    builder.signTestServer(builder.createAndAddCustomizedAndroidManifestToSelendroidServer(), file);
 
-    // Verify that apk is not yet signed
+    // Verify that apk is signed
     List<String> cmd =
         Arrays.asList(new String[] {AndroidSdk.aapt(), "list", file.getAbsolutePath()});
     String output = ShellCommand.exec(cmd);
