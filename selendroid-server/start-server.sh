@@ -1,6 +1,6 @@
 #!/bin/bash
 echo 'Starting Selendroid-server'
-adb shell am instrument -e main_activity 'io.selendroid.testapp.HomeScreenActivity' io.selendroid/ServerInstrumentation
+adb shell am instrument -e main_activity 'io.selendroid.testapp.HomeScreenActivity' io.selendroid/.ServerInstrumentation
 
 echo 'Activating port forwarding to port 8080'
 # activate port forwarding (local port : device port )
