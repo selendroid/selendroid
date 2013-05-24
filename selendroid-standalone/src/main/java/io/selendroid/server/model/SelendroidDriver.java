@@ -25,6 +25,7 @@ import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.server.Versionable;
 import io.selendroid.server.util.HttpClientUtil;
 
@@ -81,7 +82,14 @@ public class SelendroidDriver implements Versionable {
     for (String appPath : serverConfiguration.getSupportedApps()) {
       File file = new File(appPath);
       if (file.exists()) {
-        AndroidApp app = new DefaultAndroidApp(file);
+
+        AndroidApp app = null;
+        try {
+          app = selendroidApkBuilder.resignApp(new DefaultAndroidApp(file));
+        } catch (ShellCommandException e1) {
+          throw new SessionNotCreatedException("An error occured while resigning the app '"
+              + file.getName() + "'. ", e1);
+        }
         String appId = null;
         try {
           appId = app.getAppId();
