@@ -14,7 +14,7 @@
 			<unpack>true</unpack>
 			<scope>runtime</scope>
 			<excludes>
-				<exclude>org.openqa.selendroid:selendroid-server</exclude>
+				<exclude>io.selendroid:selendroid-server</exclude>
 			</excludes>
 		</dependencySet>
 		<dependencySet>
@@ -23,7 +23,7 @@
 			<unpack>false</unpack>
 			<scope>runtime</scope>
 			<includes>
-				<include>org.openqa.selendroid:selendroid-server</include>
+				<include>io.selendroid:selendroid-server</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>

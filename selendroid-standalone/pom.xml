@@ -2,15 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>io.selendroid</groupId>
+	<parent>
+		<groupId>io.selendroid</groupId>
+		<artifactId>selendroid</artifactId>
+		<version>0.4-SNAPSHOT</version>
+	</parent>
 	<artifactId>selendroid-standalone</artifactId>
 	<name>selendroid-standalone</name>
-	<version>0.4-SNAPSHOT</version>
+
 	<packaging>jar</packaging>
 
 	<properties>
-		<platform.version>2.3.3</platform.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -29,17 +31,17 @@
 	</licenses>
 	<dependencies>
 		<dependency>
-			<groupId>org.openqa.selendroid</groupId>
+			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-common</artifactId>
 			<version>0.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openqa.selendroid</groupId>
+			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-server-common</artifactId>
 			<version>0.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openqa.selendroid</groupId>
+			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-server</artifactId>
 			<version>0.4-SNAPSHOT</version>
 			<type>apk</type>
