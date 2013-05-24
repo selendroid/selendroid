@@ -1,4 +1,4 @@
-package org.openqa.selendroid;
+package io.selendroid;
 
 import io.selendroid.SelendroidCapabilities;
 import org.json.JSONObject;
