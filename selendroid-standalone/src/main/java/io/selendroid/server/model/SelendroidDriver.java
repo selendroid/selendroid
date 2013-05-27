@@ -172,9 +172,14 @@ public class SelendroidDriver implements Versionable {
           throw new SessionNotCreatedException("The Emulator '" + emulator
               + "' is already started even though it should be switched off.");
         } else {
+          Map<String, Object> config = new HashMap<String, Object>();
+          config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
+          if (desiredCapabilities.is(SelendroidCapabilities.DISPLAY)) {
+            config.put(AndroidEmulator.DISPLAY_OPTION,
+                desiredCapabilities.asMap().get(SelendroidCapabilities.DISPLAY));
+          }
           Locale locale = parseLocale(desiredCapabilities);
-          emulator.start(locale, deviceStore.nextEmulatorPort(),
-              serverConfiguration.getTimeoutEmulatorStart());
+          emulator.start(locale, deviceStore.nextEmulatorPort(), config);
         }
       } catch (AndroidDeviceException e) {
         try {

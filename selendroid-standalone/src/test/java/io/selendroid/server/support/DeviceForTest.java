@@ -25,6 +25,7 @@ import io.selendroid.server.util.HttpClientUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -152,7 +153,7 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   }
 
   @Override
-  public void start(Locale locale, int number, long timeout) {
+  public void start(Locale locale, int number, Map<String, Object> timeout) {
     try {
       Thread.sleep(500);
     } catch (InterruptedException e) {

@@ -13,14 +13,16 @@
  */
 package io.selendroid.android;
 
+import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 
 import java.io.File;
 import java.util.Locale;
-
-import io.selendroid.device.DeviceTargetPlatform;
+import java.util.Map;
 
 public interface AndroidEmulator {
+  public static final String TIMEOUT_OPTION = "TIMEOUT";
+  public static final String DISPLAY_OPTION = "DISPLAY";
 
   public String createEmulator() throws AndroidDeviceException;
 
@@ -38,7 +40,8 @@ public interface AndroidEmulator {
 
   public DeviceTargetPlatform getTargetPlatform();
 
-  public void start(Locale locale, int port,long timeout) throws AndroidDeviceException;
+  public void start(Locale locale, int port, Map<String, Object> options)
+      throws AndroidDeviceException;
 
   public void stop() throws AndroidDeviceException;
 

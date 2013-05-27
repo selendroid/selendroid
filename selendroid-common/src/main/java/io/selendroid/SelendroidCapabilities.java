@@ -29,6 +29,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String ANDROID_TARGET = "androidTarget";
   public static final String AUT = "aut";
   public static final String EMULATOR = "emulator";
+  public static final String DISPLAY = "display";
   public static final String LANGUAGE = "language";
   public static final String LOCALE = "locale";
   public static final String SCREEN_SIZE = "screenSize";

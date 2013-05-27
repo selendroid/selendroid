@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
@@ -38,6 +39,8 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   private static final Logger log = Logger.getLogger(DefaultAndroidEmulator.class.getName());
   public static final String ANDROID_EMULATOR_HARDWARE_CONFIG = "hardware-qemu.ini";
   public static final String FILE_LOCKING_SUFIX = ".lock";
+
+
   private String screenSize;
   private DeviceTargetPlatform targetPlatform;
   // TODO ddary just use this as default
@@ -194,12 +197,29 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   }
 
   @Override
-  public void start(Locale locale, int emulatorPort, long timeout) throws AndroidDeviceException {
+  public void start(Locale locale, int emulatorPort, Map<String, Object> options)
+      throws AndroidDeviceException {
     if (isEmulatorStarted()) {
       throw new SelendroidException("Error - Android emulator is already started " + this);
     }
+    Long timeout = null;
+    String display = null;
+    if (options != null) {
+      if (options.containsKey(TIMEOUT_OPTION)) {
+        timeout = (Long) options.get(TIMEOUT_OPTION);
+      }
+      if (options.containsKey(DISPLAY_OPTION)) {
+        display = (String) options.get(DISPLAY_OPTION);
+      }
+    }
+    if (timeout == null) {
+      timeout = 120000L;
+    }
     this.locale = locale;
     List<String> cmd = Lists.newArrayList();
+    if (display != null && display.isEmpty() == false) {
+      cmd.add("DISPLAY=:" + display);
+    }
     cmd.add(AndroidSdk.emulator());
     cmd.add("-avd");
     cmd.add(avdName);
