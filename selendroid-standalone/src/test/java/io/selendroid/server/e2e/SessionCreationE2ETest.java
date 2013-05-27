@@ -19,7 +19,7 @@ import io.selendroid.server.model.SelendroidDriverTests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selendroid.SelendroidDriver;
+import io.selendroid.SelendroidDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
