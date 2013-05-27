@@ -13,6 +13,8 @@
  */
 package io.selendroid;
 
+import io.selendroid.device.DeviceTargetPlatform;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +23,6 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.device.DeviceTargetPlatform;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class SelendroidCapabilities extends DesiredCapabilities {
@@ -122,6 +123,21 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     caps.setAut(aut);
     return caps;
   }
+
+  /**
+   * 
+   * @param platform The Android target platform to use.
+   * @param aut The application under test. Expected format is basePackage:version. E.g.:
+   *        io.selendroid.testapp:0.4
+   * @return Desired Capabilities of an emulator.
+   */
+  public static SelendroidCapabilities device(DeviceTargetPlatform platform, String aut) {
+    SelendroidCapabilities caps = emulator(platform, aut);
+    caps.setEmulator(false);
+
+    return caps;
+  }
+
 
   private Object decode(Object o) throws JSONException {
     if (o instanceof JSONArray) {

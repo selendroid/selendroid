@@ -22,12 +22,13 @@ import io.selendroid.server.model.SelendroidDriver;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import org.json.JSONException;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
 public class SelendroidServlet extends BaseServlet {
+  private static final Logger log = Logger.getLogger(SelendroidServlet.class.getName());
   protected Map<String, Class<? extends BaseRequestHandler>> redirectHandler =
       new HashMap<String, Class<? extends BaseRequestHandler>>();
   private SelendroidDriver driver;
@@ -81,7 +82,8 @@ public class SelendroidServlet extends BaseServlet {
     Response result;
     try {
       result = handler.handle();
-    } catch (JSONException e) {
+    } catch (Exception e) {
+      log.severe("Error occured while handlinf request: " + e.fillInStackTrace());
       replyWithServerError(response);
       return;
     }

@@ -16,6 +16,8 @@ package io.selendroid.server.model;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
+import io.selendroid.android.impl.DefaultAndroidEmulator;
+import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.DeviceStoreException;
@@ -145,8 +147,11 @@ public class DeviceStore {
         if (devicesInUse.contains(device)) {
           continue;
         }
-        devicesInUse.add(device);
-        return device;
+        if ((caps.getEmulator() == true && device instanceof DefaultAndroidEmulator)
+            || (caps.getEmulator() == false && device instanceof DefaultHardwareDevice)) {
+          devicesInUse.add(device);
+          return device;
+        }
       }
     }
     throw new DeviceStoreException("No devices are found. "

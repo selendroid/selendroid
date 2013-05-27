@@ -26,7 +26,7 @@ import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.server.Versionable;
-import io.selendroid.server.model.impl.DefaultAndroidDeviceFinder;
+import io.selendroid.server.model.impl.DefaultHardwareDeviceFinder;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
@@ -63,7 +63,7 @@ public class SelendroidDriver implements Versionable {
       AndroidDeviceException {
     this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder();
-    androidDeviceFinder = new DefaultAndroidDeviceFinder();
+    androidDeviceFinder = new DefaultHardwareDeviceFinder();
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
   }
@@ -245,16 +245,13 @@ public class SelendroidDriver implements Versionable {
       emulator = Boolean.TRUE;
       log.warning("'emualtor' capability in desired capabilities. Assuming an emulator was meant.");
     }
-    if (caps.getEmulator()) {
-      try {
-        device = deviceStore.findAndroidDevice(caps);
-      } catch (DeviceStoreException e) {
-        throw new AndroidDeviceException("Error occured while looking for emulators.", e);
-      }
-    } else {
-      throw new AndroidDeviceException(
-          "Currently only emulators are supported in selendroid standalone.");
+
+    try {
+      device = deviceStore.findAndroidDevice(caps);
+    } catch (DeviceStoreException e) {
+      throw new AndroidDeviceException("Error occured while looking for devices/emulators.", e);
     }
+
     return device;
   }
 
@@ -295,7 +292,7 @@ public class SelendroidDriver implements Versionable {
         HttpClientUtil.executeRequest("http://localhost:" + session.getSelendroidServerPort()
             + "/wd/hub/sessions/" + sessionId, HttpMethod.DELETE);
       } catch (Exception e) {
-        throw new SelendroidException(e);
+        // can happen, ignore
       }
       deviceStore.release(session.getDevice());
 

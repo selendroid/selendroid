@@ -16,7 +16,9 @@ package io.selendroid.android.impl;
 import io.selendroid.android.Abi;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
@@ -28,12 +30,10 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import io.selendroid.device.DeviceTargetPlatform;
-import io.selendroid.exceptions.SelendroidException;
 
 import com.beust.jcommander.internal.Lists;
 
-public class DefaultAndroidEmulator extends DefaultAndroidDevice implements AndroidEmulator {
+public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmulator {
   private static final String EMULATOR_SERIAL_PREFIX = "emulator-";
   private static final Logger log = Logger.getLogger(DefaultAndroidEmulator.class.getName());
   public static final String ANDROID_EMULATOR_HARDWARE_CONFIG = "hardware-qemu.ini";
@@ -44,6 +44,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
   private Abi abi = Abi.X86;
   private String avdName;
   private File avdRootFolder;
+  private Locale locale = null;
 
   public DefaultAndroidEmulator(String avdName, String abi, String screenSize, String target,
       File avdFilePath) {
@@ -197,6 +198,7 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
     if (isEmulatorStarted()) {
       throw new SelendroidException("Error - Android emulator is already started " + this);
     }
+    this.locale = locale;
     List<String> cmd = Lists.newArrayList();
     cmd.add(AndroidSdk.emulator());
     cmd.add("-avd");
@@ -283,5 +285,10 @@ public class DefaultAndroidEmulator extends DefaultAndroidDevice implements Andr
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
     }
+  }
+
+  @Override
+  public Locale getLocale() {
+    return locale;
   }
 }
