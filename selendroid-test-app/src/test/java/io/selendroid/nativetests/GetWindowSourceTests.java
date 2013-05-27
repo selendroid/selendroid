@@ -34,7 +34,7 @@ public class GetWindowSourceTests extends BaseAndroidTest {
     Assert.assertEquals(root.get("type").getAsString(),
         "com.android.internal.policy.impl.PhoneWindow$DecorView");
     Assert.assertEquals(root.get("activity").getAsString(),
-        "{org.openqa.selendroid.testapp/HomeScreenActivity}");
+        "{io.selendroid.testapp/HomeScreenActivity}");
     JsonArray child = root.get("children").getAsJsonArray();
     Assert.assertTrue(child.size() == 1, "Child element count == 1");
 
@@ -48,28 +48,28 @@ public class GetWindowSourceTests extends BaseAndroidTest {
     // Verify main ui elements
     JsonObject startUserRegistration = children.get(2).getAsJsonObject();
     Assert.assertEquals(startUserRegistration.get("name").getAsString(),
-        "org.openqa.selendroid.testapp:id/startUserRegistration");
+        "io.selendroid.testapp:id/startUserRegistration");
     Assert.assertEquals(startUserRegistration.get("type").getAsString(), "Button");
     Assert
         .assertEquals(startUserRegistration.get("value").getAsString(), "Start User Registration");
 
     JsonObject buttonTest = children.get(1).getAsJsonObject();
     Assert.assertEquals(buttonTest.get("name").getAsString(),
-        "org.openqa.selendroid.testapp:id/buttonTest");
+        "io.selendroid.testapp:id/buttonTest");
     Assert.assertEquals(buttonTest.get("type").getAsString(), "Button");
     Assert.assertEquals(buttonTest.get("value").getAsString(), "EN Button",
         "Depends on the device locale");
 
     JsonObject my_text_field = children.get(3).getAsJsonObject();
     Assert.assertEquals(my_text_field.get("name").getAsString(),
-        "org.openqa.selendroid.testapp:id/my_text_field");
+        "io.selendroid.testapp:id/my_text_field");
     Assert.assertEquals(my_text_field.get("type").getAsString(), "EditText");
     Assert.assertEquals(my_text_field.get("value").getAsString(), "");
 
 
     JsonObject buttonStartWebview = children.get(2).getAsJsonObject();
     Assert.assertEquals(buttonStartWebview.get("name").getAsString(),
-        "org.openqa.selendroid.testapp:id/buttonStartWebview");
+        "io.selendroid.testapp:id/buttonStartWebview");
     Assert.assertEquals(buttonStartWebview.get("type").getAsString(), "Button");
     Assert.assertEquals(buttonStartWebview.get("value").getAsString(), "Start Webview");
 

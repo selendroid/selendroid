@@ -111,7 +111,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
    * 
    * @param platform The Android target platform to use.
    * @param aut The application under test. Expected format is basePackage:version. E.g.:
-   *        org.openqa.selendroid.testapp:0.4
+   *        io.selendroid.testapp:0.4
    * @return Desired Capabilities of an emulator.
    */
   public static SelendroidCapabilities emulator(DeviceTargetPlatform platform, String aut) {

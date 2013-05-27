@@ -17,6 +17,7 @@ import io.selendroid.android.Abi;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
+import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.util.HttpClientUtil;
@@ -28,9 +29,14 @@ import java.util.Locale;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
-import io.selendroid.device.DeviceTargetPlatform;
 
 public class DeviceForTest implements AndroidEmulator, AndroidDevice {
+  @Override
+  public Locale getLocale() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
   public boolean deviceReady = false;
   public SelendroidDeviceServerStub selendroidDeviceServerStub = null;
   private final String screenSize;
@@ -159,8 +165,10 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   @Override
   public void stop() throws AndroidDeviceException {
     deviceReady = false;
-    selendroidDeviceServerStub.stop();
-    selendroidDeviceServerStub = null;
+    if (selendroidDeviceServerStub != null) {
+      selendroidDeviceServerStub.stop();
+      selendroidDeviceServerStub = null;
+    }
   }
 
   public boolean screenSizeMatches(String requestedScreenSize) {

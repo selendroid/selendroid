@@ -15,7 +15,6 @@ package io.selendroid.builder;
 
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
-import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.io.ShellCommand;
 
 import java.io.File;
@@ -81,7 +80,7 @@ public class SelendroidServerBuilderTest {
     SelendroidServerBuilder builder = getDefaultBuilder();
     File androidApp = File.createTempFile("testapp", ".apk");
     FileUtils.copyFile(new File(APK_FILE), androidApp);
-    AndroidApp app = builder.resignApp(new DefaultAndroidApp(androidApp));
+    AndroidApp app = builder.resignApp(androidApp);
     Assert.assertEquals("resigned-" + androidApp.getName(),
         new File(app.getAbsolutePath()).getName());
     // Verify that apk is signed

@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
  */
 @Test(groups={TestGroups.NATIVE})
 public class NativeChildElementFindingTest extends BaseAndroidTest {
-  public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp."
+  public static final String ACTIVITY_CLASS = "io.testapp."
       + "HomeScreenActivity";
 
   private void assertListIsEmpty(List<WebElement> elements) {

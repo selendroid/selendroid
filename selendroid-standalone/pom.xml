@@ -96,7 +96,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openqa.selendroid</groupId>
+			<groupId>io.selendroid</groupId>
 			<version>0.4-SNAPSHOT</version>
 			<artifactId>selendroid-client</artifactId>
 			<scope>test</scope>
@@ -117,6 +117,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
 				<configuration>
 					<descriptors>
 						<descriptor>src/main/assembly/assembly.xml</descriptor>
@@ -126,7 +127,10 @@
 							<mainClass>io.selendroid.SelendroidLauncher</mainClass>
 							<UseUniqueVersions>true</UseUniqueVersions>
 						</manifest>
-
+						<manifestEntries>
+							<url>${project.parent.url}</url>
+							<version>${project.version}</version>
+						</manifestEntries>
 					</archive>
 				</configuration>
 				<executions>

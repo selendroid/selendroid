@@ -150,7 +150,7 @@ public class WebbitAppServer implements AppServer {
         server);
     forwardPathToHandlerUnderCommon("/basicAuth", new BasicAuthHandler("test:test"), server);
     forwardPathToHandlerUnderCommon("/quitquitquit", new QuitQuitQuitHandler(), server);
-    server.add(new PathAugmentingStaticFileHandler(InProject.locate("file:///data/data/org.openqa.selendroid.testapp/web"), "/common"));
+    server.add(new PathAugmentingStaticFileHandler(InProject.locate("file:///data/data/io.selendroid.testapp/web"), "/common"));
     server.add(new PathAugmentingStaticFileHandler(InProject.locate("file:///android_asset/javascript/"),
         JS_SRC_CONTEXT_PATH));
     server.add(new PathAugmentingStaticFileHandler(InProject.locate("/third_party/closure/goog"),

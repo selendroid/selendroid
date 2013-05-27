@@ -13,15 +13,14 @@
  */
 package io.selendroid.webviewdrivertests;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import io.selendroid.TestGroups;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.waiter.TestWaiter;
 import io.selendroid.waiter.WaitingConditions;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -35,7 +34,7 @@ import org.testng.annotations.Test;
  */
 @Test(groups={TestGroups.WEBVIEW})
 public class WebChildElementFindingTest extends BaseAndroidTest {
-  public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp." + "WebViewActivity";
+  public static final String ACTIVITY_CLASS = "io.selendroid.testapp." + "WebViewActivity";
 
   private void assertListIsEmpty(List<WebElement> elements) {
     Assert.assertTrue(elements.isEmpty(), "Expecting empty list when no elements are found.");

@@ -15,7 +15,7 @@
 			<artifactId>selenium-java</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.openqa.selendroid</groupId>
+			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-common</artifactId>
 			<version>0.4-SNAPSHOT</version>
 		</dependency>

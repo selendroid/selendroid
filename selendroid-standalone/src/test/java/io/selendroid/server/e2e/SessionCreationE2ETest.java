@@ -13,20 +13,18 @@
  */
 package io.selendroid.server.e2e;
 
+import io.selendroid.SelendroidCapabilities;
+import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.server.model.SelendroidDriverTests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import io.selendroid.SelendroidCapabilities;
 import org.openqa.selendroid.SelendroidDriver;
-import io.selendroid.device.DeviceTargetPlatform;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class SessionCreationE2ETest {
-  final int port = 5555;
-
   @Test
   public void assertThatSessionCanBeStartedAndStopped1() throws Exception {
     testMethod(DeviceTargetPlatform.ANDROID10);
@@ -41,7 +39,7 @@ public class SessionCreationE2ETest {
     SelendroidCapabilities capa =
         SelendroidCapabilities.emulator(targetPlatform, SelendroidDriverTests.TEST_APP_ID);
 
-    WebDriver driver = new SelendroidDriver("http://localhost:" + port + "/wd/hub", capa);
+    WebDriver driver = new SelendroidDriver("http://localhost:5555/wd/hub", capa);
     WebElement inputField = driver.findElement(By.id("my_text_field"));
     Assert.assertEquals("true", inputField.getAttribute("enabled"));
     inputField.sendKeys("Selendroid");

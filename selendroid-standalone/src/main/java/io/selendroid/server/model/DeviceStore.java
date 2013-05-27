@@ -66,6 +66,18 @@ public class DeviceStore {
     }
   }
 
+  public void addDevices(List<AndroidDevice> androidDevices) throws AndroidDeviceException {
+    if (androidDevices == null || androidDevices.isEmpty()) {
+      log.info("No Android devices were found.");
+      return;
+    }
+    for (AndroidDevice device : androidDevices) {
+      if (device.isDeviceReady() == true) {
+        addAndroidEmulator(device);
+      }
+    }
+  }
+
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
     if (emulators == null || emulators.isEmpty()) {
       SelendroidException e =
@@ -80,7 +92,7 @@ public class DeviceStore {
         continue;
       }
       log.info("Adding: " + emulator);
-      addAndroidEmulator(emulator);
+      addAndroidEmulator((AndroidDevice) emulator);
     }
     if (androidDevices.isEmpty()) {
       throw new SelendroidException("No Android virtual devices that can be used were found. "
@@ -88,7 +100,7 @@ public class DeviceStore {
     }
   }
 
-  protected void addAndroidEmulator(AndroidEmulator emulator) throws AndroidDeviceException {
+  protected void addAndroidEmulator(AndroidDevice emulator) throws AndroidDeviceException {
     if (androidDevices.containsKey(emulator.getTargetPlatform())) {
       if (androidDevices.get(emulator.getTargetPlatform()) == null) {
         androidDevices.put(emulator.getTargetPlatform(), new ArrayList<AndroidDevice>());

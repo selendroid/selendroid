@@ -12,7 +12,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 @Test(groups={TestGroups.NATIVE})
 public class SendKeyAndNativeKeyTests extends BaseAndroidTest {
-  public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp."
+  public static final String ACTIVITY_CLASS = "io.selendroid.testapp."
       + "HomeScreenActivity";
 
   protected void precondition() {

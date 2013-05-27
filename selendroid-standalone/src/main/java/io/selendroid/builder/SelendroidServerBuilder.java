@@ -109,7 +109,8 @@ public class SelendroidServerBuilder {
     }
   }
 
-  public AndroidApp resignApp(AndroidApp app) throws ShellCommandException, AndroidSdkException {
+  public AndroidApp resignApp(File appFile) throws ShellCommandException, AndroidSdkException {
+    AndroidApp app =new DefaultAndroidApp(appFile);
     // Delete existing certificates
     deleteFileFromAppSilently(app, "META-INF/MANIFEST.MF");
     deleteFileFromAppSilently(app, "META-INF/CERT.RSA");
@@ -117,7 +118,7 @@ public class SelendroidServerBuilder {
     deleteFileFromAppSilently(app, "META-INF/ANDROIDD.SF");
     deleteFileFromAppSilently(app, "META-INF/ANDROIDD.RSA");
 
-    File appFile = new File(app.getAbsolutePath());
+    
     File outputFile = new File(appFile.getParentFile(), "resigned-" + appFile.getName());
     return signTestServer(appFile, outputFile);
   }

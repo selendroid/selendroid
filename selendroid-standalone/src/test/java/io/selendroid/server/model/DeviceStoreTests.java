@@ -256,4 +256,68 @@ public class DeviceStoreTests {
     capabilities.setScreenSize("320x480");
     return capabilities;
   }
+
+  @Test
+  public void testShouldBeAbleToAddDevices() throws Exception {
+    AndroidDevice device = mock(AndroidDevice.class);
+    when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
+    when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
+
+    DeviceStore store = new DeviceStore();
+    store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
+    assertThat(store.getDevicesList().values(), hasSize(1));
+    assertThat(store.getDevicesInUse(), hasSize(0));
+    assertThat(store.getDevicesList().values().iterator().next(), contains(device));
+  }
+
+  @Test
+  public void testShouldNotBeAbleToAddNotReadyDevice() throws Exception {
+    AndroidDevice device = mock(AndroidDevice.class);
+    when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
+    when(device.isDeviceReady()).thenReturn(Boolean.FALSE);
+
+    DeviceStore store = new DeviceStore();
+    store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
+    assertThat(store.getDevicesList().values(), hasSize(0));
+    assertThat(store.getDevicesInUse(), hasSize(0));
+  }
+
+  @Test
+  public void testShouldBeAbleToFindRealDeviceForCapabilities() throws Exception {
+    AndroidDevice device = mock(AndroidDevice.class);
+    when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
+    when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
+    when(device.getScreenSize()).thenReturn("320x480");
+    when(device.screenSizeMatches("320x480")).thenReturn(Boolean.TRUE);
+
+    DeviceStore store = new DeviceStore();
+    store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
+    assertThat(store.getDevicesList().values(), hasSize(1));
+    assertThat(store.getDevicesInUse(), hasSize(0));
+    AndroidDevice foundDevice = store.findAndroidDevice(withDefaultCapabilities());
+    assertThat(foundDevice, equalTo(device));
+    assertThat(store.getDevicesInUse(), hasSize(1));
+  }
+
+  @Test
+  public void testShouldNotBeAbleToFindRealDeviceForCapabilities() throws Exception {
+    AndroidDevice device = mock(AndroidDevice.class);
+    when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
+    when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
+    when(device.getScreenSize()).thenReturn("320x500");
+    when(device.screenSizeMatches("320x500")).thenReturn(Boolean.FALSE);
+
+    DeviceStore store = new DeviceStore();
+    store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
+    assertThat(store.getDevicesList().values(), hasSize(1));
+    assertThat(store.getDevicesInUse(), hasSize(0));
+    try {
+      store.findAndroidDevice(withDefaultCapabilities());
+      Assert.fail();
+    } catch (DeviceStoreException e) {
+      // expected
+    }
+
+    assertThat(store.getDevicesInUse(), hasSize(0));
+  }
 }

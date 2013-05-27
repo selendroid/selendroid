@@ -18,7 +18,6 @@ import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
-import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -27,6 +26,7 @@ import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.server.Versionable;
+import io.selendroid.server.model.impl.DefaultAndroidDeviceFinder;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
@@ -57,11 +57,13 @@ public class SelendroidDriver implements Versionable {
   private DeviceStore deviceStore = null;
   private SelendroidServerBuilder selendroidApkBuilder = null;
   private SelendroidConfiguration serverConfiguration = null;
+  private DeviceFinder androidDeviceFinder = null;
 
   public SelendroidDriver(SelendroidConfiguration serverConfiguration) throws AndroidSdkException,
       AndroidDeviceException {
     this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder();
+    androidDeviceFinder = new DefaultAndroidDeviceFinder();
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
   }
@@ -69,8 +71,9 @@ public class SelendroidDriver implements Versionable {
   /**
    * For testing only
    */
-  /* package */SelendroidDriver(SelendroidServerBuilder builder) {
+  /* package */SelendroidDriver(SelendroidServerBuilder builder, DeviceFinder deviceFinder) {
     this.selendroidApkBuilder = builder;
+    androidDeviceFinder = deviceFinder;
   }
 
   /* package */void initApplicationsUnderTest(SelendroidConfiguration serverConfiguration)
@@ -79,13 +82,14 @@ public class SelendroidDriver implements Versionable {
         || serverConfiguration.getSupportedApps().isEmpty()) {
       throw new SelendroidException("Configuration error - no apps has been configured.");
     }
+    this.serverConfiguration = serverConfiguration;
     for (String appPath : serverConfiguration.getSupportedApps()) {
       File file = new File(appPath);
       if (file.exists()) {
 
         AndroidApp app = null;
         try {
-          app = selendroidApkBuilder.resignApp(new DefaultAndroidApp(file));
+          app = selendroidApkBuilder.resignApp(file);
         } catch (ShellCommandException e1) {
           throw new SessionNotCreatedException("An error occured while resigning the app '"
               + file.getName() + "'. ", e1);
@@ -116,6 +120,8 @@ public class SelendroidDriver implements Versionable {
     deviceStore = new DeviceStore();
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
     deviceStore.addEmulators(emulators);
+    List<AndroidDevice> devices = androidDeviceFinder.findConnectedDevices();
+    deviceStore.addDevices(devices);
   }
 
   @Override

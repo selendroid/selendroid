@@ -43,7 +43,7 @@ public class WindowHandlingTests extends BaseAndroidTest {
   }
 
   private void openWebViewActivity() {
-    String activityClass = "org.openqa.selendroid.testapp." + "WebViewActivity";
+    String activityClass = "io.selendroid.testapp." + "WebViewActivity";
     driver.switchTo().window(NATIVE_APP);
     driver.get("and-activity://" + activityClass);
     waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://WebViewActivity"));

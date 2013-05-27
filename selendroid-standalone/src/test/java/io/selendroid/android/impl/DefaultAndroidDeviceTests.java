@@ -39,8 +39,8 @@ import com.beust.jcommander.internal.Lists;
  * 
  */
 public class DefaultAndroidDeviceTests {
-  public static final String SELENDROID_SERVER_PACKAGE = "org.openqa.selendroid";
-  public static final String AUT_PACKAGE = "org.openqa.selendroid.testapp";
+  public static final String SELENDROID_SERVER_PACKAGE = "io.selendroid";
+  public static final String AUT_PACKAGE = "io.selendroid.testapp";
   private String serial = "emulator-5554";
   private int port = 7070;
   private AndroidApp selendroidServer = new DefaultAndroidApp(new File(

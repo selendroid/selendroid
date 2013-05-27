@@ -13,7 +13,10 @@
  */
 package io.selendroid.android;
 
+import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidSdkException;
+
+import java.util.Locale;
 
 public interface AndroidDevice {
   public boolean isDeviceReady();
@@ -33,4 +36,8 @@ public interface AndroidDevice {
   public String getScreenSize();
 
   public boolean screenSizeMatches(String requestedScreenSize);
+
+  public Locale getLocale();
+
+  public DeviceTargetPlatform getTargetPlatform();
 }

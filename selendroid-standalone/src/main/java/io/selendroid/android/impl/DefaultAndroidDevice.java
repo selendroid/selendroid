@@ -16,13 +16,16 @@ package io.selendroid.android.impl;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidSdkException;
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,14 +36,17 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import io.selendroid.exceptions.SelendroidException;
 
 import com.beust.jcommander.internal.Lists;
 
 public class DefaultAndroidDevice implements AndroidDevice {
   public static final String WD_STATUS_ENDPOINT = "http://127.0.0.1:8080/wd/hub/status";
   protected String serial = null;
+  protected String model = null;
+  private Locale locale = null;
+  private String screenSize = null;
   protected Integer port = null;
+  private DeviceTargetPlatform targetPlatform = null;
 
   public DefaultAndroidDevice(String serial) {
     this.serial = serial;
@@ -140,7 +146,7 @@ public class DefaultAndroidDevice implements AndroidDevice {
     command.add("-e");
     command.add("main_activity");
     command.add(aut.getMainActivity());
-    command.add("org.openqa.selendroid/.ServerInstrumentation");
+    command.add("io.selendroid/.ServerInstrumentation");
     executeCommand(command);
 
     forwardSelendroidPort(port);
@@ -193,6 +199,10 @@ public class DefaultAndroidDevice implements AndroidDevice {
   }
 
   public Integer getDeviceTargetPlatform() {
+    return Integer.parseInt(getProp("ro.build.version.sdk"));
+  }
+
+  private String getProp(String key) {
     List<String> command = Lists.newArrayList();
     command.add(AndroidSdk.adb());
     if (isSerialConfigured()) {
@@ -201,10 +211,9 @@ public class DefaultAndroidDevice implements AndroidDevice {
     }
     command.add("shell");
     command.add("getprop");
-    command.add("ro.build.version.sdk");
-
-    String output = executeCommand(command);
-    return Integer.parseInt(output);
+    command.add(key);
+    String prop = executeCommand(command);
+    return prop.replace("\r", "").replace("\n", "");
   }
 
   protected static String extractValue(String regex, String output) {
@@ -217,9 +226,30 @@ public class DefaultAndroidDevice implements AndroidDevice {
     return null;
   }
 
+  public Locale getLocale() {
+    if (this.locale == null) {
+      this.locale = new Locale(getProp("persist.sys.language"), getProp("persist.sys.country"));
+    }
+    return locale;
+  }
+
   @Override
   public String getScreenSize() {
-    throw new RuntimeException("NOT YET IMPLEMENTED");
+    List<String> command = Lists.newArrayList();
+    command.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
+    command.add("shell");
+    command.add("dumpsys");
+    command.add("display");
+
+    String output = executeCommand(command);
+
+    this.screenSize = extractValue("PhysicalDisplayInfo\\{(.*?)\\,", output).replace(" ", "");
+    // look for deviceWidth, deviceHeight
+    return screenSize;
   }
 
   public boolean screenSizeMatches(String requestedScreenSize) {
@@ -229,5 +259,21 @@ public class DefaultAndroidDevice implements AndroidDevice {
     }
 
     return getScreenSize().equals(requestedScreenSize);
+  }
+
+  public String getModel() {
+    if (model == null) {
+      model = getProp("ro.product.model");
+    }
+    return model;
+  }
+
+  @Override
+  public DeviceTargetPlatform getTargetPlatform() {
+    if (targetPlatform == null) {
+      String version = getProp("ro.build.version.sdk");
+      targetPlatform = DeviceTargetPlatform.fromInt(version);
+    }
+    return targetPlatform;
   }
 }

@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 
 @Test(groups = {TestGroups.NATIVE})
 public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
-  public static final String ACTIVITY_CLASS = "org.openqa.selendroid.testapp."
+  public static final String ACTIVITY_CLASS = "io.selendroid.testapp."
       + "HomeScreenActivity";
   public static final By byIdUsernameLocator = By.id("label_username");
   public static final By byNameUsernameLocator = By.name("label_usernameCD");

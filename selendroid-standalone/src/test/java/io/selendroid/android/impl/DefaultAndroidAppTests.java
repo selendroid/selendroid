@@ -29,13 +29,13 @@ public class DefaultAndroidAppTests {
   @Test
   public void testShouldBeAbleToExtractBasePackage() throws Exception {
     AndroidApp app = new DefaultAndroidApp(new File(APK_FILE));
-    Assert.assertEquals(app.getBasePackage(), "org.openqa.selendroid.testapp");
+    Assert.assertEquals(app.getBasePackage(), "io.selendroid.testapp");
   }
 
   @Test
   public void testShouldBeAbleToExtractMainAcivity() throws Exception {
     AndroidApp app = new DefaultAndroidApp(new File(APK_FILE));
-    Assert.assertEquals(app.getMainActivity(), "org.openqa.selendroid.testapp.HomeScreenActivity");
+    Assert.assertEquals(app.getMainActivity(), "io.selendroid.testapp.HomeScreenActivity");
   }
 
   @Test()
@@ -80,7 +80,7 @@ public class DefaultAndroidAppTests {
   @Test
   public void testShouldBeAbleToGetAppId() throws Exception {
     AndroidApp app = new DefaultAndroidApp(new File(APK_FILE));
-    Assert.assertEquals("org.openqa.selendroid.testapp:0.4-SNAPSHOT", app.getAppId());
+    Assert.assertEquals("io.selendroid.testapp:0.4-SNAPSHOT", app.getAppId());
   }
 
   @Test
