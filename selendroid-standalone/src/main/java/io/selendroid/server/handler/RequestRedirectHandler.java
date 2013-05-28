@@ -13,7 +13,9 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.BaseSelendroidServerHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
 
@@ -23,8 +25,6 @@ import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
 public class RequestRedirectHandler extends BaseSelendroidServerHandler {
@@ -46,7 +46,6 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
           "No session found for given sessionId: " + sessionId));
     }
     String url = "http://localhost:" + session.getSelendroidServerPort() + request.uri();
-    log.info("requested forward url: " + url);
 
     String method = request.method();
 
@@ -73,9 +72,10 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
       throws Exception, JSONException {
     HttpResponse r = null;
     if ("get".equalsIgnoreCase(method)) {
+      log.info("GET redirect to: " + url);
       r = HttpClientUtil.executeRequest(url, HttpMethod.GET);
-
     } else if ("post".equalsIgnoreCase(method)) {
+      log.info("POST redirect to: " + url);
       JSONObject payload = getPayload();
       log.info("Payload? " + payload);
       r =
@@ -83,6 +83,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
               HttpMethod.POST, payload.toString());
 
     } else if ("delete".equalsIgnoreCase(method)) {
+      log.info("DELETE redirect to: " + url);
       r = HttpClientUtil.executeRequest(url, HttpMethod.DELETE);
     } else {
       throw new SelendroidException("Http method not supported.");

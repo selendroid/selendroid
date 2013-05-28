@@ -13,6 +13,10 @@
  */
 package io.selendroid.server.util;
 
+import io.selendroid.SelendroidCapabilities;
+
+import java.util.logging.Logger;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -26,9 +30,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
-import io.selendroid.SelendroidCapabilities;
 
 public class HttpClientUtil {
+  private static final Logger log = Logger.getLogger(HttpClientUtil.class.getName());
+
   public static HttpClient getHttpClient() {
     return new DefaultHttpClient();
   }
@@ -63,6 +68,7 @@ public class HttpClientUtil {
   public static HttpResponse executeCreateSessionRequest(int port,
       SelendroidCapabilities desiredCapabilities) throws Exception {
     String url = "http://localhost:" + port + "/wd/hub/session";
+    log.info("creating session by using url: " + url);
     JSONObject payload = new JSONObject();
     payload.put("desiredCapabilities", new JSONObject(desiredCapabilities.asMap()));
     HttpResponse response =

@@ -17,19 +17,17 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.exceptions.AndroidSdkException;
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -38,7 +36,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import com.beust.jcommander.internal.Lists;
 
 public abstract class AbstractDevice implements AndroidDevice {
-  public static final String WD_STATUS_ENDPOINT = "http://127.0.0.1:8080/wd/hub/status";
+  private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
+  public static final String WD_STATUS_ENDPOINT = "http://localhost:8080/wd/hub/status";
   protected String serial = null;
   protected Integer port = null;
 
@@ -186,23 +185,25 @@ public abstract class AbstractDevice implements AndroidDevice {
   @Override
   public boolean isSelendroidRunning() {
     HttpClient httpClient = new DefaultHttpClient();
-    HttpRequestBase request = new HttpGet(WD_STATUS_ENDPOINT.replace("8080", String.valueOf(port)));
+    String url = WD_STATUS_ENDPOINT.replace("8080", String.valueOf(port));
+    log.info("using url: " + url);
+    HttpRequestBase request = new HttpGet(url);
     HttpResponse response = null;
     try {
       response = httpClient.execute(request);
-    } catch (ClientProtocolException e) {
-      throw new SelendroidException(e);
-    } catch (IOException e) {
-      throw new SelendroidException(e);
+    } catch (Exception e) {
+      log.severe("Error getting status: " + e);
+      return false;
     }
     int statusCode = response.getStatusLine().getStatusCode();
+    log.info("got response status code: " + statusCode);
     String responseValue;
     try {
       responseValue = IOUtils.toString(response.getEntity().getContent());
-    } catch (IllegalStateException e) {
-      throw new SelendroidException(e);
-    } catch (IOException e) {
-      throw new SelendroidException(e);
+      log.info("got response value: " + responseValue);
+    } catch (Exception e) {
+      log.severe("Error getting status: " + e);
+      return false;
     }
 
     if (response != null && 200 == statusCode && responseValue.contains("selendroid")) {
