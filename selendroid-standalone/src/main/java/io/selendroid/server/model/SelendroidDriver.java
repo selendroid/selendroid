@@ -190,8 +190,15 @@ public class SelendroidDriver implements Versionable {
       }
     }
     AndroidApp selendroidServer = createSelendroidServerApk(app);
-
+    //Uninstalling looks probably a bit like an overhead, but
+    //this prevents errors like INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES 
+    if(device.isInstalled(app)){
+      device.uninstall(app);
+    }
     device.install(app);
+    if(device.isInstalled(selendroidServer)){
+      device.uninstall(selendroidServer);
+    }
     device.install(selendroidServer);
     int port = getNextSelendroidServerPort();
     device.startSelendroid(app, port);

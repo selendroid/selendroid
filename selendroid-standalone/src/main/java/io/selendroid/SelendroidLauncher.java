@@ -27,24 +27,14 @@ import com.beust.jcommander.ParameterException;
 public class SelendroidLauncher {
   public static final String LOGGER_NAME = "io.selendroid";
   private static final Logger log = Logger.getLogger(SelendroidLauncher.class.getName());
-  private static SelendroidServer server = null;
+  private SelendroidServer server = null;
+  private SelendroidConfiguration config = null;
 
-  public static void main(String[] args) {
-    try {
-      configureLogging();
-    } catch (Exception e1) {
-      System.out.println("Error occured while registering loggin file handler.");
-    }
+  public SelendroidLauncher(SelendroidConfiguration config) {
+    this.config = config;
+  }
 
-    log.info("################# Selendroid #################");
-    SelendroidConfiguration config = new SelendroidConfiguration();
-    try {
-      new JCommander(config, args);
-    } catch (ParameterException e) {
-      log.severe("An errror occured while starting selendroid: " + e.getMessage());
-      System.exit(0);
-    }
-
+  public void lauchSelendroid() {
     try {
       log.info("Starting selendroid-server port " + config.getPort());
       server = new SelendroidServer(config);
@@ -66,8 +56,28 @@ public class SelendroidLauncher {
     });
   }
 
+  public static void main(String[] args) {
+    try {
+      configureLogging();
+    } catch (Exception e1) {
+      System.out.println("Error occured while registering loggin file handler.");
+    }
+
+    log.info("################# Selendroid #################");
+    SelendroidConfiguration config = new SelendroidConfiguration();
+    try {
+      new JCommander(config, args);
+    } catch (ParameterException e) {
+      log.severe("An errror occured while starting selendroid: " + e.getMessage());
+      System.exit(0);
+    }
+    SelendroidLauncher laucher = new SelendroidLauncher(config);
+    laucher.lauchSelendroid();
+  }
+
   private static void configureLogging() throws Exception {
-    Handler fh = new FileHandler("selendroid.log");
+    Handler fh = new FileHandler("%h/selendroid.log", 2097152, 1);
+
     fh.setFormatter(new SimpleFormatter());
     Logger.getLogger(LOGGER_NAME).addHandler(fh);
   }

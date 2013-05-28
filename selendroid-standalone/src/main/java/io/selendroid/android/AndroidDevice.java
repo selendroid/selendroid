@@ -22,6 +22,8 @@ public interface AndroidDevice {
   public boolean isDeviceReady();
 
   public void install(AndroidApp app);
+  
+  public boolean isInstalled(AndroidApp app) throws AndroidSdkException;
 
   public void uninstall(AndroidApp app) throws AndroidSdkException;
 

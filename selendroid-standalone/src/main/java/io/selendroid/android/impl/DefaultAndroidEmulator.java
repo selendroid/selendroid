@@ -215,6 +215,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     if (timeout == null) {
       timeout = 120000L;
     }
+    log.info("Using timeout of '" + timeout / 1000 + "' seconds to start the emulator.");
     this.locale = locale;
     List<String> cmd = Lists.newArrayList();
     if (display != null && display.isEmpty() == false) {
@@ -244,7 +245,8 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         } catch (InterruptedException e) {}
       } else {
         throw new AndroidDeviceException("The emulator with avd '" + getAvdName()
-            + "' was not started after " + timemoutEnd / 1000 + " seconds.");
+            + "' was not started after " + (System.currentTimeMillis() - start) / 1000
+            + " seconds.");
       }
     }
 

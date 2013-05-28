@@ -19,24 +19,31 @@ import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.server.model.SelendroidDriverTests;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+/*
+ * Test is currently only executed in manual mode
+ */
 public class SessionCreationE2ETest {
-  @Test
+  
+  @Test()
   public void assertThatSessionCanBeExecutedOnAndroid10Emulator() throws Exception {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID10,
         SelendroidDriverTests.TEST_APP_ID));
   }
 
+  @Ignore
   @Test
   public void assertThatSessionCanBeExecutedOnAndroid16Emulator() throws Exception {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16,
         SelendroidDriverTests.TEST_APP_ID));
   }
 
+  
   @Test
   public void assertThatSessionCanBeExecutedOnAndroid17Device() throws Exception {
     SelendroidCapabilities capa =

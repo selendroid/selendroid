@@ -73,6 +73,30 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   @Override
+  public boolean isInstalled(AndroidApp app) throws AndroidSdkException {
+    List<String> command = new ArrayList<String>();
+    command.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
+    command.add("shell");
+    command.add("pm");
+    command.add("list");
+    command.add("packages");
+    String apkPackage = app.getBasePackage();
+    command.add(apkPackage);
+    String result = null;
+    try {
+      result = ShellCommand.exec(command);
+    } catch (ShellCommandException e) {}
+    if (result != null && result.contains(apkPackage)) {
+      return true;
+    }
+    return false;
+  }
+
+  @Override
   public void install(AndroidApp app) {
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());

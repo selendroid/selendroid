@@ -186,4 +186,10 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
     // TODO Auto-generated method stub
     return null;
   }
+
+  @Override
+  public boolean isInstalled(AndroidApp app) throws AndroidSdkException {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }

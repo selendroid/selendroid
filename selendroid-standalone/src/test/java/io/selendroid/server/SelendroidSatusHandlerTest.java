@@ -52,7 +52,7 @@ public class SelendroidSatusHandlerTest {
 
   @Test
   public void assertThatGetStatusHandlerIsRegistered() throws Exception {
-    String url = "http://127.0.0.1:" + server.getPort() + "/wd/hub/status";
+    String url = "http://localhost:" + server.getPort() + "/wd/hub/status";
     HttpResponse response = HttpClientUtil.executeRequest(url, HttpMethod.GET);
     SelendroidAssert.assertResponseIsOk(response);
     JSONObject result = HttpClientUtil.parseJsonResponse(response);
@@ -65,14 +65,14 @@ public class SelendroidSatusHandlerTest {
 
   @Test
   public void assertThatGetStatusHanlerIsNotRegisteredForPost() throws Exception {
-    String url = "http://127.0.0.1:" + server.getPort() + "/wd/hub/status";
+    String url = "http://localhost:" + server.getPort() + "/wd/hub/status";
     HttpResponse response = HttpClientUtil.executeRequest(url, HttpMethod.POST);
     SelendroidAssert.assertResponseIsServerError(response);
   }
 
   @Test
   public void assertThatGetStatusHanlerIsNotRegisteredForDelete() throws Exception {
-    String url = "http://127.0.0.1:" + server.getPort() + "/wd/hub/status";
+    String url = "http://localhost:" + server.getPort() + "/wd/hub/status";
     HttpResponse response = HttpClientUtil.executeRequest(url, HttpMethod.DELETE);
     SelendroidAssert.assertResponseIsServerError(response);
   }

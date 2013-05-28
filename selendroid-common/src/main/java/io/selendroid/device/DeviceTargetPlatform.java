@@ -14,7 +14,7 @@
 package io.selendroid.device;
 
 public enum DeviceTargetPlatform {
-  ANDROID10, ANDROID15, ANDROID16, ANDROID17;
+  ANDROID10, ANDROID11, ANDROID12, ANDROID13, ANDROID14, ANDROID15, ANDROID16, ANDROID17;
   public static final String ANDROID = "ANDROID";
 
   public String getSdkFolderName() {

@@ -127,7 +127,7 @@ public class SelendroidServerBuilder {
       ShellCommandException, AndroidSdkException {
     String targetPackageName = applicationUnderTest.getBasePackage();
     File tempdir =
-        new File(FileUtils.getTempDirectoryPath() + targetPackageName + System.currentTimeMillis());
+        new File(FileUtils.getTempDirectoryPath() + File.separatorChar + targetPackageName + System.currentTimeMillis());
 
     if (!tempdir.exists()) {
       tempdir.mkdirs();
