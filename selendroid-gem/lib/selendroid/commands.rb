@@ -15,10 +15,17 @@ def is_windows?
 end
 
 def aapt_command
-  if is_windows?
-     "\"#{ENV["ANDROID_HOME"]}/platform-tools/aapt.exe\""
+  aapt_base_path = "\"#{ENV["ANDROID_HOME"]}/platform-tools\""
+  current_path=nil
+  if File.exist? File.dirname(aapt_base_path)
+    current_path=aapt_base_path
   else
-    "\"#{ENV["ANDROID_HOME"]}/platform-tools/aapt\""
+    current_path="\"#{ENV["ANDROID_HOME"]}/build-tools/17.0.0\""
+  end    
+  if is_windows?
+    return "\"#{current_path}/aapt.exe\""
+  else
+    return "\"#{current_path}/aapt\""
   end
 end
 
