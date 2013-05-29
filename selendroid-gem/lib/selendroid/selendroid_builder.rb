@@ -23,7 +23,7 @@ def rebuild_selendroid(app)
           raise "Could not replace package name in manifest"
         end
 
-        unless system %Q{"#{ENV["ANDROID_HOME"]}/platform-tools/aapt" package -M AndroidManifest.xml  -I "#{android_platform}/android.jar" -F dummy.apk}
+        unless system %Q{#{aapt_command} package -M AndroidManifest.xml  -I "#{android_platform}/android.jar" -F dummy.apk}
           raise "Could not create dummy.apk"
         end
 
