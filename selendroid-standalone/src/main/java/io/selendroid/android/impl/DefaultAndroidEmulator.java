@@ -218,9 +218,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     log.info("Using timeout of '" + timeout / 1000 + "' seconds to start the emulator.");
     this.locale = locale;
     List<String> cmd = Lists.newArrayList();
-    if (display != null && display.isEmpty() == false) {
-      cmd.add("DISPLAY=:" + display);
-    }
     cmd.add(AndroidSdk.emulator());
     cmd.add("-avd");
     cmd.add(avdName);
@@ -233,7 +230,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     long start = System.currentTimeMillis();
     long timemoutEnd = start + timeout;
     try {
-      ShellCommand.execAsync(cmd);
+      ShellCommand.execAsync(display, cmd);
     } catch (ShellCommandException e) {
       throw new SelendroidException("unable to start the emulator: " + this);
     }

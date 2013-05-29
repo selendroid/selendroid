@@ -18,6 +18,7 @@ import io.selendroid.exceptions.ShellCommandException;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.exec.CommandLine;
@@ -26,6 +27,7 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteResultHandler;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.environment.EnvironmentUtils;
 import org.apache.commons.exec.util.StringUtils;
 
 public class ShellCommand {
@@ -51,23 +53,38 @@ public class ShellCommand {
     try {
       exec.execute(commandline);
     } catch (Exception e) {
-      throw new ShellCommandException("An error occured while executing shell command: " + cmd, new ShellCommandException(outputStream.toString()));
+      throw new ShellCommandException("An error occured while executing shell command: " + cmd,
+          new ShellCommandException(outputStream.toString()));
     }
     return (outputStream.toString());
   }
 
   public static void execAsync(List<String> command) throws ShellCommandException {
+    execAsync(null, command);
+  }
+
+  public static void execAsync(String display, List<String> command) throws ShellCommandException {
     String cmd = StringUtils.toString(command.toArray(new String[command.size()]), " ");
 
-    log.info("executing async command: " + command);
+    log.info("executing async command: " + cmd);
     CommandLine commandline = CommandLine.parse(cmd);
     DefaultExecutor exec = new DefaultExecutor();
+
     ExecuteResultHandler handler = new DefaultExecuteResultHandler();
+    OutputStream outputStream = new ByteArrayOutputStream();
+    PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+    exec.setStreamHandler(streamHandler);
     try {
-      exec.execute(commandline, handler);
+      if (display == null || display.isEmpty()) {
+        exec.execute(commandline, handler);
+      } else {
+        Map env = EnvironmentUtils.getProcEnvironment();
+        EnvironmentUtils.addVariableToEnvironment(env, "DISPLAY=:" + display);
+
+        exec.execute(commandline, env, handler);
+      }
     } catch (Exception e) {
       throw new ShellCommandException("An error occured while executing shell command: " + cmd, e);
     }
   }
-
 }
