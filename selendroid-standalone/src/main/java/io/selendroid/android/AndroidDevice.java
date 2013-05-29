@@ -22,7 +22,7 @@ public interface AndroidDevice {
   public boolean isDeviceReady();
 
   public void install(AndroidApp app);
-  
+
   public boolean isInstalled(AndroidApp app) throws AndroidSdkException;
 
   public void uninstall(AndroidApp app) throws AndroidSdkException;
@@ -42,4 +42,6 @@ public interface AndroidDevice {
   public Locale getLocale();
 
   public DeviceTargetPlatform getTargetPlatform();
+
+  public void runAdbCommand(String parameter);
 }

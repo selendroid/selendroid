@@ -200,6 +200,14 @@ public class SelendroidDriver implements Versionable {
       device.uninstall(selendroidServer);
     }
     device.install(selendroidServer);
+
+    List<String> adbCommands = desiredCapabilities.getPreSessionAdbCommands();
+    if (adbCommands != null && !adbCommands.isEmpty()) {
+      for (String adbCommandParameter : adbCommands) {
+        device.runAdbCommand(adbCommandParameter);
+      }
+    }
+
     int port = getNextSelendroidServerPort();
     device.startSelendroid(app, port);
     long start = System.currentTimeMillis();

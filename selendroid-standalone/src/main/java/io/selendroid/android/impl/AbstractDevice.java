@@ -21,6 +21,7 @@ import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -252,5 +253,18 @@ public abstract class AbstractDevice implements AndroidDevice {
     return getScreenSize().equals(requestedScreenSize);
   }
 
+  public void runAdbCommand(String parameter) {
+    if (parameter == null || parameter.isEmpty() == true) {
+      return;
+    }
+    List<String> command = Lists.newArrayList();
+    command.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
+    command.addAll(Arrays.asList(parameter.split(" ")));
+    executeCommand(command);
+  }
 
 }

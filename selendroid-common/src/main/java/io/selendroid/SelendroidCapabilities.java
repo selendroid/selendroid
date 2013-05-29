@@ -16,6 +16,7 @@ package io.selendroid;
 import io.selendroid.device.DeviceTargetPlatform;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String SCREEN_SIZE = "screenSize";
   private static final long serialVersionUID = -7061568919298342362L;
   public static final String DEFAULT_SCREEN_SIZE = "320x480";
+  public static final String PRE_SESSION_ADB_COMMANDS = "preSessionAdbCommands";
 
   public SelendroidCapabilities(Map<String, ?> from) {
     for (String key : from.keySet()) {
@@ -123,6 +125,32 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     caps.setLocale("en_US");
     caps.setAut(aut);
     return caps;
+  }
+
+  /**
+   * @return The list of ADB commands that will be executed before the test session starts on the
+   *         device.
+   */
+  @SuppressWarnings("unchecked")
+  public List<String> getPreSessionAdbCommands() {
+    List<String> res = new ArrayList<String>();
+
+    Object capa = getCapability(PRE_SESSION_ADB_COMMANDS);
+    if (capa != null) {
+      res.addAll((Collection<String>) capa);
+    }
+    return res;
+  }
+
+  /**
+   * Command like: "shell setprop name selendroid", please note that the adb command itself and the
+   * serial will be added by selendroid automatically.
+   * 
+   * @param commands The list of ADB commands that will be executed before the test session starts
+   *        on the device.
+   */
+  public void setPreSessionAdbCommands(List<String> commands) {
+    setCapability(PRE_SESSION_ADB_COMMANDS, commands);
   }
 
   /**

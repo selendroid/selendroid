@@ -33,8 +33,10 @@ import org.json.JSONObject;
 
 public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   @Override
+  public void runAdbCommand(String parameter) {}
+
+  @Override
   public Locale getLocale() {
-    // TODO Auto-generated method stub
     return null;
   }
 

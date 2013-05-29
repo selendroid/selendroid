@@ -14,10 +14,6 @@
 
 package io.selendroid.server.model;
 
-import android.app.Activity;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
@@ -25,6 +21,12 @@ import io.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
 
 public class SelendroidNativeDriver {
   public final String ACTIVITY_URL_PREFIX = "and-activity://";
