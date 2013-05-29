@@ -14,12 +14,12 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.BaseSelendroidServerHandler;
+import io.selendroid.server.Response;
 
 import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.Response;
 import org.webbitserver.HttpRequest;
 
 public class CreateSessionHandler extends BaseSelendroidServerHandler {
@@ -31,8 +31,8 @@ public class CreateSessionHandler extends BaseSelendroidServerHandler {
 
   @Override
   public Response handle() throws JSONException {
-    log.info("new session command");
     JSONObject payload = getPayload();
+    log.info("new session command with capabilities: " + payload.toString(2));
 
     JSONObject desiredCapabilities = payload.getJSONObject("desiredCapabilities");
 

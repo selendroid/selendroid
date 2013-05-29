@@ -174,9 +174,10 @@ public class SelendroidDriver implements Versionable {
         } else {
           Map<String, Object> config = new HashMap<String, Object>();
           config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
-          if (desiredCapabilities.is(SelendroidCapabilities.DISPLAY)) {
-            config.put(AndroidEmulator.DISPLAY_OPTION,
-                desiredCapabilities.asMap().get(SelendroidCapabilities.DISPLAY));
+          String display =
+              String.valueOf(desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY));
+          if (display != null && display.isEmpty() == false) {
+            config.put(AndroidEmulator.DISPLAY_OPTION, display);
           }
           Locale locale = parseLocale(desiredCapabilities);
           emulator.start(locale, deviceStore.nextEmulatorPort(), config);
