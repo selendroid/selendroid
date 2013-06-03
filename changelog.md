@@ -9,7 +9,7 @@
 - added new component selendroid standalone
 - moved the documentation from wiki to web page http://selendroid.io
 
-0.3.1
+0.3.2
 -----
 - Gem does support the new location of aapt.
 
