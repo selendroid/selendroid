@@ -99,7 +99,6 @@
 			<groupId>io.selendroid</groupId>
 			<version>0.4-SNAPSHOT</version>
 			<artifactId>selendroid-client</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -119,6 +118,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
 					<descriptors>
 						<descriptor>src/main/assembly/assembly.xml</descriptor>
 					</descriptors>
@@ -139,23 +139,6 @@
 						<goals>
 							<goal>attached</goal>
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<configuration>
-					<licenseName>LICENSE</licenseName>
-					<licenseResolver>../LICENSE</licenseResolver>
-				</configuration>
-				<executions>
-					<execution>
-						<id>first</id>
-						<goals>
-							<goal>add-third-party</goal>
-						</goals>
-						<phase>process-sources</phase>
 					</execution>
 				</executions>
 			</plugin>

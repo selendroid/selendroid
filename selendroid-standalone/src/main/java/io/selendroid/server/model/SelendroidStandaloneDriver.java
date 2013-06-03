@@ -45,12 +45,12 @@ import org.openqa.selenium.SessionNotCreatedException;
 
 import com.beust.jcommander.internal.Lists;
 
-public class SelendroidDriver implements Versionable {
+public class SelendroidStandaloneDriver implements Versionable {
   public static final String WD_RESP_KEY_VALUE = "value";
   public static final String WD_RESP_KEY_STATUS = "status";
   public static final String WD_RESP_KEY_SESSION_ID = "sessionId";
   private static int selendroidServerPort = 38080;
-  private static final Logger log = Logger.getLogger(SelendroidDriver.class.getName());
+  private static final Logger log = Logger.getLogger(SelendroidStandaloneDriver.class.getName());
   private Map<String, AndroidApp> appsStore = new HashMap<String, AndroidApp>();
   private Map<String, AndroidApp> selendroidServers = new HashMap<String, AndroidApp>();
   private Map<String, ActiveSession> sessions = new HashMap<String, ActiveSession>();
@@ -59,7 +59,7 @@ public class SelendroidDriver implements Versionable {
   private SelendroidConfiguration serverConfiguration = null;
   private DeviceFinder androidDeviceFinder = null;
 
-  public SelendroidDriver(SelendroidConfiguration serverConfiguration) throws AndroidSdkException,
+  public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration) throws AndroidSdkException,
       AndroidDeviceException {
     this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder();
@@ -71,7 +71,7 @@ public class SelendroidDriver implements Versionable {
   /**
    * For testing only
    */
-  /* package */SelendroidDriver(SelendroidServerBuilder builder, DeviceFinder deviceFinder) {
+  SelendroidStandaloneDriver(SelendroidServerBuilder builder, DeviceFinder deviceFinder) {
     this.selendroidApkBuilder = builder;
     androidDeviceFinder = deviceFinder;
   }

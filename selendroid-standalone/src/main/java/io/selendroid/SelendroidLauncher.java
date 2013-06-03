@@ -14,7 +14,7 @@
 package io.selendroid;
 
 import io.selendroid.exceptions.AndroidSdkException;
-import io.selendroid.server.SelendroidServer;
+import io.selendroid.server.SelendroidStandaloneServer;
 
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -27,7 +27,7 @@ import com.beust.jcommander.ParameterException;
 public class SelendroidLauncher {
   public static final String LOGGER_NAME = "io.selendroid";
   private static final Logger log = Logger.getLogger(SelendroidLauncher.class.getName());
-  private SelendroidServer server = null;
+  private SelendroidStandaloneServer server = null;
   private SelendroidConfiguration config = null;
 
   public SelendroidLauncher(SelendroidConfiguration config) {
@@ -37,7 +37,7 @@ public class SelendroidLauncher {
   public void lauchSelendroid() {
     try {
       log.info("Starting selendroid-server port " + config.getPort());
-      server = new SelendroidServer(config);
+      server = new SelendroidStandaloneServer(config);
       server.start();
     } catch (AndroidSdkException e) {
       log.severe("Selendroid was not able to interact with the Android SDK: " + e.getMessage());

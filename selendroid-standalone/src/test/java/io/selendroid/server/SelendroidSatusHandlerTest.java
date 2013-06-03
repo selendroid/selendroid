@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.exceptions.AndroidSdkException;
-import io.selendroid.server.model.SelendroidDriver;
+import io.selendroid.server.model.SelendroidStandaloneDriver;
 import io.selendroid.server.util.HttpClientUtil;
 import io.selendroid.util.SelendroidAssert;
 
@@ -32,17 +32,17 @@ import org.junit.Test;
 
 public class SelendroidSatusHandlerTest {
   protected static int port = 7777;
-  private SelendroidServer server;
+  private SelendroidStandaloneServer server;
 
   @Before
   public void startServer() throws AndroidSdkException {
-    SelendroidDriver driver = mock(SelendroidDriver.class);
+    SelendroidStandaloneDriver driver = mock(SelendroidStandaloneDriver.class);
     when(driver.getCpuArch()).thenReturn("x86");
     when(driver.getOsVersion()).thenReturn("osx");
     when(driver.getServerVersion()).thenReturn("dev");
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.setPort(getNextPort());
-    server = new SelendroidServer(conf, driver);
+    server = new SelendroidStandaloneServer(conf, driver);
     server.start();
   }
 

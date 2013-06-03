@@ -44,7 +44,7 @@ import org.junit.Test;
 
 import com.beust.jcommander.internal.Lists;
 
-public class SelendroidDriverTests {
+public class SelendroidStandaloneDriverTests {
   public static final String TEST_APP_ID = "io.selendroid.testapp:0.4-SNAPSHOT";
   private static final String APK_FILE = "src/test/resources/selendroid-test-app.apk";
   private static final String INVALID_APK_FILE =
@@ -54,7 +54,7 @@ public class SelendroidDriverTests {
   public void testShouldBeAbleToInitDriver() throws Exception {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
-    SelendroidDriver driver = new SelendroidDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidStandaloneDriver driver = new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
     driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
@@ -64,14 +64,14 @@ public class SelendroidDriverTests {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
-    SelendroidDriver driver = new SelendroidDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidStandaloneDriver driver = new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
     driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
 
   @Test
   public void testShouldNotbBeAbleInitDriverWithoutAnyConfig() throws Exception {
-    SelendroidDriver driver = new SelendroidDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidStandaloneDriver driver = new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
     try {
       driver.initApplicationsUnderTest(new SelendroidConfiguration());
     } catch (SelendroidException e) {
@@ -83,8 +83,8 @@ public class SelendroidDriverTests {
   public void testShouldnotBeAbleToInitDriverIfNoValidAppIsAvailable() throws Exception {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
-    SelendroidDriver driver =
-        new SelendroidDriver(getRealApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidStandaloneDriver driver =
+        new SelendroidStandaloneDriver(getRealApkBuilder(), anDeviceFinderWithNoDevices());
     try {
       driver.initApplicationsUnderTest(conf);
       Assert
@@ -96,7 +96,7 @@ public class SelendroidDriverTests {
     }
   }
 
-  protected void assertThatTestappHasBeenSuccessfullyRegistered(SelendroidDriver driver) {
+  protected void assertThatTestappHasBeenSuccessfullyRegistered(SelendroidStandaloneDriver driver) {
     Map<String, AndroidApp> apps = driver.getConfiguredApps();
     Assert.assertTrue("expecting 1 test app has been registered but was " + apps.size(),
         apps.size() == 1);
@@ -108,7 +108,7 @@ public class SelendroidDriverTests {
   @Test
   public void assertThatANewtestSessionCanBeCreated() throws Exception {
     // Setting up driver with test app and device stub
-    SelendroidDriver driver = new SelendroidDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidStandaloneDriver driver = new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);

@@ -16,7 +16,7 @@ package io.selendroid.server;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
-import io.selendroid.server.model.SelendroidDriver;
+import io.selendroid.server.model.SelendroidStandaloneDriver;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -27,18 +27,18 @@ import java.util.logging.Logger;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
 
-public class SelendroidServer {
-  private static final Logger log = Logger.getLogger(SelendroidServer.class.getName());
+public class SelendroidStandaloneServer {
+  private static final Logger log = Logger.getLogger(SelendroidStandaloneServer.class.getName());
   private WebServer webServer;
   private SelendroidConfiguration configuration;
-  private SelendroidDriver driver = null;
+  private SelendroidStandaloneDriver driver = null;
 
   /**
    * for testing only
    * 
    * @throws AndroidSdkException
    */
-  protected SelendroidServer(SelendroidConfiguration configuration, SelendroidDriver driver)
+  protected SelendroidStandaloneServer(SelendroidConfiguration configuration, SelendroidStandaloneDriver driver)
       throws AndroidSdkException {
     this.configuration = configuration;
     this.driver = driver;
@@ -49,7 +49,7 @@ public class SelendroidServer {
     init();
   }
 
-  public SelendroidServer(SelendroidConfiguration configuration) throws AndroidSdkException,
+  public SelendroidStandaloneServer(SelendroidConfiguration configuration) throws AndroidSdkException,
       AndroidDeviceException {
     this.configuration = configuration;
     webServer =
@@ -78,9 +78,9 @@ public class SelendroidServer {
     webServer.add(new SelendroidServlet(driver));
   }
 
-  protected SelendroidDriver initializeSelendroidServer() throws AndroidSdkException,
+  protected SelendroidStandaloneDriver initializeSelendroidServer() throws AndroidSdkException,
       AndroidDeviceException {
-    return new SelendroidDriver(configuration);
+    return new SelendroidStandaloneDriver(configuration);
   }
 
   public void start() {

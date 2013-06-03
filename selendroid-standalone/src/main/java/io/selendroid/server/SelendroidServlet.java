@@ -18,7 +18,7 @@ import io.selendroid.server.handler.DeleteSessionHandler;
 import io.selendroid.server.handler.GetCapabilities;
 import io.selendroid.server.handler.ListSessionsHandler;
 import io.selendroid.server.handler.RequestRedirectHandler;
-import io.selendroid.server.model.SelendroidDriver;
+import io.selendroid.server.model.SelendroidStandaloneDriver;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +31,9 @@ public class SelendroidServlet extends BaseServlet {
   private static final Logger log = Logger.getLogger(SelendroidServlet.class.getName());
   protected Map<String, Class<? extends BaseRequestHandler>> redirectHandler =
       new HashMap<String, Class<? extends BaseRequestHandler>>();
-  private SelendroidDriver driver;
+  private SelendroidStandaloneDriver driver;
 
-  public SelendroidServlet(SelendroidDriver driver) {
+  public SelendroidServlet(SelendroidStandaloneDriver driver) {
     this.driver = driver;
     init();
   }

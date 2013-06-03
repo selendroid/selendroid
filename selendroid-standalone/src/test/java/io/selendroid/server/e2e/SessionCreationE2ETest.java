@@ -16,7 +16,7 @@ package io.selendroid.server.e2e;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidDriver;
 import io.selendroid.device.DeviceTargetPlatform;
-import io.selendroid.server.model.SelendroidDriverTests;
+import io.selendroid.server.model.SelendroidStandaloneDriverTests;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -29,26 +29,26 @@ import org.openqa.selenium.WebElement;
  * Test is currently only executed in manual mode
  */
 public class SessionCreationE2ETest {
-  
+  @Ignore
   @Test()
   public void assertThatSessionCanBeExecutedOnAndroid10Emulator() throws Exception {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID10,
-        SelendroidDriverTests.TEST_APP_ID));
+        SelendroidStandaloneDriverTests.TEST_APP_ID));
   }
 
   @Ignore
   @Test
   public void assertThatSessionCanBeExecutedOnAndroid16Emulator() throws Exception {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16,
-        SelendroidDriverTests.TEST_APP_ID));
+        SelendroidStandaloneDriverTests.TEST_APP_ID));
   }
 
-  
+  @Ignore
   @Test
   public void assertThatSessionCanBeExecutedOnAndroid17Device() throws Exception {
     SelendroidCapabilities capa =
         SelendroidCapabilities.device(DeviceTargetPlatform.ANDROID17,
-            SelendroidDriverTests.TEST_APP_ID);
+            SelendroidStandaloneDriverTests.TEST_APP_ID);
     capa.setScreenSize("720x1280");
 
     testMethod(capa);
