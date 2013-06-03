@@ -37,18 +37,3 @@ def java_command
   end
 end
 
-def jarsigner_command
-  if is_windows?
-    "\"#{ENV["JAVA_HOME"]}/bin/jarsigner.exe\""
-  else
-    "\"#{ENV["JAVA_HOME"]}/bin/jarsigner\""
-  end
-end  
-
-def keytool_command
-  if is_windows?
-    "\"#{ENV["JAVA_HOME"]}/bin/keytool.exe\""
-  else
-    "\"#{ENV["JAVA_HOME"]}/bin/keytool\""
-  end
-end
