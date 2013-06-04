@@ -25,7 +25,7 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
-import io.selendroid.server.Versionable;
+import io.selendroid.server.ServerDetails;
 import io.selendroid.server.model.impl.DefaultHardwareDeviceFinder;
 import io.selendroid.server.util.HttpClientUtil;
 
@@ -39,13 +39,14 @@ import java.util.logging.Logger;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.SessionNotCreatedException;
 
 import com.beust.jcommander.internal.Lists;
 
-public class SelendroidStandaloneDriver implements Versionable {
+public class SelendroidStandaloneDriver implements ServerDetails {
   public static final String WD_RESP_KEY_VALUE = "value";
   public static final String WD_RESP_KEY_STATUS = "status";
   public static final String WD_RESP_KEY_SESSION_ID = "sessionId";
@@ -59,8 +60,8 @@ public class SelendroidStandaloneDriver implements Versionable {
   private SelendroidConfiguration serverConfiguration = null;
   private DeviceFinder androidDeviceFinder = null;
 
-  public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration) throws AndroidSdkException,
-      AndroidDeviceException {
+  public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration)
+      throws AndroidSdkException, AndroidDeviceException {
     this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder();
     androidDeviceFinder = new DefaultHardwareDeviceFinder();
@@ -365,4 +366,39 @@ public class SelendroidStandaloneDriver implements Versionable {
     return null;
   }
 
+  @Override
+  public synchronized JSONArray getSupportedApps() {
+    JSONArray list = new JSONArray();
+    for (AndroidApp app : appsStore.values()) {
+      JSONObject appInfo = new JSONObject();
+      try {
+        appInfo.put("appId", app.getAppId());
+        appInfo.put("basePackage", app.getBasePackage());
+        appInfo.put("mainActivity", app.getMainActivity());
+        list.put(appInfo);
+      } catch (Exception e) {}
+    }
+    return list;
+  }
+
+  @Override
+  public synchronized JSONArray getSupportedDevices() {
+    JSONArray list = new JSONArray();
+    for (AndroidDevice device : deviceStore.getDevices()) {
+      JSONObject deviceInfo = new JSONObject();
+      try {
+        if (device instanceof DefaultAndroidEmulator) {
+          deviceInfo.put("emulator", true);
+          deviceInfo.put("avdName", ((DefaultAndroidEmulator) device).getAvdName());
+        } else {
+          deviceInfo.put("emulator", false);
+        }
+        deviceInfo.put("targetPlatform", device.getTargetPlatform());
+        deviceInfo.put("screenSize", device.getScreenSize());
+
+        list.put(deviceInfo);
+      } catch (Exception e) {}
+    }
+    return list;
+  }
 }

@@ -170,6 +170,14 @@ public class DeviceStore {
     return false;
   }
 
+  public List<AndroidDevice> getDevices() {
+    List<AndroidDevice> devices = new ArrayList<AndroidDevice>();
+    for (Map.Entry<DeviceTargetPlatform, List<AndroidDevice>> entry : androidDevices.entrySet()) {
+      devices.addAll(entry.getValue());
+    }
+    return devices;
+  }
+
   /**
    * For testing only
    */

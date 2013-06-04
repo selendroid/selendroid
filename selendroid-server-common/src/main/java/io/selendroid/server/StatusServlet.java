@@ -13,8 +13,7 @@
  */
 package io.selendroid.server;
 
-import java.util.Locale;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
@@ -23,9 +22,11 @@ import org.webbitserver.HttpResponse;
 
 
 public class StatusServlet implements HttpHandler {
-  private Versionable seledendroidServer;
+  private ServerDetails seledendroidServer;
+  private JSONArray apps = null;
+  private JSONArray devices = null;
 
-  public StatusServlet(Versionable seledendroidServer) {
+  public StatusServlet(ServerDetails seledendroidServer) {
     this.seledendroidServer = seledendroidServer;
   }
 
@@ -46,13 +47,25 @@ public class StatusServlet implements HttpHandler {
     os.put("arch", seledendroidServer.getCpuArch());
     os.put("name", "Android");
     os.put("version", seledendroidServer.getOsVersion());
-    os.put("locale", Locale.getDefault().toString());
+    // os.put("locale", Locale.getDefault().toString());
 
     JSONObject json = new JSONObject();
     json.put("build", build);
     json.put("os", os);
-    httpResponse.header("Content-Type", "text/plain");
-    httpResponse.content("{status: 0, value: " + json.toString() + "}");
+    if (devices == null || devices.length() == 0) {
+      devices = seledendroidServer.getSupportedDevices();
+    }
+    json.put("supportedDevices", devices);
+
+    if (apps == null || devices.length() == 0) {
+      apps = seledendroidServer.getSupportedApps();
+    }
+    json.put("supportedApps", apps);
+
+    // httpResponse.header("Content-Type", "text/plain");
+    httpResponse.header("Content-Type", "application/json");
+
+    httpResponse.content("{status: 0, value: " + json + "}");
     httpResponse.end();
   }
 }

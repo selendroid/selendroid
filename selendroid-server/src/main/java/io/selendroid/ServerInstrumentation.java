@@ -13,14 +13,16 @@
  */
 package io.selendroid;
 
-import java.util.Set;
-
 import io.selendroid.android.ActivitiesReporter;
 import io.selendroid.android.AndroidWait;
-import io.selendroid.server.AndroidServer;
-import io.selendroid.util.SelendroidLogger;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Versionable;
+import io.selendroid.server.AndroidServer;
+import io.selendroid.server.ServerDetails;
+import io.selendroid.util.SelendroidLogger;
+
+import java.util.Set;
+
+import org.json.JSONArray;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -32,7 +34,7 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.view.View;
 
-public class ServerInstrumentation extends Instrumentation implements Versionable {
+public class ServerInstrumentation extends Instrumentation implements ServerDetails {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
   private static ServerInstrumentation instance = null;
   public static Class<? extends Activity> mainActivity = null;
@@ -48,7 +50,7 @@ public class ServerInstrumentation extends Instrumentation implements Versionabl
   public void startActivity(Class activity) {
     if (activity == null) {
       SelendroidLogger.log("activity class is empty", new NullPointerException(
-              "Activity class to start is null."));
+          "Activity class to start is null."));
       return;
     }
 
@@ -292,5 +294,15 @@ public class ServerInstrumentation extends Instrumentation implements Versionabl
       }
       looper.quit();
     }
+  }
+
+  @Override
+  public JSONArray getSupportedApps() {
+    return new JSONArray();
+  }
+
+  @Override
+  public JSONArray getSupportedDevices() {
+    return new JSONArray();
   }
 }
