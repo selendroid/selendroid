@@ -14,6 +14,7 @@
 package io.selendroid.android;
 
 import io.selendroid.exceptions.AndroidSdkException;
+import io.selendroid.exceptions.SelendroidException;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -21,8 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import io.selendroid.exceptions.SelendroidException;
 
 public class AndroidSdk {
   public static final String ANDROID_FOLDER_PREFIX = "android-";
@@ -32,14 +31,14 @@ public class AndroidSdk {
     StringBuffer adbCommand = new StringBuffer();
     adbCommand.append(platformToolsHome());
     adbCommand.append("adb");
-    adbCommand.append(platformExecutableSuffix());
+    adbCommand.append(platformExecutableSuffixExe());
     return adbCommand.toString();
   }
 
   public static String aapt() throws AndroidSdkException {
     StringBuffer command = new StringBuffer();
     command.append("aapt");
-    command.append(platformExecutableSuffix());
+    command.append(platformExecutableSuffixExe());
     File platformToolsAapt = new File(platformToolsHome() + command.toString());
     if (platformToolsAapt.exists()) {
       return platformToolsAapt.getAbsolutePath();
@@ -57,7 +56,7 @@ public class AndroidSdk {
     StringBuffer command = new StringBuffer();
     command.append(toolsHome());
     command.append("android");
-    command.append(platformExecutableSuffix());
+    command.append(platformExecutableSuffixBat());
     return command.toString();
   }
 
@@ -65,7 +64,7 @@ public class AndroidSdk {
     StringBuffer command = new StringBuffer();
     command.append(toolsHome());
     command.append("emulator");
-    command.append(platformExecutableSuffix());
+    command.append(platformExecutableSuffixExe());
     return command.toString();
   }
 
@@ -108,9 +107,16 @@ public class AndroidSdk {
     return androidHome;
   }
 
-  /* package */static String platformExecutableSuffix() {
-    boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
-    return isWindows ? ".exe" : "";
+  /* package */static String platformExecutableSuffixExe() {
+    return isWindows() ? ".exe" : "";
+  }
+
+  private static boolean isWindows() {
+    return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
+  }
+
+  /* package */static String platformExecutableSuffixBat() {
+    return isWindows() ? ".bat" : "";
   }
 
   /**

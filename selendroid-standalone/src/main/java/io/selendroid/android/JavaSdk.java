@@ -13,7 +13,7 @@
  */
 package io.selendroid.android;
 
-import static io.selendroid.android.AndroidSdk.platformExecutableSuffix;
+import static io.selendroid.android.AndroidSdk.platformExecutableSuffixExe;
 
 import java.io.File;
 
@@ -36,7 +36,7 @@ public class JavaSdk {
     adbCommand.append("bin");
     adbCommand.append(File.separator);
     adbCommand.append("jarsigner");
-    adbCommand.append(platformExecutableSuffix());
+    adbCommand.append(platformExecutableSuffixExe());
     return adbCommand.toString();
   }
 
@@ -47,7 +47,7 @@ public class JavaSdk {
     adbCommand.append("bin");
     adbCommand.append(File.separator);
     adbCommand.append("keytool");
-    adbCommand.append(platformExecutableSuffix());
+    adbCommand.append(platformExecutableSuffixExe());
     return adbCommand.toString();
   }
 }
