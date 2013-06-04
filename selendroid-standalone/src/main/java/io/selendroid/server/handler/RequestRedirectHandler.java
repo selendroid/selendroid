@@ -61,11 +61,8 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     int status = response.getInt("status");
     log.info("return value from selendroid android server: " + value);
     log.info("return status from selendroid android server: " + status);
-    if (0 != status) {
-      return new Response(sessionId, status, new SelendroidException((String) value));
-    } else {
-      return new Response(sessionId, value);
-    }
+
+    return new Response(sessionId, status, value);
   }
 
   private JSONObject redirectRequest(ActiveSession session, String url, String method)

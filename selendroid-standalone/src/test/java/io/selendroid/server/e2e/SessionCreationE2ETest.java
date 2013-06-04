@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -36,7 +37,7 @@ public class SessionCreationE2ETest {
         SelendroidStandaloneDriverTests.TEST_APP_ID));
   }
 
-  @Ignore
+
   @Test
   public void assertThatSessionCanBeExecutedOnAndroid16Emulator() throws Exception {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16,
@@ -56,6 +57,12 @@ public class SessionCreationE2ETest {
 
   private void testMethod(SelendroidCapabilities capa) throws Exception {
     WebDriver driver = new SelendroidDriver("http://localhost:5555/wd/hub", capa);
+    try {
+      driver.findElement(By.id("not there"));
+      Assert.fail();
+    } catch (NoSuchElementException e) {
+      // expected
+    }
     WebElement inputField = driver.findElement(By.id("my_text_field"));
     Assert.assertEquals("true", inputField.getAttribute("enabled"));
     inputField.sendKeys("Selendroid");

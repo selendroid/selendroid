@@ -121,7 +121,6 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static SelendroidCapabilities emulator(DeviceTargetPlatform platform, String aut) {
     SelendroidCapabilities caps = new SelendroidCapabilities();
     caps.setAndroidTarget(platform.name());
-    caps.setScreenSize(DEFAULT_SCREEN_SIZE);
     caps.setLocale("en_US");
     caps.setAut(aut);
     return caps;

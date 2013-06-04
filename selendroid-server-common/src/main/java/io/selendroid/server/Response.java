@@ -52,6 +52,12 @@ public class Response {
     this.value = value;
   }
 
+  public Response(String sessionId, int status, Object value) {
+    this.sessionId = sessionId;
+    this.status = status;
+    this.value = value;
+  }
+
   public String getSessionId() {
     return sessionId;
   }

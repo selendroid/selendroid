@@ -17,6 +17,8 @@ import java.net.URL;
 
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.HasTouchScreen;
+import org.openqa.selenium.Keyboard;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TouchScreen;
@@ -54,5 +56,7 @@ public class SelendroidDriver extends RemoteWebDriver implements HasTouchScreen,
     String base64 = execute(DriverCommand.SCREENSHOT).getValue().toString();
     return target.convertFromBase64Png(base64);
   }
+
+
 
 }
