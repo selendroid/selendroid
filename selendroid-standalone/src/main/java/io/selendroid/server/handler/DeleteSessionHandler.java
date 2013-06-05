@@ -15,12 +15,13 @@ package io.selendroid.server.handler;
 
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.server.BaseSelendroidServerHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
 import java.util.logging.Logger;
 
 import org.json.JSONException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class DeleteSessionHandler extends BaseSelendroidServerHandler {
@@ -41,6 +42,6 @@ public class DeleteSessionHandler extends BaseSelendroidServerHandler {
       log.severe("Error occured while stopping the emulator.");
     }
 
-    return new Response(sessionId, "");
+    return new SelendroidResponse(sessionId, "");
   }
 }

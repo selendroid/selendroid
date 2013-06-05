@@ -14,10 +14,12 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class ListSessions extends RequestHandler {
@@ -35,6 +37,6 @@ public class ListSessions extends RequestHandler {
       sessionResponse.put("capabilities", getSelendroidDriver().getSession().getCapabilities());
       sessions.put(sessionResponse);
     }
-    return new Response(null, sessions);
+    return new SelendroidResponse(null, sessions);
   }
 }

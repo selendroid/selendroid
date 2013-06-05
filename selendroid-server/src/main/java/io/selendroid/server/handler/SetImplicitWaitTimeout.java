@@ -15,9 +15,10 @@ package io.selendroid.server.handler;
 
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class SetImplicitWaitTimeout extends RequestHandler {
@@ -33,6 +34,6 @@ public class SetImplicitWaitTimeout extends RequestHandler {
     
     ServerInstrumentation.getInstance().setImplicitWait(timeout);
 
-    return new Response(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(), "");
   }
 }

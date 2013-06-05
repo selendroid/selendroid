@@ -14,10 +14,11 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.interactions.Coordinates;
 import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -35,13 +36,13 @@ public class LongPressOnElement extends RequestHandler {
 
     AndroidElement element = getElementFromCache(elementId);
     if (element == null) {
-      return new Response(getSessionId(), 10, new SelendroidException("Element with id '"
+      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '"
           + elementId + "' was not found."));
     }
 
     Coordinates elementLocation = element.getCoordinates();
     getSelendroidDriver().getTouch().longPress(elementLocation);
-    return new Response(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(), "");
   }
 
 }

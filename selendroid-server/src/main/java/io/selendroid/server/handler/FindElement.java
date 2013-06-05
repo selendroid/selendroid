@@ -14,6 +14,7 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.internal.NativeAndroidBySelector;
@@ -22,7 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.UnsupportedOperationException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class FindElement extends RequestHandler {
@@ -44,19 +45,19 @@ public class FindElement extends RequestHandler {
     try {
       element = getSelendroidDriver().findElement(by);
     } catch (NoSuchElementException e) {
-      return new Response(getSessionId(), 7, e);
+      return new SelendroidResponse(getSessionId(), 7, e);
     } catch (UnsupportedOperationException e) {
-      return new Response(getSessionId(), 32, e);
+      return new SelendroidResponse(getSessionId(), 32, e);
     }
     JSONObject result = new JSONObject();
 
     String id = getIdOfKnownElement(element);
 
     if (id == null) {
-      return new Response(getSessionId(), 7, new NoSuchElementException("Element was not found."));
+      return new SelendroidResponse(getSessionId(), 7, new NoSuchElementException("Element was not found."));
     }
     result.put("ELEMENT", id);
 
-    return new Response(getSessionId(), 0, result);
+    return new SelendroidResponse(getSessionId(), 0, result);
   }
 }

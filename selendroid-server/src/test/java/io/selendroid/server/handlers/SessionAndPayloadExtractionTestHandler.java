@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class SessionAndPayloadExtractionTestHandler extends RequestHandler {
@@ -29,7 +30,7 @@ public class SessionAndPayloadExtractionTestHandler extends RequestHandler {
     JSONObject payload = getPayload();
     String method = payload.getString("using");
     String selector = payload.getString("value");
-    return new Response(null, "sessionId#" + getSessionId() + " using#" + method + " value#"
+    return new SelendroidResponse(null, "sessionId#" + getSessionId() + " using#" + method + " value#"
         + selector);
   }
 }

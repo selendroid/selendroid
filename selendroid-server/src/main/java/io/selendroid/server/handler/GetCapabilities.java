@@ -16,7 +16,9 @@ package io.selendroid.server.handler;
 import io.selendroid.server.RequestHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.Session;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -33,6 +35,6 @@ public class GetCapabilities extends RequestHandler {
 
     JSONObject caps = getSelendroidDriver().getSessionCapabilities(session.getSessionId());
 
-    return new Response(session.getSessionId(), caps);
+    return new SelendroidResponse(session.getSessionId(), caps);
   }
 }

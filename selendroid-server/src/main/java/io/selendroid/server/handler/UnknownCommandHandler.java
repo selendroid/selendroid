@@ -14,9 +14,11 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
+
 import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class UnknownCommandHandler extends RequestHandler {
@@ -27,7 +29,7 @@ public class UnknownCommandHandler extends RequestHandler {
 
   @Override
   public Response handle() throws JSONException {
-    return new Response(getSessionId(), 9, new SelendroidException(
+    return new SelendroidResponse(getSessionId(), 9, new SelendroidException(
         "The requested command is currently not yet supported by selendroid."));
   }
 }

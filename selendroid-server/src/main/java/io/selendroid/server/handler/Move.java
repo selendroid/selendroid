@@ -14,9 +14,11 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -34,7 +36,7 @@ public class Move extends RequestHandler {
     int y = payload.getInt("y");
 
     getSelendroidDriver().getTouch().move(x, y);
-    return new Response(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(), "");
   }
 
 }

@@ -14,12 +14,13 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.TouchScreen;
 import io.selendroid.server.model.interactions.Coordinates;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import org.webbitserver.HttpRequest;
 
@@ -36,13 +37,13 @@ public class DoubleTapOnElement extends RequestHandler {
     TouchScreen touchScreen = getSelendroidDriver().getTouch();
     AndroidElement element = getElementFromCache(elementId);
     if (element == null) {
-      return new Response(getSessionId(), 10, new SelendroidException("Element with id '"
+      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '"
           + elementId + "' was not found."));
     }
     Coordinates elementLocation = element.getCoordinates();
 
     touchScreen.doubleTap(elementLocation);
-    return new Response(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(), "");
   }
 
 }

@@ -21,6 +21,7 @@ import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.exceptions.UnsupportedOperationException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.internal.NativeAndroidBySelector;
@@ -44,7 +45,7 @@ public class FindChildElement extends RequestHandler {
     String elementId = getElementId();
     AndroidElement root = getElementFromCache(elementId);
     if (root == null) {
-      return new Response(getSessionId(), 10, new SelendroidException("The element with Id: "
+      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("The element with Id: "
           + elementId + " was not found."));
     }
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
@@ -52,20 +53,20 @@ public class FindChildElement extends RequestHandler {
     try {
       element = root.findElement(by);
     } catch (StaleElementReferenceException se) {
-      return new Response(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(), 10, se);
     } catch (NoSuchElementException e) {
-      return new Response(getSessionId(), 7, e);
+      return new SelendroidResponse(getSessionId(), 7, e);
     } catch (UnsupportedOperationException e) {
-      return new Response(getSessionId(), 32, e);
+      return new SelendroidResponse(getSessionId(), 32, e);
     }
     JSONObject result = new JSONObject();
 
     String id = getIdOfKnownElement(element);
     if (id == null) {
-      return new Response(getSessionId(), 7, new NoSuchElementException("Element was not found."));
+      return new SelendroidResponse(getSessionId(), 7, new NoSuchElementException("Element was not found."));
     }
     result.put("ELEMENT", id);
 
-    return new Response(getSessionId(), 0, result);
+    return new SelendroidResponse(getSessionId(), 0, result);
   }
 }

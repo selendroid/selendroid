@@ -22,6 +22,7 @@ import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.UnsupportedOperationException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.internal.NativeAndroidBySelector;
@@ -47,9 +48,9 @@ public class FindElements extends RequestHandler {
     try {
       elements = getSelendroidDriver().findElements(by);
     } catch (NoSuchElementException e) {
-      return new Response(getSessionId(), new JSONArray());
+      return new SelendroidResponse(getSessionId(), new JSONArray());
     } catch (UnsupportedOperationException e) {
-      return new Response(getSessionId(), 32, e);
+      return new SelendroidResponse(getSessionId(), 32, e);
     }
     JSONArray result = new JSONArray();
     for (AndroidElement element : elements) {
@@ -61,6 +62,6 @@ public class FindElements extends RequestHandler {
       jsonElement.put("ELEMENT", id);
       result.put(jsonElement);
     }
-    return new Response(getSessionId(), result);
+    return new SelendroidResponse(getSessionId(), result);
   }
 }

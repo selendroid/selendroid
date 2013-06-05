@@ -15,11 +15,13 @@ package io.selendroid.server.handler;
 
 import io.selendroid.android.internal.Point;
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -36,7 +38,7 @@ public class ElementLocation extends RequestHandler {
     String id = getElementId();
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
-      return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"
+      return new SelendroidResponse(getSessionId(), 10, new NoSuchElementException("The element with id '"
           + id + "' was not found."));
     }
     Point point = element.getLocation();
@@ -44,9 +46,9 @@ public class ElementLocation extends RequestHandler {
     result.put("x", point.x);
     result.put("y", point.y);
     try {
-      return new Response(getSessionId(), result);
+      return new SelendroidResponse(getSessionId(), result);
     } catch (StaleElementReferenceException se) {
-      return new Response(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(), 10, se);
     }
   }
 }

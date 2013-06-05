@@ -17,6 +17,7 @@ import io.selendroid.android.internal.Base64Encoder;
 import org.json.JSONException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -31,6 +32,6 @@ public class CaptureScreenshot extends RequestHandler {
     byte[] rawPng = getSelendroidDriver().takeScreenshot();
     String base64Png = new Base64Encoder().encode(rawPng);
     
-    return new Response(getSessionId(), base64Png);
+    return new SelendroidResponse(getSessionId(), base64Png);
   }
 }

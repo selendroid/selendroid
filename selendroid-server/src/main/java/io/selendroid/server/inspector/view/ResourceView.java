@@ -13,16 +13,17 @@
  */
 package io.selendroid.server.inspector.view;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.server.inspector.InspectorServlet;
 import io.selendroid.server.inspector.SelendroidInspectorView;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
@@ -43,7 +44,8 @@ public class ResourceView extends SelendroidInspectorView {
       if (screenshot == null) {
         SelendroidLogger.log("screenshot is null");
       }
-      httpResponse.content(screenshot);
+      SelendroidLogger.log("size of screenshot: " + screenshot.length);
+      httpResponse.header("Content-Length", screenshot.length).content(screenshot);
     } else {
       try {
         String filename =

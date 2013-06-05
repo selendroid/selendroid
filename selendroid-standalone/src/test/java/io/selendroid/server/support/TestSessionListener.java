@@ -13,11 +13,12 @@
  */
 package io.selendroid.server.support;
 
+import io.selendroid.server.SelendroidResponse;
+
 import java.util.Properties;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.Response;
 
 /**
  * Implementations are able to listen to the {@link SelendroidDeviceServerStub} lifecycle.
@@ -54,15 +55,15 @@ public abstract class TestSessionListener {
     this.uriMapping = uriMapping;
   }
 
-  public Response deleteSession(Properties params) {
+  public SelendroidResponse deleteSession(Properties params) {
     return defaultResponseWithMessage("");
   }
 
-  public Response status(Properties params) throws JSONException {
+  public SelendroidResponse status(Properties params) throws JSONException {
     return defaultResponseWithMessage(status);
   }
 
-  public Response createSession(Properties params) throws JSONException {
+  public SelendroidResponse createSession(Properties params) throws JSONException {
 
     JSONObject sessionCap = new JSONObject();
     sessionCap.put(TAKES_SCREENSHOT, true);
@@ -73,13 +74,13 @@ public abstract class TestSessionListener {
     return defaultResponseWithMessage(sessionCap);
   }
 
-  public abstract Response executeSelendroidRequest(Properties params);
+  public abstract SelendroidResponse executeSelendroidRequest(Properties params);
 
-  protected Response defaultResponseWithMessage(Object message) {
-    return new Response(sessionId, message);
+  protected SelendroidResponse defaultResponseWithMessage(Object message) {
+    return new SelendroidResponse(sessionId, message);
   }
 
-  protected Response defaultResponse() {
+  protected SelendroidResponse defaultResponse() {
     return defaultResponseWithMessage("");
   }
 }

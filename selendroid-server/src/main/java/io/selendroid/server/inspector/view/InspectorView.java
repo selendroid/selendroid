@@ -13,16 +13,18 @@
  */
 package io.selendroid.server.inspector.view;
 
+import io.selendroid.ServerInstrumentation;
+import io.selendroid.server.inspector.InspectorServlet;
 import io.selendroid.server.inspector.SelendroidInspectorView;
 import io.selendroid.server.model.SelendroidDriver;
-import org.json.JSONException;
-import org.json.JSONObject;
-import io.selendroid.ServerInstrumentation;
-import org.webbitserver.HttpRequest;
-import org.webbitserver.HttpResponse;
 
 import java.nio.charset.Charset;
 import java.util.Iterator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.webbitserver.HttpRequest;
+import org.webbitserver.HttpResponse;
 
 public class InspectorView extends SelendroidInspectorView {
   public InspectorView(ServerInstrumentation serverInstrumentation, SelendroidDriver driver) {
@@ -54,7 +56,7 @@ public class InspectorView extends SelendroidInspectorView {
     b.append("<div id='mouseOver'></div>");
     b.append("<div id='rotationCenter'>");
     b.append("<div id='frame'>");
-    //b.append("<img src='" + getFrame() + "' />");
+    // b.append("<img src='" + getFrame() + "' />");
     b.append("        <div id='screen'>");
     b.append("         <img src='" + getScreen() + "' />");
     b.append("</div>");
@@ -71,7 +73,7 @@ public class InspectorView extends SelendroidInspectorView {
     b.append("<img src=\"" + getIcon() + "\" width='40px' />");
     b.append("</div>");
     b.append("<ul>");
-    b.append("<li><a target=\"_blank\" href=\"https://github.com/DominikDary/selendroid/wiki\">Selendroid Documentation</a></li>");
+    b.append("<li><a target=\"_blank\" href=\"https://selendroid.io\">Selendroid Documentation</a></li>");
     b.append("<li id=\"capabilities\"><a href=\"#\">See Capabilities</a></li>");
     b.append("</ul>");
     b.append("</div>");
@@ -108,7 +110,7 @@ public class InspectorView extends SelendroidInspectorView {
   }
 
   private String getResource(String name) {
-    return "/inspector/resources/" + name;
+    return InspectorServlet.INSPECTOR_RESSOURCE + "/" + name;
   }
 
   private String getScreen() {

@@ -15,9 +15,11 @@ package io.selendroid.server.handler;
 
 import io.selendroid.android.WindowType;
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
+
 import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
@@ -33,7 +35,7 @@ public class SwitchWindow extends RequestHandler {
     SelendroidLogger.log("Switch Window command");
     String windowName = getPayload().getString("name");
     if (windowName == null || windowName.isEmpty()) {
-      return new Response(getSessionId(), 13, new SelendroidException("Window name is missing."));
+      return new SelendroidResponse(getSessionId(), 13, new SelendroidException("Window name is missing."));
     }
     SelendroidDriver driver = getSelendroidDriver();
     if (WindowType.NATIVE_APP.name().equals(windowName)) {
@@ -41,9 +43,9 @@ public class SwitchWindow extends RequestHandler {
     } else if (WindowType.WEBVIEW.name().equals(windowName)) {
       driver.switchDriverMode(WindowType.WEBVIEW);
     } else {
-      return new Response(getSessionId(), 23, new SelendroidException(
+      return new SelendroidResponse(getSessionId(), 23, new SelendroidException(
           "Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
     }
-    return new Response(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(), "");
   }
 }

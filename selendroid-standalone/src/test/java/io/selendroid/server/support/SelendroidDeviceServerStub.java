@@ -13,6 +13,8 @@
  */
 package io.selendroid.server.support;
 
+import io.selendroid.server.SelendroidResponse;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -21,7 +23,8 @@ public class SelendroidDeviceServerStub extends NanoHTTPD {
   private final TestSessionListener testSessionListener;
   private int port;
 
-  public SelendroidDeviceServerStub(int port,TestSessionListener testSessionListener) throws IOException {
+  public SelendroidDeviceServerStub(int port, TestSessionListener testSessionListener)
+      throws IOException {
     super(port, new File("."));
     this.port = port;
     System.out.println("SelendroidDeviceServerStub is started on the following port: " + port);
@@ -66,7 +69,7 @@ public class SelendroidDeviceServerStub extends NanoHTTPD {
     return "DELETE".equals(method);
   }
 
-  private Response respond(io.selendroid.server.Response response) {
+  private Response respond(SelendroidResponse response) {
     return new Response(HTTP_OK, "application/json", response.toString());
   }
 }

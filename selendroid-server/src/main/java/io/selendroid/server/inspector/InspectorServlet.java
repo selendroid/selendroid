@@ -18,6 +18,7 @@ import io.selendroid.server.inspector.view.InspectorView;
 import io.selendroid.server.inspector.view.ResourceView;
 import io.selendroid.server.inspector.view.TreeView;
 import io.selendroid.server.model.SelendroidDriver;
+
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;

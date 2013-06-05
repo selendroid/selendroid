@@ -14,12 +14,14 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.UnsupportedOperationException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -43,7 +45,7 @@ public class ExecuteScript extends RequestHandler {
         value = getSelendroidDriver().executeScript(script);
       }
     } catch (UnsupportedOperationException e) {
-      return new Response(getSessionId(), 13, e);
+      return new SelendroidResponse(getSessionId(), 13, e);
     }
     if (value instanceof String) {
       String result = (String) value;
@@ -51,17 +53,17 @@ public class ExecuteScript extends RequestHandler {
         JSONObject json = new JSONObject(result);
         int status = json.optInt("status");
         if (0 != status) {
-          return new Response(getSessionId(), status, new SelendroidException(
+          return new SelendroidResponse(getSessionId(), status, new SelendroidException(
               json.optString("value")));
         }
         if (json.isNull("value")) {
-          return new Response(getSessionId(), null);
+          return new SelendroidResponse(getSessionId(), null);
         } else {
-          return new Response(getSessionId(), json.get("value"));
+          return new SelendroidResponse(getSessionId(), json.get("value"));
         }
       }
     }
 
-    return new Response(getSessionId(), value);
+    return new SelendroidResponse(getSessionId(), value);
   }
 }

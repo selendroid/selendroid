@@ -222,7 +222,7 @@ public class AndroidServlet extends BaseServlet {
     } catch (StaleElementReferenceException se) {
       try {
         String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
-        result = new Response(sessionId, 13, se);
+        result = new SelendroidResponse(sessionId, 13, se);
       } catch (Exception e) {
         SelendroidLogger.log("Error occured while handling reuqest and got StaleRef.", e);
         replyWithServerError(response);

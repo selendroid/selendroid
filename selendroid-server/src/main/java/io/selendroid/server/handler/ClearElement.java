@@ -14,12 +14,13 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class ClearElement extends RequestHandler {
@@ -34,17 +35,17 @@ public class ClearElement extends RequestHandler {
     String id = getElementId();
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
-      return new Response(getSessionId(), 10, new NoSuchElementException("The element with id '"
+      return new SelendroidResponse(getSessionId(), 10, new NoSuchElementException("The element with id '"
           + id + "' was not found."));
     }
     try {
       element.clear();
     } catch (StaleElementReferenceException se) {
-      return new Response(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(), 10, se);
     } catch (Exception e) {
       SelendroidLogger.log("error while clearing the element: ", e);
-      return new Response(getSelendroidDriver().getSession().getSessionId(), 33, e);
+      return new SelendroidResponse(getSelendroidDriver().getSession().getSessionId(), 33, e);
     }
-    return new Response(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(), "");
   }
 }

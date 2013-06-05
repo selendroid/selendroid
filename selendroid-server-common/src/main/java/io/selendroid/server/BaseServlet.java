@@ -157,7 +157,7 @@ public abstract class BaseServlet implements HttpHandler {
     }
 
     if (result != null) {
-      String resultString = result.toString();
+      String resultString = result.render();
       response.content(resultString);
     }
     response.end();

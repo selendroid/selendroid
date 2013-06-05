@@ -16,6 +16,7 @@ package io.selendroid.server.handler;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
 
@@ -42,7 +43,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 
     ActiveSession session = getSelendroidDriver().getActiveSession(sessionId);
     if (session == null) {
-      return new Response(sessionId, 13, new SelendroidException(
+      return new SelendroidResponse(sessionId, 13, new SelendroidException(
           "No session found for given sessionId: " + sessionId));
     }
     String url = "http://localhost:" + session.getSelendroidServerPort() + request.uri();
@@ -54,7 +55,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     try {
       response = redirectRequest(session, url, method);
     } catch (Exception e) {
-      return new Response(sessionId, 13, new SelendroidException(
+      return new SelendroidResponse(sessionId, 13, new SelendroidException(
           "Error occured while communicating with selendroid server on the device: ", e));
     }
     Object value = response.get("value");
@@ -62,7 +63,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     log.info("return value from selendroid android server: " + value);
     log.info("return status from selendroid android server: " + status);
 
-    return new Response(sessionId, status, value);
+    return new SelendroidResponse(sessionId, status, value);
   }
 
   private JSONObject redirectRequest(ActiveSession session, String url, String method)

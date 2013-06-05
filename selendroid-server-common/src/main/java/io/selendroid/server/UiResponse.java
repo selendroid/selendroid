@@ -11,20 +11,30 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.server.handlers;
+package io.selendroid.server;
 
-import io.selendroid.server.RequestHandler;
-import io.selendroid.server.Response;
-import io.selendroid.server.SelendroidResponse;
-import org.webbitserver.HttpRequest;
+public class UiResponse implements Response {
+  private String sessionId;
+  private Object object;
 
-public class SessionAndIdExtractionTestHandler extends RequestHandler {
-
-  public SessionAndIdExtractionTestHandler(HttpRequest request, String mappedUri) {
-    super(request,mappedUri);
+  public UiResponse(String sessionId, Object object) {
+    this.sessionId = sessionId;
+    this.object = object;
   }
 
-  public Response handle() {
-    return new SelendroidResponse(null, "sessionId#" + getSessionId() + " elementId#" + getElementId());
+  @Override
+  public String getSessionId() {
+    return sessionId;
   }
+
+
+  public Object getObject() {
+    return object;
+  }
+
+  @Override
+  public String render() {
+    return object.toString();
+  }
+
 }

@@ -14,9 +14,10 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class GetWindowHandle extends RequestHandler {
@@ -30,6 +31,6 @@ public class GetWindowHandle extends RequestHandler {
 
     String windowHandle = getSelendroidDriver().getWindowHandle();
 
-    return new Response(getSessionId(), windowHandle);
+    return new SelendroidResponse(getSessionId(), windowHandle);
   }
 }

@@ -15,10 +15,12 @@ package io.selendroid.server.handler;
 
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -40,8 +42,8 @@ public class NewSession extends RequestHandler {
       sessionID = getSelendroidDriver().initializeSession(desiredCapabilities);
     } catch (SelendroidException e) {
       SelendroidLogger.log("Error while creating new session: ", e);
-      return new Response("", 33, e);
+      return new SelendroidResponse("", 33, e);
     }
-    return new Response(sessionID, 0, desiredCapabilities);
+    return new SelendroidResponse(sessionID, 0, desiredCapabilities);
   }
 }

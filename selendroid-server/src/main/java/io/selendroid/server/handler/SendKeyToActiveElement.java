@@ -14,10 +14,11 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class SendKeyToActiveElement extends RequestHandler {
@@ -34,11 +35,11 @@ public class SendKeyToActiveElement extends RequestHandler {
     try {
       keysToSend = extractKeysToSendFromPayload();
     } catch (SelendroidException e) {
-      return new Response(getSessionId(), 13, e);
+      return new SelendroidResponse(getSessionId(), 13, e);
     }
 
     getSelendroidDriver().getKeyboard().sendKeys(keysToSend);
 
-    return new Response(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(), "");
   }
 }

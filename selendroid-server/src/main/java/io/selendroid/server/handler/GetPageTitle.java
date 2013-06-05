@@ -14,8 +14,10 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
-import org.json.JSONException;
 import io.selendroid.server.Response;
+
+import org.json.JSONException;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
 
@@ -29,9 +31,9 @@ public class GetPageTitle extends RequestHandler {
     SelendroidDriver driver = getSelendroidDriver();
 
     try {
-      return new Response(getSessionId(), driver.getTitle());
+      return new SelendroidResponse(getSessionId(), driver.getTitle());
     } catch (UnsupportedOperationException e) {
-      return new Response(getSessionId(), 13, e);
+      return new SelendroidResponse(getSessionId(), 13, e);
     }
   }
 }

@@ -14,13 +14,14 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.AndroidNativeElement;
 import io.selendroid.server.model.AndroidWebElement;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class LogElement extends RequestHandler {
@@ -35,15 +36,15 @@ public class LogElement extends RequestHandler {
 
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
-      return new Response(getSessionId(), 10, new SelendroidException("Element with id '" + id
+      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '" + id
           + "' was not found."));
     }
     if (element instanceof AndroidWebElement) {
-      return new Response(getSessionId(), 12, new SelendroidException(
+      return new SelendroidResponse(getSessionId(), 12, new SelendroidException(
           "Get source of element is only supported for native elements."));
     }
 
-    return new Response(getSessionId(), ((AndroidNativeElement) element).toJson().toString());
+    return new SelendroidResponse(getSessionId(), ((AndroidNativeElement) element).toJson().toString());
   }
 
 }

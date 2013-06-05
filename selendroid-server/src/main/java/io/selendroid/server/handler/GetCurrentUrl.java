@@ -14,8 +14,10 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
-import org.json.JSONException;
 import io.selendroid.server.Response;
+
+import org.json.JSONException;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -28,6 +30,6 @@ public class GetCurrentUrl extends RequestHandler {
   public Response handle() throws JSONException{
     SelendroidLogger.log("get current URL command");
 
-    return new Response(getSessionId(), getSelendroidDriver().getCurrentUrl());
+    return new SelendroidResponse(getSessionId(), getSelendroidDriver().getCurrentUrl());
   }
 }

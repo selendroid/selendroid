@@ -14,6 +14,7 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.BaseSelendroidServerHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.ActiveSession;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class ListSessionsHandler extends BaseSelendroidServerHandler {
@@ -46,7 +47,7 @@ public class ListSessionsHandler extends BaseSelendroidServerHandler {
         sessions.put(sessionResponse);
       }
     }
-    return new Response(null, sessions);
+    return new SelendroidResponse(null, sessions);
 
   }
 

@@ -27,7 +27,7 @@ import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.support.DeviceForTest;
 import io.selendroid.server.support.TestSessionListener;
 
@@ -54,7 +54,8 @@ public class SelendroidStandaloneDriverTests {
   public void testShouldBeAbleToInitDriver() throws Exception {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
-    SelendroidStandaloneDriver driver = new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidStandaloneDriver driver =
+        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
     driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
@@ -64,14 +65,16 @@ public class SelendroidStandaloneDriverTests {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
-    SelendroidStandaloneDriver driver = new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidStandaloneDriver driver =
+        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
     driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
 
   @Test
   public void testShouldNotbBeAbleInitDriverWithoutAnyConfig() throws Exception {
-    SelendroidStandaloneDriver driver = new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidStandaloneDriver driver =
+        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
     try {
       driver.initApplicationsUnderTest(new SelendroidConfiguration());
     } catch (SelendroidException e) {
@@ -108,7 +111,8 @@ public class SelendroidStandaloneDriverTests {
   @Test
   public void assertThatANewtestSessionCanBeCreated() throws Exception {
     // Setting up driver with test app and device stub
-    SelendroidStandaloneDriver driver = new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidStandaloneDriver driver =
+        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);
@@ -118,7 +122,7 @@ public class SelendroidStandaloneDriverTests {
     final UUID definedSessionId = UUID.randomUUID();
     emulator.testSessionListener = new TestSessionListener(definedSessionId.toString(), "test") {
       @Override
-      public Response executeSelendroidRequest(Properties params) {
+      public SelendroidResponse executeSelendroidRequest(Properties params) {
         return null;
       }
     };

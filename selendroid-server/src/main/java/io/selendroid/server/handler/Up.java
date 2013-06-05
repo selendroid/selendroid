@@ -14,11 +14,12 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.TouchScreen;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class Up extends RequestHandler {
@@ -37,6 +38,6 @@ public class Up extends RequestHandler {
 
     touchScreen.up(x, y);
 
-    return new Response(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(), "");
   }
 }

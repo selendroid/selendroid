@@ -14,9 +14,11 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
+
 import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
@@ -30,10 +32,10 @@ public class OpenUrl extends RequestHandler {
     SelendroidLogger.log("Open URL command");
     String url = getPayload().getString("url");
     if (url == null || url.isEmpty()) {
-      return new Response(getSessionId(), 13, new SelendroidException(
+      return new SelendroidResponse(getSessionId(), 13, new SelendroidException(
           "Not able to open Url because Url is missing."));
     }
     getSelendroidDriver().get(url);
-    return new Response(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(), "");
   }
 }

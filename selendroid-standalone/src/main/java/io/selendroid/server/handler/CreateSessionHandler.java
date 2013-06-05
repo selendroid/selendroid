@@ -15,6 +15,7 @@ package io.selendroid.server.handler;
 
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 
 import java.util.logging.Logger;
 
@@ -41,8 +42,8 @@ public class CreateSessionHandler extends BaseSelendroidServerHandler {
       sessionID = getSelendroidDriver().createNewTestSession(desiredCapabilities);
     } catch (Exception e) {
       log.severe("Error while creating new session: " + e.getMessage());
-      return new Response("", 33, e);
+      return new SelendroidResponse("", 33, e);
     }
-    return new Response(sessionID, 0, desiredCapabilities);
+    return new SelendroidResponse(sessionID, 0, desiredCapabilities);
   }
 }

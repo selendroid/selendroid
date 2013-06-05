@@ -16,6 +16,7 @@ package io.selendroid.server.handler;
 import java.util.List;
 
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.internal.NativeAndroidBySelector;
@@ -27,7 +28,7 @@ import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.exceptions.UnsupportedOperationException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class FindChildElements extends RequestHandler {
@@ -46,7 +47,7 @@ public class FindChildElements extends RequestHandler {
     String elementId = getElementId();
     AndroidElement root = getElementFromCache(elementId);
     if (root == null) {
-      return new Response(getSessionId(), 10, new SelendroidException("The element with Id: "
+      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("The element with Id: "
           + elementId + " was not found."));
     }
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
@@ -54,11 +55,11 @@ public class FindChildElements extends RequestHandler {
     try {
       elements = root.findElements(by);
     } catch (StaleElementReferenceException se) {
-      return new Response(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(), 10, se);
     } catch (NoSuchElementException e) {
-      return new Response(getSessionId(), new JSONArray());
+      return new SelendroidResponse(getSessionId(), new JSONArray());
     }catch (UnsupportedOperationException e) {
-      return new Response(getSessionId(), 32, e);
+      return new SelendroidResponse(getSessionId(), 32, e);
     }
 
     JSONArray result = new JSONArray();
@@ -71,6 +72,6 @@ public class FindChildElements extends RequestHandler {
       jsonElement.put("ELEMENT", id);
       result.put(jsonElement);
     }
-    return new Response(getSessionId(), result);
+    return new SelendroidResponse(getSessionId(), result);
   }
 }

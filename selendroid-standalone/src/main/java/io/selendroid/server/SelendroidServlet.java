@@ -16,10 +16,13 @@ package io.selendroid.server;
 import io.selendroid.server.handler.CreateSessionHandler;
 import io.selendroid.server.handler.DeleteSessionHandler;
 import io.selendroid.server.handler.GetCapabilities;
+import io.selendroid.server.handler.InspectorUiHandler;
 import io.selendroid.server.handler.ListSessionsHandler;
 import io.selendroid.server.handler.RequestRedirectHandler;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -42,6 +45,9 @@ public class SelendroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session", CreateSessionHandler.class);
     getHandler.put("/wd/hub/sessions", ListSessionsHandler.class);
     getHandler.put("/wd/hub/session/:sessionId", GetCapabilities.class);
+
+    getHandler.put("/inspector", InspectorUiHandler.class);
+    getHandler.put("/inspector/session/:sessionId", InspectorUiHandler.class);
     deleteHandler.put("/wd/hub/session/:sessionId", DeleteSessionHandler.class);
     redirectHandler.put("/wd/hub/session/", RequestRedirectHandler.class);
   }
@@ -58,8 +64,8 @@ public class SelendroidServlet extends BaseServlet {
           if (request.uri().startsWith(entry.getKey())) {
             String sessionId =
                 getParameter("/wd/hub/session/:sessionId", request.uri(), ":sessionId", false);
+            handler = instantiateHandler(entry, request);
             if (driver.isValidSession(sessionId)) {
-              handler = instantiateHandler(entry, request);
               request.data().put(SESSION_ID_KEY, sessionId);
             }
           }
@@ -87,6 +93,28 @@ public class SelendroidServlet extends BaseServlet {
       replyWithServerError(response);
       return;
     }
-    handleResponse(request, response, result);
+    if (result instanceof SelendroidResponse) {
+      handleResponse(request, response, result);
+    } else {
+      UiResponse uiResponse = (UiResponse) result;
+      response.header("Content-Type", "text/html");
+      response.charset(Charset.forName("UTF-8"));
+
+      response.status(200);
+
+      if (uiResponse != null) {
+        if (uiResponse.getObject() instanceof byte[]) {
+          byte[] data = (byte[]) uiResponse.getObject();
+          response.header("Content-Length", data.length).content(ByteBuffer.wrap(data));
+
+        } else {
+          String resultString = uiResponse.render();
+          response.content(resultString);
+
+        }
+      }
+      response.end();
+    }
   }
+
 }

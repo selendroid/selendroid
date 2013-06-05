@@ -48,7 +48,8 @@ public class HttpClientUtil {
   }
 
   public static JSONObject parseJsonResponse(HttpResponse response) throws Exception {
-    return new JSONObject(IOUtils.toString(response.getEntity().getContent()));
+    String r = IOUtils.toString(response.getEntity().getContent());
+    return new JSONObject(r);
   }
 
   public static HttpResponse executeRequest(String url, HttpMethod method) throws Exception {

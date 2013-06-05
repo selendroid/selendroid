@@ -15,12 +15,13 @@ package io.selendroid.server.handler;
 
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import org.webbitserver.HttpRequest;
 
@@ -37,7 +38,7 @@ public class GetElementSize extends RequestHandler {
 
     AndroidElement element = getElementFromCache(id);
     if (element == null) {
-      return new Response(getSessionId(), 10, new SelendroidException("Element with id '" + id
+      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '" + id
           + "' was not found."));
     }
     Dimension dimension = element.getSize();
@@ -45,9 +46,9 @@ public class GetElementSize extends RequestHandler {
     result.put("width", dimension.width);
     result.put("height", dimension.height);
     try {
-      return new Response(getSessionId(), result);
+      return new SelendroidResponse(getSessionId(), result);
     } catch (StaleElementReferenceException se) {
-      return new Response(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(), 10, se);
     }
   }
 
