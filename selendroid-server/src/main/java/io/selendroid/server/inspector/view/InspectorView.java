@@ -73,7 +73,7 @@ public class InspectorView extends SelendroidInspectorView {
     b.append("<img src=\"" + getIcon() + "\" width='40px' />");
     b.append("</div>");
     b.append("<ul>");
-    b.append("<li><a target=\"_blank\" href=\"https://selendroid.io\">Selendroid Documentation</a></li>");
+    b.append("<li><a target=\"_blank\" href=\"http://selendroid.io\">Selendroid Documentation</a></li>");
     b.append("<li id=\"capabilities\"><a href=\"#\">See Capabilities</a></li>");
     b.append("</ul>");
     b.append("</div>");
