@@ -29,7 +29,8 @@ h4{
 	left: 0px;
 	float:left;
 	margin-bottom:6em;
-	min-height:95%;
+	width:50%;
+	height: 95%;
 }
 /* making it of size 0
  to have the rotate of the top left corner. */
@@ -43,6 +44,19 @@ h4{
 	top: 0px;
 	left: 0px;
 }
+#deviceScreenshot {
+    position: relative;
+    margin: 0 auto;
+    max-height: 700px;
+    max-width: 600px;
+  
+    box-shadow: 0 0 5px #ebebeb;
+    -webkit-box-shadow: 0 0 5px #ebebeb;
+    -moz-box-shadow: 0 0 5px #ebebeb;
+    -o-box-shadow: 0 0 5px #ebebeb;
+    -ms-box-shadow: 0 0 5px #ebebeb;
+}
+
 #screen {
 	position: absolute;
 }
@@ -60,7 +74,7 @@ h4{
 }
 #details {
 	float:right;
-	width: 18%;
+	width: 20%;
 	border:1px solid #CCCCCC;
 	border-radius:8px;
 	-moz-border-radius:8px; /* Firefox 3.6 and earlier */
@@ -80,14 +94,6 @@ h4{
 	width:100%;
 	height:45px;
 	}
-	
-#picture{
-	float:left;
-
-	-moz-transform: scale(0.6);
-	margin-top: 0em;
-
-}
 
 
 #topmenu ul li {
@@ -135,7 +141,13 @@ h4{
 	z-index: 3;
 	opacity: 0.5;
 }
+#picture{
+	float:left;
 
+	-moz-transform: scale(0.6);
+	margin-top: 0em;
+
+}
 
 .overlay, .overlayLanguages{
     background:transparent url(images/overlay.png) repeat top left;

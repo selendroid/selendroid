@@ -48,6 +48,7 @@ public class InspectorView extends SelendroidInspectorView {
         + "'></script>");
     b.append("<script type='text/javascript' src='" + getResource("ide.js") + "'></script>");
     b.append("<script type='text/javascript' src='" + getResource("uiactions.js") + "'></script>");
+    b.append("<script type='text/javascript' src='" + getResource("imgscale.jquery.min.js") + "'></script>");
     b.append("</head>");
     b.append("<body>");
     b.append("<html>");
@@ -58,7 +59,7 @@ public class InspectorView extends SelendroidInspectorView {
     b.append("<div id='frame'>");
     // b.append("<img src='" + getFrame() + "' />");
     b.append("        <div id='screen'>");
-    b.append("         <img src='" + getScreen() + "' />");
+    b.append("         <img id='deviceScreenshot' src='" + getScreen() + "' />");
     b.append("</div>");
     b.append("</div>");
     b.append("</div>");

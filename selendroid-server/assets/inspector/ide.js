@@ -78,10 +78,10 @@ $(document).ready(function() {
 		$('#reference').html("<input type='hidden' name='reference' value='" + ref + "'>");
 	}
 	highlight = function(x, y, h, w, translationFound) {
-		$('#highlight').css('left', x + realOffsetX + 'px');
-		$('#highlight').css('top', y + realOffsetY + 'px');
-		$('#highlight').css('height', h + 'px');
-		$('#highlight').css('width', w + 'px');
+		$('#highlight').css('left', x*scale_highlight + realOffsetX+ 'px');
+		$('#highlight').css('top', y*scale_highlight + realOffsetY+ 'px');
+		$('#highlight').css('height', h *scale_highlight+ 'px');
+		$('#highlight').css('width', w *scale_highlight+ 'px');
 
 		var color;
 		if(translationFound) {
@@ -208,6 +208,7 @@ var realOffsetX = 0;
 var realOffsetY = 0;
 
 var scale = 1;
+var scale_highlight = 1;
 
 var frame_h = 0;
 var frame_w = 0;
@@ -218,8 +219,8 @@ var screen_w = 0;
 var to_top = 0;
 var to_left = 0;
 
-var margin = 25;
-var treeAndDetailInPercent = 0.48;
+var margin = 0;
+var treeAndDetailInPercent = 0.5;
 findFrameSizeInPixels = function() {
 	var width = window.innerWidth;
 	var leftForFrame = width * (1 - treeAndDetailInPercent);
@@ -231,45 +232,28 @@ var orientation;
 configure = function(d, o) {
 	device = d;
 	orientation = o;
-	var FRAME_IPAD_H = 1108;
-	var FRAME_IPAD_W = 852;
-	var SCREEN_IPAD_H = 1024;
-	var SCREEN_IPAD_W = 768;
-	var SCREEN_TO_TOP_IPAD = 42;
-	var SCREEN_TO_LEFT_IPAD = 42;
+	var SCREEN_TO_TOP_IPHONE = 5;
+	var SCREEN_TO_LEFT_IPHONE = 5;
+    var rect = document.getElementById('deviceScreenshot').getBoundingClientRect();
+	console.log(rect.top, rect.right, rect.bottom, rect.left);
 
-	var FRAME_IPHONE_H = 716;
-	var FRAME_IPHONE_W = 368;
-	var SCREEN_IPHONE_H = 480;
-	var SCREEN_IPHONE_W = 320;
-	var SCREEN_TO_TOP_IPHONE = 118;
-	var SCREEN_TO_LEFT_IPHONE = 24;
-
-	if(device === 'ipad') {
-		frame_h = FRAME_IPAD_H;
-		frame_w = FRAME_IPAD_W;
-		screen_h = SCREEN_IPAD_H;
-		screen_w = SCREEN_IPAD_W;
-		to_top = SCREEN_TO_TOP_IPAD;
-		to_left = SCREEN_TO_LEFT_IPAD;
-	} else if(device === 'iphone') {
-		frame_h = FRAME_IPHONE_H;
-		frame_w = FRAME_IPHONE_W;
-		screen_h = SCREEN_IPHONE_H;
-		screen_w = SCREEN_IPHONE_W;
-		to_top = SCREEN_TO_TOP_IPHONE;
-		to_left = SCREEN_TO_LEFT_IPHONE;
-	} else {
-		console.log("error, wrong device :" + device);
-	}
+	frame_h = document.getElementById('deviceScreenshot').height  ;
+	frame_w = document.getElementById('deviceScreenshot').width ;
+	screen_h = document.getElementById('deviceScreenshot').height ;
+	screen_w = document.getElementById('deviceScreenshot').width;
+	to_top = SCREEN_TO_TOP_IPHONE;
+	to_left = SCREEN_TO_LEFT_IPHONE;
 
 };
 resize = function() {
-
+    $('#deviceScreenshot').imgscale(); 
 	var neededSpace = frame_w;
 	if(orientation === 'UIA_DEVICE_ORIENTATION_LANDSCAPERIGHT' || orientation === 'UIA_DEVICE_ORIENTATION_LANDSCAPELEFT') {
 		neededSpace = frame_h;
 	}
+	var screen_width = document.getElementById('deviceScreenshot').height;
+    var real_width=document.getElementById('deviceScreenshot').naturalHeight; 
+	scale_highlight= 1/(real_width/screen_width)
 	var leftInPixel = findFrameSizeInPixels();
 	scale = leftInPixel / neededSpace;
 	if(scale > 1) {
