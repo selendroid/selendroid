@@ -31,6 +31,7 @@
 				<artifactId>selenium-java</artifactId>
 				<version>${selenium.version}</version>
 			</dependency>
+			<!-- For the grid plugin -->
 			<dependency>
 				<groupId>org.seleniumhq.selenium</groupId>
 				<artifactId>selenium-server</artifactId>
