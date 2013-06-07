@@ -44,13 +44,13 @@ public class SessionCreationE2ETest {
         SelendroidStandaloneDriverTests.TEST_APP_ID));
   }
 
+
   @Ignore
   @Test
   public void assertThatSessionCanBeExecutedOnAndroid17Device() throws Exception {
     SelendroidCapabilities capa =
         SelendroidCapabilities.device(DeviceTargetPlatform.ANDROID17,
             SelendroidStandaloneDriverTests.TEST_APP_ID);
-    capa.setScreenSize("720x1280");
 
     testMethod(capa);
   }

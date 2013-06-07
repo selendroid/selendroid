@@ -18,18 +18,22 @@ import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
+import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
+import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
+import io.selendroid.io.ShellCommand;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.model.impl.DefaultHardwareDeviceFinder;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -119,10 +123,20 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
   /* package */void initAndroidDevices() throws AndroidDeviceException {
     deviceStore = new DeviceStore();
+    try {
+      resetAdb();
+    } catch (ShellCommandException e) {
+      throw new AndroidDeviceException("An error occured while restarting adb.", e);
+    }
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
     deviceStore.addEmulators(emulators);
     List<AndroidDevice> devices = androidDeviceFinder.findConnectedDevices();
     deviceStore.addDevices(devices);
+  }
+
+  private void resetAdb() throws ShellCommandException {
+    ShellCommand.exec(Arrays.asList(new String[] {AndroidSdk.adb(), "kill-server"}));
+    ShellCommand.exec(Arrays.asList(new String[] {AndroidSdk.adb(), "start-server"}));
   }
 
   @Override
@@ -397,6 +411,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           deviceInfo.put("avdName", ((DefaultAndroidEmulator) device).getAvdName());
         } else {
           deviceInfo.put("emulator", false);
+          deviceInfo.put("model", ((DefaultHardwareDevice) device).getModel());
         }
         deviceInfo.put("targetPlatform", device.getTargetPlatform());
         deviceInfo.put("screenSize", device.getScreenSize());

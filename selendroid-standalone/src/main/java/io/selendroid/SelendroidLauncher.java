@@ -45,6 +45,7 @@ public class SelendroidLauncher {
       log.severe("http://developer.android.com/sdk/index.html");
     } catch (Exception e) {
       log.severe("Error occured while building server: " + e.getMessage());
+      e.printStackTrace();
     }
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
