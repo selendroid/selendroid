@@ -53,12 +53,20 @@ public class StatusServlet implements HttpHandler {
     json.put("build", build);
     json.put("os", os);
     if (devices == null || devices.length() == 0) {
-      devices = seledendroidServer.getSupportedDevices();
+      try {
+        devices = seledendroidServer.getSupportedDevices();
+      } catch (Exception e) {
+        apps = new JSONArray();
+      }
     }
     json.put("supportedDevices", devices);
 
     if (apps == null || devices.length() == 0) {
-      apps = seledendroidServer.getSupportedApps();
+      try {
+        apps = seledendroidServer.getSupportedApps();
+      } catch (Exception e) {
+        apps = new JSONArray();
+      }
     }
     json.put("supportedApps", apps);
 

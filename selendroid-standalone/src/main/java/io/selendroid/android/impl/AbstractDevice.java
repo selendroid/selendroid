@@ -231,7 +231,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     command.add("getprop");
     command.add(key);
     String prop = executeCommand(command);
-    return prop.replace("\r", "").replace("\n", "");
+
+    return prop == null ? "" : prop.replace("\r", "").replace("\n", "");
   }
 
   protected static String extractValue(String regex, String output) {
