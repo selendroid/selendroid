@@ -26,7 +26,6 @@ package io.selendroid.server.handler;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.UiResponse;
@@ -59,22 +58,27 @@ public class InspectorUiHandler extends BaseSelendroidServerHandler {
     } else {
       session = getSelendroidDriver().getActiveSession(sessionId);
     }
-    if (session == null) {
-      throw new SelendroidException("No active test session was found.");
-    }
-    String url = "http://localhost:" + session.getSelendroidServerPort() + "/inspector";
-
     StringBuilder html = new StringBuilder();
     html.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\">");
     html.append("<html><head><title>Selendroid Inspector</title></head>");
-    html.append("<frameset rows='100%, *' frameborder=no framespacing=0 border=0>");
-    html.append("<frame src='");
-    html.append(url);
-    html.append("' name=mainwindow frameborder=no framespacing=0 marginheight=0 marginwidth=0>");
-    html.append("</frame></frameset><noframes>");
-    html.append("<p>Frames are not supported by your browser. <a href='" + url
-        + "'>Click here</a></p>");
-    html.append("</noframes></html>");
-    return new UiResponse(session.getSessionKey(), html.toString());
+    if (session == null) {
+      html.append("<body>");
+      html.append("<h3>Warning</h3>");
+      html.append("<p>Selendroid inspector can only be used if there is an active test session running. ");
+      html.append("To start a test session, add a break point into your test code and run the test in debug mode.</p>");
+      html.append("</body>");
+    } else {
+      String url = "http://localhost:" + session.getSelendroidServerPort() + "/inspector";
+      html.append("<frameset rows='100%, *' frameborder=no framespacing=0 border=0>");
+      html.append("<frame src='");
+      html.append(url);
+      html.append("' name=mainwindow frameborder=no framespacing=0 marginheight=0 marginwidth=0>");
+      html.append("</frame></frameset><noframes>");
+      html.append("<p>Frames are not supported by your browser. <a href='" + url
+          + "'>Click here</a></p>");
+      html.append("</noframes>");
+    }
+    html.append("</html>");
+    return new UiResponse(sessionId != null ? sessionId : "", html.toString());
   }
 }
