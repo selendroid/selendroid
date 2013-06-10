@@ -164,7 +164,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       return "";
     }
     Attributes attr = manifest.getMainAttributes();
-    String value = attr.getValue("Manifest-Version");
+    String value = attr.getValue("version");
     return value;
   }
 
