@@ -38,14 +38,9 @@ public class ShellCommand {
     return exec(command, 20000);
   }
 
-  public static String exec(List<String> command, long timeoutInMillies)
+  public static String exec(CommandLine commandline, long timeoutInMillies)
       throws ShellCommandException {
-    String cmd = StringUtils.toString(command.toArray(new String[command.size()]), " ");
-
-    log.info("executing command: " + cmd);
     OutputStream outputStream = new ByteArrayOutputStream();
-
-    CommandLine commandline = CommandLine.parse(cmd);
     DefaultExecutor exec = new DefaultExecutor();
     exec.setWatchdog(new ExecuteWatchdog(timeoutInMillies));
     PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
@@ -53,10 +48,19 @@ public class ShellCommand {
     try {
       exec.execute(commandline);
     } catch (Exception e) {
-      throw new ShellCommandException("An error occured while executing shell command: " + cmd,
-          new ShellCommandException(outputStream.toString()));
+      throw new ShellCommandException("An error occured while executing shell command: "
+          + commandline, new ShellCommandException(outputStream.toString()));
     }
     return (outputStream.toString());
+  }
+
+  public static String exec(List<String> command, long timeoutInMillies)
+      throws ShellCommandException {
+    String cmd = StringUtils.toString(command.toArray(new String[command.size()]), " ");
+
+    log.info("executing command: " + cmd);
+    CommandLine commandline = CommandLine.parse(cmd);
+    return exec(commandline, timeoutInMillies);
   }
 
   public static void execAsync(List<String> command) throws ShellCommandException {

@@ -39,12 +39,14 @@ public class AndroidSdk {
     StringBuffer command = new StringBuffer();
     command.append("aapt");
     command.append(platformExecutableSuffixExe());
-    File platformToolsAapt = new File(platformToolsHome() + command.toString());
-    if (platformToolsAapt.exists()) {
+    File platformToolsAapt = new File(platformToolsHome(), command.toString());
+    
+    if (platformToolsAapt.isFile()) {
       return platformToolsAapt.getAbsolutePath();
     }
-    File buildToolsAapt = new File(buildToolsHome() + command.toString());
-    if (buildToolsAapt.exists()) {
+    File buildToolsAapt = new File(buildToolsHome(),command.toString());
+    
+    if (buildToolsAapt.isFile()) {
       return buildToolsAapt.getAbsolutePath();
     }
 
