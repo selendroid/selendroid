@@ -44,8 +44,11 @@ public class AndroidSdk {
     if (platformToolsAapt.isFile()) {
       return platformToolsAapt.getAbsolutePath();
     }
-    File buildToolsAapt = new File(buildToolsHome(),command.toString());
-    
+    File buildToolsAapt = new File(buildToolsHome("android-4.2.2"),command.toString());
+    if (buildToolsAapt.isFile()) {
+      return buildToolsAapt.getAbsolutePath();
+    }
+    buildToolsAapt = new File(buildToolsHome("17.0.0"),command.toString());
     if (buildToolsAapt.isFile()) {
       return buildToolsAapt.getAbsolutePath();
     }
@@ -79,13 +82,13 @@ public class AndroidSdk {
     return command.toString();
   }
 
-  private static String buildToolsHome() {
+  private static String buildToolsHome(String platformFolder) {
     StringBuffer command = new StringBuffer();
     command.append(androidHome());
     command.append(File.separator);
     command.append("build-tools");
     command.append(File.separator);
-    command.append("17.0.0");
+    command.append(platformFolder);
     command.append(File.separator);
 
     return command.toString();

@@ -22,7 +22,6 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -40,8 +39,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -235,18 +232,21 @@ public class SelendroidServerBuilder {
     }
 
     // Sign the jar
-    List<String> signApkCommand = Lists.newArrayList();
-    signApkCommand.add(JavaSdk.jarsigner());
-    signApkCommand.add("-sigalg MD5withRSA");
-    signApkCommand.add("-digestalg SHA1");
-    signApkCommand.add("-signedjar");
-    signApkCommand.add(outputFileName.getAbsolutePath());
-    signApkCommand.add("-storepass android");
-    signApkCommand.add("-keystore");
-    signApkCommand.add(androidKeyStore.toString());
-    signApkCommand.add(customSelendroidServer.getAbsolutePath());
-    signApkCommand.add("androiddebugkey");
-    String output = ShellCommand.exec(signApkCommand);
+    CommandLine commandline = new CommandLine(new File(JavaSdk.jarsigner()));
+
+    commandline.addArgument("-sigalg", false);
+    commandline.addArgument("MD5withRSA", false);
+    commandline.addArgument("-digestalg", false);
+    commandline.addArgument("SHA1", false);
+    commandline.addArgument("-signedjar", false);
+    commandline.addArgument(outputFileName.getAbsolutePath(), false);
+    commandline.addArgument("-storepass", false);
+    commandline.addArgument("android", false);
+    commandline.addArgument("-keystore", false);
+    commandline.addArgument(androidKeyStore.toString(), false);
+    commandline.addArgument(customSelendroidServer.getAbsolutePath(), false);
+    commandline.addArgument("androiddebugkey", false);
+    String output = ShellCommand.exec(commandline, 20000);
     if (log.isLoggable(Level.INFO)) {
       log.info("App signing output: " + output);
     }
