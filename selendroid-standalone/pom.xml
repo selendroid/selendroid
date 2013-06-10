@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.selendroid</groupId>
 		<artifactId>selendroid</artifactId>
-		<version>0.4-SNAPSHOT</version>
+		<version>0.4.0</version>
 	</parent>
 	<artifactId>selendroid-standalone</artifactId>
 	<name>selendroid-standalone</name>
@@ -33,17 +33,17 @@
 		<dependency>
 			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-common</artifactId>
-			<version>0.4-SNAPSHOT</version>
+			<version>0.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-server-common</artifactId>
-			<version>0.4-SNAPSHOT</version>
+			<version>0.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-server</artifactId>
-			<version>0.4-SNAPSHOT</version>
+			<version>0.4.0</version>
 			<type>apk</type>
 		</dependency>
 		<dependency>
@@ -97,7 +97,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.selendroid</groupId>
-			<version>0.4-SNAPSHOT</version>
+			<version>0.4.0</version>
 			<artifactId>selendroid-client</artifactId>
 		</dependency>
 	</dependencies>

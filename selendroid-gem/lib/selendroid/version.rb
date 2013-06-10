@@ -1,3 +1,3 @@
 module Selendroid
-  VERSION = "0.4.0.snapshot1"
+  VERSION = "0.4.0"
 end

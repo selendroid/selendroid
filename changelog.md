@@ -1,13 +1,15 @@
-0.4-SNAPSHOT
+0.4.0
 -------------
 
+- moved all packages to domain selendroid.io
+- added new component: selendroid-standalone
+- moved the documentation from wiki to web page: http://selendroid.io
+- selendroid gem has been refactored to support only starting selendroid-shell
 - Removed dependencies: Guava, commons-io, slf4j-android
 - Find By Tag Name refactored to find by the class now, not by text 
 - L10n Locators not longer available, the translation can be done executing the script: ((JavascriptExecutor) driver).executeScript("getL10nKeyTranslation", "l10nKey");
 - Several bug fixes
-- moved all packages to domain selendroid.io
-- added new component selendroid standalone
-- moved the documentation from wiki to web page http://selendroid.io
+
 
 0.3.2
 -----

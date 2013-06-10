@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["ddary@acm.org"]
   gem.homepage      = "http://selendroid.io"
   gem.description   = %q{"Selenium for Android Apps" (Test automate native or hybrid Android apps with Selendroid.)}
-  gem.summary       = %q{Utility for selendroid.}
+  gem.summary       = %q{Shell utility for selendroid.}
   ignores = File.readlines('.gitignore').grep(/\S+/).map {|s| s.chomp }
   dotfiles = [ '.gitignore']
   gem.files = (Dir["**/*"].reject { |f| File.directory?(f) || ignores.any? { |i| File.fnmatch(i, f) } } + dotfiles).sort
