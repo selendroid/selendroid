@@ -54,7 +54,7 @@ elsif cmd == 'shell'
   raise_if_android_and_java_home_not_set
   puts "Please specify the app you want to automate!" if (ARGV.empty? or not is_apk_file?(ARGV.first))
   unless ENV["SELENDROID_SERVER_PORT"]
-    ENV["SELENDROID_SERVER_PORT"] = "5555"
+    ENV["SELENDROID_SERVER_PORT"] = "8080"
   end
   while not ARGV.empty? and is_apk_file?(ARGV.first)
     ENV["MAIN_ACTIVITY"]  = get_app_main_activity(relative_to_full_path(ARGV.shift))

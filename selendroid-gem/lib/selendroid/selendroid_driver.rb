@@ -90,6 +90,7 @@ def wait_for_selendroid_server
   unless ENV["SELENDROID_SERVER_PORT"]
     ENV["SELENDROID_SERVER_PORT"] = "8080"
   end
+
   retriable :tries => 10, :interval => 3 do
     url = URI.parse("http://localhost:#{ENV["SELENDROID_SERVER_PORT"]}/wd/hub/status")
     the_request = Net::HTTP::Get.new("#{url.path}")
