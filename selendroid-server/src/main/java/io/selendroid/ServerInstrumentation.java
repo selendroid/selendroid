@@ -305,4 +305,9 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   public JSONArray getSupportedDevices() {
     return new JSONArray();
   }
+
+  @Override
+  public String getOsName() {
+    return "Android";
+  }
 }

@@ -94,7 +94,7 @@ public class SelendroidServlet extends BaseServlet {
       return;
     }
     if (result instanceof SelendroidResponse) {
-      handleResponse(request, response, result);
+      handleResponse(request, response, (SelendroidResponse) result);
     } else {
       UiResponse uiResponse = (UiResponse) result;
       response.header("Content-Type", "text/html");

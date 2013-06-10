@@ -13,19 +13,20 @@
  */
 package io.selendroid.server.model;
 
-import java.util.List;
-import java.util.Map;
-
-import io.selendroid.android.ViewHierarchyAnalyzer;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.android.internal.DomWindow;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.SelendroidLogger;
+
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
@@ -71,7 +72,7 @@ public class SelendroidWebDriver {
   }
 
   @SuppressWarnings("unchecked")
-  private String convertToJsArgs(JSONArray args) throws JSONException{
+  private String convertToJsArgs(JSONArray args) throws JSONException {
     StringBuilder toReturn = new StringBuilder();
 
     int length = args.length();
@@ -105,8 +106,7 @@ public class SelendroidWebDriver {
       // follow: {"ELEMENT":"id"} where "id" refers to the id
       // of the HTML element in the javascript cache that can
       // be accessed throught bot.inject.cache.getCache_()
-      toReturn.append("{\"" + ELEMENT_KEY + "\":\"" + ((AndroidWebElement) obj).getId()
-          + "\"}");
+      toReturn.append("{\"" + ELEMENT_KEY + "\":\"" + ((AndroidWebElement) obj).getId() + "\"}");
     } else if (obj instanceof DomWindow) {
       // A DomWindow is represented in JavaScript by an Object as
       // follow {"WINDOW":"id"} where "id" refers to the id of the
@@ -121,7 +121,7 @@ public class SelendroidWebDriver {
     return toReturn.toString();
   }
 
-  public Object executeAtom(AndroidAtoms atom, Object ... args) {
+  public Object executeAtom(AndroidAtoms atom, Object... args) {
     JSONArray array = new JSONArray();
     for (int i = 0; i < args.length; i++) {
       array.put(args[i]);
@@ -151,9 +151,9 @@ public class SelendroidWebDriver {
       JSONObject json = new JSONObject(jsResult);
       if (0 != json.optInt("status")) {
         Object value = json.get("value");
-        if ((value instanceof String && value.equals("Element does not exist in cache")) ||
-            (value instanceof JSONObject &&
-                ((JSONObject)value).getString("message").equals("Element does not exist in cache"))) {
+        if ((value instanceof String && value.equals("Element does not exist in cache"))
+            || (value instanceof JSONObject && ((JSONObject) value).getString("message").equals(
+                "Element does not exist in cache"))) {
           throw new StaleElementReferenceException(json.optString("value"));
         }
         throw new SelendroidException(json.optString("value"));
@@ -178,8 +178,12 @@ public class SelendroidWebDriver {
         webview.loadUrl("javascript:" + script);
       }
     });
-    long timeout =
-        System.currentTimeMillis() + 60000; /* how long to wait to allow the script to run? This could be arbitrarily high for some users... setting extremely high for now (1 min) */
+    long timeout = System.currentTimeMillis() + 60000; /*
+                                                        * how long to wait to allow the script to
+                                                        * run? This could be arbitrarily high for
+                                                        * some users... setting extremely high for
+                                                        * now (1 min)
+                                                        */
     synchronized (syncObject) {
       while (result == null && (System.currentTimeMillis() < timeout)) {
         try {
@@ -229,7 +233,7 @@ public class SelendroidWebDriver {
     done = false;
     Runnable r = new Runnable() {
       public void run() {
-          url[0] = webview.getUrl();
+        url[0] = webview.getUrl();
         synchronized (this) {
           this.notify();
         }
@@ -277,34 +281,38 @@ public class SelendroidWebDriver {
 
       @Override
       public void run() {
-        view.clearCache(true);
-        view.clearFormData();
-        view.clearHistory();
-        view.setFocusable(true);
-        view.setFocusableInTouchMode(true);
-        view.setNetworkAvailable(true);
-        view.setWebChromeClient(new MyWebChromeClient());
+        try {
+          view.clearCache(true);
+          view.clearFormData();
+          view.clearHistory();
+          view.setFocusable(true);
+          view.setFocusableInTouchMode(true);
+          view.setNetworkAvailable(true);
+          view.setWebChromeClient(new MyWebChromeClient());
 
-        WebSettings settings = view.getSettings();
-        settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        settings.setSupportMultipleWindows(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setJavaScriptEnabled(true);
-        settings.setAppCacheEnabled(true);
-        settings.setAppCacheMaxSize(10 * 1024 * 1024);
-        settings.setAppCachePath("");
-        settings.setDatabaseEnabled(true);
-        settings.setDomStorageEnabled(true);
-        settings.setGeolocationEnabled(true);
-        settings.setSaveFormData(false);
-        settings.setSavePassword(false);
-        settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
-        // Flash settings
-        settings.setPluginState(WebSettings.PluginState.ON);
+          WebSettings settings = view.getSettings();
+          settings.setJavaScriptCanOpenWindowsAutomatically(true);
+          settings.setSupportMultipleWindows(true);
+          settings.setBuiltInZoomControls(true);
+          settings.setJavaScriptEnabled(true);
+          settings.setAppCacheEnabled(true);
+          settings.setAppCacheMaxSize(10 * 1024 * 1024);
+          settings.setAppCachePath("");
+          settings.setDatabaseEnabled(true);
+          settings.setDomStorageEnabled(true);
+          settings.setGeolocationEnabled(true);
+          settings.setSaveFormData(false);
+          settings.setSavePassword(false);
+          settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+          // Flash settings
+          settings.setPluginState(WebSettings.PluginState.ON);
 
-        // Geo location settings
-        settings.setGeolocationEnabled(true);
-        settings.setGeolocationDatabasePath("/data/data/selendroid");
+          // Geo location settings
+          settings.setGeolocationEnabled(true);
+          settings.setGeolocationDatabasePath("/data/data/selendroid");
+        } catch (Exception e) {
+          SelendroidLogger.log("An error occured while configuring the web view", e);
+        }
       }
     });
   }
@@ -319,7 +327,7 @@ public class SelendroidWebDriver {
         "(function(){" + "var win; try{win=" + window + "}catch(e){win=window}"
             + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", [";
     if (args instanceof JSONArray) {
-      wrappedScript += convertToJsArgs((JSONArray)args);
+      wrappedScript += convertToJsArgs((JSONArray) args);
     } else {
       wrappedScript += convertToJsArgs(args);
     }

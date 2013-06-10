@@ -141,11 +141,12 @@ public abstract class BaseServlet implements HttpHandler {
     return false;
   }
 
-  protected void handleResponse(HttpRequest request, HttpResponse response, Response result) {
+  protected void handleResponse(HttpRequest request, HttpResponse response,
+      SelendroidResponse result) {
     response.header("Content-Type", "application/json");
     response.charset(Charset.forName("UTF-8"));
 
-    if (isNewSessionRequest(request)) {
+    if (isNewSessionRequest(request) && result.getStatus() == 0) {
       response.status(301);
       String session = result.getSessionId();
 

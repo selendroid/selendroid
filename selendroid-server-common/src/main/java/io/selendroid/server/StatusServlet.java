@@ -42,12 +42,11 @@ public class StatusServlet implements HttpHandler {
     JSONObject build = new JSONObject();
     build.put("version", seledendroidServer.getServerVersion());
     build.put("browserName", "selendroid");
-
+    
     JSONObject os = new JSONObject();
     os.put("arch", seledendroidServer.getCpuArch());
-    os.put("name", "Android");
+    os.put("name", seledendroidServer.getOsName());
     os.put("version", seledendroidServer.getOsVersion());
-    // os.put("locale", Locale.getDefault().toString());
 
     JSONObject json = new JSONObject();
     json.put("build", build);

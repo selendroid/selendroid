@@ -15,6 +15,7 @@ package io.selendroid;
 
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.SelendroidStandaloneServer;
+import io.selendroid.server.util.HttpClientUtil;
 
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -34,7 +35,7 @@ public class SelendroidLauncher {
     this.config = config;
   }
 
-  public void lauchSelendroid() {
+  private void lauchServer() {
     try {
       log.info("Starting selendroid-server port " + config.getPort());
       server = new SelendroidStandaloneServer(config);
@@ -57,6 +58,11 @@ public class SelendroidLauncher {
     });
   }
 
+  public void lauchSelendroid() {
+    lauchServer();
+    waitForServer(config.getPort());
+  }
+
   public static void main(String[] args) {
     try {
       configureLogging();
@@ -73,7 +79,7 @@ public class SelendroidLauncher {
       System.exit(0);
     }
     SelendroidLauncher laucher = new SelendroidLauncher(config);
-    laucher.lauchSelendroid();
+    laucher.lauchServer();
   }
 
   private static void configureLogging() throws Exception {
@@ -81,5 +87,19 @@ public class SelendroidLauncher {
 
     fh.setFormatter(new SimpleFormatter());
     Logger.getLogger(LOGGER_NAME).addHandler(fh);
+  }
+
+  public void stopSelendroid() {
+    if (server != null) {
+      server.stop();
+    }
+  }
+
+  private void waitForServer(int port) {
+    while (HttpClientUtil.isServerStarted(port) == false) {
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException e) {}
+    }
   }
 }

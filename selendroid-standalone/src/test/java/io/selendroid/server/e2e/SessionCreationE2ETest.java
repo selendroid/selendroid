@@ -37,13 +37,13 @@ public class SessionCreationE2ETest {
         SelendroidStandaloneDriverTests.TEST_APP_ID));
   }
 
+  
   @Ignore
   @Test
   public void assertThatSessionCanBeExecutedOnAndroid16Emulator() throws Exception {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16,
         SelendroidStandaloneDriverTests.TEST_APP_ID));
   }
-
 
   @Ignore
   @Test
@@ -57,6 +57,9 @@ public class SessionCreationE2ETest {
 
   private void testMethod(SelendroidCapabilities capa) throws Exception {
     WebDriver driver = new SelendroidDriver("http://localhost:5555/wd/hub", capa);
+    String activityClass = "io.selendroid.testapp." + "HomeScreenActivity";
+    driver.get("and-activity://" + activityClass);
+    driver.getCurrentUrl();
     try {
       driver.findElement(By.id("not there"));
       Assert.fail();

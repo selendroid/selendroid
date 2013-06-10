@@ -56,6 +56,7 @@ import io.selendroid.server.handler.UnknownCommandHandler;
 import io.selendroid.server.handler.Up;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
+
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
@@ -234,6 +235,6 @@ public class AndroidServlet extends BaseServlet {
       return;
     }
 
-    handleResponse(request, response, result);
+    handleResponse(request, response, (SelendroidResponse) result);
   }
 }

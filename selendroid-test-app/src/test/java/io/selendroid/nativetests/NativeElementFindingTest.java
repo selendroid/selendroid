@@ -13,10 +13,11 @@
  */
 package io.selendroid.nativetests;
 
-import java.util.List;
-
 import io.selendroid.TestGroups;
 import io.selendroid.support.BaseAndroidTest;
+
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;

@@ -76,4 +76,19 @@ public class HttpClientUtil {
         executeRequestWithPayload(url, port, HttpMethod.POST, payload.toString());
     return response;
   }
+
+  public static boolean isServerStarted(int port) {
+    HttpResponse response = null;
+    try {
+      response = executeRequest("http://localhost:" + port + "/wd/hub/sessions", HttpMethod.GET);
+    } catch (Exception e) {
+      return false;
+    }
+    try {
+      JSONObject result = parseJsonResponse(response);
+      return result.getInt("status") == 0;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }

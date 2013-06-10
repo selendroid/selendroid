@@ -15,12 +15,6 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>io.selendroid</groupId>
-			<artifactId>selendroid-client</artifactId>
-			<version>0.4-SNAPSHOT</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>6.8</version>
@@ -95,6 +89,18 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.2</version>
 		</dependency>
+		<dependency>
+			<groupId>io.selendroid</groupId>
+			<artifactId>selendroid-standalone</artifactId>
+			<version>0.4-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.selendroid</groupId>
+			<artifactId>selendroid-client</artifactId>
+			<version>0.4-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -127,11 +133,37 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.14.1</version>
 				<configuration>
-					<suiteXmlFiles>
-						<suiteXmlFile>src/test/resources/regressionTests.xml</suiteXmlFile>
-					</suiteXmlFiles>
-					<groups>${testngGroups}</groups>
-					<skipTests>${skipTests}</skipTests>
+					<!-- Skip the default running of this plug-in (or everything is run 
+						twice...see below) -->
+					<skip>true</skip>
+					<!-- Show 100% of the lines from the stack trace (doesn't work) -->
+					<trimStackTrace>false</trimStackTrace>
+				</configuration>
+				<executions>
+					<execution>
+						<id>integration-tests</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<suiteXmlFiles>
+								<suiteXmlFile>src/test/resources/regressionTests.xml</suiteXmlFile>
+							</suiteXmlFiles>
+							<groups>${testngGroups}</groups>
+							<skip>false</skip>
+							<!-- skipTests>${skipTests}</skipTests -->
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- just to be on the safe side that the build jar is taken -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<useProjectReferences>false</useProjectReferences>
 				</configuration>
 			</plugin>
 		</plugins>

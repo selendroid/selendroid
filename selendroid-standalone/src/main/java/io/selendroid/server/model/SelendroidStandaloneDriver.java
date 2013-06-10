@@ -27,18 +27,22 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
+import io.selendroid.exceptions.SessionNotCreatedException;
 import io.selendroid.io.ShellCommand;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.model.impl.DefaultHardwareDeviceFinder;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.logging.Logger;
 
 import org.apache.http.HttpResponse;
@@ -46,7 +50,6 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openqa.selenium.SessionNotCreatedException;
 
 import com.beust.jcommander.internal.Lists;
 
@@ -136,26 +139,51 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
   private void resetAdb() throws ShellCommandException {
     ShellCommand.exec(Arrays.asList(new String[] {AndroidSdk.adb(), "kill-server"}));
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {}
     ShellCommand.exec(Arrays.asList(new String[] {AndroidSdk.adb(), "start-server"}));
   }
 
   @Override
   public String getServerVersion() {
-    String version = "dev";
-    // TODO ddary read version number from jar
-    return version;
+
+    Class clazz = SelendroidStandaloneDriver.class;
+    String className = clazz.getSimpleName() + ".class";
+    String classPath = clazz.getResource(className).toString();
+    if (!classPath.startsWith("jar")) {
+      // Class not from JAR
+      return "dev";
+    }
+    String manifestPath =
+        classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+    Manifest manifest = null;
+    try {
+      manifest = new Manifest(new URL(manifestPath).openStream());
+    } catch (Exception e) {
+      return "";
+    }
+    Attributes attr = manifest.getMainAttributes();
+    String value = attr.getValue("Manifest-Version");
+    return value;
   }
 
   @Override
   public String getCpuArch() {
-    // TODO Auto-generated method stub
-    return null;
+    String arch = System.getProperty("os.arch");
+    return arch;
   }
 
   @Override
   public String getOsVersion() {
-    // TODO Auto-generated method stub
-    return null;
+    String os = System.getProperty("os.version");
+    return os;
+  }
+  
+  @Override
+  public String getOsName() {
+    String os = System.getProperty("os.name");
+    return os;
   }
 
   public String createNewTestSession(JSONObject caps) throws AndroidSdkException, JSONException {

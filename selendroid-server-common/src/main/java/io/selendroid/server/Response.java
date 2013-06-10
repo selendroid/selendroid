@@ -3,9 +3,7 @@ package io.selendroid.server;
 
 
 public interface Response {
+  public String getSessionId();
 
-  public abstract String getSessionId();
-
-  public abstract String render();
-
+  public String render();
 }
