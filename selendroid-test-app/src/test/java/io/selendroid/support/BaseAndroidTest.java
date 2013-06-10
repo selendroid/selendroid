@@ -38,8 +38,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod; 
 
 public class BaseAndroidTest {
   protected WebDriver driver = null;
@@ -49,19 +49,12 @@ public class BaseAndroidTest {
   public static final String WEBVIEW = "WEBVIEW";
 
 
-  @BeforeClass(alwaysRun = true)
+  @BeforeMethod(alwaysRun = true) 
   public void setup() throws Exception {
-//    SelendroidConfiguration conf = new SelendroidConfiguration();
-//    conf.setPort(4444);
-//    conf.addSupportedApp("target/selendroid-test-app-0.4-SNAPSHOT.apk");
-//    selendroidServerLauncher = new SelendroidLauncher(conf);
-//    selendroidServerLauncher.lauchSelendroid();
-//    // seems like this is needed
-//    Thread.sleep(2000);
     driver = new SelendroidDriver("http://localhost:4444/wd/hub", getDefaultCapabilities());
   }
 
-  @AfterClass(alwaysRun = true)
+  @AfterMethod(alwaysRun = true) 
   public void teardown() {
     if (driver != null) {
       driver.quit();
