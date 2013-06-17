@@ -15,7 +15,6 @@ package io.selendroid.support;
 
 import static io.selendroid.waiter.TestWaiter.waitFor;
 import io.selendroid.SelendroidCapabilities;
-import io.selendroid.SelendroidConfiguration;
 import io.selendroid.SelendroidDriver;
 import io.selendroid.SelendroidLauncher;
 import io.selendroid.device.DeviceTargetPlatform;
@@ -30,16 +29,14 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod; 
+import org.testng.annotations.BeforeMethod;
 
 public class BaseAndroidTest {
   protected WebDriver driver = null;
@@ -49,12 +46,12 @@ public class BaseAndroidTest {
   public static final String WEBVIEW = "WEBVIEW";
 
 
-  @BeforeMethod(alwaysRun = true) 
+  @BeforeMethod(alwaysRun = true)
   public void setup() throws Exception {
-    driver = new SelendroidDriver("http://localhost:4444/wd/hub", getDefaultCapabilities());
+    driver = new SelendroidDriver("http://localhost:8080/wd/hub", getDefaultCapabilities());
   }
 
-  @AfterMethod(alwaysRun = true) 
+  @AfterMethod(alwaysRun = true)
   public void teardown() {
     if (driver != null) {
       driver.quit();
@@ -91,8 +88,7 @@ public class BaseAndroidTest {
   }
 
   protected void takeScreenShot(String message) throws Exception {
-    WebDriver augmentedDriver = new Augmenter().augment(driver);
-    File screenshot = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+    File screenshot = ((SelendroidDriver) driver).getScreenshotAs(OutputType.FILE);
     String nameScreenshot = UUID.randomUUID().toString() + ".png";
     String path = getPath(nameScreenshot);
     FileUtils.copyFile(screenshot, new File(path));

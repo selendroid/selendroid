@@ -14,9 +14,13 @@
 package io.selendroid.tests;
 
 import io.selendroid.support.BaseAndroidTest;
+import io.selendroid.waiter.TestWaiter;
+import io.selendroid.waiter.WaitingConditions;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -41,7 +45,11 @@ public class SayHelloWebviewTest extends BaseAndroidTest {
     inputField.clear();
     inputField.sendKeys("Dominik");
     takeScreenShot("After entering the name of the app user.");
+    WebElement car = driver.findElement(By.name("car"));
+    Select preferedCar=new Select(car);
+    preferedCar.selectByValue("audi");
     inputField.submit();
     takeScreenShot("Result of web view: Hello app user.");
+    WaitingConditions.pageTitleToBe(driver, "Hello: Dominik");
   }
 }

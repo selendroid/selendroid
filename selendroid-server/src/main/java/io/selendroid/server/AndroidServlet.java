@@ -34,6 +34,7 @@ import io.selendroid.server.handler.GetElementDisplayed;
 import io.selendroid.server.handler.GetElementEnabled;
 import io.selendroid.server.handler.GetElementSelected;
 import io.selendroid.server.handler.GetElementSize;
+import io.selendroid.server.handler.GetElementTagName;
 import io.selendroid.server.handler.GetPageTitle;
 import io.selendroid.server.handler.GetText;
 import io.selendroid.server.handler.GetWindowHandle;
@@ -147,7 +148,7 @@ public class AndroidServlet extends BaseServlet {
     deleteHandler.put("/wd/hub/session/:sessionId/cookie/:name", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/element/active", UnknownCommandHandler.class);
-    getHandler.put("/wd/hub/session/:sessionId/element/:id/name", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/name", GetElementTagName.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/equals/:other",
         UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/css/:propertyName",

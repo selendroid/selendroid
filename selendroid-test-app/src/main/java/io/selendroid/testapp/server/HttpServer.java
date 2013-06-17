@@ -53,12 +53,15 @@ public class HttpServer extends NanoHTTPD {
       System.out.println("method: " + method);
       StringBuffer html = new StringBuffer();
       String name = parms.getProperty("name");
+      String car = parms.getProperty("car");
       html.append("<html><head><title>Hello: " + name + "</title></head>");
       html.append("<body>");
       html.append("<h1>This is my way of saying hello</h1>");
       html.append("<h2>Hello !</h2>");
       html.append("<h3>Your name is:</h3>");
       html.append("&quot;" + name + "&quot;");
+      html.append("<h3>Your prefered car is:</h3>");
+      html.append("&quot;" + car + "&quot;");
       html.append("<br><hr>to start again click <a href='http://localhost:4450/'>here</a>");
       html.append("</body></html>");
 
@@ -70,7 +73,11 @@ public class HttpServer extends NanoHTTPD {
       html.append("Hello, can you please tell me your name?");
       html.append("<form name='myform' action='http://localhost:4450/sayhello' method='get'>");
       html.append("<div align='center'><br><br>");
-      html.append("<input type='text' id='name_input' name='name' size='25' value='Enter your name here!'>");
+      html.append("<input type='text' id='name_input' name='name' size='25' value='Enter your name here!'><br>");
+      html.append("<p>Prefered Car:<br>");
+      html.append("<select name='car'><option value=\"volvo\">Volvo</option>");
+      html.append("<option value=\"mercedes\">Mercedes</option>");
+      html.append("<option value=\"audi\">Audi</option></select></p>");
       html.append("<br><input type='submit' value='Send me your name!'><br>");
       html.append("</div></form>");
 

@@ -111,4 +111,9 @@ public class AndroidRElement implements AndroidElement {
   public String getAttribute(String name) {
     throw new RuntimeException(NOT_IMPLEMENTED_ERROR_MSG);
   }
+
+  @Override
+  public String getTagName() {
+    throw new RuntimeException(NOT_IMPLEMENTED_ERROR_MSG);
+  }
 }

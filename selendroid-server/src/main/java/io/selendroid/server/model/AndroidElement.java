@@ -13,13 +13,13 @@
  */
 package io.selendroid.server.model;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.android.internal.Point;
 import io.selendroid.server.model.interactions.Coordinates;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 public interface AndroidElement {
   public AndroidElement getParent();
@@ -39,18 +39,20 @@ public interface AndroidElement {
   public void submit();
 
   public boolean isSelected();
-  
+
   public boolean isDisplayed();
-  
+
   public boolean isEnabled();
 
   public void clear();
 
   public Point getLocation();
-  
+
   public Coordinates getCoordinates();
-  
+
   public Dimension getSize();
-  
+
+  public String getTagName();
+
   public String getAttribute(String name);
 }

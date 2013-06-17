@@ -42,6 +42,14 @@ public class WebElementInteractionTests extends BaseAndroidTest {
   }
 
   @Test
+  public void testShouldBeAbleToGetTagNameOfElement() {
+    openWebdriverTestPage(HtmlTestData.FORM_PAGE);
+    WebElement button = driver.findElement(By.cssSelector("input[id='inputWithText']"));
+
+    Assert.assertEquals(button.getTagName(), "INPUT");
+  }
+  
+  @Test
   public void testShouldBeAbleToGetAttributeOfButton() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     WebElement button = driver.findElement(By.cssSelector("input[id='submitButton']"));

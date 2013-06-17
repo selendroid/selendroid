@@ -14,29 +14,20 @@
 package io.selendroid.server.model;
 
 
-import android.graphics.Rect;
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
+import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.AndroidKeys;
 import io.selendroid.android.AndroidWait;
 import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.android.internal.Dimension;
-import io.selendroid.server.model.interactions.AndroidCoordinates;
-import io.selendroid.server.model.interactions.Coordinates;
-import io.selendroid.server.model.internal.AbstractNativeElementContext;
-import org.json.JSONException;
-import org.json.JSONObject;
-import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.internal.Point;
 import io.selendroid.exceptions.ElementNotVisibleException;
 import io.selendroid.exceptions.NoSuchElementAttributeException;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.TimeoutException;
+import io.selendroid.server.model.interactions.AndroidCoordinates;
+import io.selendroid.server.model.interactions.Coordinates;
+import io.selendroid.server.model.internal.AbstractNativeElementContext;
 import io.selendroid.util.Function;
 import io.selendroid.util.Preconditions;
 import io.selendroid.util.SelendroidLogger;
@@ -47,6 +38,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.graphics.Rect;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class AndroidNativeElement implements AndroidElement {
   // TODO revisit
@@ -267,7 +269,7 @@ public class AndroidNativeElement implements AndroidElement {
     l10n.put("matches", 0);
     object.put("l10n", l10n);
     String label = String.valueOf(view.getContentDescription());
-    object.put("label", label == null ? "": label);
+    object.put("label", label == null ? "" : label);
     object.put("name", getNativeId());
     JSONObject rect = new JSONObject();
 
@@ -440,5 +442,10 @@ public class AndroidNativeElement implements AndroidElement {
   @Override
   public boolean isEnabled() {
     return view.isEnabled();
+  }
+
+  @Override
+  public String getTagName() {
+    return view.getClass().getSimpleName();
   }
 }

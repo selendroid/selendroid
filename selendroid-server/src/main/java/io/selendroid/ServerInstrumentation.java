@@ -92,7 +92,9 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     }
     mainActivity = clazz;
     SelendroidLogger.log("Instrumentation initialized with main activity: " + activityClazzName);
-
+    if (clazz == null) {
+      SelendroidLogger.log("Clazz is null - but should be an instance of: " + activityClazzName);
+    }
     instance = this;
 
     start();

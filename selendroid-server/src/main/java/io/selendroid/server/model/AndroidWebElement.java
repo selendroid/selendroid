@@ -13,20 +13,13 @@
  */
 package io.selendroid.server.model;
 
-import android.app.Activity;
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.webkit.WebView;
-import io.selendroid.server.model.interactions.AndroidCoordinates;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.android.internal.Point;
 import io.selendroid.exceptions.ElementNotVisibleException;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.model.interactions.AndroidCoordinates;
 import io.selendroid.server.model.interactions.Coordinates;
 import io.selendroid.server.model.internal.AbstractWebElementContext;
 import io.selendroid.server.model.js.AndroidAtoms;
@@ -35,6 +28,15 @@ import io.selendroid.server.webview.EventSender;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.webkit.WebView;
 
 public class AndroidWebElement implements AndroidElement {
   private final String id;
@@ -123,8 +125,9 @@ public class AndroidWebElement implements AndroidElement {
     driver.waitUntilEditAreaHasFocus();
     // Move the cursor to the end of the test input.
     // The trick is to set the value after the cursor
-    String originalText = (String) driver.executeScript("arguments[0].focus();" +
-        "arguments[0].value=arguments[0].value;return arguments[0].value", this);
+    String originalText =
+        (String) driver.executeScript("arguments[0].focus();"
+            + "arguments[0].value=arguments[0].value;return arguments[0].value", this);
 
     EventSender.sendKeys(webview, value);
 
@@ -156,7 +159,13 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public String getTagName() {
-    return (String) driver.executeScript("return arguments[0].tagName", this);
+    Object result = driver.executeScript("return arguments[0].tagName", this);
+    try {
+      return new JSONObject((String) result).getString("value");
+    } catch (JSONException e) {
+      return null;
+    }
+
   }
 
   public boolean isDisplayed() {

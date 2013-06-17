@@ -41,6 +41,13 @@ public class NativeElementInteractionTests extends BaseAndroidTest {
   }
 
   @Test
+  public void testShouldBeAbleToGetTagName() {
+    openStartActivity();
+    WebElement inputField = driver.findElement(By.id("my_text_field"));
+    Assert.assertEquals(inputField.getTagName(), "EditText");
+  }
+  
+  @Test
   public void testShouldBeAbleToGetAttributeOfButton() {
     openStartActivity();
     WebElement button = driver.findElement(By.id("waitingButtonTest"));
