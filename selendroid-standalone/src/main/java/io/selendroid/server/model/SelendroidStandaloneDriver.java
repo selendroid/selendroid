@@ -142,7 +142,13 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     try {
       Thread.sleep(1000);
     } catch (InterruptedException e) {}
-    ShellCommand.exec(Arrays.asList(new String[] {AndroidSdk.adb(), "start-server"}));
+    List<String> startAdbCommand = Arrays.asList(new String[] {AndroidSdk.adb(), "start-server"});
+    try {
+      ShellCommand.exec(startAdbCommand);
+    } catch (ShellCommandException e) {
+      // just try it again
+      ShellCommand.exec(startAdbCommand);
+    }
   }
 
   @Override
