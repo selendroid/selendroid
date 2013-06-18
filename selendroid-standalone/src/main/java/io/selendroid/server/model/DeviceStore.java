@@ -134,21 +134,26 @@ public class DeviceStore {
           "Fatal Error: Device Store does not contain any Android Device.");
     }
     String androidTarget = caps.getAndroidTarget();
+    List<AndroidDevice> devices = null;
     if (androidTarget == null || androidTarget.isEmpty()) {
-      throw new DeviceStoreException("'androidTarget' is missing in desired capabilities.");
+      devices = new ArrayList<AndroidDevice>();
+      for (List<AndroidDevice> list : androidDevices.values()) {
+        devices.addAll(list);
+      }
+    } else {
+      DeviceTargetPlatform platform = DeviceTargetPlatform.valueOf(androidTarget);
+      devices = androidDevices.get(platform);
     }
-    DeviceTargetPlatform platform = DeviceTargetPlatform.valueOf(androidTarget);
-    if (!androidDevices.containsKey(platform)) {
-      throw new DeviceStoreException(
-          "Device store does not contain a device of requested platform: " + platform);
-    }
-    for (AndroidDevice device : androidDevices.get(platform)) {
+
+    for (AndroidDevice device : devices) {
       if (isEmulatorSwitchedOff(device) == false && device.screenSizeMatches(caps.getScreenSize())) {
         if (devicesInUse.contains(device)) {
           continue;
         }
-        if ((caps.getEmulator() == true && device instanceof DefaultAndroidEmulator)
+        if (caps.getEmulator() == null
+            || (caps.getEmulator() == true && device instanceof DefaultAndroidEmulator)
             || (caps.getEmulator() == false && device instanceof DefaultHardwareDevice)) {
+
           devicesInUse.add(device);
           return device;
         }

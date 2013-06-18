@@ -223,10 +223,12 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     cmd.add(avdName);
     cmd.add("-ports");
     cmd.add(emulatorPort + "," + (emulatorPort + 1));
-    cmd.add("-prop");
-    cmd.add("persist.sys.language=" + locale.getLanguage());
-    cmd.add("-prop");
-    cmd.add("persist.sys.country=" + locale.getCountry());
+    if (locale != null) {
+      cmd.add("-prop");
+      cmd.add("persist.sys.language=" + locale.getLanguage());
+      cmd.add("-prop");
+      cmd.add("persist.sys.country=" + locale.getCountry());
+    }
     long start = System.currentTimeMillis();
     long timemoutEnd = start + timeout;
     try {

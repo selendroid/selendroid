@@ -26,8 +26,8 @@ import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.exceptions.SessionNotCreatedException;
+import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.model.impl.DefaultHardwareDeviceFinder;
@@ -179,7 +179,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     String os = System.getProperty("os.version");
     return os;
   }
-  
+
   @Override
   public String getOsName() {
     String os = System.getProperty("os.name");
@@ -313,6 +313,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   }
 
   private Locale parseLocale(SelendroidCapabilities capa) {
+    if (capa.getLocale() == null) {
+      return null;
+    }
     String[] localeStr = capa.getLocale().split("_");
     Locale locale = new Locale(localeStr[0], localeStr[1]);
 
@@ -322,11 +325,6 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   /* package */AndroidDevice getAndroidDevice(SelendroidCapabilities caps)
       throws AndroidDeviceException {
     AndroidDevice device = null;
-    Boolean emulator = caps.getEmulator();
-    if (emulator == null) {
-      emulator = Boolean.TRUE;
-      log.warning("'emualtor' capability in desired capabilities. Assuming an emulator was meant.");
-    }
 
     try {
       device = deviceStore.findAndroidDevice(caps);
