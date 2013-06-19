@@ -20,6 +20,7 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
+import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.builder.SelendroidServerBuilderTest;
 import io.selendroid.device.DeviceTargetPlatform;
@@ -46,6 +47,7 @@ import com.beust.jcommander.internal.Lists;
 
 public class SelendroidStandaloneDriverTests {
   public static final String TEST_APP_ID = "io.selendroid.testapp:0.4-SNAPSHOT";
+  private static final String TEST_APP_INSTALLED = "io.selendroid.testapp/HomeScreenActivity:0.4-SNAPSHOT";
   private static final String APK_FILE = "src/test/resources/selendroid-test-app.apk";
   private static final String INVALID_APK_FILE =
       "src/test/resources/selendroid-test-app-invalid.apk";
@@ -142,6 +144,39 @@ public class SelendroidStandaloneDriverTests {
     }
   }
 
+  @Test
+  public void assertThatANewtestSessionCanBeCreatedWithAlreadyInstalledApp() throws Exception {
+    // Setting up driver with test app and device stub
+    SelendroidStandaloneDriver driver =
+        new SelendroidStandaloneDriver(getInstalledApkBuilder(), anDeviceFinderWithNoDevices());
+    SelendroidConfiguration conf = new SelendroidConfiguration();
+    conf.setInstalledApp(TEST_APP_INSTALLED);
+    driver.initApplicationsUnderTest(conf);
+    DeviceStore store = new DeviceStore();
+
+    DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
+    final UUID definedSessionId = UUID.randomUUID();
+    emulator.testSessionListener = new TestSessionListener(definedSessionId.toString(), "test") {
+      @Override
+      public SelendroidResponse executeSelendroidRequest(Properties params) {
+        return null;
+      }
+    };
+    store.addAndroidEmulator(emulator);
+    driver.setDeviceStore(store);
+
+    // testing new session creation
+    SelendroidCapabilities capa = new SelendroidCapabilities();
+    capa.setAut(TEST_APP_ID);
+    capa.setAndroidTarget(DeviceTargetPlatform.ANDROID16.name());
+    try {
+      String sessionId = driver.createNewTestSession(new JSONObject(capa.asMap()));
+      Assert.assertNotNull(UUID.fromString(sessionId));
+    } finally {
+      // this will also stop the http server
+      emulator.stop();
+    }
+  }
 
   protected SelendroidServerBuilder getRealApkBuilder() {
     return SelendroidServerBuilderTest.getDefaultBuilder();
@@ -152,6 +187,18 @@ public class SelendroidStandaloneDriverTests {
     SelendroidServerBuilder builder = mock(SelendroidServerBuilder.class);
     AndroidApp server = mock(AndroidApp.class);
     AndroidApp resignedApp = mock(AndroidApp.class);
+    when(resignedApp.getAppId()).thenReturn(TEST_APP_ID);
+
+    when(builder.createSelendroidServer(APK_FILE)).thenReturn(server);
+    when(builder.resignApp(any(File.class))).thenReturn(resignedApp);
+    return builder;
+  }
+
+  protected SelendroidServerBuilder getInstalledApkBuilder() throws IOException, ShellCommandException,
+      AndroidSdkException {
+    SelendroidServerBuilder builder = mock(SelendroidServerBuilder.class);
+    AndroidApp server = mock(AndroidApp.class);
+    AndroidApp resignedApp = mock(InstalledAndroidApp.class);
     when(resignedApp.getAppId()).thenReturn(TEST_APP_ID);
 
     when(builder.createSelendroidServer(APK_FILE)).thenReturn(server);

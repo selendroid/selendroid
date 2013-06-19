@@ -21,6 +21,7 @@ import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultHardwareDevice;
+import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
@@ -83,8 +84,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
   /* package */void initApplicationsUnderTest(SelendroidConfiguration serverConfiguration)
       throws AndroidSdkException {
-    if (serverConfiguration == null || serverConfiguration.getSupportedApps() == null
-        || serverConfiguration.getSupportedApps().isEmpty()) {
+    if ((serverConfiguration == null || serverConfiguration.getSupportedApps() == null
+        || serverConfiguration.getSupportedApps().isEmpty())
+        && serverConfiguration.getInstalledApp() == null) {
       throw new SelendroidException("Configuration error - no apps has been configured.");
     }
     this.serverConfiguration = serverConfiguration;
@@ -114,6 +116,10 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       } else {
         log.info("Ignoring app because it was not found: " + file.getAbsolutePath());
       }
+    }
+    if (serverConfiguration.getInstalledApp() != null) {
+      AndroidApp app = new InstalledAndroidApp(serverConfiguration.getInstalledApp());
+      appsStore.put(app.getAppId(), app);
     }
     if (appsStore.isEmpty()) {
       throw new SelendroidException(
@@ -201,8 +207,11 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       AndroidEmulator emulator = (AndroidEmulator) device;
       try {
         if (emulator.isEmulatorStarted()) {
-          throw new SessionNotCreatedException("The Emulator '" + emulator
-              + "' is already started even though it should be switched off.");
+          // Allow a local developer to have their emulator up and running without restarting it
+          if (!(app instanceof InstalledAndroidApp)) {
+            throw new SessionNotCreatedException("The Emulator '" + emulator
+                + "' is already started even though it should be switched off.");
+          }
         } else {
           Map<String, Object> config = new HashMap<String, Object>();
           config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
@@ -229,10 +238,17 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       device.uninstall(app);
     }
     device.install(app);
+    // An InstalledAndroidApp won't install/uninstall.
+    // If the SelendroidServer is already installed, don't uninstall/reinstall
+    // when using an InstalledAndroidApp.
     if (device.isInstalled(selendroidServer)) {
-      device.uninstall(selendroidServer);
+      if (!(app instanceof InstalledAndroidApp)) {
+        device.uninstall(selendroidServer);
+        device.install(selendroidServer);
+      }
+    } else {
+      device.install(selendroidServer);
     }
-    device.install(selendroidServer);
 
     List<String> adbCommands = desiredCapabilities.getPreSessionAdbCommands();
     if (adbCommands != null && !adbCommands.isEmpty()) {

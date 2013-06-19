@@ -95,11 +95,17 @@ public abstract class AbstractDevice implements AndroidDevice {
     if (result != null && result.contains(apkPackage)) {
       return true;
     }
+    if (app instanceof InstalledAndroidApp) {
+      throw new RuntimeException("The specified app is not installed on the device: " + app.getAppId());
+    }
     return false;
   }
 
   @Override
   public void install(AndroidApp app) {
+    if (app instanceof InstalledAndroidApp) {
+      return;
+    }
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
     if (isSerialConfigured()) {
@@ -124,6 +130,9 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public void uninstall(AndroidApp app) throws AndroidSdkException {
+    if (app instanceof InstalledAndroidApp) {
+      return;
+    }
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
     if (isSerialConfigured()) {

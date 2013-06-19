@@ -70,6 +70,6 @@ public class SelendroidDeviceServerStub extends NanoHTTPD {
   }
 
   private Response respond(SelendroidResponse response) {
-    return new Response(HTTP_OK, "application/json", response.toString());
+    return new Response(HTTP_OK, "application/json", response.render());
   }
 }

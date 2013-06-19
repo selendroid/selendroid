@@ -143,9 +143,8 @@ public class DeviceStore {
           continue;
         }
         if (caps.getEmulator() == null
-            || (caps.getEmulator() == true && device instanceof DefaultAndroidEmulator)
-            || (caps.getEmulator() == false && device instanceof DefaultHardwareDevice)) {
-
+            || (caps.getEmulator() == true && device instanceof AndroidEmulator)
+            || (caps.getEmulator() == false && device instanceof AndroidDevice)) {
           devicesInUse.add(device);
           return device;
         }

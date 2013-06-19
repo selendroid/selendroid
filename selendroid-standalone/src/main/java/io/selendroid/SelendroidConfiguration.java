@@ -34,12 +34,23 @@ public class SelendroidConfiguration {
       "-app", "-aut"}, required = true)
   private List<String> supportedApps = new ArrayList<String>();
 
+  @Parameter(description = "", names = {"-installedApp"})
+  private String installedApp = null;
+
   public void addSupportedApp(String appAbsolutPath) {
     supportedApps.add(appAbsolutPath);
   }
 
   public List<String> getSupportedApps() {
     return supportedApps;
+  }
+
+  public void setInstalledApp(String installedApp) {
+    this.installedApp = installedApp;
+  }
+
+  public String getInstalledApp() {
+    return installedApp;
   }
 
   public static SelendroidConfiguration create(String[] args) {
