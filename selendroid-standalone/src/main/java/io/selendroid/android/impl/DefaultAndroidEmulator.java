@@ -158,6 +158,9 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     String[] avdsOutput = StringUtils.splitByWholeSeparator(output, "---------");
     if (avdsOutput != null && avdsOutput.length > 0) {
       for (int i = 0; i < avdsOutput.length; i++) {
+        if(avdsOutput[i].contains("Name:")==false){
+          continue;
+        }
         String element = avdsOutput[i];
         String avdName = extractValue("Name: (.*?)$", element);
         String abi = extractValue("ABI: (.*?)$", element);
