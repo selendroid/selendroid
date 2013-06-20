@@ -29,7 +29,7 @@ import org.openqa.selenium.WebElement;
  * Test is currently only executed in manual mode
  */
 public class SessionCreationE2ETest {
-  public static final String TEST_APP_ID = "io.selendroid.testapp:0.4.0";
+  public static final String TEST_APP_ID = "io.selendroid.testapp:0.4.1";
 
   @Ignore
   @Test()
@@ -37,7 +37,7 @@ public class SessionCreationE2ETest {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID10, TEST_APP_ID));
   }
 
-  @Ignore
+  
   @Test
   public void assertThatSessionCanBeExecutedOnAndroid16Emulator() throws Exception {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16, TEST_APP_ID));
