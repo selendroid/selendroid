@@ -20,6 +20,7 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
+import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.builder.SelendroidServerBuilderTest;
@@ -189,7 +190,7 @@ public class SelendroidStandaloneDriverTests {
     AndroidApp resignedApp = mock(AndroidApp.class);
     when(resignedApp.getAppId()).thenReturn(TEST_APP_ID);
 
-    when(builder.createSelendroidServer(APK_FILE)).thenReturn(server);
+    when(builder.createSelendroidServer(new DefaultAndroidApp(new File(APK_FILE)))).thenReturn(server);
     when(builder.resignApp(any(File.class))).thenReturn(resignedApp);
     return builder;
   }
@@ -201,7 +202,7 @@ public class SelendroidStandaloneDriverTests {
     AndroidApp resignedApp = mock(InstalledAndroidApp.class);
     when(resignedApp.getAppId()).thenReturn(TEST_APP_ID);
 
-    when(builder.createSelendroidServer(APK_FILE)).thenReturn(server);
+    when(builder.createSelendroidServer(new DefaultAndroidApp(new File(APK_FILE)))).thenReturn(server);
     when(builder.resignApp(any(File.class))).thenReturn(resignedApp);
     return builder;
   }

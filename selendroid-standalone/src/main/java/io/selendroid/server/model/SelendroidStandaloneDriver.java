@@ -200,6 +200,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       SessionNotCreatedException error =
           new SessionNotCreatedException("Error occured while finding android device: "
               + e.getMessage());
+      e.printStackTrace();
       log.severe(error.getMessage());
       throw error;
     }
@@ -305,7 +306,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     if (!selendroidServers.containsKey(aut.getAppId())) {
       try {
         AndroidApp selendroidServer =
-            selendroidApkBuilder.createSelendroidServer(aut.getAbsolutePath());
+            selendroidApkBuilder.createSelendroidServer(aut);
         selendroidServers.put(aut.getAppId(), selendroidServer);
       } catch (Exception e) {
         e.printStackTrace();

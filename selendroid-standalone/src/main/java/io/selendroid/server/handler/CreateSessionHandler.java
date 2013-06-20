@@ -42,6 +42,7 @@ public class CreateSessionHandler extends BaseSelendroidServerHandler {
       sessionID = getSelendroidDriver().createNewTestSession(desiredCapabilities);
     } catch (Exception e) {
       log.severe("Error while creating new session: " + e.getMessage());
+      e.printStackTrace();
       return new SelendroidResponse("", 33, e);
     }
     return new SelendroidResponse(sessionID, 0, desiredCapabilities);

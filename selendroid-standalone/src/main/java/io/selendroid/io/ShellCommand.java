@@ -75,8 +75,8 @@ public class ShellCommand {
     DefaultExecutor exec = new DefaultExecutor();
 
     ExecuteResultHandler handler = new DefaultExecuteResultHandler();
-    OutputStream outputStream = new ByteArrayOutputStream();
-    PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+//    OutputStream outputStream = new ByteArrayOutputStream();
+    PumpStreamHandler streamHandler = new PumpStreamHandler(System.out);
     exec.setStreamHandler(streamHandler);
     try {
       if (display == null || display.isEmpty()) {

@@ -17,6 +17,7 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.JavaSdk;
 import io.selendroid.android.impl.DefaultAndroidApp;
+import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
@@ -76,8 +77,8 @@ public class SelendroidServerBuilder {
     this.selendroidApplicationXmlTemplate = ANDROID_APPLICATION_XML_TEMPLATE;
   }
 
-  /* package */void init(String apkName) throws IOException, ShellCommandException {
-    applicationUnderTest = new DefaultAndroidApp(new File(apkName));
+  /* package */void init(AndroidApp aut) throws IOException, ShellCommandException {
+    applicationUnderTest = aut;
     File customizedServer = File.createTempFile("selendroid-server", ".apk");
 
     log.info("Creating customized Selendroid-server: " + customizedServer.getAbsolutePath());
@@ -88,10 +89,10 @@ public class SelendroidServerBuilder {
     selendroidServer = new DefaultAndroidApp(customizedServer);
   }
 
-  public AndroidApp createSelendroidServer(String autFilePath) throws IOException,
+  public AndroidApp createSelendroidServer(AndroidApp aut) throws IOException,
       ShellCommandException, AndroidSdkException {
-    log.info("create SelendroidServer for apk: " + autFilePath);
-    init(autFilePath);
+    log.info("create SelendroidServer for apk: " + aut.getAbsolutePath());
+    init(aut);
     cleanUpPrebuildServer();
     File selendroidServer = createAndAddCustomizedAndroidManifestToSelendroidServer();
     File outputFile =
@@ -273,7 +274,7 @@ public class SelendroidServerBuilder {
   /**
    * Cleans the selendroid server by removing certificates and manifest file.
    * 
-   * Precondition: {@link #init(String)} must be called upfront for initialization
+   * Precondition: {@link #init(AndroidApp)} must be called upfront for initialization
    * 
    * @throws ShellCommandException
    * @throws AndroidSdkException

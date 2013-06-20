@@ -31,7 +31,7 @@ public class SelendroidConfiguration {
 
 
   @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
-      "-app", "-aut"}, required = true)
+      "-app", "-aut"})
   private List<String> supportedApps = new ArrayList<String>();
 
   @Parameter(description = "", names = {"-installedApp"})

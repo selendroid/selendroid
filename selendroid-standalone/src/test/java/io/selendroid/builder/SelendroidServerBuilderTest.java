@@ -15,6 +15,7 @@ package io.selendroid.builder;
 
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.io.ShellCommand;
 
 import java.io.File;
@@ -37,7 +38,7 @@ public class SelendroidServerBuilderTest {
   @Test
   public void testShouldBeAbleToCreateCustomizedSelendroidServerAndCleantTUp() throws Exception {
     SelendroidServerBuilder builder = getDefaultBuilder();
-    builder.init(APK_FILE);
+    builder.init(new DefaultAndroidApp(new File(APK_FILE)));
     builder.cleanUpPrebuildServer();
 
     // Verify apk, if the files have been removed
@@ -57,7 +58,7 @@ public class SelendroidServerBuilderTest {
   @Test
   public void testShouldBeAbleToCreateCustomizedAndroidApplicationXML() throws Exception {
     SelendroidServerBuilder builder = getDefaultBuilder();
-    builder.init(APK_FILE);
+    builder.init(new DefaultAndroidApp(new File(APK_FILE)));
     builder.cleanUpPrebuildServer();
     File file = builder.createAndAddCustomizedAndroidManifestToSelendroidServer();
     ZipFile zipFile = new ZipFile(file);
@@ -98,7 +99,7 @@ public class SelendroidServerBuilderTest {
   @Test
   public void testShouldBeAbleToCreateASignedSelendroidServer() throws Exception {
     SelendroidServerBuilder builder = getDefaultBuilder();
-    builder.init(APK_FILE);
+    builder.init(new DefaultAndroidApp(new File(APK_FILE)));
     builder.cleanUpPrebuildServer();
     File file = File.createTempFile("testserver", "apk");
     builder.signTestServer(builder.createAndAddCustomizedAndroidManifestToSelendroidServer(), file);
