@@ -1,3 +1,8 @@
+0.4.1
+-----
+- several smaller bug fixes: #52, #51, #50
+- In the capabilities locale, emulator and androidTarget are now optional.
+
 0.4.0
 -------------
 
