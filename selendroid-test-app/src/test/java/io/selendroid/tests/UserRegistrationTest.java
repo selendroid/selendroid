@@ -16,6 +16,7 @@ package io.selendroid.tests;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.tests.domain.PreferedProgrammingLanguage;
 import io.selendroid.tests.domain.UserDO;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -48,7 +49,10 @@ public class UserRegistrationTest extends BaseAndroidTest {
     WebElement button = driver.findElement(By.id("startUserRegistration"));
     takeScreenShot("Main Activity started.");
     button.click();
-    driver.findElement(By.id("inputUsername")).sendKeys(user.getUsername());
+
+    WebElement username = driver.findElement(By.id("inputUsername"));
+    
+    username.sendKeys(user.getUsername());
     WebElement nameInput = driver.findElement(By.id("inputName"));
     Assert.assertEquals(nameInput.getText(), "Mr. Burns");
     nameInput.clear();

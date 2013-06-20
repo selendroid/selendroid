@@ -39,6 +39,7 @@ import io.selendroid.server.handler.GetPageTitle;
 import io.selendroid.server.handler.GetText;
 import io.selendroid.server.handler.GetWindowHandle;
 import io.selendroid.server.handler.GetWindowHandles;
+import io.selendroid.server.handler.GoBack;
 import io.selendroid.server.handler.ListSessions;
 import io.selendroid.server.handler.LogElement;
 import io.selendroid.server.handler.LogElementTree;
@@ -122,7 +123,7 @@ public class AndroidServlet extends BaseServlet {
     postHandler
         .put("/wd/hub/session/:sessionId/timeouts/async_script", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/forward", UnknownCommandHandler.class);
-    postHandler.put("/wd/hub/session/:sessionId/back", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/back", GoBack.class);
     postHandler.put("/wd/hub/session/:sessionId/refresh", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/execute_async", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/ime/available_engines", UnknownCommandHandler.class);
