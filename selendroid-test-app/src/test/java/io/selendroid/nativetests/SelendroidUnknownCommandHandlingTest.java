@@ -11,12 +11,6 @@ import org.testng.annotations.Test;
 
 
 public class SelendroidUnknownCommandHandlingTest extends BaseAndroidTest {
-
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
-  public void testShouldNotBeAbleToGoBack() {
-    driver.navigate().back();
-  }
-
   @Test(expectedExceptions = {UnsupportedCommandException.class})
   public void testShouldNotBeAbleToGoForward() {
     driver.navigate().forward();
