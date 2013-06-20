@@ -37,7 +37,7 @@ public class SessionCreationE2ETest {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID10, TEST_APP_ID));
   }
 
-  
+  @Ignore
   @Test
   public void assertThatSessionCanBeExecutedOnAndroid16Emulator() throws Exception {
     testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16, TEST_APP_ID));
