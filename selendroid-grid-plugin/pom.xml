@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.selendroid</groupId>
 		<artifactId>selendroid</artifactId>
-		<version>0.4.1</version>
+		<version>0.4.2</version>
 	</parent>
 	<artifactId>selendroid-grid-plugin</artifactId>
 	<name>selendroid-grid-plugin</name>
