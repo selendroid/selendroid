@@ -26,6 +26,9 @@ public class SelendroidConfiguration {
   @Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
   private long timeoutEmulatorStart = 120000;
 
+  @Parameter(description = "if true, adb will be restarted while starting selendroid-standalone.", names = "-restartAdb")
+  private boolean restartAdb = false;
+
 
   @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
       "-app", "-aut"}, required = true)
@@ -61,4 +64,11 @@ public class SelendroidConfiguration {
     this.timeoutEmulatorStart = timeoutEmulatorStart;
   }
 
+  public boolean isRestartAdb() {
+    return restartAdb;
+  }
+
+  public void setRestartAdb(boolean restartAdb) {
+    this.restartAdb = restartAdb;
+  }
 }

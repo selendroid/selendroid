@@ -127,7 +127,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   /* package */void initAndroidDevices() throws AndroidDeviceException {
     deviceStore = new DeviceStore();
     try {
-      resetAdb();
+      if (serverConfiguration.isRestartAdb()) {
+        resetAdb();
+      }
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException("An error occured while restarting adb.", e);
     }
