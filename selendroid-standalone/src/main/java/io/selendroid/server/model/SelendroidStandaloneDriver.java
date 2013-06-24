@@ -133,8 +133,17 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     }
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
     deviceStore.addEmulators(emulators);
+
     List<AndroidDevice> devices = androidDeviceFinder.findConnectedDevices();
     deviceStore.addDevices(devices);
+
+    if (deviceStore.getDevices().isEmpty()) {
+      SelendroidException e =
+          new SelendroidException(
+              "No android virtual devices were found. Please start the android tool and create emulators.");
+      log.severe("Error: " + e);
+      throw e;
+    }
   }
 
   private void resetAdb() throws ShellCommandException {
@@ -142,13 +151,6 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     try {
       Thread.sleep(1000);
     } catch (InterruptedException e) {}
-    List<String> startAdbCommand = Arrays.asList(new String[] {AndroidSdk.adb(), "start-server"});
-    try {
-      ShellCommand.exec(startAdbCommand);
-    } catch (ShellCommandException e) {
-      // just try it again
-      ShellCommand.exec(startAdbCommand);
-    }
   }
 
   @Override

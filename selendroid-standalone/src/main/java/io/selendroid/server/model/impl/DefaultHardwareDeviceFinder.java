@@ -39,7 +39,7 @@ public class DefaultHardwareDeviceFinder implements DeviceFinder {
     List<String> lines = listDevices();
     for (int i = 0; i < lines.size(); i++) {
       String line = lines.get(i).trim().replaceAll(" +", " ");
-      if (line.startsWith(EMULATOR_PREFIX) || 0 == i || line.isEmpty()) {
+      if (line.startsWith(EMULATOR_PREFIX) || line.startsWith("List of devices attached")||line.startsWith("* daemon started successfully *")|| 0 == i || line.isEmpty()) {
         continue;
       }
       String[] lineArgs = line.split(" ");

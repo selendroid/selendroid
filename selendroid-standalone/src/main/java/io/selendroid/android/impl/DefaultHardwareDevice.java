@@ -63,4 +63,9 @@ public class DefaultHardwareDevice extends AbstractDevice {
     }
     return locale;
   }
+
+  @Override
+  public boolean isDeviceReady() {
+    return true;
+  }
 }

@@ -116,7 +116,7 @@ public abstract class AbstractDevice implements AndroidDevice {
       return ShellCommand.exec(command);
     } catch (ShellCommandException e) {
       e.printStackTrace();
-      return null;
+      return "";
     }
   }
 

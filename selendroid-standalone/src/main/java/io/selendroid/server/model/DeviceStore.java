@@ -82,11 +82,7 @@ public class DeviceStore {
 
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
     if (emulators == null || emulators.isEmpty()) {
-      SelendroidException e =
-          new SelendroidException(
-              "No android virtual devices were found. Please start the android tool and create emulators.");
-      log.severe("Error: " + e);
-      throw e;
+      log.info("No emulators has been found.");
     }
     for (AndroidEmulator emulator : emulators) {
       if (emulator.isEmulatorStarted()) {
