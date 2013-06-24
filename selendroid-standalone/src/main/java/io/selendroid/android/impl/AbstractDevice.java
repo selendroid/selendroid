@@ -242,7 +242,7 @@ public abstract class AbstractDevice implements AndroidDevice {
       return matcher.group(1);
     }
 
-    return null;
+    return "";
   }
 
   public boolean screenSizeMatches(String requestedScreenSize) {
