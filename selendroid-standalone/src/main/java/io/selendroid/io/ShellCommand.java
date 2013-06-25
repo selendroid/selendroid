@@ -40,7 +40,7 @@ public class ShellCommand {
 
   public static String exec(CommandLine commandline, long timeoutInMillies)
       throws ShellCommandException {
-    OutputStream outputStream = new ByteArrayOutputStream();
+    PritingLogOutputStream outputStream = new PritingLogOutputStream();
     DefaultExecutor exec = new DefaultExecutor();
     exec.setWatchdog(new ExecuteWatchdog(timeoutInMillies));
     PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
@@ -49,9 +49,9 @@ public class ShellCommand {
       exec.execute(commandline);
     } catch (Exception e) {
       throw new ShellCommandException("An error occured while executing shell command: "
-          + commandline, new ShellCommandException(outputStream.toString()));
+          + commandline, new ShellCommandException(outputStream.getOutput()));
     }
-    return (outputStream.toString());
+    return (outputStream.getOutput());
   }
 
   public static String exec(List<String> command, long timeoutInMillies)
@@ -92,8 +92,15 @@ public class ShellCommand {
   }
 
   private static class PritingLogOutputStream extends LogOutputStream {
+      private StringBuilder output = new StringBuilder();
+
       @Override protected void processLine(String line, int level) {
           System.err.println("OUTPUT FROM PROCESS: " + line);
+          output.append(line).append("\n");
+      }
+
+      public String getOutput() {
+          return output.toString();
       }
   }
 }
