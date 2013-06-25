@@ -14,21 +14,21 @@
 package io.selendroid.io;
 
 import io.selendroid.exceptions.ShellCommandException;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteResultHandler;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.environment.EnvironmentUtils;
+import org.apache.commons.exec.util.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecuteResultHandler;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteResultHandler;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.commons.exec.environment.EnvironmentUtils;
-import org.apache.commons.exec.util.StringUtils;
 
 public class ShellCommand {
   private static final Logger log = Logger.getLogger(ShellCommand.class.getName());
@@ -75,8 +75,7 @@ public class ShellCommand {
     DefaultExecutor exec = new DefaultExecutor();
 
     ExecuteResultHandler handler = new DefaultExecuteResultHandler();
-//    OutputStream outputStream = new ByteArrayOutputStream();
-    PumpStreamHandler streamHandler = new PumpStreamHandler(System.out);
+    PumpStreamHandler streamHandler = new PumpStreamHandler(new PritingLogOutputStream());
     exec.setStreamHandler(streamHandler);
     try {
       if (display == null || display.isEmpty()) {
@@ -90,5 +89,11 @@ public class ShellCommand {
     } catch (Exception e) {
       throw new ShellCommandException("An error occured while executing shell command: " + cmd, e);
     }
+  }
+
+  private static class PritingLogOutputStream extends LogOutputStream {
+      @Override protected void processLine(String line, int level) {
+          System.err.println("OUTPUT FROM PROCESS: " + line);
+      }
   }
 }
