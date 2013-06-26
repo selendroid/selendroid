@@ -181,7 +181,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     return os;
   }
 
-  public String createNewTestSession(JSONObject caps) throws AndroidSdkException, JSONException {
+  public String createNewTestSession(JSONObject caps, Integer retries) throws AndroidSdkException, JSONException {
     SelendroidCapabilities desiredCapabilities = null;
     try {
       desiredCapabilities = new SelendroidCapabilities(caps);
@@ -228,6 +228,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         try {
           deviceStore.release(device);
         } catch (AndroidDeviceException e1) {}
+        if (retries > 0) {
+            return createNewTestSession(caps, retries--);
+        }
         throw new SessionNotCreatedException("Error occured while interacting with the emulator: "
             + emulator + ": " + e.getMessage());
       }

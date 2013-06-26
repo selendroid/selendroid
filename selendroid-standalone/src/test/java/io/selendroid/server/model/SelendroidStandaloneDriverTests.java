@@ -137,7 +137,7 @@ public class SelendroidStandaloneDriverTests {
     capa.setAut(TEST_APP_ID);
     capa.setAndroidTarget(DeviceTargetPlatform.ANDROID16.name());
     try {
-      String sessionId = driver.createNewTestSession(new JSONObject(capa.asMap()));
+      String sessionId = driver.createNewTestSession(new JSONObject(capa.asMap()), 0);
       Assert.assertNotNull(UUID.fromString(sessionId));
     } finally {
       // this will also stop the http server
@@ -171,7 +171,7 @@ public class SelendroidStandaloneDriverTests {
     capa.setAut(TEST_APP_ID);
     capa.setAndroidTarget(DeviceTargetPlatform.ANDROID16.name());
     try {
-      String sessionId = driver.createNewTestSession(new JSONObject(capa.asMap()));
+      String sessionId = driver.createNewTestSession(new JSONObject(capa.asMap()), 0);
       Assert.assertNotNull(UUID.fromString(sessionId));
     } finally {
       // this will also stop the http server
