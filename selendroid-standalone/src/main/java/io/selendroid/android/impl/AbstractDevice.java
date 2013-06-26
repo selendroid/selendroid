@@ -176,7 +176,15 @@ public abstract class AbstractDevice implements AndroidDevice {
     command.add("main_activity");
     command.add(aut.getMainActivity());
     command.add("io.selendroid/.ServerInstrumentation");
-    executeCommand(command);
+    Integer retries = 5;
+    while (retries-- > 0) {
+      if (!executeCommand(command).contains("INSTRUMENTATION_FAILED")) {
+        break;
+      }
+      if (retries == 0) {
+        throw new AndroidSdkException("Failed to start instrumentation");
+      }
+    }
 
     forwardSelendroidPort(port);
   }
