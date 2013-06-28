@@ -21,7 +21,6 @@ import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.DeviceStoreException;
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.impl.DefaultPortFinder;
 
 import java.util.ArrayList;
@@ -83,6 +82,7 @@ public class DeviceStore {
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
     if (emulators == null || emulators.isEmpty()) {
       log.info("No emulators has been found.");
+      return;
     }
     for (AndroidEmulator emulator : emulators) {
       if (emulator.isEmulatorStarted()) {
@@ -91,10 +91,6 @@ public class DeviceStore {
       }
       log.info("Adding: " + emulator);
       addAndroidEmulator((AndroidDevice) emulator);
-    }
-    if (androidDevices.isEmpty()) {
-      throw new SelendroidException("No Android virtual devices that can be used were found. "
-          + "Please note that only switched off emulators can be used.");
     }
   }
 
