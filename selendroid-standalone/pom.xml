@@ -118,7 +118,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<appendAssemblyId>false</appendAssemblyId>
+					<appendAssemblyId>true</appendAssemblyId>
 					<descriptors>
 						<descriptor>src/main/assembly/assembly.xml</descriptor>
 					</descriptors>
@@ -159,6 +159,14 @@
 					<include>AndroidManifest.xml</include>
 				</includes>
 			</resource>
+            <resource>
+                <directory>../selendroid-server/target/</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>selendroid-server-0.4.2.apk</include>
+                </includes>
+                <targetPath>prebuild/</targetPath>
+            </resource>
 		</resources>
 	</build>
 
