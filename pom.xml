@@ -46,9 +46,18 @@
 	</licenses>
 
 	<scm>
-		<url>scm:git:git://github.com/DominikDary/selendroid.git</url>
-		<connection>scm:git:git://github.com/DominikDary/selendroid.git</connection>
+        <connection>scm:git:git@github.com:DominikDary/selendroid.git</connection>
+        <developerConnection>scm:git:git@github.com:DominikDary/selendroid.git</developerConnection>
+        <url>http://github.com/DominikDary/selendroid</url>
 	</scm>
+
+    <distributionManagement>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>sonatype-nexus-staging</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
 	<issueManagement>
 		<system>github</system>
