@@ -13,10 +13,6 @@
  */
 package io.selendroid.server.model.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.exceptions.NoSuchElementException;
@@ -31,11 +27,28 @@ import io.selendroid.server.model.By.ById;
 import io.selendroid.server.model.By.ByLinkText;
 import io.selendroid.server.model.By.ByName;
 import io.selendroid.server.model.By.ByTagName;
+import io.selendroid.server.model.By.ByXPath;
 import io.selendroid.server.model.KnownElements;
 import io.selendroid.server.model.SearchContext;
 import io.selendroid.util.InstanceOfPredicate;
 import io.selendroid.util.ListUtil;
 import io.selendroid.util.Preconditions;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import android.app.Activity;
 import android.view.View;
@@ -95,7 +108,7 @@ public abstract class AbstractNativeElementContext
 
   }
 
-  public AndroidNativeElement getElementTree() {
+  public JSONObject getElementTree() throws JSONException {
     View decorView = viewAnalyzer.getRecentDecorView();
     if (decorView == null) {
       throw new SelendroidException("No open windows.");
@@ -106,7 +119,33 @@ public abstract class AbstractNativeElementContext
       addChildren((ViewGroup) decorView, rootElement);
     }
 
-    return rootElement;
+    JSONObject root = rootElement.toJson();
+    if (root == null) {
+      return new JSONObject();
+    }
+    root.put("activity", instrumentation.getCurrentActivity().getComponentName().toShortString());
+
+    addChildren(root, rootElement);
+
+    return root;
+  }
+
+  private void addChildren(JSONObject parent, AndroidElement parentElement) throws JSONException {
+    Collection<AndroidElement> children = parentElement.getChildren();
+    if (children == null || children.isEmpty()) {
+      return;
+    }
+    JSONArray childs = new JSONArray();
+    for (AndroidElement child : children) {
+      if (((AndroidNativeElement) child).getView() != ((AndroidNativeElement) parentElement)
+          .getView()) {
+        JSONObject jsonChild = ((AndroidNativeElement) child).toJson();
+        childs.put(jsonChild);
+
+        addChildren(jsonChild, child);
+      }
+    }
+    parent.put("children", childs);
   }
 
   private void addChildren(ViewGroup viewGroup, AndroidNativeElement parent) {
@@ -139,6 +178,8 @@ public abstract class AbstractNativeElementContext
       return findElementsByClass(by.getElementLocator());
     } else if (by instanceof ByName) {
       return findElementsByName(by.getElementLocator());
+    }else if (by instanceof ByXPath) {
+      return findElementsByXPath(by.getElementLocator());
     }
 
     throw new UnsupportedOperationException(String.format(
@@ -159,9 +200,52 @@ public abstract class AbstractNativeElementContext
       return findElementByClass(by.getElementLocator());
     } else if (by instanceof ByName) {
       return findElementByName(by.getElementLocator());
+    } else if (by instanceof ByXPath) {
+      return findElementByXPath(by.getElementLocator());
     }
     throw new UnsupportedOperationException(String.format(
         "By locator %s is curently not supported!", by.getClass().getSimpleName()));
+  }
+
+
+  public AndroidElement findElementByXPath(String using) {
+    List<AndroidElement> elements = findElementsByXPath(using);
+    if (!elements.isEmpty()) {
+      return elements.get(0);
+    }
+    return null;
+  }
+
+  public List<AndroidElement> findElementsByXPath(String expression) {
+    JSONObject root = null;
+    try {
+      root = getElementTree();
+    } catch (JSONException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+
+    Document xmlDocument = JsonXmlUtil.toXml(root);
+    XPath xPath = XPathFactory.newInstance().newXPath();
+
+    NodeList nodeList = null;
+    try {
+      // read a nodelist using xpath
+      nodeList = (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+    } catch (XPathExpressionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    List<AndroidElement> elements = new ArrayList<AndroidElement>();
+    if (nodeList != null && nodeList.getLength() > 0) {
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        Node node = nodeList.item(i);
+        String id = node.getAttributes().getNamedItem("ref").getTextContent();
+        elements.add(knownElements.get(id));
+      }
+    }
+
+    return elements;
   }
 
   @Override

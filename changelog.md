@@ -1,3 +1,16 @@
+0.5.0-SNAPSHOT (under development, check dev branch)
+---
+- Added xpath locator for native context
+
+
+
+
+0.4.2
+-----
+- small bugfixes
+
+
+
 0.4.1
 -----
 - several smaller bug fixes: #52, #51, #50

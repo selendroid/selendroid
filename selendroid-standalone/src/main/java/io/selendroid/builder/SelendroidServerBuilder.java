@@ -49,7 +49,7 @@ public class SelendroidServerBuilder {
   private static final Logger log = Logger.getLogger(SelendroidServerBuilder.class.getName());
   public static final String SELENDROID_FINAL_NAME = "selendroid-server.apk";
   public static final String PREBUILD_SELENDROID_SERVER_PATH =
-      "/prebuild/selendroid-server-0.4.2.apk";
+      "/prebuild/selendroid-server-0.5.0-SNAPSHOT.apk";
   public static final String ANDROID_APPLICATION_XML_TEMPLATE = "/AndroidManifest.xml";
   public static final String ICON = "android:icon=\"@drawable/selenium_icon\"";
   private String selendroidPrebuildServerPath = null;

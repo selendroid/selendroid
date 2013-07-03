@@ -20,9 +20,7 @@ import io.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,23 +37,6 @@ public class SelendroidNativeDriver {
     this.nativeSearchScope = nativeSearchScope;
   }
 
-  private void addChildren(JSONObject parent, AndroidElement parentElement) throws JSONException {
-    Collection<AndroidElement> children = parentElement.getChildren();
-    if (children == null || children.isEmpty()) {
-      return;
-    }
-    JSONArray childs = new JSONArray();
-    for (AndroidElement child : children) {
-      if (((AndroidNativeElement) child).getView() != ((AndroidNativeElement) parentElement)
-          .getView()) {
-        JSONObject jsonChild = ((AndroidNativeElement) child).toJson();
-        childs.put(jsonChild);
-
-        addChildren(jsonChild, child);
-      }
-    }
-    parent.put("children", childs);
-  }
 
 
   /*
@@ -77,17 +58,9 @@ public class SelendroidNativeDriver {
    * @see org.openqa.selenium.android.server.AndroidDriver#getSourceOfCurrentActivity()
    */
   public JSONObject getWindowSource() throws JSONException {
-    AndroidNativeElement rootElement = nativeSearchScope.getElementTree();
-    JSONObject root = rootElement.toJson();
-    if (root == null) {
-      return new JSONObject();
-    }
-    root.put("activity", serverInstrumentation.getCurrentActivity().getComponentName()
-        .toShortString());
+    JSONObject rootElement = nativeSearchScope.getElementTree();
 
-    addChildren(root, rootElement);
-
-    return root;
+    return rootElement;
   }
 
   public String getTitle() {

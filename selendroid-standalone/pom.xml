@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.selendroid</groupId>
 		<artifactId>selendroid</artifactId>
-		<version>0.4.2</version>
+		<version>0.5.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>selendroid-standalone</artifactId>
 	<name>selendroid-standalone</name>
@@ -159,14 +159,14 @@
 					<include>AndroidManifest.xml</include>
 				</includes>
 			</resource>
-            <resource>
-                <directory>../selendroid-server/target/</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>selendroid-server-0.4.2.apk</include>
-                </includes>
-                <targetPath>prebuild/</targetPath>
-            </resource>
+			<resource>
+				<directory>../selendroid-server/target/</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>selendroid-server-0.4.2.apk</include>
+				</includes>
+				<targetPath>prebuild/</targetPath>
+			</resource>
 		</resources>
 	</build>
 

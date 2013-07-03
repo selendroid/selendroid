@@ -63,11 +63,13 @@ public class AndroidNativeElement implements AndroidElement {
   private Coordinates coordinates = null;
   final Object syncObject = new Object();
   private Boolean done = false;
+  private KnownElements ke;
 
   public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KnownElements ke) {
     this.view = view;
     this.instrumentation = instrumentation;
     this.nativeElementSearchScope = new NativeElementSearchScope(instrumentation, ke);
+    this.ke=ke;
   }
 
   @Override
@@ -286,7 +288,7 @@ public class AndroidNativeElement implements AndroidElement {
     size.put("width", s.getWidth());
     rect.put("size", size);
 
-    object.put("ref", view.getId());
+    object.put("ref", ke.getIdOfElement(this));
     object.put("type", view.getClass().getName());
     String value = "";
     if (view instanceof TextView) {
