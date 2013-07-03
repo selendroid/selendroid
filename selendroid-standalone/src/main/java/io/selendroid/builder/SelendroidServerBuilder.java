@@ -21,6 +21,7 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
+import io.selendroid.server.model.SelendroidStandaloneDriver;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,9 +30,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,8 +52,8 @@ public class SelendroidServerBuilder {
   public static final String SELENDROID_TEST_APP_PACKAGE = "io.selendroid.testapp";
   private static final Logger log = Logger.getLogger(SelendroidServerBuilder.class.getName());
   public static final String SELENDROID_FINAL_NAME = "selendroid-server.apk";
-  public static final String PREBUILD_SELENDROID_SERVER_PATH =
-      "/prebuild/selendroid-server-0.5.0-SNAPSHOT.apk";
+  public static final String PREBUILD_SELENDROID_SERVER_PATH_PREFIX =
+      "/prebuild/selendroid-server-";
   public static final String ANDROID_APPLICATION_XML_TEMPLATE = "/AndroidManifest.xml";
   public static final String ICON = "android:icon=\"@drawable/selenium_icon\"";
   private String selendroidPrebuildServerPath = null;
@@ -67,7 +71,8 @@ public class SelendroidServerBuilder {
   }
 
   public SelendroidServerBuilder() {
-    this.selendroidPrebuildServerPath = PREBUILD_SELENDROID_SERVER_PATH;
+    this.selendroidPrebuildServerPath =
+        PREBUILD_SELENDROID_SERVER_PATH_PREFIX + getJarVersionNumber() + ".apk";
     this.selendroidApplicationXmlTemplate = ANDROID_APPLICATION_XML_TEMPLATE;
   }
 
@@ -317,5 +322,26 @@ public class SelendroidServerBuilder {
       throw new SelendroidException("The resource '" + resource + "' was not found.");
     }
     return is;
+  }
+
+  public String getJarVersionNumber() {
+    Class clazz = SelendroidStandaloneDriver.class;
+    String className = clazz.getSimpleName() + ".class";
+    String classPath = clazz.getResource(className).toString();
+    if (!classPath.startsWith("jar")) {
+      // Class not from JAR
+      return "dev";
+    }
+    String manifestPath =
+        classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+    Manifest manifest = null;
+    try {
+      manifest = new Manifest(new URL(manifestPath).openStream());
+    } catch (Exception e) {
+      return "";
+    }
+    Attributes attr = manifest.getMainAttributes();
+    String value = attr.getValue("version");
+    return value;
   }
 }

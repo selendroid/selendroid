@@ -34,15 +34,12 @@ import io.selendroid.server.model.impl.DefaultHardwareDeviceFinder;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import java.util.logging.Logger;
 
 import org.apache.http.HttpResponse;
@@ -157,25 +154,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
   @Override
   public String getServerVersion() {
-
-    Class clazz = SelendroidStandaloneDriver.class;
-    String className = clazz.getSimpleName() + ".class";
-    String classPath = clazz.getResource(className).toString();
-    if (!classPath.startsWith("jar")) {
-      // Class not from JAR
-      return "dev";
-    }
-    String manifestPath =
-        classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
-    Manifest manifest = null;
-    try {
-      manifest = new Manifest(new URL(manifestPath).openStream());
-    } catch (Exception e) {
-      return "";
-    }
-    Attributes attr = manifest.getMainAttributes();
-    String value = attr.getValue("version");
-    return value;
+    return selendroidApkBuilder.getJarVersionNumber();
   }
 
   @Override

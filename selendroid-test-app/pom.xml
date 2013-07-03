@@ -119,6 +119,20 @@
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
 				</configuration>
 				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<id>update-manifest</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>manifest-update</goal>
+						</goals>
+						<configuration>
+							<manifest>
+								<versionName>${project.version}</versionName>
+							</manifest>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>

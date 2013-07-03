@@ -80,6 +80,20 @@
 					</manifest>
 					<extractDuplicates>true</extractDuplicates>
 				</configuration>
+				<executions>
+					<execution>
+						<id>update-manifest</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>manifest-update</goal>
+						</goals>
+						<configuration>
+							<manifest>
+								<versionName>${project.version}</versionName>
+							</manifest>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
