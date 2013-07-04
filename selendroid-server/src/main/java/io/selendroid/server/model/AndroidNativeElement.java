@@ -42,6 +42,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -69,7 +70,7 @@ public class AndroidNativeElement implements AndroidElement {
     this.view = view;
     this.instrumentation = instrumentation;
     this.nativeElementSearchScope = new NativeElementSearchScope(instrumentation, ke);
-    this.ke=ke;
+    this.ke = ke;
   }
 
   @Override
@@ -268,11 +269,24 @@ public class AndroidNativeElement implements AndroidElement {
   public JSONObject toJson() throws JSONException {
     JSONObject object = new JSONObject();
     JSONObject l10n = new JSONObject();
-    l10n.put("matches", 0);
+
+    String l10nKey = null;
+    // try {
+    // l10nKey =
+    // instrumentation.getCurrentActivity().getResources().getText(view.getId()).toString();
+    // } catch (Resources.NotFoundException e) {
+    // // ignoring, can happen
+    // }
+    if (l10nKey != null) {
+      l10n.put("matches", 1);
+      l10n.put("key", l10nKey);
+    }else{
+      l10n.put("matches", 0);
+    }
     object.put("l10n", l10n);
     String label = String.valueOf(view.getContentDescription());
-    object.put("label", label == null ? "" : label);
-    object.put("name", getNativeId());
+    object.put("name", label == null ? "" : label);
+    object.put("id", getNativeId());
     JSONObject rect = new JSONObject();
 
     object.put("rect", rect);

@@ -52,7 +52,7 @@ $(document).ready(function() {
 			type = node.metadata.type;
 			ref = node.metadata.reference;
 			name = node.metadata.name;
-			label = node.metadata.label;
+			label = node.metadata.id;
 			value = node.metadata.value;
 			l10n = node.metadata.l10n
 		} else {// from listener, jstree node
@@ -60,7 +60,7 @@ $(document).ready(function() {
 			type = node.rslt.obj.data('type');
 			ref = node.rslt.obj.data('reference');
 			name = node.rslt.obj.data('name');
-			label = node.rslt.obj.data('label');
+			label = node.rslt.obj.data('id');
 			value = node.rslt.obj.data('value');
 			l10n = node.rslt.obj.data('l10n');
 
@@ -99,9 +99,9 @@ $(document).ready(function() {
 			prettyL10N = "<h3>L10N</h3>";
 			var matches = l10n.matches;
 			prettyL10N += "<p><b>Matches</b>: " + matches + "</p>";
-
+			
 			if(matches > 0) {
-				prettyL10N += "<p><b>Key</b>: " + l10n.key + "</p>";
+				prettyL10N += "<p><b>Key</b>: " + l10n.key + "</p>";	
 				var langs = l10n.langs;
 				for(var name in langs) {
 					var result = langs[name];
@@ -116,7 +116,7 @@ $(document).ready(function() {
 			prettyL10N = "no l10n for --" + name + "--";
 		}
 
-		$('#details').html("<h3>Details</h3>" + "<p><b>Type</b>: " + type + "</p>" + "<p><b>Reference</b>: " + ref + "</p>" + "<p><b>Name</b>: " + na + "</p>" + "<p><b>Label</b>: " + label + "</p>" + "<p><b>Value</b>: " + value + "</p>" + "<p><b>Rect</b>: x=" + rect.x + ",y=" + rect.y + ",h=" + rect.h + "w=" + rect.w + "</p>" + prettyL10N);
+		$('#details').html("<h3>Details</h3>" + "<p><b>Type</b>: " + type + "</p>" + "<p><b>Reference</b>: " + ref + "</p>" + "<p><b>Name</b>: " + na + "</p>" + "<p><b>Id</b>: " + label + "</p>" + "<p><b>Value</b>: " + value + "</p>" + "<p><b>Rect</b>: x=" + rect.x + ",y=" + rect.y + ",h=" + rect.h + "w=" + rect.w + "</p>" + prettyL10N);
 
 	};
 	var root;
