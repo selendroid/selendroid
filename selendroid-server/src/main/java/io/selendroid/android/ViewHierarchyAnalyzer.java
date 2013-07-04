@@ -13,15 +13,8 @@
  */
 package io.selendroid.android;
 
-import android.content.res.Resources;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.widget.AbsListView;
-import android.widget.ScrollView;
-import com.android.internal.util.Predicate;
-import io.selendroid.util.InstanceOfPredicate;
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.util.InstanceOfPredicate;
 import io.selendroid.util.ListUtil;
 import io.selendroid.util.Preconditions;
 
@@ -32,6 +25,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import android.content.res.Resources;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.widget.AbsListView;
+import android.widget.ScrollView;
+
+import com.android.internal.util.Predicate;
 
 public class ViewHierarchyAnalyzer {
   private static final ViewHierarchyAnalyzer INSTANCE = new ViewHierarchyAnalyzer();
@@ -167,7 +169,7 @@ public class ViewHierarchyAnalyzer {
     return id;
   }
 
-  public WebView findWebView() {
+  public List<WebView> findWebViews() {
     final List<WebView> webViews =
         (List<WebView>) ListUtil.filter(getViews(Arrays.asList(getRecentDecorView())),
             new InstanceOfPredicate(WebView.class));
@@ -175,7 +177,7 @@ public class ViewHierarchyAnalyzer {
     if (webViews.isEmpty()) {
       return null;
     }
-    return webViews.get(0);
+    return webViews;
   }
 
   public List<View> findScrollableContainer() {

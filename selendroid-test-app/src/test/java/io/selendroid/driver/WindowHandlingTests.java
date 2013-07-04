@@ -39,7 +39,7 @@ public class WindowHandlingTests extends BaseAndroidTest {
     Set<String> windowHandles = driver.getWindowHandles();
     Assert.assertEquals(windowHandles.size(), 2);
     Assert.assertTrue(windowHandles.contains(NATIVE_APP), "Should be able to find native context");
-    Assert.assertTrue(windowHandles.contains(WEBVIEW), "Should be able to find webview context");
+    Assert.assertTrue(windowHandles.contains("WEBVIEW_0"), "Should be able to find webview context");
   }
 
   private void openWebViewActivity() {

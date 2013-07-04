@@ -1,6 +1,7 @@
 0.5.0-SNAPSHOT (under development, check dev branch)
 ---
 - Added xpath locator for native context
+- selendroid can now handle multiple web views on the same activity
 
 
 

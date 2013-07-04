@@ -13,6 +13,26 @@
  */
 package io.selendroid.server.model;
 
+import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.AndroidTouchScreen;
+import io.selendroid.android.AndroidWait;
+import io.selendroid.android.KeySender;
+import io.selendroid.android.ViewHierarchyAnalyzer;
+import io.selendroid.android.WindowType;
+import io.selendroid.exceptions.NoSuchElementException;
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.UnsupportedOperationException;
+import io.selendroid.server.Session;
+import io.selendroid.server.model.internal.AbstractNativeElementContext;
+import io.selendroid.server.model.internal.AbstractWebElementContext;
+import io.selendroid.server.model.internal.execute_native.FindRId;
+import io.selendroid.server.model.internal.execute_native.GetL10nKeyTranslation;
+import io.selendroid.server.model.internal.execute_native.InvokeMenuAction;
+import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
+import io.selendroid.server.model.js.AndroidAtoms;
+import io.selendroid.util.Preconditions;
+import io.selendroid.util.SelendroidLogger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -26,28 +46,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import io.selendroid.ServerInstrumentation;
-import io.selendroid.android.AndroidWait;
-import io.selendroid.android.KeySender;
-import io.selendroid.android.ViewHierarchyAnalyzer;
-import io.selendroid.android.WindowType;
-import io.selendroid.server.model.internal.AbstractNativeElementContext;
-import io.selendroid.server.model.internal.AbstractWebElementContext;
-import io.selendroid.server.model.internal.execute_native.GetL10nKeyTranslation;
-import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
-import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.android.AndroidTouchScreen;
-import io.selendroid.exceptions.NoSuchElementException;
-import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.exceptions.UnsupportedOperationException;
-import io.selendroid.server.Session;
-import io.selendroid.server.model.internal.execute_native.FindRId;
-import io.selendroid.server.model.internal.execute_native.InvokeMenuAction;
-import io.selendroid.server.model.js.AndroidAtoms;
-import io.selendroid.util.Preconditions;
 
 import android.app.Activity;
 import android.content.res.Resources.Theme;
@@ -79,7 +80,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   private TouchScreen touch;
   private SelendroidNativeDriver selendroidNativeDriver = null;
   private SelendroidWebDriver selendroidWebDriver = null;
-  private WindowType activeWindowType = null;
+  private String activeWindowType = null;
 
   private Map<String, NativeExecuteScript> nativeExecuteScriptMap =
       new HashMap<String, NativeExecuteScript>();
@@ -213,7 +214,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   @Override
   public void stopSession() {
     serverInstrumentation.finishAllActivities();
-    this.activeWindowType = WindowType.NATIVE_APP;
+    this.activeWindowType = WindowType.NATIVE_APP.name();
     this.session = null;
     nativeSearchScope = null;
     selendroidNativeDriver = null;
@@ -328,23 +329,23 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     }
   }
 
-  public void switchDriverMode(WindowType type) {
+  public void switchDriverMode(String type) {
     Preconditions.checkNotNull(type);
     if (type.equals(activeWindowType)) {
       // do nothing
     } else {
       this.activeWindowType = type;
     }
-    if (WindowType.WEBVIEW.equals(type)) {
-      initSelendroidWebDriver();
-    } else {
+    if (WindowType.NATIVE_APP.name().equals(type)) {
       this.webviewSearchScope = null;
       this.selendroidWebDriver = null;
+    } else {
+      initSelendroidWebDriver(type);
     }
   }
 
-  private void initSelendroidWebDriver() {
-    this.selendroidWebDriver = new SelendroidWebDriver(serverInstrumentation);
+  private void initSelendroidWebDriver(String type) {
+    this.selendroidWebDriver = new SelendroidWebDriver(serverInstrumentation, type);
     webviewSearchScope =
         new WebviewSearchScope(session.getKnownElements(), selendroidWebDriver.getWebview(),
             selendroidWebDriver);
@@ -363,7 +364,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       session.getKnownElements().clear();
       return session.getSessionId();
     }
-    activeWindowType = WindowType.NATIVE_APP;
+    activeWindowType = WindowType.NATIVE_APP.name();
     this.session = new Session(desiredCapabilities, UUID.randomUUID().toString());
     nativeSearchScope =
         new NativeSearchScope(serverInstrumentation, getSession().getKnownElements());
@@ -502,10 +503,10 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   public boolean isNativeWindowMode() {
-    if (WindowType.WEBVIEW.equals(activeWindowType)) {
-      return false;
+    if (WindowType.NATIVE_APP.name().equals(activeWindowType)) {
+      return true;
     }
-    return true;
+    return false;
   }
 
   @Override
@@ -531,16 +532,18 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
   @Override
   public String getWindowHandle() {
-    return activeWindowType.name();
+    return activeWindowType;
   }
 
   @Override
   public Set<String> getWindowHandles() {
     Set<String> windowHandles = new HashSet<String>();
     windowHandles.add(WindowType.NATIVE_APP.name());
-    WebView webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebView();
+    List<WebView> webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebViews();
     if (webview != null) {
-      windowHandles.add(WindowType.WEBVIEW.name());
+      for (int i = 0; i < webview.size(); i++) {
+        windowHandles.add(WindowType.WEBVIEW.name() + "_" + i);
+      }
     }
     return windowHandles;
   }

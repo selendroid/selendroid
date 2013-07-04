@@ -50,9 +50,9 @@ public class SelendroidWebDriver {
   private boolean done = false;
   private ServerInstrumentation serverInstrumentation = null;
 
-  public SelendroidWebDriver(ServerInstrumentation serverInstrumentation) {
+  public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle) {
     this.serverInstrumentation = serverInstrumentation;
-    init();
+    init(handle);
   }
 
   private static String escapeAndQuote(final String toWrap) {
@@ -259,15 +259,23 @@ public class SelendroidWebDriver {
     return source.getString("value");
   }
 
-  protected void init() {
+  protected void init(String handle) {
     System.out.println("Selendroid webdriver init");
     long start = System.currentTimeMillis();
-    webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebView();
-    while (webview == null
+    List<WebView> webviews = ViewHierarchyAnalyzer.getDefaultInstance().findWebViews();
+
+    while (webviews == null
         && (System.currentTimeMillis() - start <= ServerInstrumentation.getInstance()
             .getAndroidWait().getTimeoutInMillis())) {
       DefaultSelendroidDriver.sleepQuietly(500);
-      webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebView();
+      webviews = ViewHierarchyAnalyzer.getDefaultInstance().findWebViews();
+    }
+
+    if (handle.contains("_")) {
+      int index = Integer.valueOf(handle.split("_")[1]);
+      webview = webviews.get(index);
+    } else {
+      webview = webviews.get(0);
     }
 
     if (webview == null) {

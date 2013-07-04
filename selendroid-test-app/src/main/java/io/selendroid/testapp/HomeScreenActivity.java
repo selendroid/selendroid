@@ -24,6 +24,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -161,5 +164,34 @@ public class HomeScreenActivity extends Activity {
       showUserRegistrationDialog(null);
     }
 
+  }
+  
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater menuInflater = getMenuInflater();
+    menuInflater.inflate(io.selendroid.testapp.R.layout.menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+
+    switch (item.getItemId()) {
+      case io.selendroid.testapp.R.id.menu_home:
+        startActivity(new Intent(getApplicationContext(), HomeScreenActivity.class));
+        return true;
+
+      case io.selendroid.testapp.R.id.menu_web_view:
+        startActivity(new Intent(getApplicationContext(), WebViewActivity.class));
+        return true;
+
+      case io.selendroid.testapp.R.id.menu_multiple_web_views:
+        startActivity(new Intent(getApplicationContext(), MultipleWebViewsActivity.class));
+        return true;
+
+   
+      default:
+        return super.onOptionsItemSelected(item);
+    }
   }
 }

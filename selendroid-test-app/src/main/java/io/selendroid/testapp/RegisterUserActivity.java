@@ -13,15 +13,14 @@
  */
 package io.selendroid.testapp;
 
+import io.selendroid.testapp.domain.User;
 import io.selendroid.testapp.services.UserService;
 import io.selendroid.testapp.services.impl.UserServiceImpl;
-import io.selendroid.testapp.domain.User;
 import io.selendroid.testapp.utils.MyServiceConection;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -71,14 +70,17 @@ public class RegisterUserActivity extends Activity {
         return true;
 
       case io.selendroid.testapp.R.id.menu_web_view:
-        
         startActivity(new Intent(getApplicationContext(), WebViewActivity.class));
+        return true;
+
+      case io.selendroid.testapp.R.id.menu_multiple_web_views:
+        startActivity(new Intent(getApplicationContext(), MultipleWebViewsActivity.class));
         return true;
 
       case io.selendroid.testapp.R.id.menu_settings:
         showDialog(DIALOG_ALERT);
         return true;
-        
+
       default:
         return super.onOptionsItemSelected(item);
     }
@@ -99,14 +101,19 @@ public class RegisterUserActivity extends Activity {
 
   public void registerUser(View view) {
     Intent nextScreen = new Intent(getApplicationContext(), VerifyUserActivity.class);
-    String username = ((EditText) findViewById(io.selendroid.testapp.R.id.inputUsername)).getText().toString();
-    String email = ((EditText) findViewById(io.selendroid.testapp.R.id.inputEmail)).getText().toString();
-    String password = ((EditText) findViewById(io.selendroid.testapp.R.id.inputPassword)).getText().toString();
-    String name = ((EditText) findViewById(io.selendroid.testapp.R.id.inputName)).getText().toString();
-    boolean acceptAdds = ((CheckBox) findViewById(io.selendroid.testapp.R.id.input_adds)).isChecked();
+    String username =
+        ((EditText) findViewById(io.selendroid.testapp.R.id.inputUsername)).getText().toString();
+    String email =
+        ((EditText) findViewById(io.selendroid.testapp.R.id.inputEmail)).getText().toString();
+    String password =
+        ((EditText) findViewById(io.selendroid.testapp.R.id.inputPassword)).getText().toString();
+    String name =
+        ((EditText) findViewById(io.selendroid.testapp.R.id.inputName)).getText().toString();
+    boolean acceptAdds =
+        ((CheckBox) findViewById(io.selendroid.testapp.R.id.input_adds)).isChecked();
     String preferedProgrammingLanguge =
-        ((Spinner) findViewById(io.selendroid.testapp.R.id.input_preferedProgrammingLanguage)).getSelectedItem()
-            .toString();
+        ((Spinner) findViewById(io.selendroid.testapp.R.id.input_preferedProgrammingLanguage))
+            .getSelectedItem().toString();
 
     User user = new User(username, password);
     user.setEmail(email);
@@ -117,7 +124,7 @@ public class RegisterUserActivity extends Activity {
     nextScreen.putExtra("user", user);
     startActivity(nextScreen);
   }
-  
+
   @Override
   protected Dialog onCreateDialog(int id) {
     switch (id) {
@@ -126,12 +133,13 @@ public class RegisterUserActivity extends Activity {
         Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Personal data will be stored to improve the product.\n\nDo you agree?");
         builder.setCancelable(true);
-        builder.setPositiveButton("I don't", new DialogInterface.OnClickListener(){
+        builder.setPositiveButton("I don't", new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             RegisterUserActivity.this.finish();
-          }});
-        builder.setNegativeButton("I agree",null);
+          }
+        });
+        builder.setNegativeButton("I agree", null);
         AlertDialog dialog = builder.create();
         dialog.show();
     }
