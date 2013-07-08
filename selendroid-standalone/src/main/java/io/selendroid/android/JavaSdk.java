@@ -37,7 +37,7 @@ public class JavaSdk {
     adbCommand.append(File.separator);
     adbCommand.append("jarsigner");
     adbCommand.append(platformExecutableSuffixExe());
-    return adbCommand.toString();
+    return "\"" + adbCommand.toString() + "\"";
   }
 
   public static String keytool() {
