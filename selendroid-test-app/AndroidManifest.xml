@@ -1,43 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.selendroid.testapp"
-    android:versionCode="1"
-    android:versionName="0.5.0-SNAPSHOT" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.5.0-SNAPSHOT" package="io.selendroid.testapp">
 
-    <uses-sdk android:minSdkVersion="10" />
+    <uses-sdk android:minSdkVersion="10"/>
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.INJECT_EVENTS" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INJECT_EVENTS"/>
 
-    <application
-        android:icon="@drawable/icon"
-        android:label="selendroid-test-app" >
-        <activity android:name=".HomeScreenActivity" >
+    <application android:debuggable="false" android:icon="@drawable/icon" android:label="selendroid-test-app">
+        <activity android:name=".HomeScreenActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".WebViewActivity" />
-        <activity android:name=".MultipleWebViewsActivity" />
-        <activity android:name=".RegisterUserActivity" />
-        <activity android:name=".VerifyUserActivity" />
-        <activity android:name=".SearchUsersActivity" >
+        <activity android:name=".WebViewActivity"/>
+        <activity android:name=".MultipleWebViewsActivity"/>
+        <activity android:name=".RegisterUserActivity"/>
+        <activity android:name=".VerifyUserActivity"/>
+        <activity android:name=".SearchUsersActivity">
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
+                <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
 
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+            <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
         </activity>
 
-        <meta-data
-            android:name="android.app.default_searchable"
-            android:value=".SearchUsersActivity" />
+        <meta-data android:name="android.app.default_searchable" android:value=".SearchUsersActivity"/>
 
-        <service android:name=".services.impl.UserServiceImpl" />
+        <service android:name=".services.impl.UserServiceImpl"/>
     </application>
 
 </manifest>

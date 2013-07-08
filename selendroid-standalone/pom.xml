@@ -112,6 +112,26 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+
+					<useDefaultManifestFile>true</useDefaultManifestFile>
+
+					<archive>
+						<manifest>
+							<mainClass>io.selendroid.SelendroidLauncher</mainClass>
+						</manifest>
+						<manifestEntries>
+							<url>${project.parent.url}</url>
+							<version>${project.version}</version>
+						</manifestEntries>
+					</archive>
+				</configuration>
+
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -163,7 +183,7 @@
 				<directory>../selendroid-server/target/</directory>
 				<filtering>false</filtering>
 				<includes>
-					<include>selendroid-server-0.4.2.apk</include>
+					<include>selendroid-server-${project.version}.apk</include>
 				</includes>
 				<targetPath>prebuild/</targetPath>
 			</resource>
