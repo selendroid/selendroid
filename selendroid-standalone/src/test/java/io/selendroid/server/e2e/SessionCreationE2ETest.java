@@ -24,6 +24,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.touch.TouchActions;
 
 /*
  * Test is currently only executed in manual mode
@@ -63,6 +64,7 @@ public class SessionCreationE2ETest {
     } catch (NoSuchElementException e) {
       // expected
     }
+
     WebElement inputField = driver.findElement(By.id("my_text_field"));
     Assert.assertEquals("true", inputField.getAttribute("enabled"));
     inputField.sendKeys("Selendroid");

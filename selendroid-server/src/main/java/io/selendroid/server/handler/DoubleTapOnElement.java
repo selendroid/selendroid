@@ -19,6 +19,8 @@ import io.selendroid.server.model.TouchScreen;
 import io.selendroid.server.model.interactions.Coordinates;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
@@ -33,7 +35,8 @@ public class DoubleTapOnElement extends RequestHandler {
   @Override
   public Response handle() throws JSONException {
     SelendroidLogger.log("double tap on element gesture");
-    String elementId = getElementId();
+    JSONObject payload = getPayload();
+    String elementId = payload.getString("element");
     TouchScreen touchScreen = getSelendroidDriver().getTouch();
     AndroidElement element = getElementFromCache(elementId);
     if (element == null) {

@@ -13,11 +13,11 @@
  */
 package io.selendroid.android;
 
+import static io.selendroid.android.AndroidSdk.isWindows;
 import static io.selendroid.android.AndroidSdk.platformExecutableSuffixExe;
+import io.selendroid.exceptions.SelendroidException;
 
 import java.io.File;
-
-import io.selendroid.exceptions.SelendroidException;
 
 public class JavaSdk {
   public static String javaHome() {
@@ -37,7 +37,7 @@ public class JavaSdk {
     adbCommand.append(File.separator);
     adbCommand.append("jarsigner");
     adbCommand.append(platformExecutableSuffixExe());
-    return "\"" + adbCommand.toString() + "\"";
+    return isWindows() ? "\"" + adbCommand.toString() + "\"" : adbCommand.toString();
   }
 
   public static String keytool() {

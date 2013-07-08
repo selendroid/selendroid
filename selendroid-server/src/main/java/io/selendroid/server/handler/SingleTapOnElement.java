@@ -14,6 +14,8 @@
 package io.selendroid.server.handler;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
@@ -33,7 +35,8 @@ public class SingleTapOnElement extends RequestHandler {
   @Override
   public Response handle() throws JSONException {
     SelendroidLogger.log("single tap on element gesture");
-    String elementId = getElementId();
+    JSONObject payload = getPayload();
+    String elementId = payload.getString("element");
 
     AndroidElement element = getElementFromCache(elementId);
     if (element == null) {

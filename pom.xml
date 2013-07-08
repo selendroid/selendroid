@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.selendroid</groupId>
 	<artifactId>selendroid</artifactId>
-	<version>0.4.2</version>
+	<version>0.5.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>selendroid</name>
 	<description>"Selenium for Android Apps" (Test automate native or hybrid Android apps with Selendroid.)</description>
@@ -46,18 +46,18 @@
 	</licenses>
 
 	<scm>
-        <connection>scm:git:git@github.com:DominikDary/selendroid.git</connection>
-        <developerConnection>scm:git:git@github.com:DominikDary/selendroid.git</developerConnection>
-        <url>http://github.com/DominikDary/selendroid</url>
+		<connection>scm:git:git@github.com:DominikDary/selendroid.git</connection>
+		<developerConnection>scm:git:git@github.com:DominikDary/selendroid.git</developerConnection>
+		<url>http://github.com/DominikDary/selendroid</url>
 	</scm>
 
-    <distributionManagement>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>sonatype-nexus-staging</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>sonatype-nexus-staging</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<issueManagement>
 		<system>github</system>
@@ -69,6 +69,11 @@
 			<id>ddary</id>
 			<name>Dominik Dary</name>
 			<url>https://github.com/DominikDary</url>
+		</developer>
+		<developer>
+			<id>lukeis</id>
+			<name>Luke Semerau</name>
+			<url>https://github.com/lukeis</url>
 		</developer>
 	</developers>
 	<build>

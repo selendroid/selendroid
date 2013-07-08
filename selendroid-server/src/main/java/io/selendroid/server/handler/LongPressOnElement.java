@@ -13,14 +13,16 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
-import io.selendroid.server.model.interactions.Coordinates;
-import org.json.JSONException;
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
+import io.selendroid.server.model.interactions.Coordinates;
 import io.selendroid.util.SelendroidLogger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
 public class LongPressOnElement extends RequestHandler {
@@ -32,7 +34,8 @@ public class LongPressOnElement extends RequestHandler {
   @Override
   public Response handle() throws JSONException {
     SelendroidLogger.log("Long press on element gesture");
-    String elementId = getElementId();
+    JSONObject payload = getPayload();
+    String elementId = payload.getString("element");
 
     AndroidElement element = getElementFromCache(elementId);
     if (element == null) {
