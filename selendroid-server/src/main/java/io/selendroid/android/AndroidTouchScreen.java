@@ -15,18 +15,20 @@
 
 package io.selendroid.android;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.internal.Point;
-import io.selendroid.server.model.SelendroidDriver;
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.TouchScreen;
 import io.selendroid.server.model.interactions.Coordinates;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.Instrumentation;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.ScrollView;
@@ -37,10 +39,10 @@ import android.widget.ScrollView;
  */
 public class AndroidTouchScreen implements TouchScreen {
 
-  private final SelendroidDriver driver;
+  private ServerInstrumentation instrumentation;
 
-  public AndroidTouchScreen(SelendroidDriver driver) {
-    this.driver = driver;
+  public AndroidTouchScreen(ServerInstrumentation instrumentation) {
+    this.instrumentation = instrumentation;
   }
 
   public void singleTap(Coordinates where) {
@@ -110,17 +112,64 @@ public class AndroidTouchScreen implements TouchScreen {
 
   public void longPress(Coordinates where) {
     long downTime = SystemClock.uptimeMillis();
-    List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
+    long eventTime = SystemClock.uptimeMillis();
     Point point = where.getLocationOnScreen();
-    motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, point));
-    motionEvents.add(getMotionEvent(downTime, (downTime + 3000), MotionEvent.ACTION_UP, point));
-    sendMotionEvents(motionEvents);
+    // List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
+    //
+    // motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, point));
+    // motionEvents.add(getMotionEvent(downTime, (downTime + 3000), MotionEvent.ACTION_UP, point));
+    // sendMotionEvents(motionEvents);
+    Instrumentation inst = instrumentation;
+
+
+    MotionEvent event = null;
+    boolean successfull = false;
+    int retry = 0;
+    while (!successfull && retry < 10) {
+      try {
+        if (event == null) {
+          event =
+              MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, point.x, point.y, 0);
+        }
+        System.out.println("trying to send pointer");
+        inst.sendPointerSync(event);
+        successfull = true;
+      } catch (SecurityException e) {
+        System.out.println("failed: " + retry);
+        // activityUtils.hideSoftKeyboard(null, false, true);
+        retry++;
+      }
+    }
+    if (!successfull) {
+      throw new SelendroidException("Click can not be completed!");
+    }
+    inst.sendPointerSync(event);
+    inst.waitForIdleSync();
+
+    eventTime = SystemClock.uptimeMillis();
+    final int touchSlop = ViewConfiguration.get(inst.getTargetContext()).getScaledTouchSlop();
+    event =
+        MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_MOVE, point.x + touchSlop / 2,
+            point.y + touchSlop / 2, 0);
+    inst.sendPointerSync(event);
+    inst.waitForIdleSync();
+
+    try {
+      Thread.sleep((long) (ViewConfiguration.getLongPressTimeout() * 1.5f));
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    eventTime = SystemClock.uptimeMillis();
+    event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, point.x, point.y, 0);
+    inst.sendPointerSync(event);
+    inst.waitForIdleSync();
   }
 
   public void scroll(final int xOffset, final int yOffset) {
     List<View> scrollableContainer =
         ViewHierarchyAnalyzer.getDefaultInstance().findScrollableContainer();
-    ServerInstrumentation instrumentation = ServerInstrumentation.getInstance();
+
     if (scrollableContainer == null) {
       // nothing to do
       return;
@@ -154,7 +203,7 @@ public class AndroidTouchScreen implements TouchScreen {
   public void flick(final int speedX, final int speedY) {
     List<View> scrollableContainer =
         ViewHierarchyAnalyzer.getDefaultInstance().findScrollableContainer();
-    ServerInstrumentation instrumentation = ServerInstrumentation.getInstance();
+
     if (scrollableContainer == null) {
       // nothing to do
       return;
@@ -223,11 +272,11 @@ public class AndroidTouchScreen implements TouchScreen {
   }
 
   private void sendMotionEvents(final List<MotionEvent> eventsToSend) {
-    ServerInstrumentation instr = ServerInstrumentation.getInstance();
+
     try {
-      instr.waitForIdleSync();
+      instrumentation.waitForIdleSync();
       for (MotionEvent event : eventsToSend) {
-        instr.sendPointerSync(event);
+        instrumentation.sendPointerSync(event);
       }
     } catch (SecurityException ignored) {
       ignored.printStackTrace();

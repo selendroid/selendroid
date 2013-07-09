@@ -89,7 +89,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   public DefaultSelendroidDriver(ServerInstrumentation instrumentation) {
     serverInstrumentation = instrumentation;
     keySender = new KeySender(serverInstrumentation);
-    touch = new AndroidTouchScreen(this);
+    touch = new AndroidTouchScreen(serverInstrumentation);
   }
 
   /*

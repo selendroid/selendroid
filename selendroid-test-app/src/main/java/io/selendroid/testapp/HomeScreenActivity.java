@@ -28,6 +28,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnLongClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +41,7 @@ import android.widget.Toast;
  */
 public class HomeScreenActivity extends Activity {
   private static final int DIALOG_ALERT = 10;
+  private static final int DIALOG_LONG_PRESS = 12;
   private static final int DIALOG_DOWNLOAD_PROGRESS = 11;
   private static String TAG = "Selendroid-demoapp";
   private ProgressDialog progressDialog = null;
@@ -48,6 +51,14 @@ public class HomeScreenActivity extends Activity {
     super.onCreate(savedInstanceState);
     Log.i(TAG, "onCreate");
     setContentView(io.selendroid.testapp.R.layout.homescreen);
+    Button button = (Button) findViewById(io.selendroid.testapp.R.id.buttonTest);
+    button.setOnLongClickListener(new OnLongClickListener() {
+      @Override
+      public boolean onLongClick(View v) {
+        showDialog(DIALOG_LONG_PRESS);
+        return true;
+      }
+    });
   }
 
 
@@ -108,6 +119,14 @@ public class HomeScreenActivity extends Activity {
         AlertDialog dialog = builder.create();
         dialog.show();
         return dialog;
+      case DIALOG_LONG_PRESS:
+        Builder builder2 = new AlertDialog.Builder(this);
+        builder2.setMessage("Long Press Tap has been received.");
+        builder2.setCancelable(true);
+        builder2.setPositiveButton("Ok", new CancelOnClickListener());
+        AlertDialog dialog2 = builder2.create();
+        dialog2.show();
+        return dialog2;
       case DIALOG_DOWNLOAD_PROGRESS:
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Waiting Dialog");
@@ -165,7 +184,7 @@ public class HomeScreenActivity extends Activity {
     }
 
   }
-  
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater menuInflater = getMenuInflater();
@@ -189,7 +208,7 @@ public class HomeScreenActivity extends Activity {
         startActivity(new Intent(getApplicationContext(), MultipleWebViewsActivity.class));
         return true;
 
-   
+
       default:
         return super.onOptionsItemSelected(item);
     }

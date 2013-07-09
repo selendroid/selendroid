@@ -1,17 +1,17 @@
 package io.selendroid.nativetests;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
-
 import io.selendroid.TestGroups;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.waiter.TestWaiter;
 import io.selendroid.waiter.WaitingConditions;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.touch.TouchActions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +30,8 @@ public class NativeElementInteractionTests extends BaseAndroidTest {
     WebElement button = driver.findElement(By.id("startUserRegistration"));
     button.click();
 
-    TestWaiter.waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://RegisterUserActivity"));
+    TestWaiter.waitFor(WaitingConditions.driverUrlToBe(driver,
+        "and-activity://RegisterUserActivity"));
   }
 
   @Test
@@ -46,7 +47,7 @@ public class NativeElementInteractionTests extends BaseAndroidTest {
     WebElement inputField = driver.findElement(By.id("my_text_field"));
     Assert.assertEquals(inputField.getTagName(), "EditText");
   }
-  
+
   @Test
   public void testShouldBeAbleToGetAttributeOfButton() {
     openStartActivity();
@@ -135,4 +136,25 @@ public class NativeElementInteractionTests extends BaseAndroidTest {
       Assert.assertTrue(e.getMessage().contains("Submit is not supported for native elements."));
     }
   }
+
+  @Test
+  public void testShouldBeAbleToLongPressOnElement() {
+    openStartActivity();
+    WebElement button = driver.findElement(By.id("buttonTest"));
+    TouchActions longPress = new TouchActions(driver).longPress(button);
+    longPress.perform();
+    WebElement text = driver.findElement(By.partialLinkText("Long Press Tap"));
+    Assert.assertNotNull(text);
+  }
+  
+  @Test
+  public void testShouldBeAbleToTapOnElement() {
+    openStartActivity();
+    WebElement button = driver.findElement(By.id("buttonTest"));
+    TouchActions longPress = new TouchActions(driver).singleTap(button);
+    longPress.perform();
+    WebElement text = driver.findElement(By.partialLinkText("end the activity"));
+    Assert.assertNotNull(text);
+  }
+
 }
