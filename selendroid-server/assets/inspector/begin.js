@@ -11,7 +11,7 @@ $(document).ready(function() {
 		$.get("/wd/hub/ide/getLanguages", {
 			app : path
 		}, function(data) {
-			
+
 			var language_selector = $("#language")[0];
 
 			while (language_selector.options.length > 0) {

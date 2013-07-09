@@ -42,11 +42,13 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -65,6 +67,7 @@ public class AndroidNativeElement implements AndroidElement {
   final Object syncObject = new Object();
   private Boolean done = false;
   private KnownElements ke;
+  static final long UI_TIMEOUT = 3000L;
 
   public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KnownElements ke) {
     this.view = view;
@@ -280,7 +283,7 @@ public class AndroidNativeElement implements AndroidElement {
     if (l10nKey != null) {
       l10n.put("matches", 1);
       l10n.put("key", l10nKey);
-    }else{
+    } else {
       l10n.put("matches", 0);
     }
     object.put("l10n", l10n);
@@ -310,8 +313,66 @@ public class AndroidNativeElement implements AndroidElement {
     }
     object.put("value", value);
     object.put("shown", view.isShown());
+    if (view instanceof WebView) {
+      final WebView webview = (WebView) view;
+      final MyWebChromeClient client = new MyWebChromeClient();
+      instrumentation.runOnUiThread(new Runnable() {
+        public void run() {
+          synchronized (syncObject) {
+            webview.getSettings().setJavaScriptEnabled(true);
+
+            webview.setWebChromeClient(client);
+            String script =
+                "document.body.parentNode.innerHTML";
+            webview.loadUrl("javascript:alert('selendroidSource:'+" + script + ")");
+            done = true;
+            syncObject.notify();
+          }
+        }
+      });
+      long end = System.currentTimeMillis() + UI_TIMEOUT;
+      waitForDone(end, UI_TIMEOUT, "Error while grabbing web view source code.");
+      object.put("source", client.result);
+    }
 
     return object;
+  }
+
+  public class MyWebChromeClient extends WebChromeClient {
+    public Object result = null;
+
+    /**
+     * Unconventional way of adding a Javascript interface but the main reason why I took this way
+     * is that it is working stable compared to the webview.addJavascriptInterface way.
+     */
+    @Override
+    public boolean onJsAlert(WebView view, String url, String message, JsResult jsResult) {
+      System.out.println("alert message: " + message);
+      if (message != null && message.startsWith("selendroidSource:")) {
+        jsResult.confirm();
+
+        synchronized (syncObject) {
+          result = message.replaceFirst("selendroidSource:", "");
+          syncObject.notify();
+        }
+
+        return true;
+      } else {
+        return super.onJsAlert(view, url, message, jsResult);
+      }
+    }
+  }
+
+  private void waitForDone(long end, long timeout, String error) {
+    synchronized (syncObject) {
+      while (!done && System.currentTimeMillis() < end) {
+        try {
+          syncObject.wait(timeout);
+        } catch (InterruptedException e) {
+          throw new SelendroidException(error, e);
+        }
+      }
+    }
   }
 
   private String getNativeId() {

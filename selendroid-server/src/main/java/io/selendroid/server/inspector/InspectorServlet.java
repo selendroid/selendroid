@@ -17,6 +17,7 @@ import io.selendroid.ServerInstrumentation;
 import io.selendroid.server.inspector.view.InspectorView;
 import io.selendroid.server.inspector.view.ResourceView;
 import io.selendroid.server.inspector.view.TreeView;
+import io.selendroid.server.inspector.view.WebViewContentView;
 import io.selendroid.server.model.SelendroidDriver;
 
 import org.webbitserver.HttpControl;
@@ -28,6 +29,7 @@ public class InspectorServlet implements HttpHandler {
   private InspectorView inspectorView = null;
   private ResourceView resourceView = null;
   private TreeView treeView = null;
+  private WebViewContentView webViewContentView = null;
   public static final String INSPECTOR = "/inspector";
   public static final String INSPECTOR_RESSOURCE = INSPECTOR + "/resources";
 
@@ -35,6 +37,7 @@ public class InspectorServlet implements HttpHandler {
     this.inspectorView = new InspectorView(instrumentation, driver);
     this.resourceView = new ResourceView(instrumentation, driver);
     this.treeView = new TreeView(instrumentation, driver);
+    this.webViewContentView = new WebViewContentView(instrumentation, driver);
   }
 
   @Override
@@ -48,6 +51,8 @@ public class InspectorServlet implements HttpHandler {
         treeView.render(httpRequest, httpResponse);
       } else if (httpRequest.uri().startsWith(INSPECTOR_RESSOURCE)) {
         resourceView.render(httpRequest, httpResponse);
+      } else if (httpRequest.uri().equals(INSPECTOR + "/latestWebView")) {
+        webViewContentView.render(httpRequest, httpResponse);
       }
     } else {
       httpControl.nextHandler();

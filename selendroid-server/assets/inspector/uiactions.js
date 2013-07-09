@@ -1,26 +1,25 @@
 $(function() {
   $('#capabilities').click(function(){
-  	$('#overlay').fadeIn('fast',function(){
-      $('#box').animate({'top':'160px'},500);
+   $('#overlay').fadeIn('fast',function(){
+      $('#box').animate({'left':'0px'},500);
     });
   });
-  
-  $('#languages').click(function(){
-  	$('#overlayLanguages').fadeIn('fast',function(){
-      $('#boxlanguages').animate({'top':'160px'},500);
-    });
-  });
-  
+    
   $('#boxclose').click(function(){
-  	$('#box').animate({'top':'-500px'},500,function(){
+   $('#box').animate({'left':'-2000px'},500,function(){
       $('#overlay').fadeOut('fast');
     });
   });
-  
-  $('#boxcloselanguages').click(function(){
-  	$('#boxlanguages').animate({'top':'-500px'},500,function(){
-      $('#overlayLanguages').fadeOut('fast');
+  $('#htmlshow').click(function(){
+   $('#overlayhtml').fadeIn('fast',function(){
+      $('#boxhtml').animate({'right':'0px'},500);
     });
   });
-
+    
+  $('#boxclosehtml').click(function(){
+   $('#boxhtml').animate({'right':'-2000px'},500,function(){
+      $('#overlayhtml').fadeOut('fast');
+    });
+  });
+  
 });
