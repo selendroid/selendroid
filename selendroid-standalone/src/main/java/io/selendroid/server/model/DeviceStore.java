@@ -138,16 +138,22 @@ public class DeviceStore {
     }
 
     for (AndroidDevice device : devices) {
-      if (isEmulatorSwitchedOff(device) == false && device.screenSizeMatches(caps.getScreenSize())) {
+      System.err.println("Evaluating if this device is a match for us: " + device.toString());
+      if (isEmulatorSwitchedOff(device) && device.screenSizeMatches(caps.getScreenSize())) {
         if (devicesInUse.contains(device)) {
+          System.err.println("Device is in use.");
           continue;
         }
         if (caps.getEmulator() == null
             || (caps.getEmulator() == true && device instanceof AndroidEmulator)
             || (caps.getEmulator() == false && device instanceof AndroidDevice)) {
+          System.err.println("device found.");
           devicesInUse.add(device);
           return device;
         }
+        System.err.println("Device did not match emulator/physical device. caps.getEmulator(): " + caps.getEmulator());
+      } else {
+        System.err.println("emulator switched off: " + isEmulatorSwitchedOff(device));
       }
     }
     throw new DeviceStoreException("No devices are found. "
@@ -158,12 +164,12 @@ public class DeviceStore {
   private boolean isEmulatorSwitchedOff(AndroidDevice device) throws DeviceStoreException {
     if (device instanceof AndroidEmulator) {
       try {
-        return ((AndroidEmulator) device).isEmulatorStarted();
+        return !((AndroidEmulator) device).isEmulatorStarted();
       } catch (AndroidDeviceException e) {
         throw new DeviceStoreException(e);
       }
     }
-    return false;
+    return true;
   }
 
   public List<AndroidDevice> getDevices() {
