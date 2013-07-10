@@ -18,11 +18,11 @@ function Recorder(inspector) {
     this.log.lvl = 4;
     this.index = 0;
     this.urlBase = document.URL.split("/session/")[0].replace("inspector", "wd/hub");
-    //var secondPart = document.URL.split("/session/")[1];
-    //this.session = secondPart.split("/")[0];
-    this.session="hello"
+    var secondPart = document.URL.split("/session/")[1];
+    this.session = secondPart.split("/")[0];
+    //this.session ="dummy";
     this.log.info(this.session);
-    this.on = document.URL.indexOf("mode=record") !== -1;
+    this.on =true;// document.URL.indexOf("mode=record") !== -1;
 }
 
 Recorder.prototype.recordClick = function (locator) {

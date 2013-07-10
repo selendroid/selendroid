@@ -289,7 +289,8 @@ public class AndroidNativeElement implements AndroidElement {
     object.put("l10n", l10n);
     String label = String.valueOf(view.getContentDescription());
     object.put("name", label == null ? "" : label);
-    object.put("id", getNativeId());
+    String id = getNativeId();
+    object.put("id", id.startsWith("id/") ? id.replace("id/", "") : id);
     JSONObject rect = new JSONObject();
 
     object.put("rect", rect);
@@ -306,7 +307,7 @@ public class AndroidNativeElement implements AndroidElement {
     rect.put("size", size);
 
     object.put("ref", ke.getIdOfElement(this));
-    object.put("type", view.getClass().getName());
+    object.put("type", view.getClass().getSimpleName());
     String value = "";
     if (view instanceof TextView) {
       value = String.valueOf(((TextView) view).getText());
@@ -316,14 +317,14 @@ public class AndroidNativeElement implements AndroidElement {
     if (view instanceof WebView) {
       final WebView webview = (WebView) view;
       final MyWebChromeClient client = new MyWebChromeClient();
+      String html = null;
       instrumentation.runOnUiThread(new Runnable() {
         public void run() {
           synchronized (syncObject) {
             webview.getSettings().setJavaScriptEnabled(true);
 
             webview.setWebChromeClient(client);
-            String script =
-                "document.body.parentNode.innerHTML";
+            String script = "document.body.parentNode.innerHTML";
             webview.loadUrl("javascript:alert('selendroidSource:'+" + script + ")");
             done = true;
             syncObject.notify();

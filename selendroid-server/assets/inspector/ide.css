@@ -22,12 +22,11 @@ h4 {
 
 #simulator {
     position: absolute;
-    margin-top: 45px;
     left: 0px;
+    top: 0px;
     float: left;
     margin-bottom: 6em;
-	width:50%;
-    height: 95%;
+    min-height: 95%;
 }
 
 /* making it of size 0
@@ -37,21 +36,6 @@ to have the rotate of the top left corner. */
     height: 0px;
     width: 0px;
 }
-
-#screenshot {
-    position: relative;
-    margin: 0 auto;
-    max-height: 700px;
-    max-width: 600px;
-  
-    box-shadow: 0 0 5px #ebebeb;
-    -webkit-box-shadow: 0 0 5px #ebebeb;
-    -moz-box-shadow: 0 0 5px #ebebeb;
-    -o-box-shadow: 0 0 5px #ebebeb;
-    -ms-box-shadow: 0 0 5px #ebebeb;
-}
-
-
 
 #capabilities {
     width: 40%;
@@ -65,19 +49,16 @@ to have the rotate of the top left corner. */
 
 #screen {
     position: absolute;
+    z-index: 2;
+}
+
+#screenshot {
+    z-index: 3;
 }
 
 #mouseOver {
     position: absolute;
     z-index: 4;
-}
-
-#tree {
-    height: 92%;
-    float: right;
-    width: 30%;
-    overflow: auto;
-    margin-top:45px;
 }
 
 #details {
@@ -90,34 +71,14 @@ to have the rotate of the top left corner. */
 
 #detailsparent {
     float: right;
-    width: 20%;
+    width: 17%;
     color: #444444;
-    height: 92%;
-    height: 92%;
-    margin-top:45px;
-}
-
-#xpathHelper {
-    padding-top: 0.2%;
-    padding-left: 0.2%;
-    position: absolute;
-    background: #455372;;
-    width: 29.8%;
-    height: 55px;
-    top: 40px;
-    left: 30%;
-    z-index: 0;
-    color: #FFFFFF;
-    font-size: 90%;
-}
-
-#xpathHelper input {
-    width: 90%;
-
+    height: 100%;
+    height: 100%;
 }
 
 #xpathLog {
-    margin-top:; 4px;
+    margin-top: 4px;
 }
 
 #topmenu {
@@ -291,13 +252,6 @@ a.boxclosehtml {
     width: 100%;
     max-height: 100px; /* Height of the footer */
     background: #6cf;
-}
-
-#tabs {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    max-height: 100px;
 }
 
 .tab {

@@ -1,18 +1,18 @@
 /*
-* Copyright 2012 ios-driver committers.
-*
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software distributed under the License
-* is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-* or implied. See the License for the specific language governing permissions and limitations under
-* the License.
-*/
+ * Copyright 2012 ios-driver committers.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
-Inspector.logLevel = 0; // 0=none, 1=error, 2=error +warning, 3= error,warning,info 4 = all
+Inspector.logLevel = 4; // 0=none, 1=error, 2=error +warning, 3= error,warning,info   4 = all
 
 function Inspector(selector) {
 
@@ -31,7 +31,7 @@ function Inspector(selector) {
         },
         "json_data": {
             "ajax": {
-            	"url" : "/inspector/tree"
+                "url" : "/inspector/tree"
             }
         },
         "themes": {
@@ -55,9 +55,9 @@ Inspector.prototype.reloadData = function () {
 
 }
 /**
-*
-* @param selector {string} jquery selector of the element that will host the jsTree.
-*/
+ *
+ * @param selector {string} jquery selector of the element that will host the jsTree.
+ */
 Inspector.prototype.init = function () {
     var me = this;
 
@@ -97,9 +97,9 @@ Inspector.prototype.init = function () {
 }
 
 /**
-* select the list of elements.Elements are XML nodes from a xpath query.
-* @param elements
-*/
+ * select the list of elements.Elements are XML nodes from a xpath query.
+ * @param elements
+ */
 Inspector.prototype.select = function (elements) {
     this.unselect();
     for (var i = 0; i < elements.length; i++) {
@@ -114,10 +114,10 @@ Inspector.prototype.select = function (elements) {
 }
 
 /**
-* mouse over the object tree.
-* @param e
-* @param data
-*/
+ * mouse over the object tree.
+ * @param e
+ * @param data
+ */
 Inspector.prototype.onNodeMouseOver = function (e, data) {
     if (!this.lock) {
         this.unselect();
@@ -126,13 +126,13 @@ Inspector.prototype.onNodeMouseOver = function (e, data) {
 }
 
 /**
-* init all variable when the tree is done loading.
-* @param event
-* @param data
-*/
+ * init all variable when the tree is done loading.
+ * @param event
+ * @param data
+ */
 Inspector.prototype.onTreeLoaded = function (event, data) {
     this.root = this.jstree.jstree('get_json')[0];
-    this.xml = this.root.metadata;//.xml;
+    this.xml = this.root.metadata.xml;
 
     var webView = this.extractWebView(this.getRootNode());
     if (webView != null) {
@@ -144,14 +144,14 @@ Inspector.prototype.onTreeLoaded = function (event, data) {
     this.loadXpathContext();
 
     if (this.recorder.on) {
-        $("#screenshot").attr("src", this.screenshotPath + "?time=" + new Date().getTime());
+        $("#screenshot").attr("src", this.screenshotPath);
         this.busy = false;
     }
 }
 
 /**
-* unselect everything. Highlight on the device, the tree, and the optional details.
-*/
+ * unselect everything. Highlight on the device, the tree, and the optional details.
+ */
 Inspector.prototype.unselect = function () {
     $('#details').html("");
     $('#xpathLog').html("");
@@ -160,36 +160,39 @@ Inspector.prototype.unselect = function () {
 }
 
 /**
-* Select the specified node. Node is a node from jstree.
-* @param node
-* @param displayDetails {boolean} true will display the info in the right column. If more than one
-* node is displayed, the node details will overwrite each other.
-*/
+ * Select the specified node. Node is a node from jstree.
+ * @param node
+ * @param displayDetails {boolean} true will display the info in the right column. If more than one
+ * node is displayed, the node details will overwrite each other.
+ */
 Inspector.prototype.selectOne = function (node, displayDetails) {
     var rect;
     var type;
     var ref;
     var name;
-    var label;
+    var id;
     var value;
     var l10n;
+    var source;
 
     if (node.metadata) {// from tree parsing, json node
         rect = node.metadata.rect;
         type = node.metadata.type;
         ref = node.metadata.reference;
         name = node.metadata.name;
-        label = node.metadata.label;
+        id = node.metadata.id;
         value = node.metadata.value;
         l10n = node.metadata.l10n
+        source=node.metadata.source
     } else {// from listener, jstree node
         rect = node.rslt.obj.data("rect");
         type = node.rslt.obj.data('type');
         ref = node.rslt.obj.data('reference');
         name = node.rslt.obj.data('name');
-        label = node.rslt.obj.data('id');
+        id = node.rslt.obj.data('id');
         value = node.rslt.obj.data('value');
         l10n = node.rslt.obj.data('l10n');
+        source=node.rslt.obj.data('source');
     }
 
     this.jstree.jstree('select_node', '#' + ref);
@@ -197,23 +200,24 @@ Inspector.prototype.selectOne = function (node, displayDetails) {
 
     this.highlight(rect.x, rect.y, rect.h, rect.w, translationFound, ref);
     if (displayDetails) {
-        this.showDetails(type, ref, name, label, value, rect, l10n);
+        this.showDetails(type, ref, name, id, value, rect, l10n,source);
         this.showActions(type, ref);
     }
 
 }
 
 /**
-* show the info about a node in the right details section.
-* @param type
-* @param ref
-* @param na
-* @param label
-* @param value
-* @param rect
-* @param l10n
-*/
-Inspector.prototype.showDetails = function (type, ref, na, label, value, rect, l10n) {
+ * show the info about a node in the right details section.
+ * @param type
+ * @param ref
+ * @param na
+ * @param label
+ * @param value
+ * @param rect
+ * @param l10n
+ * @param html
+ */
+Inspector.prototype.showDetails = function (type, ref, na, id, value, rect, l10n,html) {
     var prettyL10N = "";
 
     if (l10n) {
@@ -238,40 +242,47 @@ Inspector.prototype.showDetails = function (type, ref, na, label, value, rect, l
     }
 
     $('#details').html("<h3>Details</h3>" + "<p><b>Type</b>: " + type + "</p>"
-                           + "<p><b>Reference</b>: " + ref + "</p>" + "<p><b>Name (Content Description)</b>: " + na
-                           + "</p>" + "<p><b>Id</b>: " + label + "</p>" + "<p><b>Value</b>: "
+                           + "<p><b>Reference</b>: " + ref + "</p>" + "<p><b>Name</b>: " + na
+                           + "</p>" + "<p><b>Id</b>: " + id + "</p>" + "<p><b>Value</b>: "
                            + value + "</p>" + "<p><b>Rect</b>: x=" + rect.x + ",y=" + rect.y
-                           + ",h=" + rect.h + "w=" + rect.w + "</p>"+ prettyL10N);
+                           + ",h=" + rect.h + "w=" + rect.w + "</p>" + 
+                           "<p><b>html</b>:<pre>code>"+html+"</code></pre></p>"
+                           + prettyL10N);
 
 };
 
 /**
-* Highlight an area on the device.
-* @param x
-* @param y
-* @param h
-* @param w
-* @param translationFound
-* @param ref
-*/
+ * Highlight an area on the device.
+ * @param x
+ * @param y
+ * @param h
+ * @param w
+ * @param translationFound
+ * @param ref
+ */
 Inspector.prototype.highlight = function (x, y, h, w, translationFound, ref) {
     if (typeof x != 'undefined') {
         var d = $("<div></div>", {
             "class": "hightlight"
         });
-        d.appendTo("#simulator");
+        d.appendTo("#rotationCenter");
 
+        
         d.css('border', "1px solid red");
         d.css('left',x*scale_highlight + realOffsetX+ 'px');
         d.css('top', y*scale_highlight + realOffsetY+ 'px');
-        d.css('height', h *scale_highlight+  'px');
+        d.css('height', h *scale_highlight+ 'px');
         d.css('width', w *scale_highlight+ 'px');
+//        d.css('left', x + realOffsetX + 'px');
+//        d.css('top', y + realOffsetY + 'px');
+//        d.css('height', h + 'px');
+//        d.css('width', w + 'px');
         d.css('position', 'absolute');
         d.css('background-color', 'yellow');
         d.css('z-index', '3');
         d.css('opacity', '0.5');
         d.css('opacity', '0.5');
-        d.html("<div style='opacity: 1;color:red;'>ref:" + ref + "</div>");
+        d.html("<div  style='opacity: 1;color:red;'>ref:" + ref + "</div>");
         var color;
         if (translationFound) {
             color = "blue";
@@ -305,7 +316,7 @@ Inspector.prototype.expandTree = function () {
 
 Inspector.prototype.extractWebView = function (node) {
     var type = node.metadata.type;
-    if ("android.webkit.WebView" === type) {
+    if ("WebView" === type) {
         return node;
     } else {
         var children = node.children;
@@ -332,8 +343,8 @@ Inspector.prototype.getTreeAsXMLString = function () {
 };
 
 /**
-* init the xpath search content from the XML raw string.
-*/
+ * init the xpath search content from the XML raw string.
+ */
 Inspector.prototype.loadXpathContext = function () {
     var parseXml;
 
@@ -361,28 +372,32 @@ Inspector.prototype.loadXpathContext = function () {
 }
 
 /**
-* find elements by xpath.
-* @param xpath
-* @return {array} of elements.
-* @throws Error if the xpath is invalid.
-*/
+ * find elements by xpath.
+ * @param xpath
+ * @return {array} of elements.
+ * @throws Error if the xpath is invalid.
+ */
 Inspector.prototype.findElementsByXpath2 = function (xpath) {
     var res = $(this.xpathContext).xpath(xpath);
     return res;
 }
 
 /**
-* mouse move for the device mouse over.
-* @param event
-*/
+ * mouse move for the device mouse over.
+ * @param event
+ */
 Inspector.prototype.onMouseMove = function (event) {
 
     if (!this.lock) {
-        var x = event.pageX / scale - realOffsetX;
-        var y = event.pageY / scale - (realOffsetY + 45);
-        // x = x / scale;
-        // y = y / scale;
-        //console.log(x + "," + y);
+        //var x = event.pageX / scale - realOffsetX;
+        //var y = event.pageY / scale - (realOffsetY + 45);
+        var parentOffset = $("#mouseOver").offset();
+        //or $(this).offset(); if you really just want the current element's offset
+        var x = event.pageX - parentOffset.left;
+        var y = event.pageY - parentOffset.top;
+        x = x / scale;
+        y = y / scale;
+        console.log(x + "," + y);
         var finder = new NodeFinder(this.root);
         var node = finder.getNodeByPosition(x, y);
         if (node) {
@@ -395,9 +410,9 @@ Inspector.prototype.onMouseMove = function (event) {
 }
 
 /**
-* mouse move for the device mouse over.
-* @param event
-*/
+ * mouse move for the device mouse over.
+ * @param event
+ */
 Inspector.prototype.onMouseClick = function (event) {
 
     console.log("Is busy " + this.busy);
@@ -418,9 +433,11 @@ Inspector.prototype.onMouseClick = function (event) {
                 this.recorder.forwardClick(x, y);
 
             } else {
+            	this.busy = false;
                 error(xpath + " should have a single result.It has " + confirm.length);
             }
         } else {
+        	this.busy = false;
             warning("couldn't find an element for that click");
         }
     }
@@ -446,19 +463,19 @@ Inspector.prototype.refineXpathExpression = function (x, y, node, xpath, element
     console.log("Cannot refine xpath enough to get a single result.");
 };
 /**
-* Find the easiest xpath expression for the node located @ x,y.
-* @param x
-* @param y
-* @param node
-* @return {string} the xpath expression.
-*/
+ * Find the easiest xpath expression for the node located @ x,y.
+ * @param x
+ * @param y
+ * @param node
+ * @return {string} the xpath expression.
+ */
 Inspector.prototype.findXpathExpression = function (x, y, node) {
     var o = node.metadata;
     var xpath = "//" + o.type;
     if (o.name && o.name !== 'null') {
         xpath += "[@name='" + o.name + "']";
-    } else if (o.label && o.label !== 'null') {
-        xpath += "[@label='" + o.label + "']";
+    } else if (o.id && o.id !== 'null') {
+        xpath += "[@id='" + o.id + "']";
     } else if (o.value && o.value !== 'null') {
         xpath += "[@value='" + o.value + "']";
     } else {
@@ -479,16 +496,16 @@ Inspector.prototype.findXpathExpression = function (x, y, node) {
 
 }
 /**
-* toggle the lock mode for the page. Mouse over are disabled when the page is locked.
-*/
+ * toggle the lock mode for the page. Mouse over are disabled when the page is locked.
+ */
 Inspector.prototype.toggleLock = function () {
     this.lock = !this.lock;
 }
 
 /**
-* toggle the Xpath overlay.
-* @param force
-*/
+ * toggle the Xpath overlay.
+ * @param force
+ */
 Inspector.prototype.toggleXPath = function (force) {
     var show = false;
     if (typeof force != 'undefined') {
@@ -500,6 +517,11 @@ Inspector.prototype.toggleXPath = function (force) {
 
     if (show) {
         this.xpathMode = true;
+
+        $("#xpathHelper").dialog({
+                                     resizable: false,
+                                     dialogClass: "no-close"
+                                 });
         $("#xpathHelper").show();
         $("#xpathInput").focus();
     } else {
@@ -566,6 +588,7 @@ function NodeFinder(rootNode) {
                     if (correctOne) {
                         return correctOne;
                     }
+
                 }
             }
         }

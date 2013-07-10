@@ -13,18 +13,30 @@
  */
 package io.selendroid.server.inspector.view;
 
-import io.selendroid.server.inspector.TreeUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.inspector.SelendroidInspectorView;
+import io.selendroid.server.inspector.TreeUtil;
 import io.selendroid.server.model.SelendroidDriver;
+import io.selendroid.server.model.internal.JsonXmlUtil;
 import io.selendroid.util.SelendroidLogger;
+
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Document;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
-
-import java.nio.charset.Charset;
 
 public class TreeView extends SelendroidInspectorView {
   public TreeView(ServerInstrumentation serverInstrumentation, SelendroidDriver driver) {
@@ -41,8 +53,35 @@ public class TreeView extends SelendroidInspectorView {
           .content("{}").end();
       return;
     }
-    String convertedTree = TreeUtil.createFromNativeWindowsSource(source).toString();
+
+
+    JSONObject convertedTree = TreeUtil.createFromNativeWindowsSource(source);
+    convertedTree.getJSONObject("metadata").put("xml", getXMLSource(source));
     response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
-        .content(convertedTree).end();
+        .content(convertedTree.toString()).end();
+  }
+
+  private String getXMLSource(JSONObject source) {
+    Document document = JsonXmlUtil.toXml(source);
+
+    TransformerFactory tFactory = TransformerFactory.newInstance();
+    Transformer transformer = null;
+    try {
+      transformer = tFactory.newTransformer();
+    } catch (TransformerConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    DOMSource domSource = new DOMSource(document);
+    Writer outWriter = new StringWriter();
+    StreamResult result = new StreamResult(outWriter);
+    try {
+      transformer.transform(domSource, result);
+    } catch (TransformerException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return outWriter.toString();
   }
 }
