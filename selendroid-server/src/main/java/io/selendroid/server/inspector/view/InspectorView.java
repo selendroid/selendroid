@@ -40,110 +40,117 @@ public class InspectorView extends SelendroidInspectorView {
 
   protected String buildHtml() throws JSONException {
     StringBuilder b = new StringBuilder();
-    b.append("<html>");
-    b.append("<head>");
-    b.append("<title>Selendroid Inspector</title>");
-    b.append("<link rel='stylesheet' href='" + getResource("ide.css") + "' type='text/css'/>");
-    b.append("<link rel='stylesheet' href='" + getResource("prettify.css") + "' type='text/css'/>");
-    b.append("<script type='text/javascript' src='" + getResource("jquery.min.js") + "'></script>");
-    b.append("<link rel=\"stylesheet\" href='" + getResource("jquery-ui.css")  + "' type='text/css'/>");
-    b.append("<script type='text/javascript' src='" + getResource("jquery-ui.js") + "'></script>");
-    b.append("<script type='text/javascript' src='" + getResource("jquery.jstree.js")   + "'></script>");
-    b.append("<script type='text/javascript' src='" + getResource("jquery.xpath.js")   + "'></script>");
-    b.append("<script type='text/javascript' src='" + getResource("prettify.js") + "'></script>");
-    b.append("<script type='text/javascript' src='" + getResource("Logger.js") + "'></script>");
-    b.append("<script type='text/javascript' src='" + getResource("Recorder.js") + "'></script>");
-    b.append("<script type='text/javascript' src='" + getResource("inspector.js") + "'></script>");
-    b.append("<script type='text/javascript' src='" + getResource("ide.js") + "'></script>");
-    b.append("<script type='text/javascript' src='" + getResource("uiactions.js") + "'></script>");
+    appendLine(b,"<html>");
+    appendLine(b,"<head>");
+    appendLine(b,"<title>Selendroid Inspector</title>");
+    appendLine(b,"<link rel='stylesheet' href='" + getResource("ide.css") + "' type='text/css'/>");
+    appendLine(b,"<link rel='stylesheet' href='" + getResource("prettify.css") + "' type='text/css'/>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("jquery.min.js") + "'></script>");
+    appendLine(b,"<link rel=\"stylesheet\" href='" + getResource("jquery-ui.css")
+        + "' type='text/css'/>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("jquery-ui.js") + "'></script>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("jquery.jstree.js")
+        + "'></script>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("jquery.xpath.js")
+        + "'></script>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("imgscale.jquery.min.js") + "'></script>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("prettify.js") + "'></script>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("Logger.js") + "'></script>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("Recorder.js") + "'></script>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("inspector.js") + "'></script>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("ide.js") + "'></script>");
+    appendLine(b,"<script type='text/javascript' src='" + getResource("uiactions.js") + "'></script>");
+    
 
-    b.append("<script>");
-    b.append("$(document).ready(function () {");
-    b.append("  $(\"#tabs\").tabs();");
-    b.append("});");
-    b.append("</script>");
+    appendLine(b,"<script>");
+    appendLine(b,"$(document).ready(function () {");
+    appendLine(b,"  $(\"#tabs\").tabs();");
+    appendLine(b,"});");
+    appendLine(b,"</script>");
 
-    b.append("</head>");
+    appendLine(b,"</head>");
 
-    b.append("<body onload=\"prettyPrint()\">");
-    b.append("<div id='greyout'></div>");
-    b.append("<div id='simulator'>");
+    appendLine(b,"<body onload=\"prettyPrint()\">");
+    appendLine(b,"<div id='greyout'></div>");
+    appendLine(b,"<div id='simulator'>");
 
-    b.append("<div id='mouseOver'></div>");
-    b.append(" <div id='rotationCenter'>");
+    appendLine(b,"<div id='mouseOver'></div>");
+    appendLine(b," <div id='rotationCenter'>");
 
-    b.append("<div id='frame'>");
-    // b.append("<img src='" + getFrame() + "' />");
-    b.append(" <div id='screen'>");
+    appendLine(b,"<div id='frame'>");
+    // appendLine(b,"<img src='" + getFrame() + "' />");
+    appendLine(b," <div id='screen'>");
 
-    int width = 320;
+    appendLine(b," <img id='screenshot' src='" + getScreen() + "\'/>");
+    appendLine(b,"</div>");
+    appendLine(b,"</div>");
+    appendLine(b,"</div>");
+    appendLine(b,"</div>");
 
-    b.append(" <img id='screenshot' src='" + getScreen() + "' width='" + width + "px' />");
-    b.append("</div>");
-    b.append("</div>");
-    b.append("</div>");
-    b.append("</div>");
+    appendLine(b,"<div id='xpathHelper' >Xpath Expression:</br><input type='text' value='' id='xpathInput' /><div id='xpathLog' > log</div></div>");
+    appendLine(b,"<div id ='detailsparent' >");
 
-    b.append("<div id='xpathHelper' >Xpath Expression:</br><input type='text' value='' id='xpathInput' /><div id='xpathLog' > log</div></div>");
-    b.append("<div id ='detailsparent' >");
+    appendLine(b,"<div id ='details' ></div>");
+    appendLine(b,"</div>");
 
-    b.append("<div id ='details' ></div>");
-    b.append("</div>");
-
-    b.append("<div id ='tree' ></div>");
+    appendLine(b,"<div id ='tree' ></div>");
 
     String d = "iphone";
-    b.append("<script >configure('" + d + "','UIA_DEVICE_ORIENTATION_PORTRAIT');</script>");
-    b.append("<script >resize();</script>");
-    b.append("<div id ='topmenu'>");
-    b.append("<div id=\"picture\"/>");
+    appendLine(b,"<script >configure('" + d + "','UIA_DEVICE_ORIENTATION_PORTRAIT');</script>");
+    appendLine(b,"<script >resize();</script>");
+    appendLine(b,"<div id ='topmenu'>");
+    appendLine(b,"<div id=\"picture\"/>");
     String icon = getIcon();
     if (icon != null) {
-      b.append("<img src=\"" + getIcon() + "\" width='40px' />");
+      appendLine(b,"<img src=\"" + getIcon() + "\" width='40px' />");
     }
 
-    b.append("</div>");
-    b.append("<ul>");
-    //b.append("<li><a target=\"_blank\" href=\"http://selendroid.io\">Selendroid Documentation</a></li>");
-    b.append("<li id=\"capabilities\"><a href=\"#\">See Capabilities</a></li>");
-    b.append("<li id=\"htmlshow\"><a href=\"#\">See HTML</a></li>");
-    b.append("</ul>");
-    b.append("</div>");
+    appendLine(b,"</div>");
+    appendLine(b,"<ul>");
+    // appendLine(b,"<li><a target=\"_blank\" href=\"http://selendroid.io\">Selendroid Documentation</a></li>");
+    appendLine(b,"<li id=\"capabilities\"><a href=\"#\">See Capabilities</a></li>");
+    appendLine(b,"<li id=\"htmlshow\"><a href=\"#\">See HTML</a></li>");
+    appendLine(b,"</ul>");
+    appendLine(b,"</div>");
 
-    b.append(getScriptTabs());
+    appendLine(b,getScriptTabs());
 
     /*
      * OVERLAY Capabilities
      */
-    b.append("<div class=\"overlay\" id=\"overlay\" style=\"display:none;\"></div>");
-    b.append("<div class=\"box\" id=\"box\">");
-    b.append("<a class=\"boxclose\" id=\"boxclose\"><p class=\"arrow-left\"></p></a>");
-    b.append("<h4>Capabilities</h4>");
-    b.append("<p>");
-    b.append(displayCapabilities());
-    b.append("</p>");
-     b.append("<h4>Supported Languages</h4>");
-     b.append("<p>");
-    // b.append(getListOfLanguagesInHTML());
-     b.append("</p>");
-    b.append("</div>");
+    appendLine(b,"<div class=\"overlay\" id=\"overlay\" style=\"display:none;\"></div>");
+    appendLine(b,"<div class=\"box\" id=\"box\">");
+    appendLine(b,"<a class=\"boxclose\" id=\"boxclose\"><p class=\"arrow-left\"></p></a>");
+    appendLine(b,"<h4>Capabilities</h4>");
+    appendLine(b,"<p>");
+    appendLine(b,displayCapabilities());
+    appendLine(b,"</p>");
+    appendLine(b,"<h4>Supported Languages</h4>");
+    appendLine(b,"<p>");
+    // appendLine(b,getListOfLanguagesInHTML());
+    appendLine(b,"</p>");
+    appendLine(b,"</div>");
     /* END OVERLAY CAPABILITIES */
 
     /*
      * OVERLAY HTML
      */
-    b.append("<div class=\"overlayhtml\" id=\"overlayhtml\" style=\"display:none;\"></div>");
-    b.append("<div class=\"boxhtml\" id=\"boxhtml\">");
-    b.append("<a class=\"boxclosehtml\" id=\"boxclosehtml\"><p class=\"arrow-right-html\"></p></a>");
-    b.append("<h4>Web Inspector</h4>");
-    b.append("<iframe id=\"webinspector\" src=\"/inspector/latestWebView\"></iframe> ");
-    b.append("</div>");
+    appendLine(b,"<div class=\"overlayhtml\" id=\"overlayhtml\" style=\"display:none;\"></div>");
+    appendLine(b,"<div class=\"boxhtml\" id=\"boxhtml\">");
+    appendLine(b,"<a class=\"boxclosehtml\" id=\"boxclosehtml\"><p class=\"arrow-right-html\"></p></a>");
+    appendLine(b,"<h4>Web Inspector</h4>");
+    appendLine(b,"<iframe id=\"webinspector\" src=\"/inspector/latestWebView\"></iframe> ");
+    appendLine(b,"</div>");
     /* END OVERLAY HTML */
 
-    b.append("</body>");
-    b.append("</html>");
+    appendLine(b,"</body>");
+    appendLine(b,"</html>");
 
     return b.toString();
+  }
+
+  private void appendLine(StringBuilder buffer, String line) {
+    buffer.append(line + System.getProperty("line.separator"));
   }
 
 
@@ -184,25 +191,25 @@ public class InspectorView extends SelendroidInspectorView {
 
   public String getScriptTabs() {
     StringBuilder b = new StringBuilder();
-    b.append("<div id=\"tabs\">");
-    b.append("<ul>");
-    b.append("<li><a href=\"#tabs-java\">Java</a></li>");
-    b.append("<li><a href=\"#tabs-raw\">Raw</a></li>");
-    b.append("<li><a href=\"#tabs-logs\">Logs</a></li>");
-    b.append("</ul>");
+    appendLine(b,"<div id=\"tabs\">");
+    appendLine(b,"<ul>");
+    appendLine(b,"<li><a href=\"#tabs-java\">Java</a></li>");
+    appendLine(b,"<li><a href=\"#tabs-raw\">Raw</a></li>");
+    appendLine(b,"<li><a href=\"#tabs-logs\">Logs</a></li>");
+    appendLine(b,"</ul>");
 
-    b.append("<div id=\"tabs-java\" class='tab' >");
-    b.append("<pre id='java' class=\"prettyprint\"></pre>");
+    appendLine(b,"<div id=\"tabs-java\" class='tab' >");
+    appendLine(b,"<pre id='java' class=\"prettyprint\"></pre>");
 
-    b.append("</div>");
+    appendLine(b,"</div>");
 
-    b.append("<div id=\"tabs-raw\" class='tab'>");
-    b.append("TAB2");
-    b.append("</div>");
+    appendLine(b,"<div id=\"tabs-raw\" class='tab'>");
+    appendLine(b,"TAB2");
+    appendLine(b,"</div>");
 
-    b.append("<div id=\"tabs-logs\" class='tab' >");
-    b.append("TAB3");
-    b.append("</div>");
+    appendLine(b,"<div id=\"tabs-logs\" class='tab' >");
+    appendLine(b,"TAB3");
+    appendLine(b,"</div>");
 
     return b.toString();
   }

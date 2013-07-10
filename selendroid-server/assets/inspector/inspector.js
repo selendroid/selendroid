@@ -262,10 +262,10 @@ Inspector.prototype.highlight = function (x, y, h, w, translationFound, ref) {
         d.appendTo("#simulator");
 
         d.css('border', "1px solid red");
-        d.css('left', x + realOffsetX + 'px');
-        d.css('top', y + realOffsetY + 'px');
-        d.css('height', h + 'px');
-        d.css('width', w + 'px');
+        d.css('left',x*scale_highlight + realOffsetX+ 'px');
+        d.css('top', y*scale_highlight + realOffsetY+ 'px');
+        d.css('height', h *scale_highlight+  'px');
+        d.css('width', w *scale_highlight+ 'px');
         d.css('position', 'absolute');
         d.css('background-color', 'yellow');
         d.css('z-index', '3');

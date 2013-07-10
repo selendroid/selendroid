@@ -26,7 +26,8 @@ h4 {
     left: 0px;
     float: left;
     margin-bottom: 6em;
-    min-height: 95%;
+	width:50%;
+    height: 95%;
 }
 
 /* making it of size 0
@@ -36,6 +37,21 @@ to have the rotate of the top left corner. */
     height: 0px;
     width: 0px;
 }
+
+#screenshot {
+    position: relative;
+    margin: 0 auto;
+    max-height: 700px;
+    max-width: 600px;
+  
+    box-shadow: 0 0 5px #ebebeb;
+    -webkit-box-shadow: 0 0 5px #ebebeb;
+    -moz-box-shadow: 0 0 5px #ebebeb;
+    -o-box-shadow: 0 0 5px #ebebeb;
+    -ms-box-shadow: 0 0 5px #ebebeb;
+}
+
+
 
 #capabilities {
     width: 40%;
@@ -57,11 +73,11 @@ to have the rotate of the top left corner. */
 }
 
 #tree {
-    height: 100%;
+    height: 92%;
     float: right;
-    width: 23%;
+    width: 30%;
     overflow: auto;
-    margin-top: 0px;
+    margin-top:45px;
 }
 
 #details {
@@ -74,10 +90,11 @@ to have the rotate of the top left corner. */
 
 #detailsparent {
     float: right;
-    width: 17%;
+    width: 20%;
     color: #444444;
-    height: 100%;
-    height: 100%;
+    height: 92%;
+    height: 92%;
+    margin-top:45px;
 }
 
 #xpathHelper {
@@ -100,7 +117,7 @@ to have the rotate of the top left corner. */
 }
 
 #xpathLog {
-    margin-top 4px;
+    margin-top:; 4px;
 }
 
 #topmenu {
