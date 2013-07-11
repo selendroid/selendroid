@@ -40,6 +40,7 @@ import io.selendroid.server.handler.GetText;
 import io.selendroid.server.handler.GetWindowHandle;
 import io.selendroid.server.handler.GetWindowHandles;
 import io.selendroid.server.handler.GoBack;
+import io.selendroid.server.handler.InspectorTap;
 import io.selendroid.server.handler.ListSessions;
 import io.selendroid.server.handler.LogElement;
 import io.selendroid.server.handler.LogElementTree;
@@ -192,6 +193,7 @@ public class AndroidServlet extends BaseServlet {
     getHandler.put("/wd/hub/session/:sessionId/session_storage/size", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/log", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/log/types", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/tap/2", InspectorTap.class);
   }
 
   private void addHandlerAttributesToRequest(HttpRequest request, String mappedUri) {

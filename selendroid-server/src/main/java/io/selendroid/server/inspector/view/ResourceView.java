@@ -38,7 +38,7 @@ public class ResourceView extends SelendroidInspectorView {
   public void render(HttpRequest request, HttpResponse httpResponse) {
     httpResponse.charset(Charset.forName("UTF-8"));
     httpResponse.status(200);
-    if (request.uri().endsWith(SCREENSHOT)) {
+    if (request.uri().startsWith(InspectorServlet.INSPECTOR_RESSOURCE+"/"+SCREENSHOT)) {
       httpResponse.header("Content-Type", "text/html");
       byte[] screenshot = driver.takeScreenshot();
       if (screenshot == null) {
