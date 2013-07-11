@@ -240,7 +240,31 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       throw new SelendroidException("unable to start the emulator: " + this);
     }
     setSerial(emulatorPort);
+    Boolean adbKillServerAttempted = false;
     while (isDeviceReady() == false) {
+
+      if (!adbKillServerAttempted && System.currentTimeMillis() - timemoutEnd > 10000) {
+        List<String> adbDevicesCmd = Lists.newArrayList();
+        adbDevicesCmd.add(AndroidSdk.adb());
+        adbDevicesCmd.add("devices");
+        String devices = "";
+        try {
+          devices = ShellCommand.exec(adbDevicesCmd);
+        } catch (ShellCommandException e) {
+          // pass
+        }
+        if (!devices.contains(String.valueOf(emulatorPort))) {
+          List<String> killservercmd = Lists.newArrayList();
+          killservercmd.add(AndroidSdk.adb());
+          killservercmd.add("kill-server");
+          try {
+            ShellCommand.exec(killservercmd);
+          } catch (ShellCommandException e) {
+            throw new SelendroidException("unable to kill the adb server");
+          }
+        }
+        adbKillServerAttempted = true;
+      }
       if (timemoutEnd >= System.currentTimeMillis()) {
         try {
           Thread.sleep(2000);
@@ -306,14 +330,21 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
     try {
       ShellCommand.exec(command);
+      Boolean killed = false;
       while (isEmulatorStarted()) {
-        System.err.println("emulator still running, sleeping 0.5 and killing again");
+        System.err.println("emulator still running, sleeping 0.5, waiting for it to release the lock");
         try {
           Thread.sleep(500);
         } catch(InterruptedException ie) {
           throw new RuntimeException(ie);
         }
-        ShellCommand.exec(command);
+        if (!killed) {
+          try {
+            ShellCommand.exec(command);
+          } catch (ShellCommandException sce) {
+            killed = true;
+          }
+        }
       }
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
