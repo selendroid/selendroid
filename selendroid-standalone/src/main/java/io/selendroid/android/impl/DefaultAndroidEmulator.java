@@ -243,7 +243,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     Boolean adbKillServerAttempted = false;
     while (isDeviceReady() == false) {
 
-      if (!adbKillServerAttempted && System.currentTimeMillis() - timemoutEnd > 10000) {
+      if (!adbKillServerAttempted && System.currentTimeMillis() - start > 10000) {
         List<String> adbDevicesCmd = Lists.newArrayList();
         adbDevicesCmd.add(AndroidSdk.adb());
         adbDevicesCmd.add("devices");
