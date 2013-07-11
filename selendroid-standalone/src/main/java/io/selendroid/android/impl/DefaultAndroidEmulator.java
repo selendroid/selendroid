@@ -306,6 +306,15 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
     try {
       ShellCommand.exec(command);
+      while (isEmulatorStarted()) {
+        System.err.println("emulator still running, sleeping 0.5 and killing again");
+        try {
+          Thread.sleep(500);
+        } catch(InterruptedException ie) {
+          throw new RuntimeException(ie);
+        }
+        ShellCommand.exec(command);
+      }
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
     }
