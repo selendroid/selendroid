@@ -1,3 +1,0 @@
-module Selendroid
-  # Your code goes here...
-end
