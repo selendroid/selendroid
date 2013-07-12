@@ -261,8 +261,15 @@ Inspector.prototype.showDetails = function(type, ref, na, id, value, rect,
 					+ "</p>" + "<p><b>Value</b>: " + value + "</p>"
 					+ "<p><b>Rect</b>: x=" + rect.x + ",y=" + rect.y + ",h="
 					+ rect.h + "w=" + rect.w + "</p>"
-					+ "<p><b>html</b>:<pre>code>" + html + "</code></pre></p>"
 					+ prettyL10N);
+	
+    var content = $("#htmlSource").html() + "\n" + html;
+    
+    this.log.debug(content);
+    $("#htmlSource").html(content);
+    if (prettyPrint) {
+        prettyPrint();
+    }
 
 };
 
@@ -416,8 +423,10 @@ Inspector.prototype.onMouseMove = function(event) {
 		// offset
 		var x = event.pageX - parentOffset.left;
 		var y = event.pageY - parentOffset.top;
-		x = x / scale;
-		y = y / scale;
+//		x = x / scale;
+//		y = y / scale;
+		x = x / scale_highlight;
+		y = y / scale_highlight;
 		console.log(x + "," + y);
 		var finder = new NodeFinder(this.root);
 		var node = finder.getNodeByPosition(x, y);
@@ -441,8 +450,8 @@ Inspector.prototype.onMouseClick = function(event) {
 	if (this.recorder.on && !this.busy) {
 		this.busy = true;
 		console.log("Record click");
-		var x = event.pageX / scale - realOffsetX;
-		var y = event.pageY / scale - (realOffsetY + 45);
+		var x = event.pageX /scale - realOffsetX;
+		var y = event.pageY / scale - (realOffsetY); //+ 45);
 		// x = x / scale;
 		// y = y / scale;
 		var finder = new NodeFinder(this.root);
