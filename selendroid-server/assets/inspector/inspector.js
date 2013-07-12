@@ -154,6 +154,7 @@ Inspector.prototype.onTreeLoaded = function(event, data) {
 				this.screenshotPath + "?timestamp=" + d.getTime());
 		this.busy = false;
 	}
+	resize();
 }
 
 /**
