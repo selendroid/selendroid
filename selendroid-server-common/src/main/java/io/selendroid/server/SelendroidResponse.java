@@ -18,83 +18,86 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class SelendroidResponse implements Response {
-  private String sessionId;
-  private int status;
-  private Object value;
+    private String sessionId;
+    private int status;
+    private Object value;
 
-  protected SelendroidResponse() {}
-
-  public SelendroidResponse(String sessionId, int status, JSONObject value) {
-    this.sessionId = sessionId;
-    this.status = status;
-    this.value = value;
-  }
-
-  public SelendroidResponse(String sessionId, int status, Exception e) throws JSONException {
-    JSONObject errorValue = new JSONObject();
-    errorValue.put("message", e.getMessage());
-    errorValue.put("class", e.getClass().getCanonicalName());
-
-
-    JSONArray stacktace = new JSONArray();
-    for (StackTraceElement el : e.getStackTrace()) {
-      stacktace.put(el.toString());
+    protected SelendroidResponse() {
     }
-    errorValue.put("stacktrace", stacktace);
-    this.value = errorValue;
-    this.sessionId = sessionId;
-    this.status = status;
-  }
 
-  public SelendroidResponse(String sessionId, Object value) {
-    this.sessionId = sessionId;
-    this.status = 0;
-    this.value = value;
-  }
-
-  public SelendroidResponse(String sessionId, int status, Object value) {
-    this.sessionId = sessionId;
-    this.status = status;
-    this.value = value;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see io.selendroid.server.Response#getSessionId()
-   */
-  @Override
-  public String getSessionId() {
-    return sessionId;
-  }
-
-  public int getStatus() {
-    return status;
-  }
-
-  public Object getValue() {
-    return value;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see io.selendroid.server.Response#render()
-   */
-  @Override
-  public String render() {
-    JSONObject o = new JSONObject();
-    try {
-      if (sessionId != null) {
-        o.put("sessionId", sessionId);
-      }
-      o.put("status", status);
-      if (value != null) {
-        o.put("value", value);
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    public SelendroidResponse(String sessionId, int status, JSONObject value) {
+        this.sessionId = sessionId;
+        this.status = status;
+        this.value = value;
     }
-    return o.toString();
-  }
+
+    public SelendroidResponse(String sessionId, int status, Exception e) throws JSONException {
+        JSONObject errorValue = new JSONObject();
+        errorValue.put("message", e.getMessage());
+        errorValue.put("class", e.getClass().getCanonicalName());
+
+        System.out.println("printing stack trace in selendroid");
+        e.printStackTrace();
+
+        JSONArray stacktace = new JSONArray();
+        for (StackTraceElement el : e.getStackTrace()) {
+            stacktace.put(el.toString());
+        }
+        errorValue.put("stacktrace", stacktace);
+        this.value = errorValue;
+        this.sessionId = sessionId;
+        this.status = status;
+    }
+
+    public SelendroidResponse(String sessionId, Object value) {
+        this.sessionId = sessionId;
+        this.status = 0;
+        this.value = value;
+    }
+
+    public SelendroidResponse(String sessionId, int status, Object value) {
+        this.sessionId = sessionId;
+        this.status = status;
+        this.value = value;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see io.selendroid.server.Response#getSessionId()
+     */
+    @Override
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see io.selendroid.server.Response#render()
+     */
+    @Override
+    public String render() {
+        JSONObject o = new JSONObject();
+        try {
+            if (sessionId != null) {
+                o.put("sessionId", sessionId);
+            }
+            o.put("status", status);
+            if (value != null) {
+                o.put("value", value);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return o.toString();
+    }
 }
