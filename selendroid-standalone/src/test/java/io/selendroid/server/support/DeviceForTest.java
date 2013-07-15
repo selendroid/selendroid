@@ -24,12 +24,14 @@ import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
+import org.openqa.selenium.logging.LogEntry;
 
 public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   @Override
@@ -193,5 +195,10 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   public boolean isInstalled(AndroidApp app) throws AndroidSdkException {
     // TODO Auto-generated method stub
     return false;
+  }
+
+  @Override
+  public List<LogEntry> getLogs() {
+    return null;
   }
 }

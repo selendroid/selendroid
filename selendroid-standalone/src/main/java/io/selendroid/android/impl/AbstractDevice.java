@@ -23,6 +23,7 @@ import io.selendroid.io.ShellCommand;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +36,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.beust.jcommander.internal.Lists;
+import org.openqa.selenium.logging.LogEntry;
 
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
@@ -218,7 +220,35 @@ public abstract class AbstractDevice implements AndroidDevice {
     return port;
   }
 
-
+  @Override
+  public List<LogEntry> getLogs() {
+    List<LogEntry> logs = Lists.newArrayList();
+    List<String> command = Lists.newArrayList();
+    command.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
+    command.add("logcat");
+    command.add("-d"); // Dumps the log to the screen and exits.
+    String result = executeCommand(command);
+    String[] lines = result.split("\\r?\\n");
+    int num_lines = lines.length;
+    for (int x = 0; x < num_lines; x++) {
+      Level l;
+      if (lines[x].startsWith("I")) {
+        l = Level.INFO;
+      } else if (lines[x].startsWith("W")) {
+        l = Level.WARNING;
+      } else if (lines[x].startsWith("S")) {
+        l = Level.SEVERE;
+      } else {
+        l = Level.FINE;
+      }
+      logs.add(new LogEntry(l, System.currentTimeMillis(), lines[x]));
+    }
+    return logs;
+  }
 
   protected String getProp(String key) {
     List<String> command = Lists.newArrayList();

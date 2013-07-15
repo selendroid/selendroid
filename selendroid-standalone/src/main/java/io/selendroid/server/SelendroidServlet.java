@@ -13,12 +13,7 @@
  */
 package io.selendroid.server;
 
-import io.selendroid.server.handler.CreateSessionHandler;
-import io.selendroid.server.handler.DeleteSessionHandler;
-import io.selendroid.server.handler.GetCapabilities;
-import io.selendroid.server.handler.InspectorUiHandler;
-import io.selendroid.server.handler.ListSessionsHandler;
-import io.selendroid.server.handler.RequestRedirectHandler;
+import io.selendroid.server.handler.*;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
 import java.nio.ByteBuffer;
@@ -45,6 +40,9 @@ public class SelendroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session", CreateSessionHandler.class);
     getHandler.put("/wd/hub/sessions", ListSessionsHandler.class);
     getHandler.put("/wd/hub/session/:sessionId", GetCapabilities.class);
+
+    getHandler.put("/wd/hub/session/:sessionId/log/types", GetLogTypes.class);
+    postHandler.put("/wd/hub/session/:sessionId/log", GetLogs.class);
 
     getHandler.put("/inspector", InspectorUiHandler.class);
     getHandler.put("/inspector/session/:sessionId", InspectorUiHandler.class);
