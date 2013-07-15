@@ -19,6 +19,7 @@ import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.ActiveSession;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.openqa.selenium.logging.LogEntry;
 import org.webbitserver.HttpRequest;
 
 public class GetLogs extends BaseSelendroidServerHandler {
@@ -32,6 +33,10 @@ public class GetLogs extends BaseSelendroidServerHandler {
     // TODO probably should look at the payload for what type of logs ('driver')
     // but really we only support getting the adb logcat
     ActiveSession session = getSelendroidDriver().getActiveSession(getSessionId());
-    return new SelendroidResponse(getSessionId(), new JSONArray(session.getDevice().getLogs()));
+    JSONArray logs = new JSONArray();
+    for (LogEntry l : session.getDevice().getLogs()) {
+      logs.put(l.toJson());
+    }
+    return new SelendroidResponse(getSessionId(), logs);
   }
 }
