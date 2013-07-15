@@ -286,7 +286,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
           view.draw(canvas);
 
           ByteArrayOutputStream stream = new ByteArrayOutputStream();
-          if (!bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)) {
+          if (!bitmap.compress(Bitmap.CompressFormat.PNG, 70, stream)) {
             throw new RuntimeException("Error while compressing screenshot image.");
           }
           try {

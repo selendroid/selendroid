@@ -59,7 +59,7 @@ public class InspectorServlet implements HttpHandler {
               "http://" + httpRequest.header("Host") + httpRequest.uri() + divider + "session/"
                   + session + "/";
           System.out.println("new inspector URL: " + newSessionUri);
-          httpResponse.header("Location", newSessionUri);
+          httpResponse.header("Location", newSessionUri).end();
         } else {
           httpResponse.header("Content-Type", "text/html").charset(Charset.forName("UTF-8"))
               .status(200)

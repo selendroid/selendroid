@@ -333,7 +333,7 @@ public class AndroidNativeElement implements AndroidElement {
       });
       long end = System.currentTimeMillis() + UI_TIMEOUT;
       waitForDone(end, UI_TIMEOUT, "Error while grabbing web view source code.");
-      object.put("source", client.result);
+      object.put("source", "<html>"+ client.result+"</html>");
     }
 
     return object;

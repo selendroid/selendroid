@@ -1,10 +1,17 @@
 #header {
     position: fixed;
+    background: #455372;
     top: 0;
     left: 0;
     height: 70px;
     width: 100%;
+}
 
+#header div {
+    margin-right: 2em;
+    padding-right: 2em;
+    display: inline;
+    color: #FFFFFF;
 }
 
 #content {
@@ -45,9 +52,14 @@
 
 #footer {
     position: fixed;
+    background: #455372;
     bottom: 0;
     left: 0;
+    width: 100%;
+}
 
+#footer span {
+    color: #FFFFFF;
 }
 
 .ui-tabs-panel {

@@ -50,7 +50,8 @@ public class InspectorView extends SelendroidInspectorView {
         + "' type='text/css'/>");
     appendLine(b, "<link rel=\"stylesheet\" href='" + getResource("jquery-ui.css")
         + "' type='text/css'/>");
-
+      appendLine(b, "<link rel=\"stylesheet\" href='" + getResource("prettify.css")
+              + "' type='text/css'/>");
     appendLine(b, "<script type='text/javascript' src='" + getResource("jquery-1.9.1.js")
         + "'></script>");
     appendLine(b, "<script type='text/javascript' src='" + getResource("jquery-ui-1.10.2.min.js")
@@ -82,8 +83,9 @@ public class InspectorView extends SelendroidInspectorView {
     appendLine(b, "</head>");
     appendLine(b, "<body>");
     appendLine(b, "<div id='header'>");
-    appendLine(b, "<input type='checkbox' id='record'/>");
-    appendLine(b, "<label for='record' id='record_text'>Record</label>");
+    appendLine(b, "<div><a href='http://selendroid.io/inspector.html'>Selendroid Inspector Documentation</a></div>");
+    appendLine(b, "<div><input type='checkbox' id='record'/>");
+    appendLine(b, "<label for='record' id='record_text'>Record</label></div>");
 
     appendLine(b, "</div>");
 
@@ -123,8 +125,8 @@ public class InspectorView extends SelendroidInspectorView {
     appendLine(b, "</ul>");
 
     appendLine(b, "<DIV class='ui-layout-content ui-widget-content'>");
-    appendLine(b, "<pre id='java'></pre>");
-    appendLine(b, "<pre id='htmlSource'></pre>");
+    appendLine(b, "<pre id='java' class='prettyprint'></pre>");
+    appendLine(b, "<pre id='htmlSource' class='prettyprint'></pre>");
     appendLine(b, "</div>");
     appendLine(b, "</div>");
     appendLine(b, "<!--</div>-->");
@@ -138,8 +140,6 @@ public class InspectorView extends SelendroidInspectorView {
     appendLine(b, "</div>");
 
     appendLine(b, "<div id='footer'>");
-    appendLine(b, "<a href='http://selendroid.io/inspector.html'>Documentation</a>");
-
     appendLine(b, "<span>shortcuts : ctrl= lock selection , ESC= xpath helper.</span>");
     appendLine(b, "</div>");
     appendLine(b, "<script >configure('iphone','Regular','PORTRAIT');</script>");
