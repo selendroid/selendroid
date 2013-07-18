@@ -262,7 +262,19 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     }
 
     int port = getNextSelendroidServerPort();
-    device.startSelendroid(app, port);
+
+    try {
+      device.startSelendroid(app, port);
+    } catch (AndroidSdkException e) {
+      try {
+        deviceStore.release(device);
+      } catch (AndroidDeviceException e1) {}
+      if (retries > 0) {
+        return createNewTestSession(caps, retries--);
+      }
+      throw new SessionNotCreatedException("Error occured while starting instrumentation: "
+          + e.getMessage());
+    }
     long start = System.currentTimeMillis();
     long startTimeOut = 10000;
     long timemoutEnd = start + startTimeOut;
