@@ -25,17 +25,14 @@ class ExampleTest < Test::Unit::TestCase
     caps.version = "5"
     caps.platform = :linux
     caps.proxy = nil
-    caps[:aut] = "selendroid-test-app"
+    caps[:aut] = "io.selendroid.testapp:0.5.0-SNAPSHOT"
     caps[:locale]="de_DE"
-    caps[:deviceName]="emulator"
-    caps[:deviceId]="emulator-5554"
-    caps[:maxInstances]="1"
-    caps[:browserName]="native-android-driver"
-    caps[:sdkVersion]="4.1"
+    caps[:browserName]="selendroid"
+    
 
     @driver = Selenium::WebDriver.for(
     :remote,
-    :url => "http://localhost:8080/wd/hub",
+    :url => "http://localhost:5555/wd/hub",
     :desired_capabilities => caps)
   end
 end
