@@ -39,6 +39,7 @@ import io.selendroid.server.handler.GetPageTitle;
 import io.selendroid.server.handler.GetText;
 import io.selendroid.server.handler.GetWindowHandle;
 import io.selendroid.server.handler.GetWindowHandles;
+import io.selendroid.server.handler.GetWindowSize;
 import io.selendroid.server.handler.GoBack;
 import io.selendroid.server.handler.InspectorTap;
 import io.selendroid.server.handler.ListSessions;
@@ -59,7 +60,6 @@ import io.selendroid.server.handler.UnknownCommandHandler;
 import io.selendroid.server.handler.Up;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
-
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
@@ -93,6 +93,8 @@ public class AndroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session/:sessionId/timeouts/implicit_wait",
         SetImplicitWaitTimeout.class);
     postHandler.put("/wd/hub/session/:sessionId/window", SwitchWindow.class);
+    getHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/size",
+        GetWindowSize.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/submit", SubmitForm.class);
     postHandler.put("/wd/hub/session/:sessionId/keys", SendKeyToActiveElement.class);
     getHandler.put("/wd/hub/session/:sessionId/title", GetPageTitle.class);
@@ -135,8 +137,6 @@ public class AndroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session/:sessionId/frame", UnknownCommandHandler.class);
     deleteHandler.put("/wd/hub/session/:sessionId/window", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/size",
-        UnknownCommandHandler.class);
-    getHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/size",
         UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/position",
         UnknownCommandHandler.class);

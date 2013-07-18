@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import io.selendroid.android.WindowType;
+import io.selendroid.android.internal.Dimension;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import io.selendroid.server.Session;
@@ -58,4 +59,6 @@ public interface SelendroidDriver {
   public String getWindowHandle();
 
   public Set<String> getWindowHandles();
+
+  public Dimension getWindowSize();
 }

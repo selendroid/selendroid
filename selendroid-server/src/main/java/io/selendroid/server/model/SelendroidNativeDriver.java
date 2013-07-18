@@ -14,7 +14,10 @@
 
 package io.selendroid.server.model;
 
+import android.graphics.Point;
+import android.view.Display;
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.internal.Dimension;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
 
@@ -113,5 +116,12 @@ public class SelendroidNativeDriver {
 
     serverInstrumentation.startActivity(clazz);
     DefaultSelendroidDriver.sleepQuietly(500);
+  }
+
+  public Dimension getWindowSize() {
+    Display display = serverInstrumentation.getCurrentActivity().getWindowManager().getDefaultDisplay();
+    Point size = new Point();
+    display.getSize(size);
+    return new Dimension(size.x, size.y);
   }
 }
