@@ -17,6 +17,7 @@ import io.selendroid.android.Abi;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
+import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
@@ -174,6 +175,11 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
       selendroidDeviceServerStub.stop();
       selendroidDeviceServerStub = null;
     }
+  }
+
+  @Override
+  public void kill(InstalledAndroidApp app)
+      throws AndroidDeviceException, AndroidSdkException {
   }
 
   public boolean screenSizeMatches(String requestedScreenSize) {

@@ -13,8 +13,10 @@
  */
 package io.selendroid.android;
 
+import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
+import io.selendroid.exceptions.AndroidSdkException;
 
 import java.io.File;
 import java.util.Locale;
@@ -44,6 +46,9 @@ public interface AndroidEmulator {
       throws AndroidDeviceException;
 
   public void stop() throws AndroidDeviceException;
+
+  public void kill(InstalledAndroidApp aut)
+      throws AndroidDeviceException, AndroidSdkException;
 
   public Integer getPort();
 }

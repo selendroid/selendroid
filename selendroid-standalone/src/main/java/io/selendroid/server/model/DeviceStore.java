@@ -14,10 +14,12 @@
 package io.selendroid.server.model;
 
 import io.selendroid.SelendroidCapabilities;
+import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultHardwareDevice;
+import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.DeviceStoreException;
@@ -35,6 +37,7 @@ public class DeviceStore {
   private Map<DeviceTargetPlatform, List<AndroidDevice>> androidDevices =
       new HashMap<DeviceTargetPlatform, List<AndroidDevice>>();
   private EmulatorPortFinder androidEmulatorPortFinder = null;
+  private Boolean installedApp = false;
 
   public DeviceStore() {
     androidEmulatorPortFinder = new DefaultPortFinder();
@@ -56,12 +59,21 @@ public class DeviceStore {
    * @throws AndroidDeviceException
    * @see {@link #findAndroidDevice(SelendroidCapabilities)}
    */
-  public void release(AndroidDevice device) throws AndroidDeviceException {
+  public void release(AndroidDevice device, AndroidApp aut) throws AndroidDeviceException {
     if (devicesInUse.contains(device)) {
       if (device instanceof AndroidEmulator) {
-        AndroidEmulator emulator = (AndroidEmulator) device;
-        emulator.stop();
-        androidEmulatorPortFinder.release(emulator.getPort());
+        if (installedApp) {
+          // kill process instead of shutting down emulator
+          try {
+            ((AndroidEmulator)device).kill((InstalledAndroidApp)aut);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        } else {
+          AndroidEmulator emulator = (AndroidEmulator) device;
+          emulator.stop();
+          androidEmulatorPortFinder.release(emulator.getPort());
+        }
       }
       devicesInUse.remove(device);
     }
@@ -80,15 +92,23 @@ public class DeviceStore {
   }
 
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
+    addEmulators(emulators, false);
+  }
+
+  public void addEmulators(List<AndroidEmulator> emulators, Boolean installedApp) throws AndroidDeviceException {
+    this.installedApp = installedApp;
     if (emulators == null || emulators.isEmpty()) {
       log.info("No emulators has been found.");
       return;
     }
     for (AndroidEmulator emulator : emulators) {
       if (emulator.isEmulatorStarted()) {
-        log.info("Skipping emulator because it is already in use: " + emulator);
-        continue;
+        if (!installedApp) {
+          log.info("Skipping emulator because it is already in use: " + emulator);
+          continue;
+        }
       }
+
       log.info("Adding: " + emulator);
       addAndroidEmulator((AndroidDevice) emulator);
     }
@@ -109,12 +129,12 @@ public class DeviceStore {
 
   /**
    * Finds a device for the requested capabilities. <b>important note:</b> if the device is not any
-   * longer used, call the {@link #release(AndroidDevice)} method.
+   * longer used, call the {@link #release(AndroidDevice, AndroidApp)} method.
    * 
    * @param caps The desired test session capabilities.
    * @return Matching device for a test session.
    * @throws DeviceStoreException
-   * @see {@link #release(AndroidDevice)}
+   * @see {@link #release(AndroidDevice, AndroidApp)}
    */
   public synchronized AndroidDevice findAndroidDevice(SelendroidCapabilities caps)
       throws DeviceStoreException {
@@ -147,11 +167,14 @@ public class DeviceStore {
         if (caps.getEmulator() == null
             || (caps.getEmulator() == true && device instanceof AndroidEmulator)
             || (caps.getEmulator() == false && device instanceof AndroidDevice)) {
-          System.err.println("device found.");
+          System.out.println("device found.");
           devicesInUse.add(device);
           return device;
         }
         System.err.println("Device did not match emulator/physical device. caps.getEmulator(): " + caps.getEmulator());
+      } else if (installedApp) {
+        devicesInUse.add(device);
+        return device;
       } else {
         System.err.println("emulator switched off: " + isEmulatorSwitchedOff(device));
       }

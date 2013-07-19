@@ -14,10 +14,12 @@
 package io.selendroid.android.impl;
 
 import io.selendroid.android.Abi;
+import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
+import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
@@ -348,6 +350,41 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       }
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
+    }
+  }
+
+  @Override
+  public void kill(InstalledAndroidApp aut) throws AndroidDeviceException, AndroidSdkException {
+    List<String> command = new ArrayList<String>();
+    command.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
+    command.add("shell");
+    command.add("am");
+    command.add("force-stop");
+    command.add(aut.getBasePackage());
+    try {
+      ShellCommand.exec(command);
+    } catch (ShellCommandException e) {
+      e.printStackTrace();
+    }
+
+    command.clear();
+    command.add(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      command.add("-s");
+      command.add(serial);
+    }
+    command.add("shell");
+    command.add("pm");
+    command.add("clear");
+    command.add(aut.getBasePackage());
+    try {
+      ShellCommand.exec(command);
+    } catch (ShellCommandException e) {
+      e.printStackTrace();
     }
   }
 

@@ -79,7 +79,7 @@ public class DeviceStoreTests {
     AndroidDevice foundDevice = deviceStore.findAndroidDevice(withDefaultCapabilities());
     Assert.assertEquals(deEmulator, foundDevice);
     Assert.assertEquals(deviceStore.getDevicesInUse().size(), 1);
-    deviceStore.release(foundDevice);
+    deviceStore.release(foundDevice, null);
     // make sure the emulator has been stopped
     verify(deEmulator, times(1)).stop();
     verify(finder, times(1)).release(5554);

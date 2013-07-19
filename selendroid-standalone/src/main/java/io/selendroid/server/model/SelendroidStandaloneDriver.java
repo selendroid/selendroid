@@ -137,7 +137,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       throw new AndroidDeviceException("An error occured while restarting adb.", e);
     }
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
-    deviceStore.addEmulators(emulators);
+    deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null);
 
     List<AndroidDevice> devices = androidDeviceFinder.findConnectedDevices();
     deviceStore.addDevices(devices);
@@ -226,7 +226,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
       } catch (AndroidDeviceException e) {
         try {
-          deviceStore.release(device);
+          deviceStore.release(device, app);
         } catch (AndroidDeviceException e1) {}
         if (retries > 0) {
             return createNewTestSession(caps, retries--);
@@ -267,7 +267,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       device.startSelendroid(app, port);
     } catch (AndroidSdkException e) {
       try {
-        deviceStore.release(device);
+        deviceStore.release(device, app);
       } catch (AndroidDeviceException e1) {}
       if (retries > 0) {
         return createNewTestSession(caps, retries--);
@@ -395,7 +395,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       } catch (Exception e) {
         // can happen, ignore
       }
-      deviceStore.release(session.getDevice());
+      deviceStore.release(session.getDevice(), session.getAut());
 
       // remove session
       sessions.remove(session);
