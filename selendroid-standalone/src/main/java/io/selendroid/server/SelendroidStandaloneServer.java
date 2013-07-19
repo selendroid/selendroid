@@ -54,18 +54,17 @@ public class SelendroidStandaloneServer {
     this.configuration = configuration;
     webServer =
         WebServers.createWebServer(Executors.newCachedThreadPool(), new InetSocketAddress(
-            configuration.getPort()), remotelUri(configuration.getPort()));
+            configuration.getPort()), remoteUri(configuration.getPort()));
     driver = initializeSelendroidServer();
     init();
   }
 
-  private static URI remotelUri(int port) {
+  private static URI remoteUri(int port) {
     try {
       InetAddress address = InetAddress.getByName("0.0.0.0");
 
-      URI remoteUri =
+      return
           new URI("http://" + address.getHostAddress() + (port == 80 ? "" : (":" + port)) + "/");
-      return remoteUri;
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException("can not create URI from HostAddress", e);
@@ -73,7 +72,7 @@ public class SelendroidStandaloneServer {
   }
 
   protected void init() throws AndroidSdkException {
-    webServer.staleConnectionTimeout(300000);
+    webServer.staleConnectionTimeout(604800000); // 1 week
     webServer.add("/wd/hub/status", new StatusServlet(driver));
     webServer.add(new SelendroidServlet(driver));
   }

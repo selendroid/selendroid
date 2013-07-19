@@ -51,7 +51,9 @@ public class AndroidServer {
   protected void init(ServerInstrumentation androidInstrumentation) {
     SelendroidDriver driver = new DefaultSelendroidDriver(androidInstrumentation);
     // seems like this must be set first
-    webServer.staleConnectionTimeout(120 * 1000);
+    webServer.staleConnectionTimeout(604800000); // 1 week.
+    // If the stale connection cleanup is called a ConcurrentModification exception will be thrown.
+    // Thus the significantly high timeout.
     webServer.add("/wd/hub/status", new StatusServlet(androidInstrumentation));
     webServer.add(new InspectorServlet(driver, androidInstrumentation));
     webServer.add(new AndroidServlet(driver));
