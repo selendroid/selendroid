@@ -72,19 +72,8 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 		}
 		int status = response.getInt("status");
 
-    try {
-      response = redirectRequest(session, url, method);
-    } catch (Exception e) {
-      return new SelendroidResponse(sessionId, 13, new SelendroidException(
-          "Error occured while communicating with selendroid server on the device: ", e));
-    }
-    Object value = null;
-    if (response.has("value")) {
-      value = response.get("value");
-    }
-    int status = response.getInt("status");
-    log.info("return value from selendroid android server: " + value);
-    log.info("return status from selendroid android server: " + status);
+        log.fine("return value from selendroid android server: " + value);
+        log.fine("return status from selendroid android server: " + status);
 
 		return new SelendroidResponse(sessionId, status, value);
 	}
