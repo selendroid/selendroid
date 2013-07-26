@@ -113,10 +113,16 @@ public abstract class AbstractDevice implements AndroidDevice {
       command.add(serial);
     }
     command.add("install");
-    command.add("-r");
+//    command.add("-r");
     command.add(app.getAbsolutePath());
 
     executeCommand(command);
+    try {
+      // give it a second to recover from the install
+      Thread.sleep(1000);
+    } catch (InterruptedException ie) {
+      throw new RuntimeException(ie);
+    }
   }
 
   protected String executeCommand(List<String> command) {
@@ -143,6 +149,12 @@ public abstract class AbstractDevice implements AndroidDevice {
     command.add(app.getBasePackage());
 
     executeCommand(command);
+    try {
+      // give it a second to recover from the uninstall
+      Thread.sleep(1000);
+    } catch (InterruptedException ie) {
+      throw new RuntimeException(ie);
+    }
   }
 
   @Override
