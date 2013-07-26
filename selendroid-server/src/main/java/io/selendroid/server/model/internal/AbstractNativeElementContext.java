@@ -280,10 +280,7 @@ public abstract class AbstractNativeElementContext
     }
 
     public boolean apply(View view) {
-    	if (view.getTag()!=null) {
-   		 return view.getTag().toString().equals(tag);
-   	}
-    return false;
+    	return view.getClass().getSimpleName().equals(tag);
     }
   }
 

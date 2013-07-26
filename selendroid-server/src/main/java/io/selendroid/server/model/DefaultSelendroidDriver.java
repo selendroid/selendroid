@@ -13,6 +13,27 @@
  */
 package io.selendroid.server.model;
 
+import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.AndroidTouchScreen;
+import io.selendroid.android.AndroidWait;
+import io.selendroid.android.KeySender;
+import io.selendroid.android.ViewHierarchyAnalyzer;
+import io.selendroid.android.WindowType;
+import io.selendroid.exceptions.NoSuchElementException;
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.UnsupportedOperationException;
+import io.selendroid.server.Session;
+import io.selendroid.server.model.internal.AbstractNativeElementContext;
+import io.selendroid.server.model.internal.AbstractWebElementContext;
+import io.selendroid.server.model.internal.execute_native.FindElementByAndroidTag;
+import io.selendroid.server.model.internal.execute_native.FindRId;
+import io.selendroid.server.model.internal.execute_native.GetL10nKeyTranslation;
+import io.selendroid.server.model.internal.execute_native.InvokeMenuAction;
+import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
+import io.selendroid.server.model.js.AndroidAtoms;
+import io.selendroid.util.Preconditions;
+import io.selendroid.util.SelendroidLogger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -26,28 +47,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import io.selendroid.ServerInstrumentation;
-import io.selendroid.android.AndroidWait;
-import io.selendroid.android.KeySender;
-import io.selendroid.android.ViewHierarchyAnalyzer;
-import io.selendroid.android.WindowType;
-import io.selendroid.server.model.internal.AbstractNativeElementContext;
-import io.selendroid.server.model.internal.AbstractWebElementContext;
-import io.selendroid.server.model.internal.execute_native.GetL10nKeyTranslation;
-import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
-import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.android.AndroidTouchScreen;
-import io.selendroid.exceptions.NoSuchElementException;
-import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.exceptions.UnsupportedOperationException;
-import io.selendroid.server.Session;
-import io.selendroid.server.model.internal.execute_native.FindRId;
-import io.selendroid.server.model.internal.execute_native.InvokeMenuAction;
-import io.selendroid.server.model.js.AndroidAtoms;
-import io.selendroid.util.Preconditions;
 
 import android.app.Activity;
 import android.content.res.Resources.Theme;
@@ -378,6 +380,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     nativeExecuteScriptMap.put("findRId", new FindRId(serverInstrumentation));
     nativeExecuteScriptMap.put("getL10nKeyTranslation", new GetL10nKeyTranslation(
         serverInstrumentation));
+    nativeExecuteScriptMap.put("findElementByAndroidTag", new FindElementByAndroidTag(
+    		session.getKnownElements(),serverInstrumentation));
 
     return session.getSessionId();
   }
