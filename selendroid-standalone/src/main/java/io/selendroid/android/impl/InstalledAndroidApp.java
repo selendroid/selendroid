@@ -25,10 +25,14 @@ public class InstalledAndroidApp implements AndroidApp {
 
   public InstalledAndroidApp(String appInfo) {
     String[] pieces = appInfo.split(":");
-    if (pieces.length != 2) {
+    if (pieces.length > 2 || pieces.length == 0) {
       throw new RuntimeException("Format for installed app is:  tld.company.app/ActivityClass:version");
     }
-    version = pieces[1];
+    if (pieces.length == 2) {
+      version = pieces[1];
+    } else {
+      version = "UNKNOWN";
+    }
     pieces = pieces[0].split("/");
     if (pieces.length != 2) {
       throw new RuntimeException("Format for installed app is:  tld.company.app/ActivityClass:version");

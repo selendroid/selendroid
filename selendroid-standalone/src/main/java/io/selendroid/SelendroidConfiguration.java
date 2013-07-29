@@ -34,7 +34,7 @@ public class SelendroidConfiguration {
       "-app", "-aut"})
   private List<String> supportedApps = new ArrayList<String>();
 
-  @Parameter(description = "", names = {"-installedApp"})
+  @Parameter(description = "for developers who already have the app installed (and emulator running) format = tld.company.app/ActivityClass:version", names = {"-installedApp"})
   private String installedApp = null;
 
   public void addSupportedApp(String appAbsolutPath) {
