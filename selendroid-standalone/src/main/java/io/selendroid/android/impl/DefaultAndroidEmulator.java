@@ -278,10 +278,12 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
         log.info("Emulator start took: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
         log.info("Please have in mind, starting an emulator takes usually about 45 seconds.");
-        unlockEmulatorScreen();
+
+        while (!unlockEmulatorScreen()) {
+        }
     }
 
-    private void unlockEmulatorScreen() throws AndroidDeviceException {
+    private boolean unlockEmulatorScreen() throws AndroidDeviceException {
         List<String> event82 = new ArrayList<String>();
         event82.add(AndroidSdk.adb());
         if (isSerialConfigured()) {
@@ -315,6 +317,25 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         } catch (ShellCommandException e) {
             throw new AndroidDeviceException(e);
         }
+
+        List<String> event = new ArrayList<String>();
+        event.add(AndroidSdk.adb());
+        if (isSerialConfigured()) {
+            event.add("-s");
+            event.add(serial);
+        }
+        event.add("shell");
+        event.add("ps");
+        String homeScreenLaunched = null;
+        try {
+            homeScreenLaunched = ShellCommand.exec(event);
+        } catch (ShellCommandException e) {
+            throw new AndroidDeviceException(e);
+        }
+        if (homeScreenLaunched != null && homeScreenLaunched.contains("S com.android.launcher")) {
+            return true;
+        }
+        return false;
     }
 
     @Override
