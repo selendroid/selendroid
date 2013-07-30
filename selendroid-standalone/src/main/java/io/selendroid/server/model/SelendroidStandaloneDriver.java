@@ -350,6 +350,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     try {
       device = deviceStore.findAndroidDevice(caps);
     } catch (DeviceStoreException e) {
+      e.printStackTrace();
+      System.out.println(caps.getRawCapabilities());
       throw new AndroidDeviceException("Error occured while looking for devices/emulators.", e);
     }
 
