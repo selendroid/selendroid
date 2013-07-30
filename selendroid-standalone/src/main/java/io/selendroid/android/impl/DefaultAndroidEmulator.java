@@ -278,8 +278,14 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
         log.info("Emulator start took: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
         log.info("Please have in mind, starting an emulator takes usually about 45 seconds.");
-
-        while (!unlockEmulatorScreen()) {
+        unlockEmulatorScreen();
+        while (!isScreenUnlocked()) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("checking for screen unlocked");
         }
     }
 
