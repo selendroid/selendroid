@@ -287,6 +287,20 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             }
             System.out.println("checking for screen unlocked");
         }
+        allAppsGridView();
+        while (!isScreenUnlocked()) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("checking for screen launch");
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean unlockEmulatorScreen() throws AndroidDeviceException {
@@ -342,6 +356,46 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             return true;
         }
         return false;
+    }
+
+    private void allAppsGridView() throws AndroidDeviceException {
+        String[] dimensions = screenSize.split("x");
+        int x = Integer.parseInt(dimensions[0]);
+        int y = Integer.parseInt(dimensions[1]);
+        if (x > y) {
+            y = y / 2;
+            x = x - 30;
+        }
+        else {
+            x = x / 2;
+            y = y - 30;
+        }
+
+        List<String> event1 = new ArrayList<String>();
+        List<String> coordinates = new ArrayList<String>();
+        coordinates.add("3 0 " + x);
+        coordinates.add("3 1 " + y);
+        coordinates.add("1 330 1");
+        coordinates.add("0 0 0");
+        coordinates.add("1 330 0");
+        coordinates.add("0 0 0");
+        event1.add(AndroidSdk.adb());
+        if (isSerialConfigured()) {
+            event1.add("-s");
+            event1.add(serial);
+        }
+        event1.add("shell");
+        event1.add("sendevent");
+        event1.add("dev/input/event0");
+        for (String coordinate : coordinates) {
+            event1.add(coordinate);
+            try {
+                ShellCommand.exec(event1);
+            } catch (ShellCommandException e) {
+                throw new AndroidDeviceException(e);
+            }
+            event1.remove(coordinate);
+        }
     }
 
     @Override
