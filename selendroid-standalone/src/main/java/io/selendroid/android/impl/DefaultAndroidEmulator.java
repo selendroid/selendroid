@@ -279,7 +279,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         log.info("Emulator start took: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
         log.info("Please have in mind, starting an emulator takes usually about 45 seconds.");
         unlockEmulatorScreen();
-        while (!isScreenUnlocked()) {
+        while (!isScreenLaunched()) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -288,7 +288,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             System.out.println("checking for screen unlocked");
         }
         allAppsGridView();
-        while (!isScreenUnlocked()) {
+        while (!isScreenLaunched()) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -338,6 +338,10 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             throw new AndroidDeviceException(e);
         }
 
+<<<<<<< HEAD
+=======
+    private boolean isScreenLaunched() throws AndroidDeviceException {
+>>>>>>> Moves into App Drawer view before App install
         List<String> event = new ArrayList<String>();
         event.add(AndroidSdk.adb());
         if (isSerialConfigured()) {
