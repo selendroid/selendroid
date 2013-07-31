@@ -229,7 +229,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           deviceStore.release(device, app);
         } catch (AndroidDeviceException e1) {}
         if (retries > 0) {
-            return createNewTestSession(caps, retries--);
+            return createNewTestSession(caps, retries-1);
         }
         throw new SessionNotCreatedException("Error occured while interacting with the emulator: "
             + emulator + ": " + e.getMessage());
@@ -270,7 +270,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         deviceStore.release(device, app);
       } catch (AndroidDeviceException e1) {}
       if (retries > 0) {
-        return createNewTestSession(caps, retries--);
+        return createNewTestSession(caps, retries-1);
       }
       throw new SessionNotCreatedException("Error occured while starting instrumentation: "
           + e.getMessage());
