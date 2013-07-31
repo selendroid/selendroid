@@ -288,6 +288,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             System.out.println("checking for screen unlocked");
         }
         allAppsGridView();
+
         while (!isScreenLaunched()) {
             try {
                 Thread.sleep(500);
