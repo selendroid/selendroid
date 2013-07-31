@@ -279,29 +279,14 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         log.info("Emulator start took: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
         log.info("Please have in mind, starting an emulator takes usually about 45 seconds.");
         unlockEmulatorScreen();
-        while (!isScreenLaunched()) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("checking for screen unlocked");
-        }
+
+        waitForLauncherToComplete();
+
+        // we observed that emulators can sometimes not be 'fully loaded'
+        // if we click on the All Apps button and wait for it to load it is more likely to be in a usable state.
         allAppsGridView();
 
-        while (!isScreenLaunched()) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("checking for screen launch");
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitForLauncherToComplete();
     }
 
     private boolean unlockEmulatorScreen() throws AndroidDeviceException {
@@ -339,10 +324,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             throw new AndroidDeviceException(e);
         }
 
-<<<<<<< HEAD
-=======
-    private boolean isScreenLaunched() throws AndroidDeviceException {
->>>>>>> Moves into App Drawer view before App install
+    private void waitForLauncherToComplete() throws AndroidDeviceException {
         List<String> event = new ArrayList<String>();
         event.add(AndroidSdk.adb());
         if (isSerialConfigured()) {
@@ -358,9 +340,24 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             throw new AndroidDeviceException(e);
         }
         if (homeScreenLaunched != null && homeScreenLaunched.contains("S com.android.launcher")) {
-            return true;
+            return;
         }
-        return false;
+        // it's still running, sleep for a bit
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        waitForLauncherToComplete();
+
+        // it's done right? ... well, maybe... check again after waiting a second
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        waitForLauncherToComplete();
+
     }
 
     private void allAppsGridView() throws AndroidDeviceException {
