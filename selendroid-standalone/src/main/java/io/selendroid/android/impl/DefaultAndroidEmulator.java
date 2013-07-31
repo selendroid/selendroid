@@ -398,6 +398,12 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             }
             event1.remove(coordinate);
         }
+
+        try {
+            Thread.sleep(750);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
