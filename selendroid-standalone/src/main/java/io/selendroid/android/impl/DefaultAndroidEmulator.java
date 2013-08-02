@@ -289,7 +289,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         waitForLauncherToComplete();
     }
 
-    private boolean unlockEmulatorScreen() throws AndroidDeviceException {
+    private void unlockEmulatorScreen() throws AndroidDeviceException {
         List<String> event82 = new ArrayList<String>();
         event82.add(AndroidSdk.adb());
         if (isSerialConfigured()) {
@@ -323,6 +323,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         } catch (ShellCommandException e) {
             throw new AndroidDeviceException(e);
         }
+    }
 
     private void waitForLauncherToComplete() throws AndroidDeviceException {
         List<String> event = new ArrayList<String>();
