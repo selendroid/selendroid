@@ -326,6 +326,10 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     }
 
     private void waitForLauncherToComplete() throws AndroidDeviceException {
+        waitForLauncherToComplete(true);
+    }
+
+    private void waitForLauncherToComplete(Boolean delay) throws AndroidDeviceException {
         List<String> event = new ArrayList<String>();
         event.add(AndroidSdk.adb());
         if (isSerialConfigured()) {
@@ -341,15 +345,16 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             throw new AndroidDeviceException(e);
         }
         if (homeScreenLaunched != null && homeScreenLaunched.contains("S com.android.launcher")) {
-            return;
+            if (!delay) return;
+        } else {
+            // it's still running, sleep for a bit
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            waitForLauncherToComplete(true);
         }
-        // it's still running, sleep for a bit
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        waitForLauncherToComplete();
 
         // it's done right? ... well, maybe... check again after waiting a second
         try {
@@ -357,7 +362,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        waitForLauncherToComplete();
+        waitForLauncherToComplete(false);
 
     }
 
