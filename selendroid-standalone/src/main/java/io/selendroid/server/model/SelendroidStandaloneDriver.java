@@ -128,7 +128,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   }
 
   /* package */void initAndroidDevices() throws AndroidDeviceException {
-    deviceStore = new DeviceStore();
+    deviceStore = new DeviceStore(serverConfiguration.isVerbose());
     try {
       if (serverConfiguration.isRestartAdb()) {
         resetAdb();
@@ -302,7 +302,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       throw new SessionNotCreatedException(
           "Error occured while creating session on Android device", e);
     }
-    System.out.println("Create new session response: " + response.toString(2));
+    log.info("Create new session response: " + response.toString(2));
     if (response.getInt(WD_RESP_KEY_STATUS) != 0) {
       throw new SessionNotCreatedException(
           "Error occured while initilizing wd session on android device.");
@@ -351,7 +351,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       device = deviceStore.findAndroidDevice(caps);
     } catch (DeviceStoreException e) {
       e.printStackTrace();
-      System.out.println(caps.getRawCapabilities());
+      log.fine(caps.getRawCapabilities().toString());
       throw new AndroidDeviceException("Error occured while looking for devices/emulators.", e);
     }
 

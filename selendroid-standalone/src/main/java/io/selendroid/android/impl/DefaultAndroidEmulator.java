@@ -427,7 +427,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             ShellCommand.exec(command);
             Boolean killed = false;
             while (isEmulatorStarted()) {
-                System.err.println("emulator still running, sleeping 0.5, waiting for it to release the lock");
+                log.info("emulator still running, sleeping 0.5, waiting for it to release the lock");
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ie) {

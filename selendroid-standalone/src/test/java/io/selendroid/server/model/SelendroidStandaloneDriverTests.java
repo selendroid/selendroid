@@ -119,7 +119,7 @@ public class SelendroidStandaloneDriverTests {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);
-    DeviceStore store = new DeviceStore();
+    DeviceStore store = new DeviceStore(false);
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
     final UUID definedSessionId = UUID.randomUUID();
@@ -153,7 +153,7 @@ public class SelendroidStandaloneDriverTests {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.setInstalledApp(TEST_APP_INSTALLED);
     driver.initApplicationsUnderTest(conf);
-    DeviceStore store = new DeviceStore();
+    DeviceStore store = new DeviceStore(false);
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
     final UUID definedSessionId = UUID.randomUUID();

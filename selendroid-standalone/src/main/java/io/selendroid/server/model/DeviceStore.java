@@ -17,8 +17,6 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
-import io.selendroid.android.impl.DefaultAndroidEmulator;
-import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -29,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DeviceStore {
@@ -39,11 +38,17 @@ public class DeviceStore {
   private EmulatorPortFinder androidEmulatorPortFinder = null;
   private Boolean installedApp = false;
 
-  public DeviceStore() {
+  public DeviceStore(Boolean debug) {
+    if (debug) {
+      log.setLevel(Level.FINE);
+    }
     androidEmulatorPortFinder = new DefaultPortFinder();
   }
 
-  public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder) {
+  public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder, Boolean debug) {
+    if (debug) {
+      log.setLevel(Level.FINE);
+    }
     this.androidEmulatorPortFinder = androidEmulatorPortFinder;
   }
 
@@ -106,6 +111,8 @@ public class DeviceStore {
         if (!installedApp) {
           log.info("Skipping emulator because it is already in use: " + emulator);
           continue;
+        } else {
+
         }
       }
 
@@ -157,27 +164,42 @@ public class DeviceStore {
       devices = androidDevices.get(platform);
     }
 
+    // keep a list of emulators that aren't started to be used as backup
+    // when installedApp is used, want to default to the already running emulator
+    List<AndroidDevice> potentialMatches = new ArrayList<AndroidDevice>();
     for (AndroidDevice device : devices) {
-      System.err.println("Evaluating if this device is a match for us: " + device.toString());
+      log.fine("Evaluating if this device is a match for us: " + device.toString());
       if (isEmulatorSwitchedOff(device) && device.screenSizeMatches(caps.getScreenSize())) {
         if (devicesInUse.contains(device)) {
-          System.err.println("Device is in use.");
+          log.fine("Device is in use.");
           continue;
         }
         if (caps.getEmulator() == null
             || (caps.getEmulator() == true && device instanceof AndroidEmulator)
             || (caps.getEmulator() == false && device instanceof AndroidDevice)) {
-          System.out.println("device found.");
+          if (installedApp && device instanceof AndroidEmulator) {
+            potentialMatches.add(device);
+            continue;
+          }
+          log.fine("device found.");
           devicesInUse.add(device);
           return device;
         }
-        System.err.println("Device did not match emulator/physical device. caps.getEmulator(): " + caps.getEmulator());
+        log.severe("Device did not match emulator/physical device. caps.getEmulator(): " + caps.getEmulator());
       } else if (installedApp) {
+        if (devicesInUse.contains(device)) {
+            log.fine("device already in use");
+            continue;
+        }
         devicesInUse.add(device);
         return device;
       } else {
-        System.err.println("emulator switched off: " + isEmulatorSwitchedOff(device));
+        log.info("emulator switched off: " + isEmulatorSwitchedOff(device));
       }
+    }
+    if (potentialMatches.size() > 0) {
+      devicesInUse.add(potentialMatches.get(0));
+      return potentialMatches.get(0);
     }
     throw new DeviceStoreException("No devices are found. "
         + "This can happen if the devices are in use or no device screen "

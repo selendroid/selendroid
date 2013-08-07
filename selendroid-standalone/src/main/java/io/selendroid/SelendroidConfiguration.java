@@ -29,13 +29,15 @@ public class SelendroidConfiguration {
   @Parameter(description = "if true, adb will be restarted while starting selendroid-standalone.", names = "-restartAdb")
   private boolean restartAdb = false;
 
-
   @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
       "-app", "-aut"})
   private List<String> supportedApps = new ArrayList<String>();
 
   @Parameter(description = "for developers who already have the app installed (and emulator running) format = tld.company.app/ActivityClass:version", names = {"-installedApp"})
   private String installedApp = null;
+
+  @Parameter(names = "-verbose", description = "Debug mode")
+  private boolean verbose = false;
 
   public void addSupportedApp(String appAbsolutPath) {
     supportedApps.add(appAbsolutPath);
@@ -81,5 +83,13 @@ public class SelendroidConfiguration {
 
   public void setRestartAdb(boolean restartAdb) {
     this.restartAdb = restartAdb;
+  }
+
+  public boolean isVerbose() {
+    return verbose;
+  }
+
+  public void setVerbose(boolean verbose) {
+    this.verbose = verbose;
   }
 }

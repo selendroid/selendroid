@@ -28,11 +28,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ShellCommand {
   private static final Logger log = Logger.getLogger(ShellCommand.class.getName());
+  private static boolean verbose = false;
 
+  public static void setVerbose() {
+      verbose = true;
+  }
 
   public static String exec(List<String> command) throws ShellCommandException {
     return exec(command, 20000);
@@ -95,7 +100,9 @@ public class ShellCommand {
       private StringBuilder output = new StringBuilder();
 
       @Override protected void processLine(String line, int level) {
-          System.err.println("OUTPUT FROM PROCESS: " + line);
+          if (verbose) {
+            System.out.println("OUTPUT FROM PROCESS: " + line);
+          }
           output.append(line).append("\n");
       }
 
