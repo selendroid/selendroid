@@ -65,8 +65,9 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   }
 
   @Override
-  public void install(AndroidApp app) {
+  public Boolean install(AndroidApp app) {
     // do nothing
+      return true;
   }
 
   @Override

@@ -102,9 +102,9 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   @Override
-  public void install(AndroidApp app) {
+  public Boolean install(AndroidApp app) {
     if (app instanceof InstalledAndroidApp) {
-      return;
+      return true;
     }
     List<String> command = new ArrayList<String>();
     command.add(AndroidSdk.adb());
@@ -113,15 +113,24 @@ public abstract class AbstractDevice implements AndroidDevice {
       command.add(serial);
     }
     command.add("install");
-//    command.add("-r");
     command.add(app.getAbsolutePath());
 
-    executeCommand(command);
+    String out = executeCommand(command, 120000);
     try {
       // give it a second to recover from the install
       Thread.sleep(1000);
     } catch (InterruptedException ie) {
       throw new RuntimeException(ie);
+    }
+    return out.contains("Success");
+  }
+
+  protected String executeCommand(List<String> command, long timeout) {
+    try {
+      return ShellCommand.exec(command, timeout);
+    } catch (ShellCommandException e) {
+      e.printStackTrace();
+      return "";
     }
   }
 

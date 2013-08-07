@@ -23,7 +23,7 @@ import java.util.Locale;
 public interface AndroidDevice {
   public boolean isDeviceReady();
 
-  public void install(AndroidApp app);
+  public Boolean install(AndroidApp app);
 
   public boolean isInstalled(AndroidApp app) throws AndroidSdkException;
 

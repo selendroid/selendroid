@@ -241,17 +241,31 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     if (device.isInstalled(app)) {
       device.uninstall(app);
     }
-    device.install(app);
+    Boolean retryInstallApp = !device.install(app);
     // An InstalledAndroidApp won't install/uninstall.
     // If the SelendroidServer is already installed, don't uninstall/reinstall
     // when using an InstalledAndroidApp.
+    Boolean selendroidInstalledSuccessfully = true;
     if (device.isInstalled(selendroidServer)) {
       if (!(app instanceof InstalledAndroidApp)) {
         device.uninstall(selendroidServer);
-        device.install(selendroidServer);
+        selendroidInstalledSuccessfully = device.install(selendroidServer);
       }
     } else {
-      device.install(selendroidServer);
+      selendroidInstalledSuccessfully = device.install(selendroidServer);
+    }
+    if (!selendroidInstalledSuccessfully) {
+      if (!device.install(selendroidServer)) {
+        try {
+          deviceStore.release(device, app);
+        } catch (AndroidDeviceException e) {
+        }
+        if (retries > 0) {
+          return createNewTestSession(caps, retries-1);
+        }
+      }
+    } else if (retryInstallApp) {
+      device.install(app);
     }
 
     List<String> adbCommands = desiredCapabilities.getPreSessionAdbCommands();
