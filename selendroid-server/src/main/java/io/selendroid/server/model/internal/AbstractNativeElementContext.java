@@ -57,6 +57,7 @@ import android.widget.TextView;
 
 import com.android.internal.util.Predicate;
 
+
 public abstract class AbstractNativeElementContext
     implements
       SearchContext,
@@ -364,7 +365,7 @@ public abstract class AbstractNativeElementContext
     }
 
     public boolean apply(View view) {
-      return view.getClass().getSimpleName().equals(tag);
+    	return view.getClass().getSimpleName().equals(tag);
     }
   }
 
