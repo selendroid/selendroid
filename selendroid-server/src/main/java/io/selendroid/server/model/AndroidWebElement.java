@@ -160,6 +160,9 @@ public class AndroidWebElement implements AndroidElement {
 
   public String getTagName() {
     Object result = driver.executeScript("return arguments[0].tagName", this);
+    if(result==null){
+      return null;
+    }
     try {
       return new JSONObject((String) result).getString("value");
     } catch (JSONException e) {

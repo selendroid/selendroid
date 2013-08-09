@@ -334,7 +334,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   public void switchDriverMode(String type) {
     Preconditions.checkNotNull(type);
     if (type.equals(activeWindowType)) {
-      // do nothing
+      return;
     } else {
       this.activeWindowType = type;
     }
@@ -344,6 +344,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     } else {
       initSelendroidWebDriver(type);
     }
+    session.getKnownElements().clear();
   }
 
   private void initSelendroidWebDriver(String type) {
