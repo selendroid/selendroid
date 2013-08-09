@@ -38,11 +38,11 @@ public class DeviceStore {
   private EmulatorPortFinder androidEmulatorPortFinder = null;
   private Boolean installedApp = false;
 
-  public DeviceStore(Boolean debug) {
+  public DeviceStore(Boolean debug, Integer emulatorPort) {
     if (debug) {
       log.setLevel(Level.FINE);
     }
-    androidEmulatorPortFinder = new DefaultPortFinder();
+    androidEmulatorPortFinder = new DefaultPortFinder(emulatorPort, emulatorPort+30);
   }
 
   public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder, Boolean debug) {

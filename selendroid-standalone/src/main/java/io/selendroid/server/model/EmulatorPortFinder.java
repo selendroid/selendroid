@@ -15,9 +15,6 @@ package io.selendroid.server.model;
 
 public interface EmulatorPortFinder {
 
-  public static final int MIN_PORT = 5560;
-  public static final int MAX_PORT = 5584;
-
   public abstract Integer next();
 
   public abstract void release(Integer port);

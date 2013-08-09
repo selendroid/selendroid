@@ -43,12 +43,13 @@ import org.junit.Test;
  */
 public class DeviceStoreTests {
   public static final String ANY_STRING = "ANY";
+  private static final Integer EMULATOR_PORT = 5560;
 
   @Test
   public void testShouldBeAbleToRegisterSingleNotStatedEmulator() throws Exception {
     AndroidEmulator emulator = anEmulator("de", DeviceTargetPlatform.ANDROID10, false);
 
-    DeviceStore deviceStore = new DeviceStore(false);
+    DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
     deviceStore.addEmulators(Collections.singletonList(emulator));
     Assert.assertEquals(deviceStore.getDevicesInUse().size(), 0);
     Assert.assertEquals(deviceStore.getDevicesList().size(), 1);
@@ -60,7 +61,7 @@ public class DeviceStoreTests {
 
   @Test
   public void testShouldBeAbleToIncrementEmulatorPortsByTwo() {
-    DeviceStore deviceStore = new DeviceStore(false);
+    DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
     Assert.assertEquals(5554, deviceStore.nextEmulatorPort().intValue());
     Assert.assertEquals(5556, deviceStore.nextEmulatorPort().intValue());
     Assert.assertEquals(5558, deviceStore.nextEmulatorPort().intValue());
@@ -93,7 +94,7 @@ public class DeviceStoreTests {
     AndroidEmulator enEmulator10 = anEmulator("en", DeviceTargetPlatform.ANDROID10, false);
     AndroidEmulator deEmulator16 = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
 
-    DeviceStore deviceStore = new DeviceStore(false);
+    DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
     deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator10, enEmulator10,
         deEmulator16}));
     Assert.assertEquals(deviceStore.getDevicesInUse().size(), 0);
@@ -115,7 +116,7 @@ public class DeviceStoreTests {
     AndroidEmulator enEmulator10 = anEmulator("en", DeviceTargetPlatform.ANDROID10, true);
     AndroidEmulator deEmulator16 = anEmulator("de", DeviceTargetPlatform.ANDROID16, true);
 
-    DeviceStore deviceStore = new DeviceStore(false);
+    DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
     deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator10, enEmulator10,
         deEmulator16}));
     Assert.assertEquals(deviceStore.getDevicesInUse().size(), 0);
@@ -131,7 +132,7 @@ public class DeviceStoreTests {
     AndroidEmulator enEmulator10 = anEmulator("en", DeviceTargetPlatform.ANDROID10, true);
     AndroidEmulator deEmulator16 = anEmulator("de", DeviceTargetPlatform.ANDROID16, true);
 
-    DeviceStore deviceStore = new DeviceStore(false);
+    DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
     try {
       deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {enEmulator10, deEmulator16}));
       Assert.fail();
@@ -143,7 +144,7 @@ public class DeviceStoreTests {
 
   @Test
   public void storeShouldThrowAnExceptionIfInitializedWithEmptyList() throws AndroidDeviceException {
-    DeviceStore store = new DeviceStore(false);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
     try {
       store.addEmulators(new ArrayList<AndroidEmulator>());
       Assert.fail();
@@ -155,7 +156,7 @@ public class DeviceStoreTests {
 
   @Test
   public void storeShouldThrowAnExceptionIfInitializedWithNull() throws AndroidDeviceException {
-    DeviceStore store = new DeviceStore(false);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
     try {
       store.addEmulators(null);
       Assert.fail();
@@ -181,7 +182,7 @@ public class DeviceStoreTests {
   public void storeShouldBeAbleToFindDeviceForCapabilities() throws Exception {
     // prepare device store
     DefaultAndroidEmulator deEmulator16 = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
-    DeviceStore deviceStore = new DeviceStore(false);
+    DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
     deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator16}));
 
     // find by Capabilities
@@ -196,7 +197,7 @@ public class DeviceStoreTests {
   public void storeShouldThrowAnExceptionIfTargetPlatformIsMissingInCapabilities() throws Exception {
     // prepare device store
     DefaultAndroidEmulator deEmulator16 = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
-    DeviceStore deviceStore = new DeviceStore(false);
+    DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
     deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator16}));
 
     SelendroidCapabilities capa = new SelendroidCapabilities();
@@ -213,7 +214,7 @@ public class DeviceStoreTests {
     // prepare device store
     DefaultAndroidEmulator deEmulator10 = anEmulator("de", DeviceTargetPlatform.ANDROID10, false);
     AndroidEmulator enEmulator10 = anEmulator("en", DeviceTargetPlatform.ANDROID10, false);
-    DeviceStore deviceStore = new DeviceStore(false);
+    DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
     deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator10, enEmulator10}));
 
     // find by Capabilities
@@ -233,7 +234,7 @@ public class DeviceStoreTests {
     // prepare device store
     DefaultAndroidEmulator deEmulator10 = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
     AndroidEmulator enEmulator10 = anEmulator("en", DeviceTargetPlatform.ANDROID10, false);
-    DeviceStore deviceStore = new DeviceStore(false);
+    DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
     deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator10, enEmulator10}));
 
     // find by Capabilities
@@ -263,7 +264,7 @@ public class DeviceStoreTests {
     when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
     when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
 
-    DeviceStore store = new DeviceStore(false);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
     store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
     assertThat(store.getDevicesList().values(), hasSize(1));
     assertThat(store.getDevicesInUse(), hasSize(0));
@@ -276,7 +277,7 @@ public class DeviceStoreTests {
     when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
     when(device.isDeviceReady()).thenReturn(Boolean.FALSE);
 
-    DeviceStore store = new DeviceStore(false);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
     store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
     assertThat(store.getDevicesList().values(), hasSize(0));
     assertThat(store.getDevicesInUse(), hasSize(0));
@@ -290,7 +291,7 @@ public class DeviceStoreTests {
     when(device.getScreenSize()).thenReturn("320x480");
     when(device.screenSizeMatches("320x480")).thenReturn(Boolean.TRUE);
 
-    DeviceStore store = new DeviceStore(false);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
     store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
     assertThat(store.getDevicesList().values(), hasSize(1));
     assertThat(store.getDevicesInUse(), hasSize(0));
@@ -307,7 +308,7 @@ public class DeviceStoreTests {
     when(device.getScreenSize()).thenReturn("320x500");
     when(device.screenSizeMatches("320x500")).thenReturn(Boolean.FALSE);
 
-    DeviceStore store = new DeviceStore(false);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
     store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
     assertThat(store.getDevicesList().values(), hasSize(1));
     assertThat(store.getDevicesInUse(), hasSize(0));

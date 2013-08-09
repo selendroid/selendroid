@@ -128,7 +128,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   }
 
   /* package */void initAndroidDevices() throws AndroidDeviceException {
-    deviceStore = new DeviceStore(serverConfiguration.isVerbose());
+    deviceStore = new DeviceStore(serverConfiguration.isVerbose(),
+            serverConfiguration.getEmulatorPort());
     try {
       if (serverConfiguration.isRestartAdb()) {
         resetAdb();

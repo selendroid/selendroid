@@ -22,9 +22,13 @@ import java.util.List;
 public class DefaultPortFinder implements EmulatorPortFinder {
   private List<Integer> availablePorts = new ArrayList<Integer>();
   private List<Integer> portsInUse = new ArrayList<Integer>();
+  private Integer minPort;
+  private Integer maxPort;
 
-  public DefaultPortFinder() {
-    for (int i = MIN_PORT; i <= MAX_PORT; i++) {
+  public DefaultPortFinder(Integer minPort, Integer maxPort) {
+    this.minPort = minPort;
+    this.maxPort = maxPort;
+    for (int i = minPort; i <= maxPort; i++) {
       if (isEvenNumber(i)) {
         availablePorts.add(i);
       }
@@ -52,7 +56,7 @@ public class DefaultPortFinder implements EmulatorPortFinder {
   @Override
   public synchronized void release(Integer port) {
     portsInUse.remove(port);
-    if (port >= MIN_PORT && port <= MAX_PORT && isEvenNumber(port)) {
+    if (port >= minPort && port <= maxPort && isEvenNumber(port)) {
       availablePorts.add(port);
     }
   }

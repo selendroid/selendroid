@@ -52,6 +52,7 @@ public class SelendroidStandaloneDriverTests {
   private static final String APK_FILE = "src/test/resources/selendroid-test-app.apk";
   private static final String INVALID_APK_FILE =
       "src/test/resources/selendroid-test-app-invalid.apk";
+  private static final Integer EMULATOR_PORT = 5560;
 
   @Test
   public void testShouldBeAbleToInitDriver() throws Exception {
@@ -119,7 +120,7 @@ public class SelendroidStandaloneDriverTests {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);
-    DeviceStore store = new DeviceStore(false);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
     final UUID definedSessionId = UUID.randomUUID();
@@ -153,7 +154,7 @@ public class SelendroidStandaloneDriverTests {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.setInstalledApp(TEST_APP_INSTALLED);
     driver.initApplicationsUnderTest(conf);
-    DeviceStore store = new DeviceStore(false);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
     final UUID definedSessionId = UUID.randomUUID();

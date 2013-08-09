@@ -39,6 +39,9 @@ public class SelendroidConfiguration {
   @Parameter(names = "-verbose", description = "Debug mode")
   private boolean verbose = false;
 
+  @Parameter(names= "-emulatorPort", description = "port number to start running emulators on")
+  private int emulatorPort = 5560;
+
   public void addSupportedApp(String appAbsolutPath) {
     supportedApps.add(appAbsolutPath);
   }
@@ -67,6 +70,14 @@ public class SelendroidConfiguration {
 
   public int getPort() {
     return this.port;
+  }
+
+  public void setEmulatorPort(int port) {
+    emulatorPort = port;
+  }
+
+  public int getEmulatorPort() {
+    return emulatorPort;
   }
 
   public long getTimeoutEmulatorStart() {
