@@ -221,6 +221,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         this.locale = locale;
         List<String> cmd = Lists.newArrayList();
         cmd.add(AndroidSdk.emulator());
+        cmd.add("-no-snapshot-save");
         cmd.add("-avd");
         cmd.add(avdName);
         cmd.add("-ports");
