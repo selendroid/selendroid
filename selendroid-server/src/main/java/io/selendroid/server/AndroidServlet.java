@@ -14,9 +14,11 @@
 package io.selendroid.server;
 
 import io.selendroid.exceptions.StaleElementReferenceException;
+import io.selendroid.server.handler.AddCookie;
 import io.selendroid.server.handler.CaptureScreenshot;
 import io.selendroid.server.handler.ClearElement;
 import io.selendroid.server.handler.ClickElement;
+import io.selendroid.server.handler.DeleteCookie;
 import io.selendroid.server.handler.DeleteSession;
 import io.selendroid.server.handler.DoubleTapOnElement;
 import io.selendroid.server.handler.Down;
@@ -28,6 +30,7 @@ import io.selendroid.server.handler.FindElement;
 import io.selendroid.server.handler.FindElements;
 import io.selendroid.server.handler.Flick;
 import io.selendroid.server.handler.GetCapabilities;
+import io.selendroid.server.handler.GetCookie;
 import io.selendroid.server.handler.GetCurrentUrl;
 import io.selendroid.server.handler.GetElementAttribute;
 import io.selendroid.server.handler.GetElementDisplayed;
@@ -143,10 +146,10 @@ public class AndroidServlet extends BaseServlet {
         UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/maximize",
         UnknownCommandHandler.class);
-    getHandler.put("/wd/hub/session/:sessionId/cookie", UnknownCommandHandler.class);
-    postHandler.put("/wd/hub/session/:sessionId/cookie", UnknownCommandHandler.class);
-    deleteHandler.put("/wd/hub/session/:sessionId/cookie", UnknownCommandHandler.class);
-    deleteHandler.put("/wd/hub/session/:sessionId/cookie/:name", UnknownCommandHandler.class);
+    getHandler.put("/wd/hub/session/:sessionId/cookie", GetCookie.class);
+    postHandler.put("/wd/hub/session/:sessionId/cookie", AddCookie.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/cookie", DeleteCookie.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/cookie/:name", DeleteCookie.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/element/active", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/name", GetElementTagName.class);
