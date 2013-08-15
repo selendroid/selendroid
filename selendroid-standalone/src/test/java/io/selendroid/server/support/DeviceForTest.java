@@ -224,4 +224,9 @@ public class DeviceForTest extends DefaultAndroidEmulator {
   public String getSerial() {
     return "emulator-5554";
   }
+
+  @Override
+  public void setVerbose() {
+
+  }
 }

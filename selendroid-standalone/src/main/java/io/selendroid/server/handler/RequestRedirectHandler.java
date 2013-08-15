@@ -13,7 +13,9 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.android.AndroidDevice;
 import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.io.ShellCommand;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
@@ -26,6 +28,7 @@ import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selenium.logging.LogEntry;
 import org.webbitserver.HttpRequest;
 
 public class RequestRedirectHandler extends BaseSelendroidServerHandler {
@@ -57,11 +60,27 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 
     JSONObject response = null;
 
-    try {
-      response = redirectRequest(session, url, method);
-    } catch (Exception e) {
-      return new SelendroidResponse(sessionId, 13, new SelendroidException(
-          "Error occured while communicating with selendroid server on the device: ", e));
+    int retries = 3;
+    while (retries-- > 0) {
+      try {
+        response = redirectRequest(session, url, method);
+        break;
+      } catch (Exception e) {
+        if (retries == 0) {
+          AndroidDevice device = session.getDevice();
+          System.out.println("getting logs");
+          device.setVerbose();
+          for (LogEntry le : device.getLogs()) {
+            System.out.println(le.getMessage());
+          }
+          return new SelendroidResponse(sessionId, 13,
+                  new SelendroidException(
+                          "Error occured while communicating with selendroid server on the device: ",
+                          e));
+        } else {
+          log.severe("failed to forward request to Selendroid Server");
+        }
+      }
     }
     Object value = response.opt("value");
     if (value != null) {
@@ -77,6 +96,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 
   private JSONObject redirectRequest(ActiveSession session, String url, String method)
       throws Exception, JSONException {
+
     HttpResponse r = null;
     if ("get".equalsIgnoreCase(method)) {
       log.info("GET redirect to: " + url);
