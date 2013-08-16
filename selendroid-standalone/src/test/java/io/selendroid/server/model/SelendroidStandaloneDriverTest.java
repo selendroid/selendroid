@@ -43,7 +43,7 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SelendroidStandaloneDriverTests {
+public class SelendroidStandaloneDriverTest {
   public static final String TEST_APP_ID = "io.selendroid.testapp:0.4-SNAPSHOT";
   private static final String TEST_APP_INSTALLED =
       "io.selendroid.testapp/HomeScreenActivity:0.4-SNAPSHOT";

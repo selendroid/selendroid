@@ -41,7 +41,7 @@ import org.junit.Test;
 /**
  * @author ddary
  */
-public class DeviceStoreTests {
+public class DeviceStoreTest {
   public static final String ANY_STRING = "ANY";
   private static final Integer EMULATOR_PORT = 5560;
 

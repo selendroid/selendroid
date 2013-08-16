@@ -29,7 +29,7 @@ import org.openqa.selenium.WebElement;
 /*
  * Test is currently only executed in manual mode
  */
-public class SessionCreationE2ETest {
+public class SessionCreationE2ETests {
 	public static final String TEST_APP_ID = "io.selendroid.testapp:0.5.0-SNAPSHOT";
 
 	@Ignore

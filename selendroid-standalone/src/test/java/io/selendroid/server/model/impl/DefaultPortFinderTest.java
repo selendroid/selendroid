@@ -6,7 +6,7 @@ import io.selendroid.server.model.impl.DefaultPortFinder;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DefaultPortFinderTests {
+public class DefaultPortFinderTest {
 
   private final static Integer MIN_PORT = 5560;
   private final static Integer MAX_PORT = 5590;
