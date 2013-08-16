@@ -1,6 +1,5 @@
 package io.selendroid.server.model.impl;
 
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import io.selendroid.server.model.EmulatorPortFinder;
 import io.selendroid.server.model.impl.DefaultPortFinder;
 
