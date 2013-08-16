@@ -563,4 +563,40 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     }
     return windowHandles;
   }
+
+  @Override
+  public void addCookie(String url, Cookie cookie) {
+
+        if (selendroidWebDriver != null)
+            selendroidWebDriver.setCookies(url, cookie);
+
+    }
+
+  @Override
+  public Set<Cookie> getCookies(String url) {
+
+
+      Set<Cookie> coo = new HashSet<Cookie>();
+        if (selendroidWebDriver != null) {
+           coo.addAll(selendroidWebDriver.getCookies(url));
+        }
+         return coo;
+    }
+
+  @Override
+  public void deleteCookie(String url) {
+
+        if (selendroidWebDriver != null) {
+            selendroidWebDriver.removeAllCookie(url);
+        }
+    }
+
+  @Override
+  public void deleteNamedCookie(String url, String name) {
+
+        if (selendroidWebDriver != null) {
+            selendroidWebDriver.remove(url, name);
+        }
+    }
+
 }

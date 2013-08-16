@@ -20,10 +20,9 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.SelendroidLogger;
-
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +48,7 @@ public class SelendroidWebDriver {
   private final Object syncObject = new Object();
   private boolean done = false;
   private ServerInstrumentation serverInstrumentation = null;
+  private SessionCookieManager sm = new SessionCookieManager();
 
   public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle) {
     this.serverInstrumentation = serverInstrumentation;
@@ -455,4 +455,28 @@ public class SelendroidWebDriver {
   public WebView getWebview() {
     return webview;
   }
+    public Set<Cookie> getCookies(String url) {
+
+        return sm.getAllCookies(url);
+
+    }
+
+    public void removeAllCookie(String url) {
+
+        sm.removeAllCookies(url);
+
+    }
+
+    public void remove(String url, String name) {
+
+        sm.remove(url, name);
+
+    }
+
+    public void setCookies(String url, Cookie cookie) {
+
+        sm.addCookie(url, cookie);
+
+    }
+
 }
