@@ -90,6 +90,10 @@ public class DeviceStore {
       log.info("No Android devices were found.");
       return;
     }
+    if (androidDevice instanceof AndroidEmulator) {
+      throw new AndroidDeviceException(
+          "For adding emulator instances please use #addEmulator method.");
+    }
     if (androidDevice.isDeviceReady() == true) {
       System.out.println("Adding: " + androidDevice);
       addDeviceToStore(androidDevice);
@@ -112,8 +116,6 @@ public class DeviceStore {
         if (!installedApp) {
           log.info("Skipping emulator because it is already in use: " + emulator);
           continue;
-        } else {
-
         }
       }
 
@@ -169,6 +171,9 @@ public class DeviceStore {
     } else {
       DeviceTargetPlatform platform = DeviceTargetPlatform.valueOf(androidTarget);
       devices = androidDevices.get(platform);
+    }
+    if (devices == null) {
+      devices = new ArrayList<AndroidDevice>();
     }
 
     // keep a list of emulators that aren't started to be used as backup
