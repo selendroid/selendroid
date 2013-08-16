@@ -13,17 +13,13 @@
  */
 package io.selendroid.testapp;
 
-import java.util.ArrayList;
-
 import io.selendroid.testapp.server.HttpServer;
-import io.selendroid.testapp.webdrivertestserver.AppServer;
-import io.selendroid.testapp.webdrivertestserver.Pages;
-import io.selendroid.testapp.webdrivertestserver.WebbitAppServer;
+
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -36,24 +32,19 @@ public class WebViewActivity extends Activity {
   private HttpServer server = null;
   private WebView mainWebView = null;
   private Spinner testDataSpinner = null;
-  private Pages webdriverTestPages = null;
   private ArrayAdapter<SpinnerItem> arrayAdapter = null;
 
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     server = HttpServer.getInstance();
-    // currently not used
-    // serverThread = new HttpdThread();
-    // serverThread.start();
-    // webdriverTestPages = new Pages(serverThread.getServer());
-    super.onCreate(savedInstanceState);
-    setContentView(io.selendroid.testapp.R.layout.webview);
 
+    setContentView(io.selendroid.testapp.R.layout.webview);
 
     mainWebView = (WebView) findViewById(io.selendroid.testapp.R.id.mainWebView);
     mainWebView.setWebViewClient(new MyWebViewClient());
-    testDataSpinner = (Spinner) findViewById(io.selendroid.testapp.R.id.spinner_webdriver_test_data);
+    testDataSpinner =
+        (Spinner) findViewById(io.selendroid.testapp.R.id.spinner_webdriver_test_data);
     arrayAdapter =
         new ArrayAdapter<SpinnerItem>(this, android.R.layout.simple_spinner_item,
             new ArrayList<SpinnerItem>());
@@ -87,6 +78,7 @@ public class WebViewActivity extends Activity {
         mainWebView.loadUrl(item.url);
       }
     });
+    super.onCreate(savedInstanceState);
   }
 
   @Override
@@ -99,20 +91,6 @@ public class WebViewActivity extends Activity {
     Intent nextScreen = new Intent(getApplicationContext(), HomeScreenActivity.class);
     startActivity(nextScreen);
   }
-
-  // @Override
-  // protected void onDestroy() {
-  // if (server != null) {
-  // server.stop();
-  // try {
-  // server.waitUntilShutdown();
-  // } catch (InterruptedException e) {
-  // // TODO Auto-generated catch block
-  // e.printStackTrace();
-  // }
-  // }
-  // super.onDestroy();
-  // }
 
   public class SpinnerItem {
     private String text;
@@ -128,35 +106,7 @@ public class WebViewActivity extends Activity {
       return text;
     }
   }
-  private class HttpdThread extends Thread {
-    private final AppServer server;
-    private Looper looper;
 
-    public HttpdThread() {
-
-      server = new WebbitAppServer();
-
-    }
-
-    @Override
-    public void run() {
-      Looper.prepare();
-      looper = Looper.myLooper();
-      server.start();
-      Looper.loop();
-    }
-
-    public AppServer getServer() {
-      return server;
-    }
-
-    public void stopLooping() {
-      if (looper == null) {
-        return;
-      }
-      looper.quit();
-    }
-  }
   private class MyWebViewClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {

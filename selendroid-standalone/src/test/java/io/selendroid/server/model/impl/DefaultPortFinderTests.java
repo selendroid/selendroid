@@ -1,6 +1,5 @@
 package io.selendroid.server.model.impl;
 
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import io.selendroid.server.model.EmulatorPortFinder;
 import io.selendroid.server.model.impl.DefaultPortFinder;
 
@@ -27,11 +26,11 @@ public class DefaultPortFinderTests {
   public void assertTestIsAbleToReleasePorts() {
     EmulatorPortFinder finder = new DefaultPortFinder(MIN_PORT, MAX_PORT);
 
-    Assert.assertEquals(5554, finder.next().intValue());
-    Assert.assertEquals(5556, finder.next().intValue());
-    Assert.assertEquals(5558, finder.next().intValue());
-    finder.release(5554);
-    Assert.assertEquals(5554, finder.next().intValue());
+    Assert.assertEquals(5560, finder.next().intValue());
+    Assert.assertEquals(5562, finder.next().intValue());
+    Assert.assertEquals(5564, finder.next().intValue());
+    finder.release(5564);
+    Assert.assertEquals(5564, finder.next().intValue());
   }
 
   @Test

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
-import io.selendroid.android.AndroidDevice;
+import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
@@ -35,7 +35,6 @@ import io.selendroid.server.support.TestSessionListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -44,11 +43,10 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.beust.jcommander.internal.Lists;
-
 public class SelendroidStandaloneDriverTests {
   public static final String TEST_APP_ID = "io.selendroid.testapp:0.4-SNAPSHOT";
-  private static final String TEST_APP_INSTALLED = "io.selendroid.testapp/HomeScreenActivity:0.4-SNAPSHOT";
+  private static final String TEST_APP_INSTALLED =
+      "io.selendroid.testapp/HomeScreenActivity:0.4-SNAPSHOT";
   private static final String APK_FILE = "src/test/resources/selendroid-test-app.apk";
   private static final String INVALID_APK_FILE =
       "src/test/resources/selendroid-test-app-invalid.apk";
@@ -130,7 +128,7 @@ public class SelendroidStandaloneDriverTests {
         return null;
       }
     };
-    store.addAndroidEmulator(emulator);
+    store.addDeviceToStore(emulator);
     driver.setDeviceStore(store);
 
     // testing new session creation
@@ -164,7 +162,7 @@ public class SelendroidStandaloneDriverTests {
         return null;
       }
     };
-    store.addAndroidEmulator(emulator);
+    store.addDeviceToStore(emulator);
     driver.setDeviceStore(store);
 
     // testing new session creation
@@ -191,27 +189,28 @@ public class SelendroidStandaloneDriverTests {
     AndroidApp resignedApp = mock(AndroidApp.class);
     when(resignedApp.getAppId()).thenReturn(TEST_APP_ID);
 
-    when(builder.createSelendroidServer(new DefaultAndroidApp(new File(APK_FILE)))).thenReturn(server);
+    when(builder.createSelendroidServer(new DefaultAndroidApp(new File(APK_FILE)))).thenReturn(
+        server);
     when(builder.resignApp(any(File.class))).thenReturn(resignedApp);
     return builder;
   }
 
-  protected SelendroidServerBuilder getInstalledApkBuilder() throws IOException, ShellCommandException,
-      AndroidSdkException {
+  protected SelendroidServerBuilder getInstalledApkBuilder() throws IOException,
+      ShellCommandException, AndroidSdkException {
     SelendroidServerBuilder builder = mock(SelendroidServerBuilder.class);
     AndroidApp server = mock(AndroidApp.class);
     AndroidApp resignedApp = mock(InstalledAndroidApp.class);
     when(resignedApp.getAppId()).thenReturn(TEST_APP_ID);
 
-    when(builder.createSelendroidServer(new DefaultAndroidApp(new File(APK_FILE)))).thenReturn(server);
+    when(builder.createSelendroidServer(new DefaultAndroidApp(new File(APK_FILE)))).thenReturn(
+        server);
     when(builder.resignApp(any(File.class))).thenReturn(resignedApp);
     return builder;
   }
 
-  public DeviceFinder anDeviceFinderWithNoDevices() throws AndroidDeviceException {
-    DeviceFinder finder = mock(DeviceFinder.class);
-    List<AndroidDevice> list = Lists.newArrayList();
-    when(finder.findConnectedDevices()).thenReturn(list);
+  public HardwareDeviceListener anDeviceFinderWithNoDevices() throws AndroidDeviceException {
+    HardwareDeviceListener finder = mock(HardwareDeviceListener.class);
+
     return finder;
   }
 }

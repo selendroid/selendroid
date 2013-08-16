@@ -62,9 +62,9 @@ public class DeviceStoreTests {
   @Test
   public void testShouldBeAbleToIncrementEmulatorPortsByTwo() {
     DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
-    Assert.assertEquals(5554, deviceStore.nextEmulatorPort().intValue());
-    Assert.assertEquals(5556, deviceStore.nextEmulatorPort().intValue());
-    Assert.assertEquals(5558, deviceStore.nextEmulatorPort().intValue());
+    Assert.assertEquals(5560, deviceStore.nextEmulatorPort().intValue());
+    Assert.assertEquals(5562, deviceStore.nextEmulatorPort().intValue());
+    Assert.assertEquals(5564, deviceStore.nextEmulatorPort().intValue());
   }
 
   @Test
@@ -265,7 +265,7 @@ public class DeviceStoreTests {
     when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
 
     DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
-    store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
+    store.addDevice(device);
     assertThat(store.getDevicesList().values(), hasSize(1));
     assertThat(store.getDevicesInUse(), hasSize(0));
     assertThat(store.getDevicesList().values().iterator().next(), contains(device));
@@ -278,7 +278,7 @@ public class DeviceStoreTests {
     when(device.isDeviceReady()).thenReturn(Boolean.FALSE);
 
     DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
-    store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
+    store.addDevice(device);
     assertThat(store.getDevicesList().values(), hasSize(0));
     assertThat(store.getDevicesInUse(), hasSize(0));
   }
@@ -292,7 +292,7 @@ public class DeviceStoreTests {
     when(device.screenSizeMatches("320x480")).thenReturn(Boolean.TRUE);
 
     DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
-    store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
+    store.addDevice(device);
     assertThat(store.getDevicesList().values(), hasSize(1));
     assertThat(store.getDevicesInUse(), hasSize(0));
     AndroidDevice foundDevice = store.findAndroidDevice(withDefaultCapabilities());
@@ -309,7 +309,7 @@ public class DeviceStoreTests {
     when(device.screenSizeMatches("320x500")).thenReturn(Boolean.FALSE);
 
     DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
-    store.addDevices(Arrays.asList(new AndroidDevice[] {device}));
+    store.addDevice(device);
     assertThat(store.getDevicesList().values(), hasSize(1));
     assertThat(store.getDevicesInUse(), hasSize(0));
     try {
@@ -320,5 +320,24 @@ public class DeviceStoreTests {
     }
 
     assertThat(store.getDevicesInUse(), hasSize(0));
+  }
+
+  @Test
+  public void testShouldBeAbleToRemoveAHardwareDevice() {
+    Assert.fail("implement me");
+  }
+
+  @Test
+  public void testShouldNotBeAbleToRemoveAnEmulator() throws Exception {
+    DefaultAndroidEmulator deEmulator16 = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
+    store.addDevice(deEmulator16);
+    assertThat(store.getDevicesList().values(), hasSize(1));
+    try {
+      store.removeAndroidDevice(deEmulator16);
+      Assert.fail("Only hardware devices should be able to be removed.");
+    } catch (DeviceStoreException e) {
+      // expected
+    }
   }
 }

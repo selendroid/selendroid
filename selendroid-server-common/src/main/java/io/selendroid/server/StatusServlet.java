@@ -24,7 +24,6 @@ import org.webbitserver.HttpResponse;
 public class StatusServlet implements HttpHandler {
   private ServerDetails seledendroidServer;
   private JSONArray apps = null;
-  private JSONArray devices = null;
 
   public StatusServlet(ServerDetails seledendroidServer) {
     this.seledendroidServer = seledendroidServer;
@@ -42,7 +41,7 @@ public class StatusServlet implements HttpHandler {
     JSONObject build = new JSONObject();
     build.put("version", seledendroidServer.getServerVersion());
     build.put("browserName", "selendroid");
-    
+
     JSONObject os = new JSONObject();
     os.put("arch", seledendroidServer.getCpuArch());
     os.put("name", seledendroidServer.getOsName());
@@ -51,13 +50,14 @@ public class StatusServlet implements HttpHandler {
     JSONObject json = new JSONObject();
     json.put("build", build);
     json.put("os", os);
-    if (devices == null || devices.length() == 0) {
-      try {
-        devices = seledendroidServer.getSupportedDevices();
-      } catch (Exception e) {
-        apps = new JSONArray();
-      }
+
+    JSONArray devices = null;
+    try {
+      devices = seledendroidServer.getSupportedDevices();
+    } catch (Exception e) {
+      devices = new JSONArray();
     }
+
     json.put("supportedDevices", devices);
 
     if (apps == null || devices.length() == 0) {

@@ -13,6 +13,8 @@
  */
 package io.selendroid.android.impl;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
@@ -28,6 +30,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.android.ddmlib.IDevice;
 import com.beust.jcommander.internal.Lists;
 
 
@@ -58,7 +61,9 @@ public class DefaultHardwareDeviceTests {
 
   @Test
   public void testShouldBeAbleToStartSelendroid() throws Exception {
-    AndroidDevice emulator = new DefaultHardwareDevice(serial);
+    IDevice device = mock(IDevice.class);
+    when(device.getSerialNumber()).thenReturn(serial);
+    AndroidDevice emulator = new DefaultHardwareDevice(device);
     Assert.assertTrue(emulator.isDeviceReady());
     cleanUpDevice(emulator);
 

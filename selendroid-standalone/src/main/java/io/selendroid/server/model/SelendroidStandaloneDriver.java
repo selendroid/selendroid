@@ -19,8 +19,11 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.android.HardwareDeviceListener;
+import io.selendroid.android.HardwareDeviceManager;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultHardwareDevice;
+import io.selendroid.android.impl.DefaultHardwareDeviceManager;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -31,7 +34,6 @@ import io.selendroid.exceptions.SessionNotCreatedException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 import io.selendroid.server.ServerDetails;
-import io.selendroid.server.model.impl.DefaultHardwareDeviceFinder;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
@@ -63,13 +65,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private DeviceStore deviceStore = null;
   private SelendroidServerBuilder selendroidApkBuilder = null;
   private SelendroidConfiguration serverConfiguration = null;
-  private DeviceFinder androidDeviceFinder = null;
+  private HardwareDeviceListener hardwareDeviceListener = null;
+  private HardwareDeviceManager hardwareDeviceManager;
 
   public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration)
       throws AndroidSdkException, AndroidDeviceException {
     this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder();
-    androidDeviceFinder = new DefaultHardwareDeviceFinder();
+
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
   }
@@ -77,16 +80,15 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   /**
    * For testing only
    */
-  SelendroidStandaloneDriver(SelendroidServerBuilder builder, DeviceFinder deviceFinder) {
+  SelendroidStandaloneDriver(SelendroidServerBuilder builder, HardwareDeviceListener deviceFinder) {
     this.selendroidApkBuilder = builder;
-    androidDeviceFinder = deviceFinder;
+    hardwareDeviceListener = deviceFinder;
   }
 
   /* package */void initApplicationsUnderTest(SelendroidConfiguration serverConfiguration)
       throws AndroidSdkException {
-    if ((serverConfiguration == null || serverConfiguration.getSupportedApps() == null
-        || serverConfiguration.getSupportedApps().isEmpty())
-        && serverConfiguration.getInstalledApp() == null) {
+    if ((serverConfiguration == null || serverConfiguration.getSupportedApps() == null || serverConfiguration
+        .getSupportedApps().isEmpty()) && serverConfiguration.getInstalledApp() == null) {
       throw new SelendroidException("Configuration error - no apps has been configured.");
     }
     this.serverConfiguration = serverConfiguration;
@@ -128,8 +130,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   }
 
   /* package */void initAndroidDevices() throws AndroidDeviceException {
-    deviceStore = new DeviceStore(serverConfiguration.isVerbose(),
-            serverConfiguration.getEmulatorPort());
+    deviceStore =
+        new DeviceStore(serverConfiguration.isVerbose(), serverConfiguration.getEmulatorPort());
     try {
       if (serverConfiguration.isRestartAdb()) {
         resetAdb();
@@ -137,18 +139,22 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException("An error occured while restarting adb.", e);
     }
+    if (hardwareDeviceListener == null) {
+      hardwareDeviceListener = new DefaultHardwareDeviceListener(deviceStore);
+    }
+    hardwareDeviceManager = new DefaultHardwareDeviceManager(AndroidSdk.adb());
+    hardwareDeviceManager.initialize(hardwareDeviceListener);
+
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
     deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null);
-
-    List<AndroidDevice> devices = androidDeviceFinder.findConnectedDevices();
-    deviceStore.addDevices(devices);
 
     if (deviceStore.getDevices().isEmpty()) {
       SelendroidException e =
           new SelendroidException(
-              "No android virtual devices were found. Please start the android tool and create emulators.");
-      log.severe("Error: " + e);
-      throw e;
+              "No android virtual devices were found. "
+                  + "Please start the android tool and create emulators and restart the selendroid-standalone "
+                  + "or plugin an Android hardware device via USB.");
+      log.warning("Warning: " + e);
     }
   }
 
@@ -182,7 +188,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     return os;
   }
 
-  public String createNewTestSession(JSONObject caps, Integer retries) throws AndroidSdkException, JSONException {
+  public String createNewTestSession(JSONObject caps, Integer retries) throws AndroidSdkException,
+      JSONException {
     SelendroidCapabilities desiredCapabilities = null;
     try {
       desiredCapabilities = new SelendroidCapabilities(caps);
@@ -230,7 +237,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           deviceStore.release(device, app);
         } catch (AndroidDeviceException e1) {}
         if (retries > 0) {
-            return createNewTestSession(caps, retries-1);
+          return createNewTestSession(caps, retries - 1);
         }
         throw new SessionNotCreatedException("Error occured while interacting with the emulator: "
             + emulator + ": " + e.getMessage());
@@ -259,10 +266,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       if (!device.install(selendroidServer)) {
         try {
           deviceStore.release(device, app);
-        } catch (AndroidDeviceException e) {
-        }
+        } catch (AndroidDeviceException e) {}
         if (retries > 0) {
-          return createNewTestSession(caps, retries-1);
+          return createNewTestSession(caps, retries - 1);
         }
       }
     } else if (retryInstallApp) {
@@ -285,7 +291,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         deviceStore.release(device, app);
       } catch (AndroidDeviceException e1) {}
       if (retries > 0) {
-        return createNewTestSession(caps, retries-1);
+        return createNewTestSession(caps, retries - 1);
       }
       throw new SessionNotCreatedException("Error occured while starting instrumentation: "
           + e.getMessage());
@@ -335,8 +341,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkException {
     if (!selendroidServers.containsKey(aut.getAppId())) {
       try {
-        AndroidApp selendroidServer =
-            selendroidApkBuilder.createSelendroidServer(aut);
+        AndroidApp selendroidServer = selendroidApkBuilder.createSelendroidServer(aut);
         selendroidServers.put(aut.getAppId(), selendroidServer);
       } catch (Exception e) {
         e.printStackTrace();
@@ -432,6 +437,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
       }
     }
+    hardwareDeviceManager.shutdown();
   }
 
   public SelendroidCapabilities getSessionCapabilities(String sessionId) {
@@ -481,8 +487,54 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         deviceInfo.put("screenSize", device.getScreenSize());
 
         list.put(deviceInfo);
-      } catch (Exception e) {}
+      } catch (Exception e) {
+        log.info("Error occured when building suported device info: " + e.getMessage());
+      }
     }
     return list;
+  }
+
+  public class DefaultHardwareDeviceListener implements HardwareDeviceListener {
+    private DeviceStore store = null;
+
+    public DefaultHardwareDeviceListener(DeviceStore store) {
+      this.store = store;
+    }
+
+    @Override
+    public void onDeviceConnected(AndroidDevice device) {
+      try {
+        store.addDevice(device);
+      } catch (AndroidDeviceException e) {
+        log.info(e.getMessage());
+      }
+    }
+
+    @Override
+    public void onDeviceDisconnected(AndroidDevice device) {
+      try {
+        // if there is an active session on the device,
+        // mark it as invalid.
+        ActiveSession session=findActiveSession(device);
+        if(session!=null){
+          session.invalidate();
+        }
+        
+        //remove device from store
+        store.removeAndroidDevice(device);
+      } catch (DeviceStoreException e) {
+        log.severe("The device cannot be removed: " + e.getMessage());
+      }
+    }
+  }
+
+  private ActiveSession findActiveSession(AndroidDevice device) {
+    for (ActiveSession session : sessions.values()) {
+      if (session.getDevice().equals(device)) {
+        return session;
+      }
+    }
+    return null;
+
   }
 }
