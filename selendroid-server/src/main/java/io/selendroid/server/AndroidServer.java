@@ -43,7 +43,8 @@ public class AndroidServer {
     init(androidInstrumentation);
   }
 
-  public AndroidServer(ServerInstrumentation androidInstrumentation) {
+  public AndroidServer(ServerInstrumentation androidInstrumentation, int port) {
+    driverPort = port;
     webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
     init(androidInstrumentation);
   }
@@ -80,4 +81,5 @@ public class AndroidServer {
   public int getPort() {
     return webServer.getPort();
   }
+
 }
