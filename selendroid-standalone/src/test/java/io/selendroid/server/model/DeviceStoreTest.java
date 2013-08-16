@@ -30,7 +30,6 @@ import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.DeviceStoreException;
-import io.selendroid.exceptions.SelendroidException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -134,37 +133,26 @@ public class DeviceStoreTest {
     AndroidEmulator deEmulator16 = anEmulator("de", DeviceTargetPlatform.ANDROID16, true);
 
     DeviceStore deviceStore = new DeviceStore(false, EMULATOR_PORT);
-    try {
-      deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {enEmulator10, deEmulator16}));
-      Assert.fail();
-    } catch (SelendroidException e) {
-      // expected
-      Assert.assertEquals(deviceStore.getDevicesList().size(), 0);
-    }
+    deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {enEmulator10, deEmulator16}));
+
+    // Nothing has been added.
+    Assert.assertEquals(deviceStore.getDevicesList().size(), 0);
   }
 
   @Test
-  public void storeShouldThrowAnExceptionIfInitializedWithEmptyList() throws AndroidDeviceException {
+  public void storeShouldDoNothingIfInitializedWithEmptyList() throws AndroidDeviceException {
     DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
-    try {
-      store.addEmulators(new ArrayList<AndroidEmulator>());
-      Assert.fail();
-    } catch (SelendroidException e) {
-      // expected
-      Assert.assertEquals(store.getDevicesList().size(), 0);
-    }
+
+    store.addEmulators(new ArrayList<AndroidEmulator>());
+    Assert.assertEquals(store.getDevicesList().size(), 0);
   }
 
   @Test
-  public void storeShouldThrowAnExceptionIfInitializedWithNull() throws AndroidDeviceException {
+  public void storeShouldDoNothingIfInitializedWithNull() throws AndroidDeviceException {
     DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
-    try {
-      store.addEmulators(null);
-      Assert.fail();
-    } catch (SelendroidException e) {
-      // expected
-      Assert.assertEquals(store.getDevicesList().size(), 0);
-    }
+
+    store.addEmulators(null);
+    Assert.assertEquals(store.getDevicesList().size(), 0);
   }
 
   private DefaultAndroidEmulator anEmulator(String name, DeviceTargetPlatform platform,
@@ -217,7 +205,10 @@ public class DeviceStoreTest {
       deviceStore.findAndroidDevice(capa);
       Assert.fail();
     } catch (DeviceStoreException e) {
-      Assert.assertEquals("'androidTarget' is missing in desired capabilities.", e.getMessage());
+      Assert
+          .assertEquals(
+              "No devices are found. This can happen if the devices are in use or no device screen matches the required capabilities.",
+              e.getMessage());
     }
   }
 
@@ -339,7 +330,6 @@ public class DeviceStoreTest {
 
   @Test
   public void testShouldBeAbleToRemoveAHardwareDevice() throws Exception {
-    Assert.fail("implement me");
     DefaultHardwareDevice device = anDevice("de", DeviceTargetPlatform.ANDROID16);
     DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
     store.addDevice(device);
