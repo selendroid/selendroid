@@ -21,7 +21,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import io.selendroid.exceptions.SelendroidException;
 
-public class DefaultAndroidAppTests {
+public class DefaultAndroidAppTest {
   private static final String APK_FILE = "src/test/resources/selendroid-test-app.apk";
   private static final String INVALID_APK_FILE =
       "src/test/resources/selendroid-test-app-invalid.apk";

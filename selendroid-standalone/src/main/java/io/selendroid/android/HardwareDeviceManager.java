@@ -11,13 +11,14 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.server.model;
+package io.selendroid.android;
 
-import io.selendroid.android.AndroidDevice;
-import io.selendroid.exceptions.AndroidDeviceException;
+public interface HardwareDeviceManager {
+  public void initialize(HardwareDeviceListener defaultListener);
 
-import java.util.List;
+  public void registerListner(HardwareDeviceListener deviceListener);
 
-public interface DeviceFinder {
-  public List<AndroidDevice> findConnectedDevices() throws AndroidDeviceException;
+  public void unregisterListener(HardwareDeviceListener deviceListener);
+
+  public void shutdown();
 }

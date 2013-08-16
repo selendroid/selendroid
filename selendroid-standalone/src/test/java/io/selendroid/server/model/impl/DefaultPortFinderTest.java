@@ -6,7 +6,7 @@ import io.selendroid.server.model.impl.DefaultPortFinder;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DefaultPortFinderTests {
+public class DefaultPortFinderTest {
 
   private final static Integer MIN_PORT = 5560;
   private final static Integer MAX_PORT = 5590;
@@ -26,11 +26,11 @@ public class DefaultPortFinderTests {
   public void assertTestIsAbleToReleasePorts() {
     EmulatorPortFinder finder = new DefaultPortFinder(MIN_PORT, MAX_PORT);
 
-    Assert.assertEquals(5554, finder.next().intValue());
-    Assert.assertEquals(5556, finder.next().intValue());
-    Assert.assertEquals(5558, finder.next().intValue());
-    finder.release(5554);
-    Assert.assertEquals(5554, finder.next().intValue());
+    Assert.assertEquals(5560, finder.next().intValue());
+    Assert.assertEquals(5562, finder.next().intValue());
+    Assert.assertEquals(5564, finder.next().intValue());
+    finder.release(5564);
+    Assert.assertEquals(5564, finder.next().intValue());
   }
 
   @Test

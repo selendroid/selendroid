@@ -13,10 +13,9 @@
  */
 package io.selendroid.server.model;
 
+import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
-
-import io.selendroid.SelendroidCapabilities;
 
 public class ActiveSession {
   private final String sessionKey;
@@ -24,6 +23,7 @@ public class ActiveSession {
   private AndroidDevice device;
   private SelendroidCapabilities desiredCapabilities;
   private final int selendroidServerPort;
+  private boolean invalid = false;
 
   ActiveSession(String sessionKey, SelendroidCapabilities desiredCapabilities, AndroidApp aut,
       AndroidDevice device, int selendroidPort) {
@@ -72,6 +72,18 @@ public class ActiveSession {
     int result = 1;
     result = prime * result + ((sessionKey == null) ? 0 : sessionKey.hashCode());
     return result;
+  }
+
+  public boolean isInvalid() {
+    return invalid;
+  }
+
+  /**
+   * marks the session as invalid. This happens when e.g. the hardware device has been disconnected.
+   */
+  public void invalidate() {
+    this.invalid = true;
+
   }
 
   @Override

@@ -1,21 +1,38 @@
+/*
+ * Copyright 2013 selendroid committers.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package io.selendroid.android.impl;
 
-import io.selendroid.android.AndroidSdk;
 import io.selendroid.device.DeviceTargetPlatform;
 
-import java.util.List;
 import java.util.Locale;
+import java.util.logging.Logger;
 
-import com.beust.jcommander.internal.Lists;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.RawImage;
 
 public class DefaultHardwareDevice extends AbstractDevice {
+  private static final Logger log = Logger.getLogger(DefaultHardwareDevice.class.getName());
+  private IDevice device;
   private String model = null;
+
   private Locale locale = null;
   private DeviceTargetPlatform targetPlatform = null;
   private String screenSize = null;
 
-  public DefaultHardwareDevice(String serial) {
-    super(serial);
+  public DefaultHardwareDevice(IDevice device) {
+    super(device.getSerialNumber());
+    this.device = device;
   }
 
   public String getModel() {
@@ -25,8 +42,9 @@ public class DefaultHardwareDevice extends AbstractDevice {
     return model;
   }
 
-  public Integer getDeviceTargetPlatform() {
-    return Integer.parseInt(getProp("ro.build.version.sdk"));
+  @Override
+  protected String getProp(String key) {
+    return device.getProperty(key);
   }
 
   @Override
@@ -40,21 +58,20 @@ public class DefaultHardwareDevice extends AbstractDevice {
 
   @Override
   public String getScreenSize() {
-    List<String> command = Lists.newArrayList();
-    command.add(AndroidSdk.adb());
-    if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+    if (this.screenSize == null) {
+      RawImage screeshot = null;
+
+      try {
+        screeshot = device.getScreenshot();
+        this.screenSize = screeshot.height + "x" + screeshot.width;
+      } catch (Exception e) {
+        log.warning("was not able to determine screensize: " + e.getMessage());
+        // can happen
+        e.printStackTrace();
+      }
     }
-    command.add("shell");
-    command.add("dumpsys");
-    command.add("display");
 
-    String output = executeCommand(command);
-
-    this.screenSize = extractValue("PhysicalDisplayInfo\\{(.*?)\\,", output).replace(" ", "");
-    // look for deviceWidth, deviceHeight
-    return screenSize;
+    return this.screenSize;
   }
 
   public Locale getLocale() {
@@ -66,6 +83,12 @@ public class DefaultHardwareDevice extends AbstractDevice {
 
   @Override
   public boolean isDeviceReady() {
+    // TODO ddary maybe use property dev.bootcomplete
     return true;
+  }
+
+  @Override
+  public String toString() {
+    return "HardwareDevice [serial=" + serial + ", model=" + getModel() + "]";
   }
 }

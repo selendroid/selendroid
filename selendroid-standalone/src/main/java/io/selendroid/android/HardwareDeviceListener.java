@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Selenium committers Copyright 2012 Software Freedom Conservancy
+ * Copyright 2013 selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -11,20 +11,10 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+package io.selendroid.android;
 
-
-package io.selendroid.testapp.webdrivertestserver.handler;
-
-
-import java.io.File;
-
-import org.webbitserver.handler.StaticFileHandler;
-
-public class ImprovedStaticFileHandler extends StaticFileHandler {
-
-  public ImprovedStaticFileHandler(File dir) {
-    super(dir);
-    addMimeType("appcache", "text/cache-manifest");
-    enableDirectoryListing(true);
-  }
+public interface HardwareDeviceListener {
+  public void onDeviceConnected(AndroidDevice device);
+  
+  public void onDeviceDisconnected(AndroidDevice device); 
 }

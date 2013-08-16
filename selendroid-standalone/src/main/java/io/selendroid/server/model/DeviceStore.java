@@ -17,6 +17,7 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
+import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -42,7 +43,7 @@ public class DeviceStore {
     if (debug) {
       log.setLevel(Level.FINE);
     }
-    androidEmulatorPortFinder = new DefaultPortFinder(emulatorPort, emulatorPort+30);
+    androidEmulatorPortFinder = new DefaultPortFinder(emulatorPort, emulatorPort + 30);
   }
 
   public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder, Boolean debug) {
@@ -70,7 +71,7 @@ public class DeviceStore {
         if (installedApp) {
           // kill process instead of shutting down emulator
           try {
-            ((AndroidEmulator)device).kill((InstalledAndroidApp)aut);
+            ((AndroidEmulator) device).kill((InstalledAndroidApp) aut);
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -84,15 +85,18 @@ public class DeviceStore {
     }
   }
 
-  public void addDevices(List<AndroidDevice> androidDevices) throws AndroidDeviceException {
-    if (androidDevices == null || androidDevices.isEmpty()) {
+  public synchronized void addDevice(AndroidDevice androidDevice) throws AndroidDeviceException {
+    if (androidDevice == null) {
       log.info("No Android devices were found.");
       return;
     }
-    for (AndroidDevice device : androidDevices) {
-      if (device.isDeviceReady() == true) {
-        addAndroidEmulator(device);
-      }
+    if (androidDevice instanceof AndroidEmulator) {
+      throw new AndroidDeviceException(
+          "For adding emulator instances please use #addEmulator method.");
+    }
+    if (androidDevice.isDeviceReady() == true) {
+      System.out.println("Adding: " + androidDevice);
+      addDeviceToStore(androidDevice);
     }
   }
 
@@ -100,7 +104,8 @@ public class DeviceStore {
     addEmulators(emulators, false);
   }
 
-  public void addEmulators(List<AndroidEmulator> emulators, Boolean installedApp) throws AndroidDeviceException {
+  public void addEmulators(List<AndroidEmulator> emulators, Boolean installedApp)
+      throws AndroidDeviceException {
     this.installedApp = installedApp;
     if (emulators == null || emulators.isEmpty()) {
       log.info("No emulators has been found.");
@@ -111,26 +116,30 @@ public class DeviceStore {
         if (!installedApp) {
           log.info("Skipping emulator because it is already in use: " + emulator);
           continue;
-        } else {
-
         }
       }
 
       log.info("Adding: " + emulator);
-      addAndroidEmulator((AndroidDevice) emulator);
+      addDeviceToStore((AndroidDevice) emulator);
     }
   }
 
-  protected void addAndroidEmulator(AndroidDevice emulator) throws AndroidDeviceException {
-    if (androidDevices.containsKey(emulator.getTargetPlatform())) {
-      if (androidDevices.get(emulator.getTargetPlatform()) == null) {
-        androidDevices.put(emulator.getTargetPlatform(), new ArrayList<AndroidDevice>());
+  /**
+   * Internal method to add an actual device to the store.
+   * 
+   * @param device The device to add.
+   * @throws AndroidDeviceException
+   */
+  protected synchronized void addDeviceToStore(AndroidDevice device) throws AndroidDeviceException {
+    if (androidDevices.containsKey(device.getTargetPlatform())) {
+      if (androidDevices.get(device.getTargetPlatform()) == null) {
+        androidDevices.put(device.getTargetPlatform(), new ArrayList<AndroidDevice>());
       }
-      androidDevices.get(emulator.getTargetPlatform()).add((AndroidDevice) emulator);
+      androidDevices.get(device.getTargetPlatform()).add((AndroidDevice) device);
     } else {
-      List<AndroidDevice> device = new ArrayList<AndroidDevice>();
-      device.add((AndroidDevice) emulator);
-      androidDevices.put(emulator.getTargetPlatform(), device);
+      List<AndroidDevice> devices = new ArrayList<AndroidDevice>();
+      devices.add((AndroidDevice) device);
+      androidDevices.put(device.getTargetPlatform(), devices);
     }
   }
 
@@ -163,6 +172,9 @@ public class DeviceStore {
       DeviceTargetPlatform platform = DeviceTargetPlatform.valueOf(androidTarget);
       devices = androidDevices.get(platform);
     }
+    if (devices == null) {
+      devices = new ArrayList<AndroidDevice>();
+    }
 
     // keep a list of emulators that aren't started to be used as backup
     // when installedApp is used, want to default to the already running emulator
@@ -185,11 +197,12 @@ public class DeviceStore {
           devicesInUse.add(device);
           return device;
         }
-        log.severe("Device did not match emulator/physical device. caps.getEmulator(): " + caps.getEmulator());
+        log.severe("Device did not match emulator/physical device. caps.getEmulator(): "
+            + caps.getEmulator());
       } else if (installedApp) {
         if (devicesInUse.contains(device)) {
-            log.fine("device already in use");
-            continue;
+          log.fine("device already in use");
+          continue;
         }
         devicesInUse.add(device);
         return device;
@@ -237,5 +250,38 @@ public class DeviceStore {
    */
   /* package */Map<DeviceTargetPlatform, List<AndroidDevice>> getDevicesList() {
     return androidDevices;
+  }
+
+  /**
+   * Removes the given device from store so that it cannot be any longer be used for testing. This
+   * can happen if e.g. the hardware device gets unplugged from the computer.
+   * 
+   * @param device the device to remove.
+   * @throws DeviceStoreException when parameter is not type of 'DefaultHardwareDevice'.
+   */
+  public void removeAndroidDevice(AndroidDevice device) throws DeviceStoreException {
+    if (device == null) {
+      return;
+    }
+    boolean hardwareDevice = device instanceof DefaultHardwareDevice;
+    if (hardwareDevice == false) {
+      throw new DeviceStoreException("Only devices of type 'DefaultHardwareDevice' can be removed.");
+    }
+    try {
+      release(device, null);
+    } catch (AndroidDeviceException e) {
+      throw new DeviceStoreException("An error occured while releasing device", e);
+    }
+    DeviceTargetPlatform apiLevel = device.getTargetPlatform();
+    if (androidDevices.containsKey(apiLevel)) {
+      log.info("Removing: " + device);
+      androidDevices.get(apiLevel).remove(device);
+      if (androidDevices.get(apiLevel).isEmpty()) {
+        androidDevices.remove(apiLevel);
+      }
+    } else {
+      log.warning("The target platform version of the device is not found in device store.");
+      log.warning("The device was propably already removed.");
+    }
   }
 }
