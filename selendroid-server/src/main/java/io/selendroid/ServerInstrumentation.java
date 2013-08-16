@@ -41,7 +41,8 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   private HttpdThread serverThread = null;
   private AndroidWait androidWait = new AndroidWait();
   private PowerManager.WakeLock wakeLock;
-
+  private int serverPort = 8080;
+  
   public void startMainActivity() {
     finishAllActivities();
     startActivity(mainActivity);
@@ -81,8 +82,22 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   @SuppressWarnings("unchecked")
   @Override
   public void onCreate(Bundle arguments) {
+
     String activityClazzName = arguments.getString("main_activity");
 
+    int parsedServerPort;
+    
+    try {
+        parsedServerPort = Integer.parseInt(arguments.getString("server_port", Integer.toString(this.serverPort)));
+    } catch (NumberFormatException ex) {
+        SelendroidLogger.log("Unable to parse the value of server_port key.");
+        parsedServerPort = this.serverPort;
+    }
+    
+    if (isValidPort(parsedServerPort)) {
+        this.serverPort = parsedServerPort;
+    }
+    
     Class<? extends Activity> clazz = null;
     try {
       clazz = (Class<? extends Activity>) Class.forName(activityClazzName);
@@ -98,6 +113,10 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     instance = this;
 
     start();
+  }
+
+  private boolean isValidPort(int port) {
+      return port >= 1024 && port <= 65535;
   }
 
   @Override
@@ -193,7 +212,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       stopServer();
     }
 
-    serverThread = new HttpdThread(this);
+    serverThread = new HttpdThread(this, this.serverPort);
     serverThread.start();
   }
 
@@ -227,7 +246,8 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     serverThread.getServer().setConnectionTimeout(millies);
   }
 
-  public String getServerVersion() {
+  @Override
+public String getServerVersion() {
     Context context = getContext();
     String versionName = "0.3";
     try {
@@ -253,10 +273,10 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     private ServerInstrumentation instrumentation = null;
     private Looper looper;
 
-    public HttpdThread(ServerInstrumentation instrumentation) {
+    public HttpdThread(ServerInstrumentation instrumentation, int serverPort) {
       this.instrumentation = instrumentation;
       // Create the server but absolutely do not start it here
-      server = new AndroidServer(this.instrumentation);
+      server = new AndroidServer(this.instrumentation, serverPort);
     }
 
     @Override
@@ -282,7 +302,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
         server.start();
 
-        SelendroidLogger.log("Started selendroid http server on port 8080.");
+        SelendroidLogger.log("Started selendroid http server on port " + server.getPort());
       } catch (Exception e) {
         SelendroidLogger.log("Error starting httpd.", e);
 
