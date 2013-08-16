@@ -52,6 +52,14 @@ public interface SelendroidDriver {
 
   public TouchScreen getTouch();
 
+  public void addCookie(String url, Cookie cookie);
+
+  public void deleteCookie(String url);
+
+  public void deleteNamedCookie(String url, String name);
+
+  public Set<Cookie> getCookies(String url);
+
   public Object executeScript(String script, JSONArray args);
 
   public Object executeScript(String script, Object... args);
@@ -61,4 +69,6 @@ public interface SelendroidDriver {
   public Set<String> getWindowHandles();
 
   public Dimension getWindowSize();
+
+
 }
