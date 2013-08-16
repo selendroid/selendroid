@@ -15,8 +15,11 @@ package io.selendroid.server;
 
 import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.server.handler.CaptureScreenshot;
+import io.selendroid.server.handler.AddCookie;
 import io.selendroid.server.handler.ClearElement;
 import io.selendroid.server.handler.ClickElement;
+import io.selendroid.server.handler.DeleteCookies;
+import io.selendroid.server.handler.DeleteNamedCookie;
 import io.selendroid.server.handler.DeleteSession;
 import io.selendroid.server.handler.DoubleTapOnElement;
 import io.selendroid.server.handler.Down;
@@ -28,6 +31,7 @@ import io.selendroid.server.handler.FindElement;
 import io.selendroid.server.handler.FindElements;
 import io.selendroid.server.handler.Flick;
 import io.selendroid.server.handler.GetCapabilities;
+import io.selendroid.server.handler.GetCookies;
 import io.selendroid.server.handler.GetCurrentUrl;
 import io.selendroid.server.handler.GetElementAttribute;
 import io.selendroid.server.handler.GetElementDisplayed;
@@ -75,7 +79,6 @@ public class AndroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session", NewSession.class);
     getHandler.put("/wd/hub/session/:sessionId", GetCapabilities.class);
     deleteHandler.put("/wd/hub/session/:sessionId", DeleteSession.class);
-
     getHandler.put("/wd/hub/session/:sessionId/screenshot", CaptureScreenshot.class);
     postHandler.put("/wd/hub/session/:sessionId/element", FindElement.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/element", FindChildElement.class);
@@ -106,6 +109,10 @@ public class AndroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session/:sessionId/execute", ExecuteScript.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/enabled", GetElementEnabled.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/displayed", GetElementDisplayed.class);
+    getHandler.put("/wd/hub/session/:sessionId/cookie", GetCookies.class);
+    postHandler.put("/wd/hub/session/:sessionId/cookie", AddCookie.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/cookie", DeleteCookies.class);
+    deleteHandler.put("/wd/hub/session/:sessionId/cookie/:name", DeleteNamedCookie.class);
 
     // Advanced Touch API
     postHandler.put("/wd/hub/session/:sessionId/touch/click", SingleTapOnElement.class);
@@ -144,10 +151,6 @@ public class AndroidServlet extends BaseServlet {
         UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/maximize",
         UnknownCommandHandler.class);
-    getHandler.put("/wd/hub/session/:sessionId/cookie", UnknownCommandHandler.class);
-    postHandler.put("/wd/hub/session/:sessionId/cookie", UnknownCommandHandler.class);
-    deleteHandler.put("/wd/hub/session/:sessionId/cookie", UnknownCommandHandler.class);
-    deleteHandler.put("/wd/hub/session/:sessionId/cookie/:name", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/element/active", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/name", GetElementTagName.class);
