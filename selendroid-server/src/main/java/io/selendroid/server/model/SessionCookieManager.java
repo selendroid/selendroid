@@ -16,7 +16,7 @@ limitations under the License.
 package io.selendroid.server.model;
 
 import android.webkit.CookieManager;
-import io.selendroid.exceptions.WebDriverException;
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.util.SelendroidLogger;
 
 import java.net.MalformedURLException;
@@ -77,7 +77,7 @@ class SessionCookieManager {
         try {
             domains = getDomainsFromUrl(new URL(url));
         } catch (MalformedURLException e) {
-            throw new WebDriverException("Error while adding cookie. " + e);
+            throw new SelendroidException("Error while adding cookie. " + e);
         }
 
         for (String domain : domains) {
@@ -122,7 +122,7 @@ class SessionCookieManager {
         try {
             cookies = getCookies(getDomainsFromUrl(new URL(url)).get(0));
         } catch (MalformedURLException e) {
-            throw new WebDriverException("Error while adding cookie. " + e);
+            throw new SelendroidException("Error while adding cookie. " + e);
         }
         // No cookies for given domain
         if (cookies == null || cookies.size() == 0) {
@@ -157,7 +157,7 @@ class SessionCookieManager {
         try {
             domains = getDomainsFromUrl(new URL(url));
         } catch (MalformedURLException e) {
-            throw new WebDriverException("Error while adding cookie. " + e);
+            throw new SelendroidException("Error while adding cookie. " + e);
         }
         for (String domain : domains) {
             List<Cookie> cookies = getCookies(domain);
@@ -185,7 +185,7 @@ class SessionCookieManager {
         try {
             urlObj = new URL(url);
         } catch (MalformedURLException e) {
-            throw new WebDriverException("Error while adding cookie. ", e);
+            throw new SelendroidException("Error while adding cookie. ", e);
         }
         String domain = "http://" + urlObj.getHost() + cookie.getPath();
         SelendroidLogger.log(domain);
