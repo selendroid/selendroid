@@ -17,7 +17,6 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.JavaSdk;
 import io.selendroid.android.impl.DefaultAndroidApp;
-import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
@@ -34,7 +33,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -46,8 +44,6 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-
-import com.beust.jcommander.internal.Lists;
 
 public class SelendroidServerBuilder {
   public static final String SELENDROID_TEST_APP_PACKAGE = "io.selendroid.testapp";
@@ -164,16 +160,17 @@ public class SelendroidServerBuilder {
     IOUtils.closeQuietly(outputStream);
 
     // adding the xml to an empty apk
-    List<String> createManifestApk = Lists.newArrayList();
-    createManifestApk.add(AndroidSdk.aapt());
-    createManifestApk.add("package -M");
-    createManifestApk.add(customizedManifest.getAbsolutePath());
-    createManifestApk.add("-I");
-    createManifestApk.add(AndroidSdk.androidJar());
-    createManifestApk.add("-F");
-    createManifestApk.add(tempdir.getAbsolutePath() + File.separatorChar + "manifest.apk");
-    createManifestApk.add("-f");
-    log.info(ShellCommand.exec(createManifestApk));
+    CommandLine createManifestApk = new CommandLine(AndroidSdk.aapt());
+
+    createManifestApk.addArgument("package -M", false);
+    createManifestApk.addArgument(customizedManifest.getAbsolutePath(), false);
+    createManifestApk.addArgument("-I", false);
+    createManifestApk.addArgument(AndroidSdk.androidJar(), false);
+    createManifestApk.addArgument("-F", false);
+    createManifestApk.addArgument(tempdir.getAbsolutePath() + File.separatorChar + "manifest.apk",
+        false);
+    createManifestApk.addArgument("-f", false);
+    log.info(ShellCommand.exec(createManifestApk, 20000L));
 
     ZipFile manifestApk =
         new ZipFile(new File(tempdir.getAbsolutePath() + File.separatorChar + "manifest.apk"));
@@ -210,7 +207,7 @@ public class SelendroidServerBuilder {
 
     if (androidKeyStore.isFile() == false) {
       // create a new keystore
-      CommandLine commandline = new CommandLine(new File(JavaSdk.keytool()));
+      CommandLine commandline = new CommandLine(JavaSdk.keytool());
 
       commandline.addArgument("-genkey", false);
       commandline.addArgument("-v", false);
@@ -238,7 +235,7 @@ public class SelendroidServerBuilder {
     }
 
     // Sign the jar
-    CommandLine commandline = new CommandLine(new File(JavaSdk.jarsigner()));
+    CommandLine commandline = new CommandLine(JavaSdk.jarsigner());
 
     commandline.addArgument("-sigalg", false);
     commandline.addArgument("MD5withRSA", false);

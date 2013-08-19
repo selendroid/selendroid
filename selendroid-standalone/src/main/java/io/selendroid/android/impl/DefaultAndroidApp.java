@@ -16,17 +16,15 @@ package io.selendroid.android.impl;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.exceptions.AndroidSdkException;
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
 import java.io.File;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.selendroid.exceptions.SelendroidException;
-
-import com.beust.jcommander.internal.Lists;
+import org.apache.commons.exec.CommandLine;
 
 
 public class DefaultAndroidApp implements AndroidApp {
@@ -40,12 +38,12 @@ public class DefaultAndroidApp implements AndroidApp {
   }
 
   private String extractApkDetails(String regex) throws ShellCommandException, AndroidSdkException {
-    List<String> line = Lists.newArrayList();
-    line.add(AndroidSdk.aapt());
-    line.add("dump");
-    line.add("badging");
-    line.add(apkFile.getAbsolutePath());
-    String output = ShellCommand.exec(line);
+    CommandLine line = new CommandLine(AndroidSdk.aapt());
+
+    line.addArgument("dump", false);
+    line.addArgument("badging", false);
+    line.addArgument(apkFile.getAbsolutePath(), false);
+    String output = ShellCommand.exec(line, 20000);
 
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(output);
@@ -99,14 +97,14 @@ public class DefaultAndroidApp implements AndroidApp {
    * @see io.selendroid.android.impl.AndroidAppA#deleteFileFromWithinApk(java.lang.String)
    */
   @Override
-  public void deleteFileFromWithinApk(String file) throws ShellCommandException, AndroidSdkException {
-    List<String> line = Lists.newArrayList();
-    line.add(AndroidSdk.aapt());
-    line.add("remove");
-    line.add(apkFile.getAbsolutePath());
-    line.add(file);
+  public void deleteFileFromWithinApk(String file) throws ShellCommandException,
+      AndroidSdkException {
+    CommandLine line = new CommandLine(AndroidSdk.aapt());
+    line.addArgument("remove", false);
+    line.addArgument(apkFile.getAbsolutePath(), false);
+    line.addArgument(file, false);
 
-    ShellCommand.exec(line);
+    ShellCommand.exec(line, 20000);
   }
 
   /*

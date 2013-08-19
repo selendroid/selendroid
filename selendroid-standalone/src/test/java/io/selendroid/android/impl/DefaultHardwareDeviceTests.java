@@ -84,7 +84,7 @@ public class DefaultHardwareDeviceTests {
 
   private String listInstalledPackages() throws Exception {
     List<String> command = Lists.newArrayList();
-    command.add(AndroidSdk.adb());
+    command.add(AndroidSdk.adb().getAbsolutePath());
     command.add("-s");
     command.add(serial);
     command.add("shell");

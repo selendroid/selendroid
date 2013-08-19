@@ -20,23 +20,22 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.openqa.selenium.logging.LogEntry;
 
 import com.beust.jcommander.internal.Lists;
-import org.openqa.selenium.logging.LogEntry;
 
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
@@ -56,17 +55,17 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public boolean isDeviceReady() {
-    List<String> command = new ArrayList<String>();
-    command.add(AndroidSdk.adb());
+    CommandLine command = new CommandLine(AndroidSdk.adb());
+
     if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
     }
-    command.add("shell");
-    command.add("getprop init.svc.bootanim");
+    command.addArgument("shell", false);
+    command.addArgument("getprop init.svc.bootanim", false);
     String bootAnimDisplayed = null;
     try {
-      bootAnimDisplayed = ShellCommand.exec(command);
+      bootAnimDisplayed = ShellCommand.exec(command, 20000);
     } catch (ShellCommandException e) {}
     if (bootAnimDisplayed != null && bootAnimDisplayed.contains("stopped")) {
       return true;
@@ -76,27 +75,28 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public boolean isInstalled(AndroidApp app) throws AndroidSdkException {
-    List<String> command = new ArrayList<String>();
-    command.add(AndroidSdk.adb());
+    CommandLine command = new CommandLine(AndroidSdk.adb());
+
     if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
     }
-    command.add("shell");
-    command.add("pm");
-    command.add("list");
-    command.add("packages");
+    command.addArgument("shell", false);
+    command.addArgument("pm", false);
+    command.addArgument("list", false);
+    command.addArgument("packages", false);
     String apkPackage = app.getBasePackage();
-    command.add(apkPackage);
+    command.addArgument(apkPackage, false);
     String result = null;
     try {
-      result = ShellCommand.exec(command);
+      result = ShellCommand.exec(command, 20000);
     } catch (ShellCommandException e) {}
     if (result != null && result.contains(apkPackage)) {
       return true;
     }
     if (app instanceof InstalledAndroidApp) {
-      throw new RuntimeException("The specified app is not installed on the device: " + app.getAppId());
+      throw new RuntimeException("The specified app is not installed on the device: "
+          + app.getAppId());
     }
     return false;
   }
@@ -106,14 +106,14 @@ public abstract class AbstractDevice implements AndroidDevice {
     if (app instanceof InstalledAndroidApp) {
       return true;
     }
-    List<String> command = new ArrayList<String>();
-    command.add(AndroidSdk.adb());
+    CommandLine command = new CommandLine(AndroidSdk.adb());
+
     if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
     }
-    command.add("install");
-    command.add(app.getAbsolutePath());
+    command.addArgument("install", false);
+    command.addArgument(app.getAbsolutePath(), false);
 
     String out = executeCommand(command, 120000);
     try {
@@ -125,7 +125,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     return out.contains("Success");
   }
 
-  protected String executeCommand(List<String> command, long timeout) {
+  protected String executeCommand(CommandLine command, long timeout) {
     try {
       return ShellCommand.exec(command, timeout);
     } catch (ShellCommandException e) {
@@ -148,16 +148,16 @@ public abstract class AbstractDevice implements AndroidDevice {
     if (app instanceof InstalledAndroidApp) {
       return;
     }
-    List<String> command = new ArrayList<String>();
-    command.add(AndroidSdk.adb());
-    if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
-    }
-    command.add("uninstall");
-    command.add(app.getBasePackage());
+    CommandLine command = new CommandLine(AndroidSdk.adb());
 
-    executeCommand(command);
+    if (isSerialConfigured()) {
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
+    }
+    command.addArgument("uninstall", false);
+    command.addArgument(app.getBasePackage(), false);
+
+    executeCommand(command, 20000);
     try {
       // give it a second to recover from the uninstall
       Thread.sleep(1000);
@@ -168,37 +168,37 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public void clearUserData(AndroidApp app) throws AndroidSdkException {
-    List<String> command = new ArrayList<String>();
-    command.add(AndroidSdk.adb());
+    CommandLine command = new CommandLine(AndroidSdk.adb());
+
     if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
     }
-    command.add("shell");
-    command.add("pm");
-    command.add("clear");
-    command.add(app.getBasePackage());
-    executeCommand(command);
+    command.addArgument("shell", false);
+    command.addArgument("pm", false);
+    command.addArgument("clear", false);
+    command.addArgument(app.getBasePackage(), false);
+    executeCommand(command, 20000);
   }
 
   @Override
   public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
     this.port = port;
-    List<String> command = Lists.newArrayList();
-    command.add(AndroidSdk.adb());
-    if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
-    }
-    command.add("shell");
-    command.add("am");
-    command.add("instrument");
-    command.add("-e");
-    command.add("main_activity");
-    command.add(aut.getMainActivity());
-    command.add("io.selendroid/.ServerInstrumentation");
+    CommandLine command = new CommandLine(AndroidSdk.adb());
 
-    if (executeCommand(command).contains("INSTRUMENTATION_FAILED")) {
+    if (isSerialConfigured()) {
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
+    }
+    command.addArgument("shell", false);
+    command.addArgument("am", false);
+    command.addArgument("instrument", false);
+    command.addArgument("-e", false);
+    command.addArgument("main_activity", false);
+    command.addArgument(aut.getMainActivity(), false);
+    command.addArgument("io.selendroid/.ServerInstrumentation", false);
+
+    if (executeCommand(command, 20000).contains("INSTRUMENTATION_FAILED")) {
       throw new AndroidSdkException("Failed to start instrumentation");
     }
 
@@ -206,16 +206,16 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   private void forwardSelendroidPort(int port) {
-    List<String> command = Lists.newArrayList();
-    command.add(AndroidSdk.adb());
+    CommandLine command = new CommandLine(AndroidSdk.adb());
+
     if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
     }
-    command.add("forward");
-    command.add("tcp:" + port);
-    command.add("tcp:8080");
-    executeCommand(command);
+    command.addArgument("forward", false);
+    command.addArgument("tcp:" + port, false);
+    command.addArgument("tcp:8080", false);
+    executeCommand(command, 20000);
   }
 
   @Override
@@ -256,15 +256,15 @@ public abstract class AbstractDevice implements AndroidDevice {
   @Override
   public List<LogEntry> getLogs() {
     List<LogEntry> logs = Lists.newArrayList();
-    List<String> command = Lists.newArrayList();
-    command.add(AndroidSdk.adb());
+    CommandLine command = new CommandLine(AndroidSdk.adb());
+
     if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
     }
-    command.add("logcat");
-    command.add("-d"); // Dumps the log to the screen and exits.
-    String result = executeCommand(command);
+    command.addArgument("logcat", false);
+    command.addArgument("-d", false); // Dumps the log to the screen and exits.
+    String result = executeCommand(command, 20000);
     String[] lines = result.split("\\r?\\n");
     int num_lines = lines.length;
     for (int x = 0; x < num_lines; x++) {
@@ -284,16 +284,16 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   protected String getProp(String key) {
-    List<String> command = Lists.newArrayList();
-    command.add(AndroidSdk.adb());
+    CommandLine command = new CommandLine(AndroidSdk.adb());
+
     if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
     }
-    command.add("shell");
-    command.add("getprop");
-    command.add(key);
-    String prop = executeCommand(command);
+    command.addArgument("shell", false);
+    command.addArgument("getprop", false);
+    command.addArgument(key, false);
+    String prop = executeCommand(command, 20000);
 
     return prop == null ? "" : prop.replace("\r", "").replace("\n", "");
   }
@@ -321,14 +321,14 @@ public abstract class AbstractDevice implements AndroidDevice {
     if (parameter == null || parameter.isEmpty() == true) {
       return;
     }
-    List<String> command = Lists.newArrayList();
-    command.add(AndroidSdk.adb());
+    CommandLine command = new CommandLine(AndroidSdk.adb());
+
     if (isSerialConfigured()) {
-      command.add("-s");
-      command.add(serial);
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
     }
-    command.addAll(Arrays.asList(parameter.split(" ")));
-    executeCommand(command);
+    command.addArgument(parameter, false);
+    executeCommand(command, 20000);
   }
 
 }

@@ -27,22 +27,19 @@ public class AndroidSdk {
   public static final String ANDROID_FOLDER_PREFIX = "android-";
   public static final String ANDROID_HOME = "ANDROID_HOME";
 
-  public static String adb() {
-    StringBuffer adbCommand = new StringBuffer();
-    adbCommand.append(platformToolsHome());
-    adbCommand.append("adb");
-    adbCommand.append(platformExecutableSuffixExe());
-    return adbCommand.toString();
+  public static File adb() {
+
+    return new File(platformToolsHome(), "adb" + platformExecutableSuffixExe());
   }
 
-  public static String aapt() throws AndroidSdkException {
+  public static File aapt() throws AndroidSdkException {
     StringBuffer command = new StringBuffer();
     command.append("aapt");
     command.append(platformExecutableSuffixExe());
     File platformToolsAapt = new File(platformToolsHome(), command.toString());
 
     if (platformToolsAapt.isFile()) {
-      return platformToolsAapt.getAbsolutePath();
+      return platformToolsAapt;
     }
 
     File buildToolsFolder = new File(buildToolsHome());
@@ -51,7 +48,7 @@ public class AndroidSdk {
       @Override
       public boolean accept(File pathname) {
         String fileName = pathname.getName();
-        System.out.println("FileFilter. got: " + fileName);
+
         String regex = "\\d{2}\\.\\d{1}\\.\\d{1}";
         if (fileName.matches(regex) || fileName.startsWith(ANDROID_FOLDER_PREFIX)) {
           return true;
@@ -65,7 +62,7 @@ public class AndroidSdk {
     }
     Arrays.sort(buildToolsContent, Collections.reverseOrder());
 
-    return new File(buildToolsContent[0].getAbsoluteFile(), command.toString()).getAbsolutePath();
+    return new File(buildToolsContent[0].getAbsoluteFile(), command.toString());
   }
 
   public static String android() {

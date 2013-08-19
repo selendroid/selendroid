@@ -37,7 +37,6 @@ import io.selendroid.server.ServerDetails;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +44,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.exec.CommandLine;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONArray;
@@ -142,7 +142,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     if (hardwareDeviceListener == null) {
       hardwareDeviceListener = new DefaultHardwareDeviceListener(deviceStore);
     }
-    hardwareDeviceManager = new DefaultHardwareDeviceManager(AndroidSdk.adb());
+    hardwareDeviceManager = new DefaultHardwareDeviceManager(AndroidSdk.adb().getAbsolutePath());
     hardwareDeviceManager.initialize(hardwareDeviceListener);
 
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
@@ -159,7 +159,10 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   }
 
   private void resetAdb() throws ShellCommandException {
-    ShellCommand.exec(Arrays.asList(new String[] {AndroidSdk.adb(), "kill-server"}));
+    CommandLine resetAdb = new CommandLine(AndroidSdk.adb());
+    resetAdb.addArgument("kill-server", false);
+
+    ShellCommand.exec(resetAdb, 20000);
     try {
       Thread.sleep(1000);
     } catch (InterruptedException e) {}
@@ -515,12 +518,12 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       try {
         // if there is an active session on the device,
         // mark it as invalid.
-        ActiveSession session=findActiveSession(device);
-        if(session!=null){
+        ActiveSession session = findActiveSession(device);
+        if (session != null) {
           session.invalidate();
         }
-        
-        //remove device from store
+
+        // remove device from store
         store.removeAndroidDevice(device);
       } catch (DeviceStoreException e) {
         log.severe("The device cannot be removed: " + e.getMessage());

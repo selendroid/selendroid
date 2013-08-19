@@ -13,7 +13,6 @@
  */
 package io.selendroid.android;
 
-import static io.selendroid.android.AndroidSdk.isWindows;
 import static io.selendroid.android.AndroidSdk.platformExecutableSuffixExe;
 import io.selendroid.exceptions.SelendroidException;
 
@@ -29,25 +28,23 @@ public class JavaSdk {
     return javaHome;
   }
 
-  public static String jarsigner() {
-    StringBuffer adbCommand = new StringBuffer();
-    adbCommand.append(javaHome());
-    adbCommand.append(File.separator);
-    adbCommand.append("bin");
-    adbCommand.append(File.separator);
-    adbCommand.append("jarsigner");
-    adbCommand.append(platformExecutableSuffixExe());
-    return isWindows() ? "\"" + adbCommand.toString() + "\"" : adbCommand.toString();
+  public static File jarsigner() {
+    StringBuffer jarsigner = new StringBuffer();
+    jarsigner.append(javaHome());
+    jarsigner.append(File.separator);
+    jarsigner.append("bin");
+    jarsigner.append(File.separator);
+
+    return new File(jarsigner.toString(), "jarsigner" + platformExecutableSuffixExe());
   }
 
-  public static String keytool() {
-    StringBuffer adbCommand = new StringBuffer();
-    adbCommand.append(javaHome());
-    adbCommand.append(File.separator);
-    adbCommand.append("bin");
-    adbCommand.append(File.separator);
-    adbCommand.append("keytool");
-    adbCommand.append(platformExecutableSuffixExe());
-    return adbCommand.toString();
+  public static File keytool() {
+    StringBuffer keytool = new StringBuffer();
+    keytool.append(javaHome());
+    keytool.append(File.separator);
+    keytool.append("bin");
+    keytool.append(File.separator);
+
+    return new File(keytool.toString(), "keytool" + platformExecutableSuffixExe());
   }
 }
