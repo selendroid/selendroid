@@ -162,7 +162,8 @@ public class SelendroidServerBuilder {
     // adding the xml to an empty apk
     CommandLine createManifestApk = new CommandLine(AndroidSdk.aapt());
 
-    createManifestApk.addArgument("package -M", false);
+    createManifestApk.addArgument("package", false);
+    createManifestApk.addArgument("-M", false);
     createManifestApk.addArgument(customizedManifest.getAbsolutePath(), false);
     createManifestApk.addArgument("-I", false);
     createManifestApk.addArgument(AndroidSdk.androidJar(), false);
