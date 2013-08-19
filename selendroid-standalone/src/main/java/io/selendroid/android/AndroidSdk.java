@@ -40,21 +40,32 @@ public class AndroidSdk {
     command.append("aapt");
     command.append(platformExecutableSuffixExe());
     File platformToolsAapt = new File(platformToolsHome(), command.toString());
-    
+
     if (platformToolsAapt.isFile()) {
       return platformToolsAapt.getAbsolutePath();
     }
-    File buildToolsAapt = new File(buildToolsHome("android-4.2.2"),command.toString());
-    if (buildToolsAapt.isFile()) {
-      return buildToolsAapt.getAbsolutePath();
-    }
-    buildToolsAapt = new File(buildToolsHome("17.0.0"),command.toString());
-    if (buildToolsAapt.isFile()) {
-      return buildToolsAapt.getAbsolutePath();
-    }
 
-    throw new AndroidSdkException(
-        "Command 'aapt' was not found inside the Android SDK. Please update to the latest development tools and try again.");
+    File buildToolsFolder = new File(buildToolsHome());
+    File[] buildToolsContent = buildToolsFolder.listFiles(new FileFilter() {
+
+      @Override
+      public boolean accept(File pathname) {
+        String fileName = pathname.getName();
+        System.out.println("FileFilter. got: " + fileName);
+        String regex = "\\d{2}\\.\\d{1}\\.\\d{1}";
+        if (fileName.matches(regex) || fileName.startsWith(ANDROID_FOLDER_PREFIX)) {
+          return true;
+        }
+        return false;
+      }
+    });
+    if (buildToolsContent == null || buildToolsContent.length == 0) {
+      throw new AndroidSdkException(
+          "Command 'aapt' was not found inside the Android SDK. Please update to the latest development tools and try again.");
+    }
+    Arrays.sort(buildToolsContent, Collections.reverseOrder());
+
+    return new File(buildToolsContent[0].getAbsoluteFile(), command.toString()).getAbsolutePath();
   }
 
   public static String android() {
@@ -82,13 +93,11 @@ public class AndroidSdk {
     return command.toString();
   }
 
-  private static String buildToolsHome(String platformFolder) {
+  private static String buildToolsHome() {
     StringBuffer command = new StringBuffer();
     command.append(androidHome());
     command.append(File.separator);
     command.append("build-tools");
-    command.append(File.separator);
-    command.append(platformFolder);
     command.append(File.separator);
 
     return command.toString();
