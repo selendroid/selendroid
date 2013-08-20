@@ -327,7 +327,11 @@ public abstract class AbstractDevice implements AndroidDevice {
       command.addArgument("-s", false);
       command.addArgument(serial, false);
     }
-    command.addArgument(parameter, false);
+    String[] params = parameter.split(" ");
+    for (int i = 0; i < params.length; i++) {
+      command.addArgument(params[i], false);
+    }
+
     executeCommand(command, 20000);
   }
 
