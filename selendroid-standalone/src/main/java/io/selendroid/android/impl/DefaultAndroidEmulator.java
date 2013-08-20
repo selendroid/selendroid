@@ -205,6 +205,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       throw new SelendroidException("Error - Android emulator is already started " + this);
     }
     Long timeout = null;
+
     String display = null;
     if (options != null) {
       if (options.containsKey(TIMEOUT_OPTION)) {
@@ -213,6 +214,10 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       if (options.containsKey(DISPLAY_OPTION)) {
         display = (String) options.get(DISPLAY_OPTION);
       }
+    }
+
+    if (display != null) {
+      log.info("Using display " + display + " for running the emulator");
     }
     if (timeout == null) {
       timeout = 120000L;
@@ -386,7 +391,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     coordinates.add("0 0 0");
     coordinates.add("1 330 0");
     coordinates.add("0 0 0");
-    //TODO lukeis: review if this can be refactored to use the CommandLine class.
+    // TODO lukeis: review if this can be refactored to use the CommandLine class.
     event1.add(AndroidSdk.adb().getAbsolutePath());
     if (isSerialConfigured()) {
       event1.add("-s");

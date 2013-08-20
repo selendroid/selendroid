@@ -227,11 +227,11 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         } else {
           Map<String, Object> config = new HashMap<String, Object>();
           config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
-          String display =
-              String.valueOf(desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY));
-          if (display != null && display.isEmpty() == false) {
-            config.put(AndroidEmulator.DISPLAY_OPTION, display);
+          if(desiredCapabilities.is(SelendroidCapabilities.DISPLAY)){
+            Object d=desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY);
+            config.put(AndroidEmulator.DISPLAY_OPTION, String.valueOf(d));
           }
+          
           Locale locale = parseLocale(desiredCapabilities);
           emulator.start(locale, deviceStore.nextEmulatorPort(), config);
         }
