@@ -92,7 +92,7 @@ public class DefaultHardwareDeviceManager extends Thread
   @Override
   public void deviceChanged(IDevice device, int changeMask) {
     // Only fire events if the phone properties are available
-    if (IDevice.CHANGE_BUILD_INFO == changeMask) {
+    if (IDevice.CHANGE_BUILD_INFO == changeMask && device.isEmulator() == false) {
       for (HardwareDeviceListener listener : deviceListeners) {
         listener.onDeviceConnected(connectedDevices.get(device));
       }
@@ -101,7 +101,7 @@ public class DefaultHardwareDeviceManager extends Thread
 
   @Override
   public void deviceConnected(IDevice device) {
-    if (device == null) {
+    if (device == null || device.isEmulator()) {
       return;
     }
     for (HardwareDeviceListener listener : deviceListeners) {
@@ -112,7 +112,7 @@ public class DefaultHardwareDeviceManager extends Thread
 
   @Override
   public void deviceDisconnected(IDevice device) {
-    if (device == null || connectedDevices.containsKey(device) == false) {
+    if (device == null || connectedDevices.containsKey(device) == false || device.isEmulator()) {
       return;
     }
     for (HardwareDeviceListener listener : deviceListeners) {
