@@ -42,7 +42,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   private AndroidWait androidWait = new AndroidWait();
   private PowerManager.WakeLock wakeLock;
   private int serverPort = 8080;
-  
+
   public void startMainActivity() {
     finishAllActivities();
     startActivity(mainActivity);
@@ -86,18 +86,18 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     String activityClazzName = arguments.getString("main_activity");
 
     int parsedServerPort;
-    
+
     try {
-        parsedServerPort = Integer.parseInt(arguments.getString("server_port", Integer.toString(this.serverPort)));
+      parsedServerPort = arguments.getInt("server_port", this.serverPort);
     } catch (NumberFormatException ex) {
-        SelendroidLogger.log("Unable to parse the value of server_port key.");
-        parsedServerPort = this.serverPort;
+      SelendroidLogger.log("Unable to parse the value of server_port key.");
+      parsedServerPort = this.serverPort;
     }
-    
+
     if (isValidPort(parsedServerPort)) {
-        this.serverPort = parsedServerPort;
+      this.serverPort = parsedServerPort;
     }
-    
+
     Class<? extends Activity> clazz = null;
     try {
       clazz = (Class<? extends Activity>) Class.forName(activityClazzName);
@@ -116,7 +116,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   }
 
   private boolean isValidPort(int port) {
-      return port >= 1024 && port <= 65535;
+    return port >= 1024 && port <= 65535;
   }
 
   @Override
@@ -247,7 +247,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   }
 
   @Override
-public String getServerVersion() {
+  public String getServerVersion() {
     Context context = getContext();
     String versionName = "0.3";
     try {
