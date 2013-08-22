@@ -176,7 +176,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 	 * @param aut
 	 *            The application under test. Expected format is
 	 *            basePackage:version. E.g.: io.selendroid.testapp:0.4
-	 * @return Desired Capabilities of an emulator.
+	 * @return Desired Capabilities of an device.
 	 */
 	public static SelendroidCapabilities device(DeviceTargetPlatform platform,
 			String aut) {
@@ -191,7 +191,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 	 * @param aut
 	 *            The application under test. Expected format is
 	 *            basePackage:version. E.g.: io.selendroid.testapp:0.4
-	 * @return Desired Capabilities of an emulator.
+	 * @return Desired Capabilities of an device.
 	 */
 	public static SelendroidCapabilities device(String aut) {
 		SelendroidCapabilities caps = emulator(aut);
