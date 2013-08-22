@@ -1,5 +1,5 @@
 /*
-x * Copyright 2013 selendroid committers.
+ * x * Copyright 2013 selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -20,10 +20,10 @@ import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.HardwareDeviceListener;
-import io.selendroid.android.HardwareDeviceManager;
+import io.selendroid.android.DeviceManager;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultHardwareDevice;
-import io.selendroid.android.impl.DefaultHardwareDeviceManager;
+import io.selendroid.android.impl.DefaultDeviceManager;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -66,7 +66,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private SelendroidServerBuilder selendroidApkBuilder = null;
   private SelendroidConfiguration serverConfiguration = null;
   private HardwareDeviceListener hardwareDeviceListener = null;
-  private HardwareDeviceManager hardwareDeviceManager;
+  private DeviceManager hardwareDeviceManager;
 
   public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration)
       throws AndroidSdkException, AndroidDeviceException {
@@ -80,9 +80,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   /**
    * For testing only
    */
-  SelendroidStandaloneDriver(SelendroidServerBuilder builder, HardwareDeviceListener deviceFinder) {
+  SelendroidStandaloneDriver(SelendroidServerBuilder builder, DeviceManager deviceManager) {
     this.selendroidApkBuilder = builder;
-    hardwareDeviceListener = deviceFinder;
+    hardwareDeviceManager = deviceManager;
   }
 
   /* package */void initApplicationsUnderTest(SelendroidConfiguration serverConfiguration)
@@ -142,7 +142,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     if (hardwareDeviceListener == null) {
       hardwareDeviceListener = new DefaultHardwareDeviceListener(deviceStore);
     }
-    hardwareDeviceManager = new DefaultHardwareDeviceManager(AndroidSdk.adb().getAbsolutePath());
+    hardwareDeviceManager = new DefaultDeviceManager(AndroidSdk.adb().getAbsolutePath());
     hardwareDeviceManager.initialize(hardwareDeviceListener);
 
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
@@ -227,11 +227,11 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         } else {
           Map<String, Object> config = new HashMap<String, Object>();
           config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
-          if(desiredCapabilities.is(SelendroidCapabilities.DISPLAY)){
-            Object d=desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY);
+          if (desiredCapabilities.is(SelendroidCapabilities.DISPLAY)) {
+            Object d = desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY);
             config.put(AndroidEmulator.DISPLAY_OPTION, String.valueOf(d));
           }
-          
+
           Locale locale = parseLocale(desiredCapabilities);
           emulator.start(locale, deviceStore.nextEmulatorPort(), config);
         }
@@ -245,6 +245,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         throw new SessionNotCreatedException("Error occured while interacting with the emulator: "
             + emulator + ": " + e.getMessage());
       }
+      emulator.setIDevice(hardwareDeviceManager.getVirtualDevice(emulator.getSerial()));
     }
     AndroidApp selendroidServer = createSelendroidServerApk(app);
     // Uninstalling looks probably a bit like an overhead, but
@@ -300,7 +301,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           + e.getMessage());
     }
     long start = System.currentTimeMillis();
-    long startTimeOut = 10000;
+    long startTimeOut = 20000;
     long timemoutEnd = start + startTimeOut;
     while (device.isSelendroidRunning() == false) {
       if (timemoutEnd >= System.currentTimeMillis()) {
@@ -539,5 +540,12 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     }
     return null;
 
+  }
+
+  public byte[] takeScreenshot(String sessionId) throws AndroidDeviceException {
+    if (sessionId == null || sessions.containsKey(sessionId) == false) {
+      throw new SelendroidException("The gicen session id '" + sessionId + "' was not found.");
+    }
+    return sessions.get(sessionId).getDevice().takeScreenshot();
   }
 }

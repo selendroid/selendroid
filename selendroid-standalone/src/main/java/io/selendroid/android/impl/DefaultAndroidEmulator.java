@@ -34,6 +34,7 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.android.ddmlib.IDevice;
 import com.beust.jcommander.internal.Lists;
 
 public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmulator {
@@ -419,6 +420,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
   @Override
   public void stop() throws AndroidDeviceException {
+    this.device = null;
     CommandLine command = new CommandLine(AndroidSdk.adb());
     if (isSerialConfigured()) {
       command.addArgument("-s", false);
@@ -487,5 +489,14 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   @Override
   public Locale getLocale() {
     return locale;
+  }
+
+  @Override
+  public void setIDevice(IDevice iDevice) {
+    super.device = iDevice;
+  }
+
+  public String getSerial() {
+    return serial;
   }
 }

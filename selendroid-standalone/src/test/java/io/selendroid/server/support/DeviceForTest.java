@@ -34,6 +34,8 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;
 
+import com.android.ddmlib.IDevice;
+
 public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   @Override
   public void runAdbCommand(String parameter) {}
@@ -207,5 +209,22 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   @Override
   public List<LogEntry> getLogs() {
     return null;
+  }
+
+  @Override
+  public byte[] takeScreenshot() throws AndroidDeviceException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void setIDevice(IDevice iDevice) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public String getSerial() {
+    return "emulator-5554";
   }
 }

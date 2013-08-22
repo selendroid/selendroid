@@ -74,7 +74,7 @@ public class SelendroidStandaloneServer {
   protected void init() throws AndroidSdkException {
     webServer.staleConnectionTimeout(604800000); // 1 week
     webServer.add("/wd/hub/status", new StatusServlet(driver));
-    webServer.add(new SelendroidServlet(driver));
+    webServer.add(new SelendroidServlet(driver,configuration));
   }
 
   protected SelendroidStandaloneDriver initializeSelendroidServer() throws AndroidSdkException,

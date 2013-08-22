@@ -13,7 +13,16 @@
  */
 package io.selendroid.server;
 
-import io.selendroid.server.handler.*;
+import io.selendroid.SelendroidConfiguration;
+import io.selendroid.server.handler.CaptureScreenshot;
+import io.selendroid.server.handler.CreateSessionHandler;
+import io.selendroid.server.handler.DeleteSessionHandler;
+import io.selendroid.server.handler.GetCapabilities;
+import io.selendroid.server.handler.GetLogTypes;
+import io.selendroid.server.handler.GetLogs;
+import io.selendroid.server.handler.InspectorUiHandler;
+import io.selendroid.server.handler.ListSessionsHandler;
+import io.selendroid.server.handler.RequestRedirectHandler;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
 import java.nio.ByteBuffer;
@@ -30,9 +39,11 @@ public class SelendroidServlet extends BaseServlet {
   protected Map<String, Class<? extends BaseRequestHandler>> redirectHandler =
       new HashMap<String, Class<? extends BaseRequestHandler>>();
   private SelendroidStandaloneDriver driver;
+  private SelendroidConfiguration conf;
 
-  public SelendroidServlet(SelendroidStandaloneDriver driver) {
+  public SelendroidServlet(SelendroidStandaloneDriver driver, SelendroidConfiguration conf) {
     this.driver = driver;
+    this.conf = conf;
     init();
   }
 
@@ -43,6 +54,9 @@ public class SelendroidServlet extends BaseServlet {
 
     getHandler.put("/wd/hub/session/:sessionId/log/types", GetLogTypes.class);
     postHandler.put("/wd/hub/session/:sessionId/log", GetLogs.class);
+    if (conf.isDeviceScreenshot() == false) {
+      getHandler.put("/wd/hub/session/:sessionId/screenshot", CaptureScreenshot.class);
+    }// otherwise the request will be automatically forwarded to the device
 
     getHandler.put("/inspector", InspectorUiHandler.class);
     getHandler.put("/inspector/session/:sessionId", InspectorUiHandler.class);

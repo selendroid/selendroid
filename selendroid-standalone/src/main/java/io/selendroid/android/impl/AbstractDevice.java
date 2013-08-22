@@ -16,15 +16,22 @@ package io.selendroid.android.impl;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.IOUtils;
@@ -35,6 +42,10 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.openqa.selenium.logging.LogEntry;
 
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.RawImage;
+import com.android.ddmlib.TimeoutException;
 import com.beust.jcommander.internal.Lists;
 
 public abstract class AbstractDevice implements AndroidDevice {
@@ -42,10 +53,30 @@ public abstract class AbstractDevice implements AndroidDevice {
   public static final String WD_STATUS_ENDPOINT = "http://localhost:8080/wd/hub/status";
   protected String serial = null;
   protected Integer port = null;
+  protected IDevice device;
 
+  /**
+   * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
+   * will become available if the emulator will be started. Please make sure that #setIDevice is
+   * called on the emulator.
+   * 
+   * @param serial
+   */
   public AbstractDevice(String serial) {
     this.serial = serial;
   }
+
+  /**
+   * Constructor mean to be used with Android Hardware devices because a reference to the
+   * {@link IDevice} will be available immediately after they are connected.
+   * 
+   * @param device
+   */
+  public AbstractDevice(IDevice device) {
+    this.device = device;
+    this.serial = device.getSerialNumber();
+  }
+
 
   protected AbstractDevice() {}
 
@@ -333,6 +364,66 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
 
     executeCommand(command, 20000);
+  }
+
+  public byte[] takeScreenshot() throws AndroidDeviceException {
+    RawImage rawImage;
+    try {
+      rawImage = device.getScreenshot();
+    } catch (IOException ioe) {
+      throw new AndroidDeviceException("Unable to get frame buffer: " + ioe.getMessage());
+    } catch (TimeoutException e) {
+      e.printStackTrace();
+      throw new AndroidDeviceException(e.getMessage());
+    } catch (AdbCommandRejectedException e) {
+      e.printStackTrace();
+      throw new AndroidDeviceException(e.getMessage());
+    }
+
+    // device/adb not available?
+    if (rawImage == null) return null;
+
+    BufferedImage image =
+        new BufferedImage(rawImage.width, rawImage.height, BufferedImage.TYPE_INT_ARGB);
+
+    int index = 0;
+    int IndexInc = rawImage.bpp >> 3;
+    for (int y = 0; y < rawImage.height; y++) {
+      for (int x = 0; x < rawImage.width; x++) {
+        int value = rawImage.getARGB(index);
+        index += IndexInc;
+        image.setRGB(x, y, value);
+      }
+    }
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+    try {
+      if (!ImageIO.write(image, "png", stream)) {
+        throw new IOException("Failed to find png writer");
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new AndroidDeviceException(e.getMessage());
+    }
+    byte[] raw = null;
+    try {
+      stream.flush();
+      raw = stream.toByteArray();
+      stream.close();
+    } catch (IOException e) {
+      throw new RuntimeException("I/O Error while capturing screenshot: " + e.getMessage());
+    } finally {
+      Closeable closeable = (Closeable) stream;
+      try {
+        if (closeable != null) {
+          closeable.close();
+        }
+      } catch (IOException ioe) {
+        // ignore
+      }
+    }
+
+    return raw;
   }
 
 }

@@ -14,7 +14,9 @@
 package io.selendroid.android;
 
 import io.selendroid.device.DeviceTargetPlatform;
+import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
+
 import org.openqa.selenium.logging.LogEntry;
 
 import java.util.List;
@@ -48,4 +50,6 @@ public interface AndroidDevice {
   public DeviceTargetPlatform getTargetPlatform();
 
   public void runAdbCommand(String parameter);
+  
+  public byte[] takeScreenshot()throws AndroidDeviceException;
 }

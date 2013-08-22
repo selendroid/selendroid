@@ -24,7 +24,7 @@ public class SelendroidConfiguration {
   private int port = 5555;
 
   @Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
-  private long timeoutEmulatorStart = 120000;
+  private long timeoutEmulatorStart = 300000;
 
   @Parameter(description = "if true, adb will be restarted while starting selendroid-standalone.", names = "-restartAdb")
   private boolean restartAdb = false;
@@ -39,8 +39,11 @@ public class SelendroidConfiguration {
   @Parameter(names = "-verbose", description = "Debug mode")
   private boolean verbose = false;
 
-  @Parameter(names= "-emulatorPort", description = "port number to start running emulators on")
+  @Parameter(names = "-emulatorPort", description = "port number to start running emulators on")
   private int emulatorPort = 5560;
+
+  @Parameter(names = "-deviceScreenshot", description = "if true, screenshots will be taken on the device instead of using the ddmlib libary.")
+  private boolean deviceScreenshot = false;
 
   public void addSupportedApp(String appAbsolutPath) {
     supportedApps.add(appAbsolutPath);
@@ -102,5 +105,13 @@ public class SelendroidConfiguration {
 
   public void setVerbose(boolean verbose) {
     this.verbose = verbose;
+  }
+
+  public boolean isDeviceScreenshot() {
+    return deviceScreenshot;
+  }
+
+  public void setDeviceScreenshot(boolean deviceScreenshot) {
+    this.deviceScreenshot = deviceScreenshot;
   }
 }

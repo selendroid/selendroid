@@ -21,9 +21,9 @@ import java.util.logging.Logger;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 
+
 public class DefaultHardwareDevice extends AbstractDevice {
   private static final Logger log = Logger.getLogger(DefaultHardwareDevice.class.getName());
-  private IDevice device;
   private String model = null;
 
   private Locale locale = null;
@@ -31,8 +31,7 @@ public class DefaultHardwareDevice extends AbstractDevice {
   private String screenSize = null;
 
   public DefaultHardwareDevice(IDevice device) {
-    super(device.getSerialNumber());
-    this.device = device;
+    super(device);
   }
 
   public String getModel() {
@@ -89,6 +88,7 @@ public class DefaultHardwareDevice extends AbstractDevice {
 
   @Override
   public String toString() {
-    return "HardwareDevice [serial=" + serial + ", model=" + getModel() + "]";
+    return "HardwareDevice [serial=" + serial + ", model=" + getModel() + ", targetVersion="
+        + getTargetPlatform() + "]";
   }
 }

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
-import io.selendroid.android.HardwareDeviceListener;
+import io.selendroid.android.DeviceManager;
 import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
@@ -57,7 +57,7 @@ public class SelendroidStandaloneDriverTest {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceManager());
     driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
@@ -68,7 +68,7 @@ public class SelendroidStandaloneDriverTest {
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
     SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceManager());
     driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
@@ -76,7 +76,7 @@ public class SelendroidStandaloneDriverTest {
   @Test
   public void testShouldNotbBeAbleInitDriverWithoutAnyConfig() throws Exception {
     SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceManager());
     try {
       driver.initApplicationsUnderTest(new SelendroidConfiguration());
     } catch (SelendroidException e) {
@@ -89,7 +89,7 @@ public class SelendroidStandaloneDriverTest {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
     SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getRealApkBuilder(), anDeviceFinderWithNoDevices());
+        new SelendroidStandaloneDriver(getRealApkBuilder(), anDeviceManager());
     try {
       driver.initApplicationsUnderTest(conf);
       Assert
@@ -114,7 +114,7 @@ public class SelendroidStandaloneDriverTest {
   public void assertThatANewtestSessionCanBeCreated() throws Exception {
     // Setting up driver with test app and device stub
     SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceFinderWithNoDevices());
+        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceManager());
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);
@@ -148,7 +148,7 @@ public class SelendroidStandaloneDriverTest {
   public void assertThatANewtestSessionCanBeCreatedWithAlreadyInstalledApp() throws Exception {
     // Setting up driver with test app and device stub
     SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getInstalledApkBuilder(), anDeviceFinderWithNoDevices());
+        new SelendroidStandaloneDriver(getInstalledApkBuilder(), anDeviceManager());
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.setInstalledApp(TEST_APP_INSTALLED);
     driver.initApplicationsUnderTest(conf);
@@ -208,8 +208,9 @@ public class SelendroidStandaloneDriverTest {
     return builder;
   }
 
-  public HardwareDeviceListener anDeviceFinderWithNoDevices() throws AndroidDeviceException {
-    HardwareDeviceListener finder = mock(HardwareDeviceListener.class);
+  public DeviceManager anDeviceManager() throws AndroidDeviceException {
+    DeviceManager finder = mock(DeviceManager.class);
+    when(finder.getVirtualDevice("emulator-5554")).thenReturn(null);
 
     return finder;
   }

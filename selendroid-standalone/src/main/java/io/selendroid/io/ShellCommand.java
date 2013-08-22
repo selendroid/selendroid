@@ -14,6 +14,11 @@
 package io.selendroid.io;
 
 import io.selendroid.exceptions.ShellCommandException;
+
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
@@ -24,19 +29,12 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.exec.environment.EnvironmentUtils;
 import org.apache.commons.exec.util.StringUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class ShellCommand {
   private static final Logger log = Logger.getLogger(ShellCommand.class.getName());
   private static boolean verbose = false;
 
   public static void setVerbose() {
-      verbose = true;
+    verbose = true;
   }
 
   public static String exec(List<String> command) throws ShellCommandException {
@@ -45,6 +43,7 @@ public class ShellCommand {
 
   public static String exec(CommandLine commandline, long timeoutInMillies)
       throws ShellCommandException {
+    log.info("executing command: " + commandline);
     PritingLogOutputStream outputStream = new PritingLogOutputStream();
     DefaultExecutor exec = new DefaultExecutor();
     exec.setWatchdog(new ExecuteWatchdog(timeoutInMillies));
@@ -97,17 +96,18 @@ public class ShellCommand {
   }
 
   private static class PritingLogOutputStream extends LogOutputStream {
-      private StringBuilder output = new StringBuilder();
+    private StringBuilder output = new StringBuilder();
 
-      @Override protected void processLine(String line, int level) {
-          if (verbose) {
-            System.out.println("OUTPUT FROM PROCESS: " + line);
-          }
-          output.append(line).append("\n");
+    @Override
+    protected void processLine(String line, int level) {
+      if (verbose) {
+        System.out.println("OUTPUT FROM PROCESS: " + line);
       }
+      output.append(line).append("\n");
+    }
 
-      public String getOutput() {
-          return output.toString();
-      }
+    public String getOutput() {
+      return output.toString();
+    }
   }
 }

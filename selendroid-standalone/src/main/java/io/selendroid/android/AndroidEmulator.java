@@ -22,6 +22,8 @@ import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
+import com.android.ddmlib.IDevice;
+
 public interface AndroidEmulator {
   public static final String TIMEOUT_OPTION = "TIMEOUT";
   public static final String DISPLAY_OPTION = "DISPLAY";
@@ -47,8 +49,11 @@ public interface AndroidEmulator {
 
   public void stop() throws AndroidDeviceException;
 
-  public void kill(InstalledAndroidApp aut)
-      throws AndroidDeviceException, AndroidSdkException;
+  public void kill(InstalledAndroidApp aut) throws AndroidDeviceException, AndroidSdkException;
 
   public Integer getPort();
+
+  public void setIDevice(IDevice iDevice);
+  
+  public String getSerial();
 }

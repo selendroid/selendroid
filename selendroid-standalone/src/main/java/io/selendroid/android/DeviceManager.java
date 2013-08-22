@@ -13,7 +13,9 @@
  */
 package io.selendroid.android;
 
-public interface HardwareDeviceManager {
+import com.android.ddmlib.IDevice;
+
+public interface DeviceManager {
   public void initialize(HardwareDeviceListener defaultListener);
 
   public void registerListner(HardwareDeviceListener deviceListener);
@@ -21,4 +23,6 @@ public interface HardwareDeviceManager {
   public void unregisterListener(HardwareDeviceListener deviceListener);
 
   public void shutdown();
+  
+  public IDevice getVirtualDevice(String serial);
 }

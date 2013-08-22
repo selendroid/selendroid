@@ -15,7 +15,7 @@ package io.selendroid.android.impl;
 
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.HardwareDeviceListener;
-import io.selendroid.android.HardwareDeviceManager;
+import io.selendroid.android.DeviceManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,18 +28,19 @@ import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.Log;
 
-public class DefaultHardwareDeviceManager extends Thread
+public class DefaultDeviceManager extends Thread
     implements
       IDeviceChangeListener,
-      HardwareDeviceManager {
-  private static final Logger log = Logger.getLogger(DefaultHardwareDeviceManager.class.getName());
+      DeviceManager {
+  private static final Logger log = Logger.getLogger(DefaultDeviceManager.class.getName());
   private String adbPath;
   private List<HardwareDeviceListener> deviceListeners = new ArrayList<HardwareDeviceListener>();
   private Map<IDevice, DefaultHardwareDevice> connectedDevices =
       new HashMap<IDevice, DefaultHardwareDevice>();
+  private Map<String, IDevice> virtualDevices = new HashMap<String, IDevice>();
   private AndroidDebugBridge bridge;
 
-  public DefaultHardwareDeviceManager(String adbPath) {
+  public DefaultDeviceManager(String adbPath) {
     this.adbPath = adbPath;
   }
 
@@ -61,6 +62,11 @@ public class DefaultHardwareDeviceManager extends Thread
 
     if (bridge == null) {
       bridge = AndroidDebugBridge.createBridge(adbPath, false);
+    }
+    IDevice[] devicesss = bridge.getDevices();
+    log.info("has initial list: " + bridge.hasInitialDeviceList());
+    for (int i = 0; i < devicesss.length; i++) {
+      System.out.println("my devices: " + devicesss[i].getAvdName());
     }
 
     // Add the existing devices to the list of devices we are tracking.
@@ -101,24 +107,32 @@ public class DefaultHardwareDeviceManager extends Thread
 
   @Override
   public void deviceConnected(IDevice device) {
-    if (device == null || device.isEmulator()) {
+    if (device == null) {
       return;
     }
-    for (HardwareDeviceListener listener : deviceListeners) {
-      listener.onDeviceDisconnected(connectedDevices.get(device));
+    if (device.isEmulator()) {
+      virtualDevices.put(device.getSerialNumber(), device);
+    } else {
+      for (HardwareDeviceListener listener : deviceListeners) {
+        listener.onDeviceDisconnected(connectedDevices.get(device));
+      }
+      connectedDevices.put(device, new DefaultHardwareDevice(device));
     }
-    connectedDevices.put(device, new DefaultHardwareDevice(device));
   }
 
   @Override
   public void deviceDisconnected(IDevice device) {
-    if (device == null || connectedDevices.containsKey(device) == false || device.isEmulator()) {
+    if (device == null) {
       return;
     }
-    for (HardwareDeviceListener listener : deviceListeners) {
-      listener.onDeviceDisconnected(connectedDevices.get(device));
+    if (device.isEmulator()) {
+      virtualDevices.remove(device.getSerialNumber());
+    } else if (connectedDevices.containsKey(device)) {
+      for (HardwareDeviceListener listener : deviceListeners) {
+        listener.onDeviceDisconnected(connectedDevices.get(device));
+      }
+      connectedDevices.remove(device);
     }
-    connectedDevices.remove(device);
   }
 
   @Override
@@ -137,5 +151,9 @@ public class DefaultHardwareDeviceManager extends Thread
   public void initialize(HardwareDeviceListener defaultListener) {
     registerListner(defaultListener);
     initializeAdbConnection();
+  }
+
+  public IDevice getVirtualDevice(String serial) {
+    return virtualDevices.get(serial);
   }
 }
