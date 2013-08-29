@@ -2,14 +2,23 @@
 ---
 - Added xpath locator for native context
 - selendroid can now handle multiple web views on the same activity
-
-
+- new inspector with the ability to display html source code of a web view.
+- multiple bug fixes (...)
+- Support for Set, Get, Delete Cookies for WebViews
+- hardware device handling is now based on the ddmlib library which means devices can be now hot plugged.
+- selendroid-standalone can is now taking screenshots by default using ddmlib library.
+- selendroid-shell has been removed from the core project
+- selendroid-server port can now be configured
+- Updated to use the lastest Selenium automation Atoms.
+- Official support for windows
+- Emulator and instrumentation start handling was massively improved
+- selendroid-standalone can handle installed apps which is can speed up especially test case development.
+- Selenium Log API is now supported
 
 
 0.4.2
 -----
 - small bugfixes
-
 
 
 0.4.1
