@@ -1,20 +1,21 @@
 package io.selendroid.nativetests;
 
 import static io.selendroid.waiter.TestWaiter.waitFor;
-
-import java.util.concurrent.TimeUnit;
-
+import static io.selendroid.waiter.TestWaiter.waitForElement;
 import io.selendroid.TestGroups;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.waiter.WaitingConditions;
+
+import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @Test(groups = {TestGroups.NATIVE})
 public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
-  public static final String ACTIVITY_CLASS = "io.selendroid.testapp."
-      + "HomeScreenActivity";
+  public static final String ACTIVITY_CLASS = "io.selendroid.testapp." + "HomeScreenActivity";
   public static final By byIdUsernameLocator = By.id("label_username");
   public static final By byNameUsernameLocator = By.name("label_usernameCD");
   public static final By byLinkTextUsernameLocator = By.linkText("Username");
@@ -67,5 +68,12 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
     driver.findElement(By.id("waitingButtonTest")).click();
     // the popup dialog wait for some time until then the user registration page is opened
     Assert.assertEquals(driver.findElement(locatorUsernameLabel).getText(), "Username");
+  }
+
+  @Test
+  public void testShouldBeAbleToWaitUntilToastWasDisplayed() throws Exception {
+    driver.findElement(By.id("showToastButton")).click();
+    WebElement toast = waitForElement(By.linkText(""), 4, driver);
+    Assert.assertNotNull(toast);
   }
 }

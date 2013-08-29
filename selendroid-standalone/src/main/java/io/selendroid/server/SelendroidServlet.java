@@ -20,12 +20,13 @@ import io.selendroid.server.handler.DeleteSessionHandler;
 import io.selendroid.server.handler.GetCapabilities;
 import io.selendroid.server.handler.GetLogTypes;
 import io.selendroid.server.handler.GetLogs;
+import io.selendroid.server.handler.InspectorScreenshotHandler;
+import io.selendroid.server.handler.InspectorTreeHandler;
 import io.selendroid.server.handler.InspectorUiHandler;
 import io.selendroid.server.handler.ListSessionsHandler;
 import io.selendroid.server.handler.RequestRedirectHandler;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +59,9 @@ public class SelendroidServlet extends BaseServlet {
       getHandler.put("/wd/hub/session/:sessionId/screenshot", CaptureScreenshot.class);
     }// otherwise the request will be automatically forwarded to the device
 
-    getHandler.put("/inspector", InspectorUiHandler.class);
+
+    getHandler.put("/inspector/session/:sessionId/tree", InspectorTreeHandler.class);
+    getHandler.put("/inspector/session/:sessionId/screenshot", InspectorScreenshotHandler.class);
     getHandler.put("/inspector/session/:sessionId", InspectorUiHandler.class);
     deleteHandler.put("/wd/hub/session/:sessionId", DeleteSessionHandler.class);
     redirectHandler.put("/wd/hub/session/", RequestRedirectHandler.class);
@@ -72,6 +75,26 @@ public class SelendroidServlet extends BaseServlet {
       response.status(404);
       response.end();
       return;
+    }
+    if ("/inspector/".equals(request.uri()) || "/inspector".equals(request.uri())) {
+      if (driver.getActiceSessions().isEmpty()) {
+        response.status(200);
+        response
+            .content(
+                "Selendroid inspector can only be used if there is an active test session running. "
+                    + "To start a test session, add a break point into your test code and run the test in debug mode.")
+            .end();
+        return;
+      } else {
+        response.status(302);
+        String session = driver.getActiceSessions().get(0).getSessionKey();
+
+        String newSessionUri =
+            "http://" + request.header("Host") + "/inspector/session/" + session + "/";
+        log.info("new Inspector URL: " + newSessionUri);
+        response.header("location", newSessionUri).end();
+        return;
+      }
     }
     if (foundHandler == null) {
       if (redirectHandler.isEmpty() == false) {
@@ -89,7 +112,7 @@ public class SelendroidServlet extends BaseServlet {
         }
       }
       if (handler == null) {
-        replyWithServerError(response);
+        response.status(404).end();
         return;
       }
     } else {
@@ -106,12 +129,17 @@ public class SelendroidServlet extends BaseServlet {
     try {
       result = handler.handle();
     } catch (Exception e) {
-      log.severe("Error occured while handlinf request: " + e.fillInStackTrace());
+      e.printStackTrace();
+      log.severe("Error occured while handling request: " + e.getMessage());
       replyWithServerError(response);
       return;
     }
     if (result instanceof SelendroidResponse) {
       handleResponse(request, response, (SelendroidResponse) result);
+    } else if (result instanceof JsResult) {
+      JsResult js = (JsResult) result;
+      response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
+          .content(js.render()).end();
     } else {
       UiResponse uiResponse = (UiResponse) result;
       response.header("Content-Type", "text/html");
@@ -122,8 +150,7 @@ public class SelendroidServlet extends BaseServlet {
       if (uiResponse != null) {
         if (uiResponse.getObject() instanceof byte[]) {
           byte[] data = (byte[]) uiResponse.getObject();
-          response.header("Content-Length", data.length).content(ByteBuffer.wrap(data));
-
+          response.header("Content-Length", data.length).content(data);
         } else {
           String resultString = uiResponse.render();
           response.content(resultString);

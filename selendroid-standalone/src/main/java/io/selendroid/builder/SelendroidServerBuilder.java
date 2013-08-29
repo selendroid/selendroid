@@ -93,7 +93,7 @@ public class SelendroidServerBuilder {
     File selendroidServer = createAndAddCustomizedAndroidManifestToSelendroidServer();
     File outputFile =
         new File(getCurrentDir() + "selendroid-server-" + applicationUnderTest.getBasePackage()
-            + "-0.4.0.apk");
+            + "-" + getJarVersionNumber() + ".apk");
 
     return signTestServer(selendroidServer, outputFile);
   }

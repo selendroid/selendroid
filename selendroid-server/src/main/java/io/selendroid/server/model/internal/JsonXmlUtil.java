@@ -56,6 +56,7 @@ public class JsonXmlUtil {
     node.setAttribute("label", from.optString("label"));
     node.setAttribute("value", from.optString("value"));
     node.setAttribute("ref", from.optString("ref"));
+    node.setAttribute("id", from.optString("id"));
     node.setAttribute("shown", from.optString("shown"));
 
     JSONArray array = from.optJSONArray("children");

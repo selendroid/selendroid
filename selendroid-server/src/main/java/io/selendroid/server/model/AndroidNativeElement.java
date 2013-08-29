@@ -326,12 +326,10 @@ public class AndroidNativeElement implements AndroidElement {
             webview.setWebChromeClient(client);
             String script = "document.body.parentNode.innerHTML";
             webview.loadUrl("javascript:alert('selendroidSource:'+" + script + ")");
-            done = true;
-            syncObject.notify();
           }
         }
       });
-      long end = System.currentTimeMillis() + UI_TIMEOUT;
+      long end = System.currentTimeMillis() + 10000;
       waitForDone(end, UI_TIMEOUT, "Error while grabbing web view source code.");
       object.put("source", "<html>"+ client.result+"</html>");
     }
@@ -354,6 +352,7 @@ public class AndroidNativeElement implements AndroidElement {
 
         synchronized (syncObject) {
           result = message.replaceFirst("selendroidSource:", "");
+          done = true;
           syncObject.notify();
         }
 

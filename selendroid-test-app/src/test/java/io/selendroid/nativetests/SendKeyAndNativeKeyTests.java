@@ -1,13 +1,13 @@
 package io.selendroid.nativetests;
 
 import static io.selendroid.waiter.TestWaiter.waitFor;
-
 import io.selendroid.SelendroidKeys;
 import io.selendroid.TestGroups;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.waiter.WaitingConditions;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.HasInputDevices;
+import org.openqa.selenium.interactions.HasInputDevices;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 @Test(groups={TestGroups.NATIVE})

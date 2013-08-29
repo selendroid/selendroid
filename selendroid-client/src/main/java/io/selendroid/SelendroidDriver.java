@@ -16,13 +16,11 @@ package io.selendroid;
 import java.net.URL;
 
 import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.HasTouchScreen;
-import org.openqa.selenium.Keyboard;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.TouchScreen;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.interactions.HasTouchScreen;
+import org.openqa.selenium.interactions.TouchScreen;
 import org.openqa.selenium.remote.DriverCommand;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteTouchScreen;

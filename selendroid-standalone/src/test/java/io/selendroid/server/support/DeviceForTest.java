@@ -15,8 +15,7 @@ package io.selendroid.server.support;
 
 import io.selendroid.android.Abi;
 import io.selendroid.android.AndroidApp;
-import io.selendroid.android.AndroidDevice;
-import io.selendroid.android.AndroidEmulator;
+import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -36,7 +35,7 @@ import org.openqa.selenium.logging.LogEntry;
 
 import com.android.ddmlib.IDevice;
 
-public class DeviceForTest implements AndroidEmulator, AndroidDevice {
+public class DeviceForTest extends DefaultAndroidEmulator {
   @Override
   public void runAdbCommand(String parameter) {}
 
@@ -69,7 +68,7 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   @Override
   public Boolean install(AndroidApp app) {
     // do nothing
-      return true;
+    return true;
   }
 
   @Override
@@ -126,12 +125,12 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   }
 
   @Override
-  public boolean isEmulatorAlreadyExistent() throws AndroidDeviceException {
+  public boolean isEmulatorAlreadyExistent() {
     return true;
   }
 
   @Override
-  public boolean isEmulatorStarted() throws AndroidDeviceException {
+  public boolean isEmulatorStarted() {
     return false;
   }
 
@@ -181,9 +180,7 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   }
 
   @Override
-  public void kill(InstalledAndroidApp app)
-      throws AndroidDeviceException, AndroidSdkException {
-  }
+  public void kill(InstalledAndroidApp app) throws AndroidDeviceException, AndroidSdkException {}
 
   public boolean screenSizeMatches(String requestedScreenSize) {
     // if screen size is not requested, just ignore it
@@ -220,7 +217,7 @@ public class DeviceForTest implements AndroidEmulator, AndroidDevice {
   @Override
   public void setIDevice(IDevice iDevice) {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override

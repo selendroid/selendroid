@@ -26,29 +26,36 @@ package io.selendroid.server.handler;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.BaseSelendroidServerHandler;
+import io.selendroid.server.JsResult;
 import io.selendroid.server.Response;
 import io.selendroid.server.UiResponse;
-import io.selendroid.server.inspector.BaseInspectorViewRenderer;
 import io.selendroid.server.model.ActiveSession;
+import io.selendroid.server.util.HttpClientUtil;
 
 import java.util.logging.Logger;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.webbitserver.HttpRequest;
 
-public class InspectorUiHandler extends BaseSelendroidServerHandler {
-  private static final Logger log = Logger.getLogger(InspectorUiHandler.class.getName());
+public class InspectorTreeHandler extends BaseSelendroidServerHandler {
+  private static final Logger log = Logger.getLogger(InspectorTreeHandler.class.getName());
+  private ActiveSession session = null;
 
-  public InspectorUiHandler(HttpRequest request, String mappedUri) {
+  public InspectorTreeHandler(HttpRequest request, String mappedUri) {
     super(request, mappedUri);
   }
 
   @Override
   public Response handle() throws JSONException {
     String sessionId = getSessionId();
-    log.info("inspector command, sessionId: " + sessionId);
-    ActiveSession session = null;
+    log.info("inspector tree handler, sessionId: " + sessionId);
+
+
     if (sessionId == null || sessionId.isEmpty() == true) {
       if (getSelendroidDriver().getActiceSessions() != null
           && getSelendroidDriver().getActiceSessions().size() >= 1) {
@@ -61,33 +68,17 @@ public class InspectorUiHandler extends BaseSelendroidServerHandler {
                 + "To start a test session, add a break point into your test code and run the test in debug mode.");
       }
     } else {
-      if (getSelendroidDriver().isValidSession(sessionId)) {
-        session = getSelendroidDriver().getActiveSession(sessionId);
-      } else {
-        return new UiResponse(
-            "",
-            "You are using an invalid session key. Please open the inspecor with the base uri: <IpAddress>:<Port>/inspector");
-      }
-    }
-    return new UiResponse(sessionId != null ? sessionId : "",
-        new MyInspectorViewRenderer(session).buildHtml());
-  }
-
-  public class MyInspectorViewRenderer extends BaseInspectorViewRenderer {
-    private ActiveSession session;
-
-    public MyInspectorViewRenderer(ActiveSession session) {
-      this.session = session;
+      session = getSelendroidDriver().getActiveSession(sessionId);
     }
 
-    public String getResource(String name) {
-      return "http://localhost:" + session.getSelendroidServerPort() + "/inspector/resources/"
-          + name;
-    }
-
-    public String getScreen() {
-      return "http://" + request.header("Host") + "/inspector/session/" + session.getSessionKey()
-          + "/screenshot";
+    try {
+      HttpResponse r =
+          HttpClientUtil.executeRequest("http://localhost:" + session.getSelendroidServerPort()
+              + "/inspector/tree", HttpMethod.GET);
+      return new JsResult(EntityUtils.toString(r.getEntity()));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new SelendroidException(e);
     }
   }
 }

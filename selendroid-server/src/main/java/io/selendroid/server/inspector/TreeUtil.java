@@ -70,13 +70,13 @@ public class TreeUtil {
 
   private static String getNodeTitle(JSONObject node) throws JSONException {
     StringBuilder b = new StringBuilder();
-    b.append("[" + node.optString("type") + "]-");
-    String name = node.optString("name");
-    if (name != null) {
+    b.append("[" + node.optString("type") + "]");
+    String name = node.optString("id");
+    if (name != null && name.isEmpty() == false) {
       if (name.length() > 18) {
         name = name.substring(0, 15) + "...";
       }
-      b.append(name);
+      b.append("-" + name);
     }
     return b.toString();
   }

@@ -289,7 +289,7 @@ public class DeviceStoreTest {
 
   @Test
   public void testShouldBeAbleToFindRealDeviceForCapabilities() throws Exception {
-    AndroidDevice device = mock(AndroidDevice.class);
+    AndroidDevice device = mock(DefaultHardwareDevice.class);
     when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
     when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
     when(device.getScreenSize()).thenReturn("320x480");

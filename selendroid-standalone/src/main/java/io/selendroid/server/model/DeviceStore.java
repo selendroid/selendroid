@@ -17,6 +17,7 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
+import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
@@ -187,8 +188,8 @@ public class DeviceStore {
           continue;
         }
         if (caps.getEmulator() == null
-            || (caps.getEmulator() == true && device instanceof AndroidEmulator)
-            || (caps.getEmulator() == false && device instanceof AndroidDevice)) {
+            || (caps.getEmulator() == true && device instanceof DefaultAndroidEmulator)
+            || (caps.getEmulator() == false && device instanceof DefaultHardwareDevice)) {
           if (installedApp && device instanceof AndroidEmulator) {
             potentialMatches.add(device);
             continue;
@@ -197,8 +198,6 @@ public class DeviceStore {
           devicesInUse.add(device);
           return device;
         }
-        log.severe("Device did not match emulator/physical device. caps.getEmulator(): "
-            + caps.getEmulator());
       } else if (installedApp) {
         if (devicesInUse.contains(device)) {
           log.fine("device already in use");

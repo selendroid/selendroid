@@ -23,7 +23,17 @@ function Inspector(selector) {
     this.recorder = new Recorder(this);
     this.log = new Logger(this);
     this.selector = selector;
-
+    this.log.debug("document url "+document.URL);
+    var treeUrl="";
+    if (document.URL.indexOf("8080")  > -1) {
+    	treeUrl="/inspector/tree";		
+    }else{
+    	var secondPart = document.URL.split("/session/")[1];
+    	var sessionId = secondPart.split("/")[0];
+    	treeUrl="/inspector/session/"+sessionId+"/tree";
+    }
+    this.log.debug(treeUrl)
+    
     this.screenshotPath = $("#screenshot").attr("src");
     this.jsTreeConfig = {
         "core": {
@@ -32,7 +42,7 @@ function Inspector(selector) {
         },
         "json_data": {
             "ajax": {
-                "url": "/inspector/tree"
+                "url":treeUrl
             }
         },
         "themes": {
@@ -428,15 +438,9 @@ Inspector.prototype.findElementsByXpath2 = function (xpath) {
 Inspector.prototype.onMouseMove = function (event) {
 
     if (!this.lock) {
-        // var x = event.pageX / scale - realOffsetX;
-        // var y = event.pageY / scale - realOffsetY;
         var parentOffset = $("#mouseOver").offset();
-        // or $(this).offset(); if you really just want the current element's
-        // offset
         var x = event.pageX - parentOffset.left;
         var y = event.pageY - parentOffset.top;
-//		x = x / scale;
-//		y = y / scale;
         x = x / scale_highlight;
         y = y / scale_highlight;
         console.log(x + "," + y);
@@ -462,14 +466,18 @@ Inspector.prototype.onMouseClick = function (event) {
     if (this.recorder.on && !this.busy) {
         this.busy = true;
         console.log("Record click");
-        var x = event.pageX / scale - realOffsetX;
-        var y = event.pageY / scale - realOffsetY;
-        //var x = x / scale_highlight;
-        //var y = y / scale_highlight;
+        var parentOffset = $("#mouseOver").offset();
+        var x = event.pageX - parentOffset.left;
+        var y = event.pageY - parentOffset.top;
+        x = x / scale_highlight;
+        y = y / scale_highlight;
         var finder = new NodeFinder(this.root);
         var node = finder.getNodeByPosition(x, y);
         if (node) {
             var xpath = this.findXpathExpression(x, y, node);
+            if (xpath===undefined){
+            	this.busy = false;
+            }
             var confirm = this.findElementsByXpath2(xpath);
             if (confirm.length === 1) {
                 this.recorder.recordClick(xpath);
@@ -527,10 +535,10 @@ Inspector.prototype.refineXpathExpression = function (x, y, node, xpath, element
 Inspector.prototype.findXpathExpression = function (x, y, node) {
     var o = node.metadata;
     var xpath = "//" + o.type;
-    if (o.name && o.name !== 'null') {
-        xpath += "[@name='" + o.name + "']";
-    } else if (o.id && o.id !== 'null') {
+    if (o.id && o.id !== 'null') {
         xpath += "[@id='" + o.id + "']";
+    } else if  (o.name && o.name !== 'null'){
+    	xpath += "[@name='" + o.name + "']";
     } else if (o.value && o.value !== 'null') {
         xpath += "[@value='" + o.value + "']";
     } else {

@@ -51,6 +51,8 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   private File avdRootFolder;
   private Locale locale = null;
 
+  protected DefaultAndroidEmulator(){}
+  
   public DefaultAndroidEmulator(String avdName, String abi, String screenSize, String target,
       File avdFilePath) {
     this.avdName = avdName;

@@ -19,6 +19,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -97,6 +98,15 @@ public class HomeScreenActivity extends Activity {
     startActivity(nextScreen);
   }
 
+  public void displayToast(View view){
+    Context context = getApplicationContext();
+    CharSequence text = "Hello selendroid toast!";
+    int duration = Toast.LENGTH_LONG;
+
+    Toast toast = Toast.makeText(context, text, duration);
+    toast.show();
+  }
+  
   public void displayTextView(View view) {
     TextView textview = ((TextView) findViewById(io.selendroid.testapp.R.id.visibleTextView));
     if (textview.isShown()) {
