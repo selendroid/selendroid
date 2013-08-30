@@ -16,7 +16,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @Test(groups = {TestGroups.NATIVE})
-public class NativeElementInteractionTests extends BaseAndroidTest {
+public class NativeElementInteractionTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetTextOfElement() {
     openStartActivity();

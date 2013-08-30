@@ -11,7 +11,7 @@ import org.openqa.selenium.interactions.HasInputDevices;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 @Test(groups={TestGroups.NATIVE})
-public class SendKeyAndNativeKeyTests extends BaseAndroidTest {
+public class SendKeyAndNativeKeyTest extends BaseAndroidTest {
   public static final String ACTIVITY_CLASS = "io.selendroid.testapp."
       + "HomeScreenActivity";
 

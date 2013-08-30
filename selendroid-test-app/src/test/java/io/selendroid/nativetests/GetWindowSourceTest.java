@@ -21,7 +21,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 @Test(groups = {TestGroups.NATIVE})
-public class GetWindowSourceTests extends BaseAndroidTest {
+public class GetWindowSourceTest extends BaseAndroidTest {
   /**
    * TODO update test, because test app was refactored
    */
