@@ -3,7 +3,7 @@
 - Added xpath locator for native context
 - selendroid can now handle multiple web views on the same activity
 - new inspector with the ability to display html source code of a web view.
-- multiple bug fixes (...)
+- multiple bug fixes
 - Support for Set, Get, Delete Cookies for WebViews
 - hardware device handling is now based on the ddmlib library which means devices can be now hot plugged.
 - selendroid-standalone can is now taking screenshots by default using ddmlib library.
