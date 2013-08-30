@@ -1,4 +1,3 @@
-
 /*
 Copyright 2012 Selenium committers
 Copyright 2012 Software Freedom Conservancy
