@@ -2,11 +2,11 @@ package io.selendroid.webviewdrivertests;
 
 import static io.selendroid.waiter.TestWaiter.waitFor;
 import static io.selendroid.waiter.WaitingConditions.pageTitleToBe;
+import io.selendroid.TestGroups;
+import io.selendroid.support.BaseAndroidTest;
 
 import java.util.concurrent.TimeUnit;
 
-import io.selendroid.TestGroups;
-import io.selendroid.support.BaseAndroidTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -15,7 +15,7 @@ import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-@Test(groups={TestGroups.WEBVIEW})
+@Test(groups = {TestGroups.WEBVIEW})
 public class WebElementInteractionTests extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetTextOfElement() {
@@ -48,7 +48,7 @@ public class WebElementInteractionTests extends BaseAndroidTest {
 
     Assert.assertEquals(button.getTagName(), "INPUT");
   }
-  
+
   @Test
   public void testShouldBeAbleToGetAttributeOfButton() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
@@ -106,8 +106,8 @@ public class WebElementInteractionTests extends BaseAndroidTest {
 
     WebElement element = driver.findElement(By.id("checky"));
     Point location = element.getLocation();
-    Assert.assertEquals(location.x, 151);
-    Assert.assertEquals(location.y, 113);
+    Assert.assertTrue(location.x >= 120);
+    Assert.assertTrue(location.y >= 100);
   }
 
   @Test
@@ -137,7 +137,7 @@ public class WebElementInteractionTests extends BaseAndroidTest {
     Assert.assertEquals(element.isEnabled(), true);
   }
 
-  @Test(enabled=false)
+  @Test(enabled = false)
   public void testShouldBeAbleToSubmitAnElement() {
     openWebdriverTestPage(HtmlTestData.SAY_HELLO_DEMO);
 

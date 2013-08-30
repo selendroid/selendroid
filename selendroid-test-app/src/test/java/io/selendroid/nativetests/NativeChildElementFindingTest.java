@@ -13,10 +13,11 @@
  */
 package io.selendroid.nativetests;
 
-import java.util.List;
-
 import io.selendroid.TestGroups;
 import io.selendroid.support.BaseAndroidTest;
+
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
@@ -29,16 +30,15 @@ import org.testng.annotations.Test;
  * 
  * @author ddary
  */
-@Test(groups={TestGroups.NATIVE})
+@Test(groups = {TestGroups.NATIVE})
 public class NativeChildElementFindingTest extends BaseAndroidTest {
-  public static final String ACTIVITY_CLASS = "io.testapp."
-      + "HomeScreenActivity";
+  public static final String ACTIVITY_CLASS = "io.testapp." + "HomeScreenActivity";
 
   private void assertListIsEmpty(List<WebElement> elements) {
     Assert.assertTrue(elements.isEmpty(), "Expecting empty list when no elements are found.");
   }
-  
-  
+
+
   @Test
   public void testShouldBeAbleToFindChildButtonIdentifiedByText() throws Exception {
     openStartActivity();
@@ -76,7 +76,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
     WebElement rootElement = driver.findElement(By.id("l10n"));
     assertListIsEmpty(rootElement.findElements(By.linkText("nonExistantButton")));
   }
-  
+
   @Test
   public void testShouldBeAbleToFindChildButtonIdentifiedByPartialText() throws Exception {
     openStartActivity();
@@ -275,10 +275,10 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleTofindChildElementByXpath() throws Exception {
     openStartActivity();
     try {
-      driver.findElement(By.xpath("//a[@id='waitingButtonTest']"));
-      Assert.fail("Finding Native elements by css selector is not supported.");
-    } catch (WebDriverException e) {
-      Assert.assertTrue(e.getMessage().contains("By locator ByXPath is curently not supported!"));
+      driver.findElement(By.xpath("//a[@id='blabla']"));
+      Assert.fail("not existent element cannot be found.");
+    } catch (NoSuchElementException e) {
+      // expected
     }
   }
 
@@ -299,12 +299,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleTofindChildElementsByXpath() throws Exception {
     openStartActivity();
     WebElement rootElement = driver.findElement(By.id("l10n"));
-    try {
-      rootElement.findElements(By.xpath("//button[id='waitingButtonTest']"));
-      Assert.fail("Finding Native elements by css selector is not supported.");
-    } catch (WebDriverException e) {
-      Assert.assertTrue(e.getMessage().contains("By locator ByXPath is curently not supported!"));
-    }
+    assertListIsEmpty(rootElement.findElements(By.xpath("//button[id='blabla']")));
   }
 
   @Test

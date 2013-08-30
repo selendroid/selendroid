@@ -117,8 +117,8 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     try {
       driver.findElement(By.xpath("//a[@id='waitingButtonTest']"));
       Assert.fail("Finding Native elements by css selector is not supported.");
-    } catch (WebDriverException e) {
-      Assert.assertTrue(e.getMessage().contains("By locator ByXPath is curently not supported!"));
+    } catch (NoSuchElementException e) {
+      // expected
     }
   }
 
@@ -137,12 +137,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldNotBeAbleTofindElementsByXpath() throws Exception {
     openStartActivity();
-    try {
-      driver.findElements(By.xpath("//a[@id='waitingButtonTest']"));
-      Assert.fail("Finding Native elements by css selector is not supported.");
-    } catch (WebDriverException e) {
-      Assert.assertTrue(e.getMessage().contains("By locator ByXPath is curently not supported!"));
-    }
+    assertListIsEmpty(driver.findElements(By.xpath("//a[@id='blaBal']")));
   }
 
   @Test
@@ -197,7 +192,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
     List<WebElement> elements = driver.findElements(By.className("android.widget.Button"));
-    Assert.assertEquals(elements.size(), 4);
+    Assert.assertEquals(elements.size(), 5);
     Assert.assertEquals(elements.get(1).getText(), buttonText);
   }
 
@@ -235,7 +230,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     openStartActivity();
     String buttonText = "EN Button";
     List<WebElement> elements = driver.findElements(By.tagName("Button"));
-    Assert.assertEquals(elements.size(), 3);
+    Assert.assertEquals(elements.size(), 4);
     Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
 
