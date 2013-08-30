@@ -18,6 +18,8 @@ import io.selendroid.support.BaseAndroidTest;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Cookie;
@@ -28,12 +30,12 @@ import org.testng.annotations.Test;
 
 
 @Test(groups={TestGroups.WEBVIEW})
-public class CookieHandlerTests extends BaseAndroidTest {
+public class CookieHandlerTest extends BaseAndroidTest {
 
     private void setupWebView() {
         openWebdriverTestPage(HtmlTestData.ACTUAL_XHTML_PAGE);
         ((JavascriptExecutor)driver).executeScript("window.location = 'http://www.google.com'");
-        new WebDriverWait(driver, 6).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("input[name=q]")));
+        new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("input[name=q]")));
     }
     @Test
     public void testShouldBeAbleToAddCookie() {

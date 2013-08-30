@@ -16,7 +16,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @Test(groups = {TestGroups.WEBVIEW})
-public class WebElementInteractionTests extends BaseAndroidTest {
+public class WebElementInteractionTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetTextOfElement() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
