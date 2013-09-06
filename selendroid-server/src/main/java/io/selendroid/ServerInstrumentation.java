@@ -85,10 +85,13 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
     String activityClazzName = arguments.getString("main_activity");
 
-    int parsedServerPort;
+    int parsedServerPort = 0;
 
     try {
-      parsedServerPort = arguments.getInt("server_port", this.serverPort);
+      String port = arguments.getString("server_port");
+      if (port != null && port.isEmpty() == false) {
+        parsedServerPort = Integer.parseInt(port);
+      }
     } catch (NumberFormatException ex) {
       SelendroidLogger.log("Unable to parse the value of server_port key.");
       parsedServerPort = this.serverPort;
