@@ -20,98 +20,109 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 public class SelendroidConfiguration {
-  @Parameter(description = "port the server will listen on.", names = "-port")
-  private int port = 5555;
+	@Parameter(description = "port the server will listen on.", names = "-port")
+	private int port = 5555;
 
-  @Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
-  private long timeoutEmulatorStart = 300000;
+	@Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
+	private long timeoutEmulatorStart = 300000;
 
-  @Parameter(description = "if true, adb will be restarted while starting selendroid-standalone.", names = "-restartAdb")
-  private boolean restartAdb = false;
+	@Parameter(description = "if true, adb will be restarted while starting selendroid-standalone.", names = "-restartAdb")
+	private boolean restartAdb = false;
 
-  @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
-      "-app", "-aut"})
-  private List<String> supportedApps = new ArrayList<String>();
+	@Parameter(description = "location of the application under test. Absolute path to the apk", names = {
+			"-app", "-aut" })
+	private List<String> supportedApps = new ArrayList<String>();
 
-  @Parameter(description = "for developers who already have the app installed (and emulator running) format = tld.company.app/ActivityClass:version", names = {"-installedApp"})
-  private String installedApp = null;
+	@Parameter(description = "for developers who already have the app installed (and emulator running) format = tld.company.app/ActivityClass:version", names = { "-installedApp" })
+	private String installedApp = null;
 
-  @Parameter(names = "-verbose", description = "Debug mode")
-  private boolean verbose = false;
+	@Parameter(names = "-verbose", description = "Debug mode")
+	private boolean verbose = false;
 
-  @Parameter(names = "-emulatorPort", description = "port number to start running emulators on")
-  private int emulatorPort = 5560;
+	@Parameter(names = "-emulatorPort", description = "port number to start running emulators on")
+	private int emulatorPort = 5560;
 
-  @Parameter(names = "-deviceScreenshot", description = "if true, screenshots will be taken on the device instead of using the ddmlib libary.")
-  private boolean deviceScreenshot = false;
+	@Parameter(names = "-deviceScreenshot", description = "if true, screenshots will be taken on the device instead of using the ddmlib libary.")
+	private boolean deviceScreenshot = false;
 
-  public void addSupportedApp(String appAbsolutPath) {
-    supportedApps.add(appAbsolutPath);
-  }
+	@Parameter(description = "the port the selendroid-standalone is using to communicate with instrumentation server", names = { "-selendroidServerPort" })
+	private int selendroidServerPort = 8080;
 
-  public List<String> getSupportedApps() {
-    return supportedApps;
-  }
+	public void setSelendroidServerPort(int selendroidServerPort) {
+		this.selendroidServerPort = selendroidServerPort;
+	}
 
-  public void setInstalledApp(String installedApp) {
-    this.installedApp = installedApp;
-  }
+	public int getSelendroidServerPort() {
+		return selendroidServerPort;
+	}
 
-  public String getInstalledApp() {
-    return installedApp;
-  }
+	public void addSupportedApp(String appAbsolutPath) {
+		supportedApps.add(appAbsolutPath);
+	}
 
-  public static SelendroidConfiguration create(String[] args) {
-    SelendroidConfiguration res = new SelendroidConfiguration();
-    new JCommander(res).parse(args);
-    return res;
-  }
+	public List<String> getSupportedApps() {
+		return supportedApps;
+	}
 
-  public void setPort(int port) {
-    this.port = port;
-  }
+	public void setInstalledApp(String installedApp) {
+		this.installedApp = installedApp;
+	}
 
-  public int getPort() {
-    return this.port;
-  }
+	public String getInstalledApp() {
+		return installedApp;
+	}
 
-  public void setEmulatorPort(int port) {
-    emulatorPort = port;
-  }
+	public static SelendroidConfiguration create(String[] args) {
+		SelendroidConfiguration res = new SelendroidConfiguration();
+		new JCommander(res).parse(args);
+		return res;
+	}
 
-  public int getEmulatorPort() {
-    return emulatorPort;
-  }
+	public void setPort(int port) {
+		this.port = port;
+	}
 
-  public long getTimeoutEmulatorStart() {
-    return timeoutEmulatorStart;
-  }
+	public int getPort() {
+		return this.port;
+	}
 
-  public void setTimeoutEmulatorStart(long timeoutEmulatorStart) {
-    this.timeoutEmulatorStart = timeoutEmulatorStart;
-  }
+	public void setEmulatorPort(int port) {
+		emulatorPort = port;
+	}
 
-  public boolean isRestartAdb() {
-    return restartAdb;
-  }
+	public int getEmulatorPort() {
+		return emulatorPort;
+	}
 
-  public void setRestartAdb(boolean restartAdb) {
-    this.restartAdb = restartAdb;
-  }
+	public long getTimeoutEmulatorStart() {
+		return timeoutEmulatorStart;
+	}
 
-  public boolean isVerbose() {
-    return verbose;
-  }
+	public void setTimeoutEmulatorStart(long timeoutEmulatorStart) {
+		this.timeoutEmulatorStart = timeoutEmulatorStart;
+	}
 
-  public void setVerbose(boolean verbose) {
-    this.verbose = verbose;
-  }
+	public boolean isRestartAdb() {
+		return restartAdb;
+	}
 
-  public boolean isDeviceScreenshot() {
-    return deviceScreenshot;
-  }
+	public void setRestartAdb(boolean restartAdb) {
+		this.restartAdb = restartAdb;
+	}
 
-  public void setDeviceScreenshot(boolean deviceScreenshot) {
-    this.deviceScreenshot = deviceScreenshot;
-  }
+	public boolean isVerbose() {
+		return verbose;
+	}
+
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
+
+	public boolean isDeviceScreenshot() {
+		return deviceScreenshot;
+	}
+
+	public void setDeviceScreenshot(boolean deviceScreenshot) {
+		this.deviceScreenshot = deviceScreenshot;
+	}
 }

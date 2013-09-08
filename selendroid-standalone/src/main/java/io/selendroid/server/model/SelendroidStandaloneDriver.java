@@ -194,6 +194,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   public String createNewTestSession(JSONObject caps, Integer retries) throws AndroidSdkException,
       JSONException {
     SelendroidCapabilities desiredCapabilities = null;
+    
+    selendroidServerPort = serverConfiguration.getSelendroidServerPort();
+
     try {
       desiredCapabilities = new SelendroidCapabilities(caps);
     } catch (JSONException e) {
@@ -286,7 +289,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       }
     }
 
-    int port = getNextSelendroidServerPort();
+    int port = selendroidServerPort;
 
     try {
       device.startSelendroid(app, port);

@@ -224,11 +224,17 @@ public abstract class AbstractDevice implements AndroidDevice {
     command.addArgument("shell", false);
     command.addArgument("am", false);
     command.addArgument("instrument", false);
+    
     command.addArgument("-e", false);
     command.addArgument("main_activity", false);
     command.addArgument(aut.getMainActivity(), false);
-    command.addArgument("io.selendroid/.ServerInstrumentation", false);
-
+    
+    command.addArgument("-e", false);
+    command.addArgument("server_port", false);
+    command.addArgument(port+"", false);
+    
+    command.addArgument(aut.getBasePackage() + "io.selendroid/io.selendroid.ServerInstrumentation", false);
+    
     if (executeCommand(command, 20000).contains("INSTRUMENTATION_FAILED")) {
       throw new AndroidSdkException("Failed to start instrumentation");
     }
@@ -245,7 +251,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
     command.addArgument("forward", false);
     command.addArgument("tcp:" + port, false);
-    command.addArgument("tcp:8080", false);
+    command.addArgument("tcp:" + port, false);
     executeCommand(command, 20000);
   }
 

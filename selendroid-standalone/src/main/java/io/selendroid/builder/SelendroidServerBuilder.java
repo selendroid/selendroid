@@ -147,7 +147,16 @@ public class SelendroidServerBuilder {
       throw new SelendroidException("AndroidApplication.xml template file was not found.");
     }
     String content = IOUtils.toString(inputStream, Charset.defaultCharset().displayName());
-
+    
+    // find the first occurance of "package" and appending the targetpackagename to begining
+    int i = content.toLowerCase().indexOf("package");
+    for( ; i < content.length() ; i++) {
+    	if(content.charAt(i) == '\"') {
+    		break;
+    	}
+    }
+    content = content.substring(0, i+1) + targetPackageName + content.substring(i+1);
+    log.info("Final Manifest File:\n" + content);
     content = content.replaceAll(SELENDROID_TEST_APP_PACKAGE, targetPackageName);
     // Seems like this needs to be done
     if (content.contains(ICON)) {
