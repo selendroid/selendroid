@@ -150,12 +150,16 @@ public class SelendroidServerBuilder {
     
     // find the first occurance of "package" and appending the targetpackagename to begining
     int i = content.toLowerCase().indexOf("package");
+    int cnt = 0;
     for( ; i < content.length() ; i++) {
     	if(content.charAt(i) == '\"') {
+    		cnt++;
+    	}
+    	if(cnt == 2) {
     		break;
     	}
     }
-    content = content.substring(0, i+1) + targetPackageName + content.substring(i+1);
+    content = content.substring(0, i) + "." + targetPackageName + content.substring(i);
     log.info("Final Manifest File:\n" + content);
     content = content.replaceAll(SELENDROID_TEST_APP_PACKAGE, targetPackageName);
     // Seems like this needs to be done

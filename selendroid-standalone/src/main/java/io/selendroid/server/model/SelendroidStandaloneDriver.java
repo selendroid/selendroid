@@ -289,7 +289,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       }
     }
 
-    int port = selendroidServerPort;
+    int port = getNextSelendroidServerPort();
 
     try {
       device.startSelendroid(app, port);

@@ -1,4 +1,7 @@
-0.5.0-SNAPSHOT (under development, check dev branch)
+0.5.1
+- fix for 'Arbitrary port number binding is broken' #105
+
+0.5.0
 ---
 - Added xpath locator for native context
 - selendroid can now handle multiple web views on the same activity
