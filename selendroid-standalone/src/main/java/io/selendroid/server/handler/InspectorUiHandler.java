@@ -53,7 +53,7 @@ public class InspectorUiHandler extends BaseSelendroidServerHandler {
       } else {
         return new UiResponse(
             "",
-            "You are using an invalid session key. Please open the inspecto with the base uri: <IpAddress>:<Port>/inspector");
+            "You are using an invalid session key. Please open the inspector with the base uri: <IpAddress>:<Port>/inspector");
       }
     }
     return new UiResponse(sessionId != null ? sessionId : "",
