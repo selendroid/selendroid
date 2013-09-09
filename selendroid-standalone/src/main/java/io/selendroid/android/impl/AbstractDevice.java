@@ -233,7 +233,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     command.addArgument("server_port", false);
     command.addArgument(port+"", false);
     
-    command.addArgument(aut.getBasePackage() + "io.selendroid/io.selendroid.ServerInstrumentation", false);
+    command.addArgument("io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation", false);
     
     if (executeCommand(command, 20000).contains("INSTRUMENTATION_FAILED")) {
       throw new AndroidSdkException("Failed to start instrumentation");
