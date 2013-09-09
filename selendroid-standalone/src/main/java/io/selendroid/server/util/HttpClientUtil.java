@@ -29,6 +29,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HttpClientUtil {
@@ -49,7 +50,12 @@ public class HttpClientUtil {
 
   public static JSONObject parseJsonResponse(HttpResponse response) throws Exception {
     String r = IOUtils.toString(response.getEntity().getContent());
-    return new JSONObject(r);
+      try {
+          return new JSONObject(r);
+      } catch (JSONException e) {
+          log.severe("Failed to parse json response: " + r);
+          throw e;
+      }
   }
 
   public static HttpResponse executeRequest(String url, HttpMethod method) throws Exception {

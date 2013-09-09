@@ -130,7 +130,7 @@ public class SelendroidServlet extends BaseServlet {
       result = handler.handle();
     } catch (Exception e) {
       e.printStackTrace();
-      log.severe("Error occured while handling request: " + e.getMessage());
+      log.severe("Error occurred while handling request: " + e.fillInStackTrace());
       replyWithServerError(response);
       return;
     }

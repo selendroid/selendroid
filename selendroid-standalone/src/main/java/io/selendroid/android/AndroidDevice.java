@@ -52,4 +52,6 @@ public interface AndroidDevice {
   public void runAdbCommand(String parameter);
   
   public byte[] takeScreenshot()throws AndroidDeviceException;
+
+  public void setVerbose();
 }
