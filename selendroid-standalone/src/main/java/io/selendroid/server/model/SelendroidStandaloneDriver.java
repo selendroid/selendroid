@@ -417,14 +417,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       ActiveSession session = sessions.get(sessionId);
       try {
         HttpClientUtil.executeRequest("http://localhost:" + session.getSelendroidServerPort()
-            + "/wd/hub/sessions/" + sessionId, HttpMethod.DELETE);
+            + "/wd/hub/session/" + sessionId, HttpMethod.DELETE);
       } catch (Exception e) {
         // can happen, ignore
       }
       deviceStore.release(session.getDevice(), session.getAut());
 
       // remove session
-      sessions.remove(session);
+      sessions.remove(sessionId);
       session = null;
     }
   }
