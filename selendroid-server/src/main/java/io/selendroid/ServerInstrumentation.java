@@ -70,8 +70,8 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       public void run() {
         Set<Activity> activities = getActivities();
         if (activities != null && !activities.isEmpty()) {
-          for (Activity acivity : activities) {
-            acivity.finish();
+          for (Activity activity : activities) {
+            activity.finish();
           }
         }
       }
