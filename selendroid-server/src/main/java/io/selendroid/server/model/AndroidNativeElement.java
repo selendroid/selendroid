@@ -479,6 +479,9 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public String getAttribute(String attribute) {
+    if (attribute.equalsIgnoreCase("nativeid")) {
+      return getNativeId();
+    }
     String name = capitalizeFirstLetter(attribute);
     Method method = getDeclaredMethod("get" + name);
     if (method == null) {
