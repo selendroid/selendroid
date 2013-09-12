@@ -13,12 +13,12 @@
  */
 package io.selendroid.support;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidDriver;
 import io.selendroid.SelendroidLauncher;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.waiter.TestWaiter;
+import static io.selendroid.waiter.TestWaiter.waitFor;
 import io.selendroid.waiter.WaitingConditions;
 
 import java.io.File;

@@ -13,12 +13,12 @@
  */
 package io.selendroid.driver;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
+import io.selendroid.support.BaseAndroidTest;
+import io.selendroid.waiter.TestWaiter;
+import io.selendroid.waiter.WaitingConditions;
 
 import java.util.Set;
 
-import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.waiter.WaitingConditions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -59,6 +59,6 @@ public class WindowHandlingTests extends BaseAndroidTest {
     String activityClass = "io.selendroid.testapp." + "WebViewActivity";
     driver.switchTo().window(NATIVE_APP);
     driver.get("and-activity://" + activityClass);
-    waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://WebViewActivity"));
+    TestWaiter.waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://WebViewActivity"));
   }
 }
