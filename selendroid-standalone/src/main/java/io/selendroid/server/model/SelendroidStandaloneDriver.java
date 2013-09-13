@@ -19,11 +19,11 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
-import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.android.DeviceManager;
+import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
-import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.DefaultDeviceManager;
+import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -227,7 +227,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         } else {
           Map<String, Object> config = new HashMap<String, Object>();
           config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
-          if (desiredCapabilities.is(SelendroidCapabilities.DISPLAY)) {
+          if (desiredCapabilities.asMap().containsKey(SelendroidCapabilities.DISPLAY)) {
             Object d = desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY);
             config.put(AndroidEmulator.DISPLAY_OPTION, String.valueOf(d));
           }
