@@ -22,7 +22,7 @@ import org.openqa.grid.internal.utils.CapabilityMatcher;
 public class SelendroidCapabilityMatcher implements CapabilityMatcher {
   public static final String LOCALE = "locale";
   public static final String AUT = "aut";
-  public static final String SDK_VERSION = "sdkVersion";
+  public static final String ANDROID_TARGET = "androidTarget";
   public static final String SCREEN_SIZE = "screenSize";
   public static final String BROWSER_NAME = "browserName";
   private final List<String> toConsider = new ArrayList<String>();
@@ -31,7 +31,7 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
     toConsider.add(BROWSER_NAME);
     toConsider.add(LOCALE);
     toConsider.add(AUT);
-    toConsider.add(SDK_VERSION);
+    toConsider.add(ANDROID_TARGET);
     toConsider.add(SCREEN_SIZE);
   }
 
@@ -44,8 +44,10 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
       if (toConsider.contains(key)) {
         if (requestedCapability.get(key) != null) {
           String value = requestedCapability.get(key).toString();
-          if (!requestedCapability.get(key).equals(nodeCapability.get(key))) {
-            return false;
+          if (value != null) {
+            if (!value.equals(nodeCapability.get(key))) {
+              return false;
+            }
           } else {
             // null value matches anything.
           }
