@@ -52,10 +52,7 @@ public class DefaultDeviceManager extends Thread
   protected void initializeAdbConnection() {
     // Get a device bridge instance. Initialize, create and restart.
     try {
-    if (!started) {
       AndroidDebugBridge.init(false);
-      started = true;
-    }
     } catch (IllegalStateException e) {
       e.printStackTrace();
       Log.e("The IllegalStateException is not a show "
@@ -73,10 +70,6 @@ public class DefaultDeviceManager extends Thread
       System.out.println("my devices: " + devicesss[i].getAvdName());
     }
     
-<<<<<<< HEAD
-=======
-    log.info("bridge connocted?: " + bridge.isConnected());
->>>>>>> d3e26c61a6b9eb4fc9ce84fa28e179b291b255a9
     // Add the existing devices to the list of devices we are tracking.
     if (bridge.isConnected() && bridge.hasInitialDeviceList()) {
       IDevice[] devices = bridge.getDevices();
