@@ -25,6 +25,7 @@ import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.DefaultDeviceManager;
 import io.selendroid.android.impl.InstalledAndroidApp;
+import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
@@ -36,7 +37,10 @@ import io.selendroid.io.ShellCommand;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.util.HttpClientUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +64,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private static int selendroidServerPort = 38080;
   private static final Logger log = Logger.getLogger(SelendroidStandaloneDriver.class.getName());
   private Map<String, AndroidApp> appsStore = new HashMap<String, AndroidApp>();
+  private Map<String, AndroidApp> appsToInstall = new HashMap<String, AndroidApp>();
   private Map<String, AndroidApp> selendroidServers = new HashMap<String, AndroidApp>();
   private Map<String, ActiveSession> sessions = new HashMap<String, ActiveSession>();
   private DeviceStore deviceStore = null;
@@ -71,7 +76,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration)
       throws AndroidSdkException, AndroidDeviceException {
     this.serverConfiguration = serverConfiguration;
-    selendroidApkBuilder = new SelendroidServerBuilder();
+    selendroidApkBuilder = new SelendroidServerBuilder(serverConfiguration);
 
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
@@ -113,6 +118,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
         if (appId != null && !appsStore.containsKey(appId)) {
           appsStore.put(appId, app);
+          appsToInstall.put(appId,app);
           log.info("App " + appId + " has been added to selendroid standalone server.");
         }
       } else {
@@ -146,8 +152,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     hardwareDeviceManager.initialize(hardwareDeviceListener);
 
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
-    deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null);
-
+    
+    deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null);	
+   
     if (deviceStore.getDevices().isEmpty()) {
       SelendroidException e =
           new SelendroidException(
@@ -157,7 +164,29 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       log.warning("Warning: " + e);
     }
   }
-
+  
+  private String getAvdName(int port) { 
+	if (port == -1) {
+		return null;
+	}
+	String cmd = "(sleep 4; echo 'avd name') | telnet localhost " + port;
+    try {
+        Process proc = Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
+        try {
+            proc.waitFor();
+        } catch (InterruptedException e) { }
+        BufferedReader read = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        while (read.ready()) {
+           if(read.readLine().equals("OK"))	{
+        	   break;
+           }
+        }
+        return read.readLine();
+    } catch (IOException e) {
+    	return null;
+    }
+  }
+  
   private void resetAdb() throws ShellCommandException {
     CommandLine resetAdb = new CommandLine(AndroidSdk.adb());
     resetAdb.addArgument("kill-server", false);
@@ -222,6 +251,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       AndroidEmulator emulator = (AndroidEmulator) device;
       try {
         if (emulator.isEmulatorStarted()) {
+        	if (desiredCapabilities.getSerial() != null) {
+        		emulator.setSerial(Integer.parseInt(desiredCapabilities.getSerial().substring(9)));
+        	}
           // Allow a local developer to have their emulator up and running without restarting it
           if (!(app instanceof InstalledAndroidApp)) {
             throw new SessionNotCreatedException("The Emulator '" + emulator
@@ -250,13 +282,18 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       }
       emulator.setIDevice(hardwareDeviceManager.getVirtualDevice(emulator.getSerial()));
     }
-    AndroidApp selendroidServer = createSelendroidServerApk(app);
     // Uninstalling looks probably a bit like an overhead, but
     // this prevents errors like INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES
-    if (device.isInstalled(app)) {
-      device.uninstall(app);
+    for (AndroidApp supportedApp : appsToInstall.values()) {
+        if (device.isInstalled(supportedApp)) {
+        	device.uninstall(supportedApp);
+        }
+        if (!device.install(supportedApp)) {
+        	device.install(supportedApp);
+        }
     }
-    Boolean retryInstallApp = !device.install(app);
+    AndroidApp selendroidServer = createSelendroidServerApk(app);
+
     // An InstalledAndroidApp won't install/uninstall.
     // If the SelendroidServer is already installed, don't uninstall/reinstall
     // when using an InstalledAndroidApp.
@@ -278,9 +315,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           return createNewTestSession(caps, retries - 1);
         }
       }
-    } else if (retryInstallApp) {
-      device.install(app);
-    }
+    } 
 
     List<String> adbCommands = desiredCapabilities.getPreSessionAdbCommands();
     if (adbCommands != null && !adbCommands.isEmpty()) {
@@ -373,7 +408,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   /* package */AndroidDevice getAndroidDevice(SelendroidCapabilities caps)
       throws AndroidDeviceException {
     AndroidDevice device = null;
-
+    String serial = caps.getSerial();
+    if (serial != null) {
+	   if (serial.startsWith("emulator")) {
+	   	 deviceStore.setAvdName(getAvdName(Integer.parseInt(serial.substring(9))));
+	   } else {
+	   	 deviceStore.setDeviceSerial(serial);
+	   }
+    }
     try {
       device = deviceStore.findAndroidDevice(caps);
     } catch (DeviceStoreException e) {

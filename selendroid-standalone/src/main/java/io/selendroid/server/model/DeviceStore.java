@@ -39,7 +39,9 @@ public class DeviceStore {
       new HashMap<DeviceTargetPlatform, List<AndroidDevice>>();
   private EmulatorPortFinder androidEmulatorPortFinder = null;
   private Boolean installedApp = false;
-
+  private String avdName = null;
+  private String deviceSerial = null;
+  
   public DeviceStore(Boolean debug, Integer emulatorPort) {
     if (debug) {
       log.setLevel(Level.FINE);
@@ -104,10 +106,20 @@ public class DeviceStore {
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
     addEmulators(emulators, false);
   }
+  
+  public void setDeviceSerial(String deviceSerial) {
+	  this.deviceSerial = deviceSerial;
+  }
 
+  public void setAvdName(String avdName) {
+	  this.avdName = avdName;
+  }
+  
   public void addEmulators(List<AndroidEmulator> emulators, Boolean installedApp)
       throws AndroidDeviceException {
     this.installedApp = installedApp;
+    
+    
     if (emulators == null || emulators.isEmpty()) {
       log.info("No emulators has been found.");
       return;
@@ -194,6 +206,14 @@ public class DeviceStore {
             potentialMatches.add(device);
             continue;
           }
+          if (installedApp && device instanceof AndroidDevice && (deviceSerial == null ||
+        		  ((DefaultHardwareDevice) device).getSerial().equals(deviceSerial))) {
+        	devicesInUse.add(device);
+          	return device;
+          } else if (installedApp && device instanceof AndroidDevice &&
+        		  !((DefaultHardwareDevice) device).getSerial().equals(deviceSerial)) {
+        	 continue;
+          }
           log.fine("device found.");
           devicesInUse.add(device);
           return device;
@@ -203,8 +223,10 @@ public class DeviceStore {
           log.fine("device already in use");
           continue;
         }
-        devicesInUse.add(device);
-        return device;
+        if (avdName == null || ((DefaultAndroidEmulator) device).getAvdName().equals(avdName)) {
+        	devicesInUse.add(device);
+        	return device;
+        }
       } else {
         log.info("emulator switched off: " + isEmulatorSwitchedOff(device));
       }

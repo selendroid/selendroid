@@ -48,6 +48,17 @@ public class SelendroidConfiguration {
 	@Parameter(description = "the port the selendroid-standalone is using to communicate with instrumentation server", names = { "-selendroidServerPort" })
 	private int selendroidServerPort = 8080;
 
+	@Parameter(description = "The file of the keystore to be used", names = { "-keystore" })
+	private String keystore = null;
+	
+	public void setKeystore(String keystore) {
+		this.keystore = keystore;
+	}
+	
+	public String getKeystore() {
+		return keystore;
+	}
+	
 	public void setSelendroidServerPort(int selendroidServerPort) {
 		this.selendroidServerPort = selendroidServerPort;
 	}
@@ -55,7 +66,7 @@ public class SelendroidConfiguration {
 	public int getSelendroidServerPort() {
 		return selendroidServerPort;
 	}
-
+	
 	public void addSupportedApp(String appAbsolutPath) {
 		supportedApps.add(appAbsolutPath);
 	}
