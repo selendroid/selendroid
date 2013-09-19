@@ -48,7 +48,10 @@ public class InstalledAndroidApp implements AndroidApp {
 
   @Override
   public String getMainActivity() throws AndroidSdkException {
-    return activityName;
+	if(activityName.contains("."))
+		return activityName;
+	else
+		return packageName + "." + activityName;
   }
 
   @Override

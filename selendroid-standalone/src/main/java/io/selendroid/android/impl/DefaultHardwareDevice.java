@@ -91,4 +91,8 @@ public class DefaultHardwareDevice extends AbstractDevice {
     return "HardwareDevice [serial=" + serial + ", model=" + getModel() + ", targetVersion="
         + getTargetPlatform() + "]";
   }
+  
+  public String getSerial() {
+	  return serial;
+  }
 }

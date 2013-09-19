@@ -32,7 +32,29 @@ public class SelendroidLauncher {
   private static final Logger log = Logger.getLogger(SelendroidLauncher.class.getName());
   private SelendroidStandaloneServer server = null;
   private SelendroidConfiguration config = null;
-
+  
+  public static SelendroidLauncher getInstance(String[] args) {
+	try {
+      configureLogging();
+    } catch (Exception e1) {
+      log.severe("Error occured while registering loggin file handler.");
+    }
+    log.info("################# Selendroid #################");
+    SelendroidConfiguration config = new SelendroidConfiguration();
+    try {
+      new JCommander(config, args);
+    } catch (ParameterException e) {
+      log.severe("An errror occured while starting selendroid: " + e.getMessage());
+      System.exit(0);
+    }
+    if (config.isVerbose()) {
+      log.setLevel(Level.FINE);
+      ShellCommand.setVerbose();
+    }
+    SelendroidLauncher launcher = new SelendroidLauncher(config);  
+    return launcher;
+  }
+  
   public SelendroidLauncher(SelendroidConfiguration config) {
     this.config = config;
   }

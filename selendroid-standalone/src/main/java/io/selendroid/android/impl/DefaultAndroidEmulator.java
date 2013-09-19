@@ -190,7 +190,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         + ", avdName=" + avdName + "]";
   }
 
-  private void setSerial(int port) {
+  public void setSerial(int port) {
     serial = EMULATOR_SERIAL_PREFIX + port;
   }
 

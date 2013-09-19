@@ -68,7 +68,7 @@ public class DefaultDeviceManager extends Thread
     for (int i = 0; i < devicesss.length; i++) {
       System.out.println("my devices: " + devicesss[i].getAvdName());
     }
-
+    
     // Add the existing devices to the list of devices we are tracking.
     if (bridge.isConnected() && bridge.hasInitialDeviceList()) {
       IDevice[] devices = bridge.getDevices();
