@@ -1,5 +1,7 @@
 0.6.0-SNAPSHOT (under current development)
 - #114 Optimizing logcat handling and retry handling for selendroid-server start.
+- Emulators are started on display configured in capabilities
+- device logcat are availbe as type logcat
 
 0.5.1
 - fix for 'Arbitrary port number binding is broken' #105
