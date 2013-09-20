@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 public class AndroidSdk {
   public static final String ANDROID_FOLDER_PREFIX = "android-";
@@ -43,26 +41,12 @@ public class AndroidSdk {
     }
 
     File buildToolsFolder = new File(buildToolsHome());
-    File[] buildToolsContent = buildToolsFolder.listFiles(new FileFilter() {
 
-      @Override
-      public boolean accept(File pathname) {
-        String fileName = pathname.getName();
-
-        String regex = "\\d{2}\\.\\d{1}\\.\\d{1}";
-        if (fileName.matches(regex) || fileName.startsWith(ANDROID_FOLDER_PREFIX)) {
-          return true;
-        }
-        return false;
-      }
-    });
-    if (buildToolsContent == null || buildToolsContent.length == 0) {
-      throw new AndroidSdkException(
-          "Command 'aapt' was not found inside the Android SDK. Please update to the latest development tools and try again.");
-    }
-    Arrays.sort(buildToolsContent, Collections.reverseOrder());
-
-    return new File(buildToolsContent[0].getAbsoluteFile(), command.toString());
+    return new File(
+        findLatestAndroidPlatformFolder(
+            buildToolsFolder,
+            "Command 'aapt' was not found inside the Android SDK. Please update to the latest development tools and try again."),
+        command.toString());
   }
 
   public static String android() {
@@ -137,43 +121,30 @@ public class AndroidSdk {
     String platformsRootFolder = androidHome() + File.separator + "platforms";
     File platformsFolder = new File(platformsRootFolder);
 
-    File[] androidApis = platformsFolder.listFiles(new AndroidFileFilter());
+    return new File(findLatestAndroidPlatformFolder(platformsFolder,
+        "No installed Android APIs have been found."), "android.jar").getAbsolutePath();
+  }
+
+  protected static File findLatestAndroidPlatformFolder(File rootFolder, String errorMessage) {
+    File[] androidApis = rootFolder.listFiles(new AndroidFileFilter());
     if (androidApis == null || androidApis.length == 0) {
-      throw new SelendroidException("No installed Android APIs have been found.");
+      throw new SelendroidException(errorMessage);
     }
-    List<File> folders = Arrays.asList(androidApis);
-    Collections.sort(folders, new AndroidVersionComoparator());
-
-    String apiLevel = folders.get(folders.size() - 1).getAbsolutePath() + "/android.jar";
-
-    return apiLevel;
+    Arrays.sort(androidApis, Collections.reverseOrder());
+    return androidApis[0].getAbsoluteFile();
   }
 
-  public static class AndroidVersionComoparator implements Comparator<File> {
-    public int compare(File object1, File object2) {
-      if (isAndroidFolder(object1, object2)) {
-        return versionNumber(object1).compareTo(versionNumber(object2));
-      }
-      return object1.compareTo(object2);
-    }
-
-    private Integer versionNumber(File file) {
-      return Integer.parseInt(file.getName().split("-")[1]);
-    }
-
-    private boolean isAndroidFolder(File object1, File object2) {
-      return AndroidFileFilter.isAndroidSdkFolder(object1)
-          && AndroidFileFilter.isAndroidSdkFolder(object2);
-    }
-  }
   public static class AndroidFileFilter implements FileFilter {
+
     @Override
     public boolean accept(File pathname) {
-      return isAndroidSdkFolder(pathname);
-    }
+      String fileName = pathname.getName();
 
-    public static boolean isAndroidSdkFolder(File file) {
-      return file.getName().startsWith(ANDROID_FOLDER_PREFIX);
+      String regex = "\\d{2}\\.\\d{1}\\.\\d{1}";
+      if (fileName.matches(regex) || fileName.startsWith(ANDROID_FOLDER_PREFIX)) {
+        return true;
+      }
+      return false;
     }
   }
 }
