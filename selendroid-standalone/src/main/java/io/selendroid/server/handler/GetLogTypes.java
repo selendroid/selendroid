@@ -28,6 +28,6 @@ public class GetLogTypes extends BaseSelendroidServerHandler {
 
   @Override
   public Response handle() throws JSONException {
-    return new SelendroidResponse(getSessionId(), new JSONArray("driver"));
+    return new SelendroidResponse(getSessionId(), new JSONArray("logcat"));
   }
 }
