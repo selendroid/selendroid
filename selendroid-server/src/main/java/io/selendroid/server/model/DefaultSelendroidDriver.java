@@ -20,7 +20,6 @@ import io.selendroid.android.KeySender;
 import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.android.WindowType;
 import io.selendroid.android.internal.Dimension;
-import android.graphics.Point;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.Session;
@@ -57,6 +56,7 @@ import android.content.res.Resources.Theme;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.view.Display;
 import android.view.View;
@@ -382,8 +382,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     nativeExecuteScriptMap.put("findRId", new FindRId(serverInstrumentation));
     nativeExecuteScriptMap.put("getL10nKeyTranslation", new GetL10nKeyTranslation(
         serverInstrumentation));
-    nativeExecuteScriptMap.put("findElementByAndroidTag", new FindElementByAndroidTag(
-    		session.getKnownElements(),serverInstrumentation));
+    nativeExecuteScriptMap.put("findElementByAndroidTag",
+        new FindElementByAndroidTag(session.getKnownElements(), serverInstrumentation));
 
     return session.getSessionId();
   }
@@ -423,7 +423,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
       Object result = driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator);
       if (result == null) {
-        return null;
+        return new ArrayList<AndroidElement>();
       }
       elements = replyElements((JSONArray) result);
       if (elements == null || elements.isEmpty()) {
@@ -478,11 +478,11 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   public Object getWindowSource() {
     Object source = null;
     try {
-      //if (isNativeWindowMode()) {
-        source = selendroidNativeDriver.getWindowSource();
-//      } else {
-//        source = selendroidWebDriver.getWindowSource();
-//      }
+      // if (isNativeWindowMode()) {
+      source = selendroidNativeDriver.getWindowSource();
+      // } else {
+      // source = selendroidWebDriver.getWindowSource();
+      // }
     } catch (JSONException e) {
       throw new SelendroidException(e);
     }
@@ -545,9 +545,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     if (isNativeWindowMode()) {
       return selendroidNativeDriver.getWindowSize();
     } else {
-      return new Dimension(
-          selendroidWebDriver.getWebview().getWidth(),
-          selendroidWebDriver.getWebview().getHeight());
+      return new Dimension(selendroidWebDriver.getWebview().getWidth(), selendroidWebDriver
+          .getWebview().getHeight());
     }
   }
 
@@ -567,36 +566,35 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   @Override
   public void addCookie(String url, Cookie cookie) {
 
-        if (selendroidWebDriver != null)
-            selendroidWebDriver.setCookies(url, cookie);
+    if (selendroidWebDriver != null) selendroidWebDriver.setCookies(url, cookie);
 
-    }
+  }
 
   @Override
   public Set<Cookie> getCookies(String url) {
 
 
-      Set<Cookie> coo = new HashSet<Cookie>();
-        if (selendroidWebDriver != null) {
-           coo.addAll(selendroidWebDriver.getCookies(url));
-        }
-         return coo;
+    Set<Cookie> coo = new HashSet<Cookie>();
+    if (selendroidWebDriver != null) {
+      coo.addAll(selendroidWebDriver.getCookies(url));
     }
+    return coo;
+  }
 
   @Override
   public void deleteCookie(String url) {
 
-        if (selendroidWebDriver != null) {
-            selendroidWebDriver.removeAllCookie(url);
-        }
+    if (selendroidWebDriver != null) {
+      selendroidWebDriver.removeAllCookie(url);
     }
+  }
 
   @Override
   public void deleteNamedCookie(String url, String name) {
 
-        if (selendroidWebDriver != null) {
-            selendroidWebDriver.remove(url, name);
-        }
+    if (selendroidWebDriver != null) {
+      selendroidWebDriver.remove(url, name);
     }
+  }
 
 }
