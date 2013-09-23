@@ -1,3 +1,10 @@
+0.6.0-SNAPSHOT (under current development)
+- #114 Optimizing logcat handling and retry handling for selendroid-server start.
+- Emulators are started on display configured in capabilities
+- Device logcats are available as logging type "logcat"
+- The feature to restart adb has been removed
+- Selendroid-standalone can register himself as a node to a Selenium Grid hub by using command line parameters (-hub and -host) 
+
 0.5.1
 - fix for 'Arbitrary port number binding is broken' #105
 

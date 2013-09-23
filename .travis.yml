@@ -2,7 +2,9 @@ language: java
 
 notifications:
   email: false
-  
+  irc:
+      - "chat.freenode.net#selendroid"
+
 branches:
   only:
     - master

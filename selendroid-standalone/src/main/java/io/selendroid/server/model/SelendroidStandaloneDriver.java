@@ -19,11 +19,11 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
-import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.android.DeviceManager;
+import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
-import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.DefaultDeviceManager;
+import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
@@ -33,7 +33,6 @@ import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.SessionNotCreatedException;
 import io.selendroid.exceptions.ShellCommandException;
-import io.selendroid.io.ShellCommand;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.util.HttpClientUtil;
 
@@ -48,7 +47,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.exec.CommandLine;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONArray;
@@ -138,13 +136,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   /* package */void initAndroidDevices() throws AndroidDeviceException {
     deviceStore =
         new DeviceStore(serverConfiguration.isVerbose(), serverConfiguration.getEmulatorPort());
-    try {
-      if (serverConfiguration.isRestartAdb()) {
-        resetAdb();
-      }
-    } catch (ShellCommandException e) {
-      throw new AndroidDeviceException("An error occured while restarting adb.", e);
-    }
+
     if (hardwareDeviceListener == null) {
       hardwareDeviceListener = new DefaultHardwareDeviceListener(deviceStore);
     }
@@ -164,6 +156,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       log.warning("Warning: " + e);
     }
   }
+
   
   private String getAvdName(int port) { 
 	if (port == -1) {
@@ -185,16 +178,6 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     } catch (IOException e) {
     	return null;
     }
-  }
-  
-  private void resetAdb() throws ShellCommandException {
-    CommandLine resetAdb = new CommandLine(AndroidSdk.adb());
-    resetAdb.addArgument("kill-server", false);
-
-    ShellCommand.exec(resetAdb, 20000);
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {}
   }
 
   @Override
@@ -262,7 +245,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         } else {
           Map<String, Object> config = new HashMap<String, Object>();
           config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
-          if (desiredCapabilities.is(SelendroidCapabilities.DISPLAY)) {
+          if (desiredCapabilities.asMap().containsKey(SelendroidCapabilities.DISPLAY)) {
             Object d = desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY);
             config.put(AndroidEmulator.DISPLAY_OPTION, String.valueOf(d));
           }
@@ -462,14 +445,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       ActiveSession session = sessions.get(sessionId);
       try {
         HttpClientUtil.executeRequest("http://localhost:" + session.getSelendroidServerPort()
-            + "/wd/hub/sessions/" + sessionId, HttpMethod.DELETE);
+            + "/wd/hub/session/" + sessionId, HttpMethod.DELETE);
       } catch (Exception e) {
         // can happen, ignore
       }
       deviceStore.release(session.getDevice(), session.getAut());
 
       // remove session
-      sessions.remove(session);
+      sessions.remove(sessionId);
       session = null;
     }
   }
@@ -526,14 +509,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       JSONObject deviceInfo = new JSONObject();
       try {
         if (device instanceof DefaultAndroidEmulator) {
-          deviceInfo.put("emulator", true);
+          deviceInfo.put(SelendroidCapabilities.EMULATOR, true);
           deviceInfo.put("avdName", ((DefaultAndroidEmulator) device).getAvdName());
         } else {
-          deviceInfo.put("emulator", false);
+          deviceInfo.put(SelendroidCapabilities.EMULATOR, false);
           deviceInfo.put("model", ((DefaultHardwareDevice) device).getModel());
         }
-        deviceInfo.put("targetPlatform", device.getTargetPlatform());
-        deviceInfo.put("screenSize", device.getScreenSize());
+        deviceInfo.put(SelendroidCapabilities.ANDROID_TARGET, device.getTargetPlatform());
+        deviceInfo.put(SelendroidCapabilities.SCREEN_SIZE, device.getScreenSize());
 
         list.put(deviceInfo);
       } catch (Exception e) {

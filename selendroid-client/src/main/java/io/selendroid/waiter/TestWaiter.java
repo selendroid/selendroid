@@ -16,7 +16,6 @@
 package io.selendroid.waiter;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.fail;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -85,8 +84,7 @@ public class TestWaiter {
       throw propagate(lastException);
     }
 
-    fail("Condition timed out: " + until);
-    return null;
+    throw new RuntimeException("Condition timed out: " + until);
   }
 
   private static RuntimeException propagate(Exception lastException) {

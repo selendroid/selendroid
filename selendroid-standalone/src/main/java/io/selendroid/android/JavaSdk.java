@@ -15,15 +15,37 @@ package io.selendroid.android;
 
 import static io.selendroid.android.AndroidSdk.platformExecutableSuffixExe;
 import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.ShellCommandException;
+import io.selendroid.io.ShellCommand;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class JavaSdk {
-  public static String javaHome() {
-    String javaHome = System.getenv("JAVA_HOME");
+  public static String javaHome = null;
 
+  public static String javaHome() {
+    String osName = System.getProperty("os.name").toLowerCase();
     if (javaHome == null) {
-      throw new SelendroidException("Environment variable 'JAVA_HOME' was not found!");
+      if (osName != null && osName.startsWith("mac")) {
+        try {
+          javaHome = ShellCommand.exec(Arrays.asList("/usr/libexec/java_home"));
+          if (javaHome != null) {
+            javaHome = javaHome.replaceAll("\\r|\\n", "");
+          }
+        } catch (ShellCommandException e) {}
+      }
+      if (javaHome == null) {
+        javaHome = System.getProperty("java.home");
+      }
+      if (javaHome == null) {
+        javaHome = System.getenv("JAVA_HOME");
+      }
+
+
+      if (javaHome == null) {
+        throw new SelendroidException("Environment variable 'JAVA_HOME' was not found!");
+      }
     }
     return javaHome;
   }

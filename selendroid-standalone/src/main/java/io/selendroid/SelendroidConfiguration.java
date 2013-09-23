@@ -20,6 +20,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 public class SelendroidConfiguration {
+
 	@Parameter(description = "port the server will listen on.", names = "-port")
 	private int port = 5555;
 
@@ -50,6 +51,15 @@ public class SelendroidConfiguration {
 
 	@Parameter(description = "The file of the keystore to be used", names = { "-keystore" })
 	private String keystore = null;
+	
+    @Parameter(description = "if specified, will send a registration request to the given url. Example : http://localhost:4444/grid/register", names = "-hub")
+    private String registrationUrl = null;
+
+    @Parameter(description = "if specified, will specify the remote proxy to use on the grid. Example : io.selendroid.grid.SelendroidSessionProxy", names = "-proxy")
+    private String proxy = null;
+   
+    @Parameter(description = "host of the node. Ip address needs to be specified for registering to a grid hub (guessing can be wrong complex).", names = "-host")
+    private String serverHost;
 	
 	public void setKeystore(String keystore) {
 		this.keystore = keystore;
@@ -135,5 +145,29 @@ public class SelendroidConfiguration {
 
 	public void setDeviceScreenshot(boolean deviceScreenshot) {
 		this.deviceScreenshot = deviceScreenshot;
+	}
+	
+    public String getRegistrationUrl() {
+	   return registrationUrl;
+	}
+	
+    public void setRegistrationUrl(String registrationUrl) {
+    	this.registrationUrl = registrationUrl;
+    }
+		
+    public String getProxy() {
+	    return proxy;
+	}
+	
+	public void setProxy(String proxy) {
+	    this.proxy = proxy;
+	}
+	
+	public String getServerHost() {
+	    return serverHost;
+	}
+		
+	public void setServerHost(String serverHost) {
+	    this.serverHost = serverHost;
 	}
 }

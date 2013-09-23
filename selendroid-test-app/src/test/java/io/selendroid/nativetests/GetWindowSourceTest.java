@@ -13,17 +13,19 @@
  */
 package io.selendroid.nativetests;
 
+import io.selendroid.TestGroups;
+import io.selendroid.support.BaseAndroidTest;
+import io.selendroid.util.JsonXmlUtil;
+
 import java.io.StringReader;
 
+import static io.selendroid.waiter.TestWaiter.waitFor;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
-import io.selendroid.TestGroups;
 import org.json.JSONObject;
-import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.util.JsonXmlUtil;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.w3c.dom.Element;

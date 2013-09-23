@@ -14,8 +14,8 @@
 package io.selendroid.android.impl;
 
 import io.selendroid.android.AndroidDevice;
-import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.android.DeviceManager;
+import io.selendroid.android.HardwareDeviceListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,10 +28,7 @@ import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.Log;
 
-public class DefaultDeviceManager extends Thread
-    implements
-      IDeviceChangeListener,
-      DeviceManager {
+public class DefaultDeviceManager extends Thread implements IDeviceChangeListener, DeviceManager {
   private static final Logger log = Logger.getLogger(DefaultDeviceManager.class.getName());
   private static boolean started = false;
   private String adbPath;
@@ -69,31 +66,54 @@ public class DefaultDeviceManager extends Thread
     for (int i = 0; i < devicesss.length; i++) {
       System.out.println("my devices: " + devicesss[i].getAvdName());
     }
-    
+
+    AndroidDebugBridge.addDeviceChangeListener(this);
+
     // Add the existing devices to the list of devices we are tracking.
-    if (bridge.isConnected() && bridge.hasInitialDeviceList()) {
+    if (hasDevices()) {
       IDevice[] devices = bridge.getDevices();
 
       for (int i = 0; i < devices.length; i++) {
         connectedDevices.put(devices[i], new DefaultHardwareDevice(devices[i]));
       }
+    } else {
+      long timeout = System.currentTimeMillis() + 10000;
+      System.out.println("nothing there");
+      while (hasDevices() == false && System.currentTimeMillis() >= timeout) {
+
+      }
+      System.out.println("after wait");
+      if (hasDevices()) {
+        System.out.println("devices found");
+        IDevice[] devices = bridge.getDevices();
+
+        for (int i = 0; i < devices.length; i++) {
+          connectedDevices.put(devices[i], new DefaultHardwareDevice(devices[i]));
+        }
+      }
     }
 
-    AndroidDebugBridge.addDeviceChangeListener(this);
+  }
+
+  private boolean hasDevices() {
+    return bridge.isConnected() && bridge.hasInitialDeviceList();
   }
 
   /**
    * Shutdown the AndroidDebugBridge and clean up all connected devices.
    */
   public void shutdown() {
+    log.info("Notifying device listener about shutdown");
     for (HardwareDeviceListener listener : deviceListeners) {
       for (AndroidDevice device : connectedDevices.values()) {
         listener.onDeviceDisconnected(connectedDevices.get(device));
       }
     }
-
+    log.info("Removing Device Manager listener from ADB");
     AndroidDebugBridge.removeDeviceChangeListener(this);
     AndroidDebugBridge.terminate();
+    log.info("stopping Device Manager");
+    //TODO add thread interrupt and join handling
   }
 
   @Override

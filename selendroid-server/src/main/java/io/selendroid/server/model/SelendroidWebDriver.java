@@ -20,9 +20,11 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.SelendroidLogger;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +51,7 @@ public class SelendroidWebDriver {
   private boolean done = false;
   private ServerInstrumentation serverInstrumentation = null;
   private SessionCookieManager sm = new SessionCookieManager();
+  private SelendroidWebChromeClient chromeClient = null;
 
   public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle) {
     this.serverInstrumentation = serverInstrumentation;
@@ -175,6 +178,8 @@ public class SelendroidWebDriver {
         if (webview.getUrl() == null) {
           return;
         }
+        //seems to be needed
+        webview.setWebChromeClient(chromeClient);
         webview.loadUrl("javascript:" + script);
       }
     });
@@ -296,7 +301,8 @@ public class SelendroidWebDriver {
           view.setFocusable(true);
           view.setFocusableInTouchMode(true);
           view.setNetworkAvailable(true);
-          view.setWebChromeClient(new MyWebChromeClient());
+          chromeClient = new SelendroidWebChromeClient();
+          view.setWebChromeClient(chromeClient);
 
           WebSettings settings = view.getSettings();
           settings.setJavaScriptCanOpenWindowsAutomatically(true);
@@ -386,7 +392,7 @@ public class SelendroidWebDriver {
   }
 
 
-  public class MyWebChromeClient extends WebChromeClient {
+  public class SelendroidWebChromeClient extends WebChromeClient {
 
     /**
      * Unconventional way of adding a Javascript interface but the main reason why I took this way
@@ -455,28 +461,29 @@ public class SelendroidWebDriver {
   public WebView getWebview() {
     return webview;
   }
-    public Set<Cookie> getCookies(String url) {
 
-        return sm.getAllCookies(url);
+  public Set<Cookie> getCookies(String url) {
 
-    }
+    return sm.getAllCookies(url);
 
-    public void removeAllCookie(String url) {
+  }
 
-        sm.removeAllCookies(url);
+  public void removeAllCookie(String url) {
 
-    }
+    sm.removeAllCookies(url);
 
-    public void remove(String url, String name) {
+  }
 
-        sm.remove(url, name);
+  public void remove(String url, String name) {
 
-    }
+    sm.remove(url, name);
 
-    public void setCookies(String url, Cookie cookie) {
+  }
 
-        sm.addCookie(url, cookie);
+  public void setCookies(String url, Cookie cookie) {
 
-    }
+    sm.addCookie(url, cookie);
+
+  }
 
 }

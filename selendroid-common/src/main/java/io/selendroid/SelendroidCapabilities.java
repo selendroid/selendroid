@@ -46,6 +46,8 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 	}
 	
 	public String getSerial() {
+		if (getRawCapabilities().get(SERIAL) == null || getRawCapabilities().get(SERIAL).equals(JSONObject.NULL))
+			return null;
 		return (String) getRawCapabilities().get(SERIAL);
 	}
 	
@@ -58,6 +60,8 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 	}
 
 	public Boolean getEmulator() {
+		if (getRawCapabilities().get(EMULATOR) == null || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL))
+			return null;
 		return (Boolean) getRawCapabilities().get(EMULATOR);
 	}
 
@@ -123,7 +127,9 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 	public SelendroidCapabilities(String serial, String aut) {
 		setAut(aut);
 		setSerial(serial);
-		if (serial == null || serial.startsWith("emulator")) {
+		if (serial == null) {
+			setEmulator(null);
+		} else if (serial.startsWith("emulator")) {
 			setEmulator(true);
 		} else {
 			setEmulator(false);

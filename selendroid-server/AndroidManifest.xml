@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.5.1" package="io.selendroid">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.6.0-SNAPSHOT" package="io.selendroid">
 
     <uses-sdk android:minSdkVersion="10"/>
 

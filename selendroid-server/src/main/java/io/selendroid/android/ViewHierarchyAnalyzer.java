@@ -133,7 +133,9 @@ public class ViewHierarchyAnalyzer {
   public Collection<View> getViews(List<View> rootViews) {
     final List<View> views = new ArrayList<View>();
     for (View rootView : rootViews) {
-      Preconditions.checkNotNull(rootView);
+      if (rootView == null) {
+        continue;
+      }
       if (rootView instanceof ViewGroup) {
         addAllChilren((ViewGroup) rootView, views);
       }

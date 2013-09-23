@@ -36,9 +36,6 @@ public class SelendroidResponse implements Response {
         errorValue.put("message", e.getMessage());
         errorValue.put("class", e.getClass().getCanonicalName());
 
-        System.out.println("printing stack trace in selendroid");
-        e.printStackTrace();
-
         JSONArray stacktace = new JSONArray();
         for (StackTraceElement el : e.getStackTrace()) {
             stacktace.put(el.toString());
