@@ -32,7 +32,6 @@ import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.SessionNotCreatedException;
 import io.selendroid.exceptions.ShellCommandException;
-import io.selendroid.io.ShellCommand;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.util.HttpClientUtil;
 
@@ -44,7 +43,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.exec.CommandLine;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONArray;
@@ -132,13 +130,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   /* package */void initAndroidDevices() throws AndroidDeviceException {
     deviceStore =
         new DeviceStore(serverConfiguration.isVerbose(), serverConfiguration.getEmulatorPort());
-    try {
-      if (serverConfiguration.isRestartAdb()) {
-        resetAdb();
-      }
-    } catch (ShellCommandException e) {
-      throw new AndroidDeviceException("An error occured while restarting adb.", e);
-    }
+
     if (hardwareDeviceListener == null) {
       hardwareDeviceListener = new DefaultHardwareDeviceListener(deviceStore);
     }
@@ -156,16 +148,6 @@ public class SelendroidStandaloneDriver implements ServerDetails {
                   + "or plugin an Android hardware device via USB.");
       log.warning("Warning: " + e);
     }
-  }
-
-  private void resetAdb() throws ShellCommandException {
-    CommandLine resetAdb = new CommandLine(AndroidSdk.adb());
-    resetAdb.addArgument("kill-server", false);
-
-    ShellCommand.exec(resetAdb, 20000);
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {}
   }
 
   @Override
@@ -481,14 +463,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       JSONObject deviceInfo = new JSONObject();
       try {
         if (device instanceof DefaultAndroidEmulator) {
-          deviceInfo.put("emulator", true);
+          deviceInfo.put(SelendroidCapabilities.EMULATOR, true);
           deviceInfo.put("avdName", ((DefaultAndroidEmulator) device).getAvdName());
         } else {
-          deviceInfo.put("emulator", false);
+          deviceInfo.put(SelendroidCapabilities.EMULATOR, false);
           deviceInfo.put("model", ((DefaultHardwareDevice) device).getModel());
         }
-        deviceInfo.put("targetPlatform", device.getTargetPlatform());
-        deviceInfo.put("screenSize", device.getScreenSize());
+        deviceInfo.put(SelendroidCapabilities.ANDROID_TARGET, device.getTargetPlatform());
+        deviceInfo.put(SelendroidCapabilities.SCREEN_SIZE, device.getScreenSize());
 
         list.put(deviceInfo);
       } catch (Exception e) {

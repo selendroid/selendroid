@@ -16,6 +16,7 @@ package io.selendroid.server;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
+import io.selendroid.server.grid.SelfRegisteringRemote;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
 import java.net.InetAddress;
@@ -24,6 +25,7 @@ import java.net.URI;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
 
@@ -38,8 +40,8 @@ public class SelendroidStandaloneServer {
    * 
    * @throws AndroidSdkException
    */
-  protected SelendroidStandaloneServer(SelendroidConfiguration configuration, SelendroidStandaloneDriver driver)
-      throws AndroidSdkException {
+  protected SelendroidStandaloneServer(SelendroidConfiguration configuration,
+      SelendroidStandaloneDriver driver) throws AndroidSdkException {
     this.configuration = configuration;
     this.driver = driver;
     webServer =
@@ -49,8 +51,8 @@ public class SelendroidStandaloneServer {
     init();
   }
 
-  public SelendroidStandaloneServer(SelendroidConfiguration configuration) throws AndroidSdkException,
-      AndroidDeviceException {
+  public SelendroidStandaloneServer(SelendroidConfiguration configuration)
+      throws AndroidSdkException, AndroidDeviceException {
     this.configuration = configuration;
     webServer =
         WebServers.createWebServer(Executors.newCachedThreadPool(), new InetSocketAddress(
@@ -63,8 +65,7 @@ public class SelendroidStandaloneServer {
     try {
       InetAddress address = InetAddress.getByName("0.0.0.0");
 
-      return
-          new URI("http://" + address.getHostAddress() + (port == 80 ? "" : (":" + port)) + "/");
+      return new URI("http://" + address.getHostAddress() + (port == 80 ? "" : (":" + port)) + "/");
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException("can not create URI from HostAddress", e);
@@ -74,7 +75,7 @@ public class SelendroidStandaloneServer {
   protected void init() throws AndroidSdkException {
     webServer.staleConnectionTimeout(604800000); // 1 week
     webServer.add("/wd/hub/status", new StatusServlet(driver));
-    webServer.add(new SelendroidServlet(driver,configuration));
+    webServer.add(new SelendroidServlet(driver, configuration));
   }
 
   protected SelendroidStandaloneDriver initializeSelendroidServer() throws AndroidSdkException,
@@ -84,6 +85,15 @@ public class SelendroidStandaloneServer {
 
   public void start() {
     webServer.start();
+    if (StringUtils.isBlank(configuration.getRegistrationUrl()) == false
+        && StringUtils.isBlank(configuration.getServerHost()) == false) {
+      try {
+        new SelfRegisteringRemote(configuration, driver).performRegistration();
+      } catch (Exception e) {
+        log.severe("An error occured while registering selendroid into grid hub.");
+        e.printStackTrace();
+      }
+    }
     log.info("selendroid-standalone server has been started on port: " + configuration.getPort());
   }
 
@@ -95,5 +105,9 @@ public class SelendroidStandaloneServer {
 
   public int getPort() {
     return webServer.getPort();
+  }
+
+  protected SelendroidStandaloneDriver getDriver() {
+    return driver;
   }
 }

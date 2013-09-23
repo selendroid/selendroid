@@ -23,11 +23,17 @@ public class SelendroidConfiguration {
   @Parameter(description = "port the server will listen on.", names = "-port")
   private int port = 5555;
 
+  @Parameter(description = "host of the node. Ip address needs to be specified for registering to a grid hub (guessing can be wrong complex).", names = "-host")
+  private String serverHost;
+
   @Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
   private long timeoutEmulatorStart = 300000;
 
-  @Parameter(description = "if true, adb will be restarted while starting selendroid-standalone.", names = "-restartAdb")
-  private boolean restartAdb = false;
+  @Parameter(description = "if specified, will send a registration request to the given url. Example : http://localhost:4444/grid/register", names = "-hub")
+  private String registrationUrl = null;
+
+  @Parameter(description = "if specified, will specify the remote proxy to use on the grid. Example : io.selendroid.grid.SelendroidSessionProxy", names = "-proxy")
+  private String proxy = null;
 
   @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
       "-app", "-aut"})
@@ -91,14 +97,6 @@ public class SelendroidConfiguration {
     this.timeoutEmulatorStart = timeoutEmulatorStart;
   }
 
-  public boolean isRestartAdb() {
-    return restartAdb;
-  }
-
-  public void setRestartAdb(boolean restartAdb) {
-    this.restartAdb = restartAdb;
-  }
-
   public boolean isVerbose() {
     return verbose;
   }
@@ -113,5 +111,29 @@ public class SelendroidConfiguration {
 
   public void setDeviceScreenshot(boolean deviceScreenshot) {
     this.deviceScreenshot = deviceScreenshot;
+  }
+
+  public String getRegistrationUrl() {
+    return registrationUrl;
+  }
+
+  public void setRegistrationUrl(String registrationUrl) {
+    this.registrationUrl = registrationUrl;
+  }
+
+  public String getProxy() {
+    return proxy;
+  }
+
+  public void setProxy(String proxy) {
+    this.proxy = proxy;
+  }
+
+  public String getServerHost() {
+    return serverHost;
+  }
+
+  public void setServerHost(String serverHost) {
+    this.serverHost = serverHost;
   }
 }
