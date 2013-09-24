@@ -30,7 +30,6 @@ import com.android.ddmlib.Log;
 
 public class DefaultDeviceManager extends Thread implements IDeviceChangeListener, DeviceManager {
   private static final Logger log = Logger.getLogger(DefaultDeviceManager.class.getName());
-  private static boolean started = false;
   private String adbPath;
   private List<HardwareDeviceListener> deviceListeners = new ArrayList<HardwareDeviceListener>();
   private Map<IDevice, DefaultHardwareDevice> connectedDevices =
