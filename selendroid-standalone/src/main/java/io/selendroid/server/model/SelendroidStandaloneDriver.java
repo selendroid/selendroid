@@ -75,7 +75,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       throws AndroidSdkException, AndroidDeviceException {
     this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder(serverConfiguration);
-
+    
+    selendroidServerPort = serverConfiguration.getSelendroidServerPort();
+    
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
   }
@@ -206,8 +208,6 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   public String createNewTestSession(JSONObject caps, Integer retries) throws AndroidSdkException,
       JSONException {
     SelendroidCapabilities desiredCapabilities = null;
-    
-    selendroidServerPort = serverConfiguration.getSelendroidServerPort();
 
     try {
       desiredCapabilities = new SelendroidCapabilities(caps);
