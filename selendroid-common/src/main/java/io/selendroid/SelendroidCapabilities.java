@@ -37,13 +37,20 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 	private static final long serialVersionUID = -7061568919298342362L;
 	public static final String DEFAULT_SCREEN_SIZE = "320x480";
 	public static final String PRE_SESSION_ADB_COMMANDS = "preSessionAdbCommands";
+	public static final String SERIAL = "serial";
 
 	public SelendroidCapabilities(Map<String, ?> from) {
 		for (String key : from.keySet()) {
 			setCapability(key, from.get(key));
 		}
 	}
-
+	
+	public String getSerial() {
+		if (getRawCapabilities().get(SERIAL) == null || getRawCapabilities().get(SERIAL).equals(JSONObject.NULL))
+			return null;
+		return (String) getRawCapabilities().get(SERIAL);
+	}
+	
 	public String getAndroidTarget() {
 		return (String) getRawCapabilities().get(ANDROID_TARGET);
 	}
@@ -53,6 +60,8 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 	}
 
 	public Boolean getEmulator() {
+		if (getRawCapabilities().get(EMULATOR) == null || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL))
+			return null;
 		return (Boolean) getRawCapabilities().get(EMULATOR);
 	}
 
@@ -71,7 +80,11 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 	public String getScreenSize() {
 		return (String) getRawCapabilities().get(SCREEN_SIZE);
 	}
-
+	
+	public void setSerial(String serial) {
+		setCapability(SERIAL, serial);
+	}
+	
 	public void setAndroidTarget(String androidTarget) {
 		setCapability(ANDROID_TARGET, androidTarget);
 	}
@@ -110,7 +123,19 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 		setEmulator(true);
 		setLocale("en_US");
 	}
-
+	
+	public SelendroidCapabilities(String serial, String aut) {
+		setAut(aut);
+		setSerial(serial);
+		if (serial == null) {
+			setEmulator(null);
+		} else if (serial.startsWith("emulator")) {
+			setEmulator(true);
+		} else {
+			setEmulator(false);
+		}
+	}
+	
 	/**
 	 * 
 	 * @param aut

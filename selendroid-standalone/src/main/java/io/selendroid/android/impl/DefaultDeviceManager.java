@@ -65,7 +65,9 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
     for (int i = 0; i < devicesss.length; i++) {
       System.out.println("my devices: " + devicesss[i].getAvdName());
     }
+
     AndroidDebugBridge.addDeviceChangeListener(this);
+
     // Add the existing devices to the list of devices we are tracking.
     if (hasDevices()) {
       IDevice[] devices = bridge.getDevices();
