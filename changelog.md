@@ -4,6 +4,7 @@
 - Device logcats are available as logging type "logcat"
 - The feature to restart adb has been removed
 - Selendroid-standalone can register himself as a node to a Selenium Grid hub by using command line parameters (-hub and -host) 
+- Selenium Automation Atoms has been updated to fix #127
 
 0.5.1
 - fix for 'Arbitrary port number binding is broken' #105
