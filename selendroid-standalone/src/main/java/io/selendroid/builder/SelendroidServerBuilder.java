@@ -22,6 +22,7 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
+import io.selendroid.SelendroidConfiguration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +58,7 @@ public class SelendroidServerBuilder {
   private String selendroidApplicationXmlTemplate = null;
   private AndroidApp selendroidServer = null;
   private AndroidApp applicationUnderTest = null;
+  private SelendroidConfiguration serverConfiguration = null; 
 
   /**
    * FOR TESTING ONLY
@@ -68,11 +70,16 @@ public class SelendroidServerBuilder {
   }
 
   public SelendroidServerBuilder() {
+    this(null);
+  }
+  
+  public SelendroidServerBuilder(SelendroidConfiguration serverConfiguration) {
     this.selendroidPrebuildServerPath =
         PREBUILD_SELENDROID_SERVER_PATH_PREFIX + getJarVersionNumber() + ".apk";
     this.selendroidApplicationXmlTemplate = ANDROID_APPLICATION_XML_TEMPLATE;
+    this.serverConfiguration = serverConfiguration;
   }
-
+	  
   /* package */void init(AndroidApp aut) throws IOException, ShellCommandException {
     applicationUnderTest = aut;
     File customizedServer = File.createTempFile("selendroid-server", ".apk");
@@ -147,7 +154,20 @@ public class SelendroidServerBuilder {
       throw new SelendroidException("AndroidApplication.xml template file was not found.");
     }
     String content = IOUtils.toString(inputStream, Charset.defaultCharset().displayName());
-
+    
+    // find the first occurance of "package" and appending the targetpackagename to begining
+    int i = content.toLowerCase().indexOf("package");
+    int cnt = 0;
+    for( ; i < content.length() ; i++) {
+    	if(content.charAt(i) == '\"') {
+    		cnt++;
+    	}
+    	if(cnt == 2) {
+    		break;
+    	}
+    }
+    content = content.substring(0, i) + "." + targetPackageName + content.substring(i);
+    log.info("Final Manifest File:\n" + content);
     content = content.replaceAll(SELENDROID_TEST_APP_PACKAGE, targetPackageName);
     // Seems like this needs to be done
     if (content.contains(ICON)) {
@@ -258,11 +278,13 @@ public class SelendroidServerBuilder {
     return new DefaultAndroidApp(outputFileName);
   }
 
-
-
   private File androidDebugKeystore() {
-    return new File(FileUtils.getUserDirectory(), File.separatorChar + ".android"
-        + File.separatorChar + "debug.keystore");
+	  if (serverConfiguration == null || serverConfiguration.getKeystore() == null) {
+		return new File(FileUtils.getUserDirectory(), File.separatorChar + ".android"
+			+ File.separatorChar + "debug.keystore");
+	  } else {
+		  return new File(serverConfiguration.getKeystore());  
+	  }
   }
 
   private String getCurrentDir() {

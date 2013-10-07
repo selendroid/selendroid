@@ -56,4 +56,6 @@ public interface AndroidEmulator {
   public void setIDevice(IDevice iDevice);
   
   public String getSerial();
+  
+  public void setSerial(int port);
 }
