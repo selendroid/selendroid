@@ -17,82 +17,82 @@ import io.selendroid.support.BaseAndroidTest;
 
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Test;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.UnsupportedCommandException;
-import org.testng.annotations.Test;
 
 
 public class SelendroidUnknownCommandHandlingTest extends BaseAndroidTest {
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToGoForward() {
-    driver.navigate().forward();
+    driver().navigate().forward();
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToGoRefresh() {
-    driver.navigate().refresh();
+    driver().navigate().refresh();
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToActivateIMEEngine() {
-    driver.manage().ime().activateEngine("selendroid");
+    driver().manage().ime().activateEngine("selendroid");
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToDeactivateIME() {
-    driver.manage().ime().deactivate();
+    driver().manage().ime().deactivate();
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToGetActiveEngine() {
-    driver.manage().ime().getActiveEngine();
+    driver().manage().ime().getActiveEngine();
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToGetAvailableEngines() {
-    driver.manage().ime().getAvailableEngines();
+    driver().manage().ime().getAvailableEngines();
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToGetActivatedStateOfIME() {
-    driver.manage().ime().isActivated();
+    driver().manage().ime().isActivated();
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToGetWindowPosition() {
-    driver.manage().window().getPosition();
+    driver().manage().window().getPosition();
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToGetWindowSize() {
-    driver.manage().window().getSize();
+    driver().manage().window().getSize();
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToGetWindowsMaximizedState() {
-    driver.manage().window().maximize();
+    driver().manage().window().maximize();
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToSetPosition() {
     Point targetPosition = new Point(1, 2);
-    driver.manage().window().setPosition(targetPosition);
+    driver().manage().window().setPosition(targetPosition);
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToSetSize() {
     Dimension targetSize = new Dimension(320, 480);
-    driver.manage().window().setSize(targetSize);
+    driver().manage().window().setSize(targetSize);
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToSetPageLoadTimeout() {
-    driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+    driver().manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
   }
 
-  @Test(expectedExceptions = {UnsupportedCommandException.class})
+  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToSetScriptTimeout() {
-    driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
+    driver().manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
   }
 }

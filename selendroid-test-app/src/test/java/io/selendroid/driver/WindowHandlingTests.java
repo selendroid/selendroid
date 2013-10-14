@@ -19,29 +19,29 @@ import io.selendroid.waiter.WaitingConditions;
 
 import java.util.Set;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class WindowHandlingTests extends BaseAndroidTest {
 
   @Test
   public void assertsThatDriverIsAbleToGetCurrentNativeWindow() {
-    String windowHandle = driver.getWindowHandle();
+    String windowHandle = driver().getWindowHandle();
     Assert.assertEquals(windowHandle, NATIVE_APP);
   }
 
   @Test
   public void assertsThatDriverIsAbleToGetCurrentWebViewWindow() {
     openWebViewActivity();
-    Assert.assertEquals(driver.getWindowHandle(), NATIVE_APP);
-    driver.switchTo().window(WEBVIEW);
-    Assert.assertEquals(driver.getWindowHandle(), WEBVIEW);
+    Assert.assertEquals(driver().getWindowHandle(), NATIVE_APP);
+    driver().switchTo().window(WEBVIEW);
+    Assert.assertEquals(driver().getWindowHandle(), WEBVIEW);
   }
 
 
   @Test
   public void assertsThatDriverIsAbleToGetWindowHandlesOnMainActivity() {
-    Set<String> windowHandles = driver.getWindowHandles();
+    Set<String> windowHandles = driver().getWindowHandles();
     Assert.assertEquals(windowHandles.iterator().next(), NATIVE_APP);
     Assert.assertEquals(windowHandles.size(), 1);
   }
@@ -49,16 +49,17 @@ public class WindowHandlingTests extends BaseAndroidTest {
   @Test
   public void assertsThatDriverIsAbleToGetWindowHandlesOnWebViewActivity() {
     openWebViewActivity();
-    Set<String> windowHandles = driver.getWindowHandles();
+    Set<String> windowHandles = driver().getWindowHandles();
     Assert.assertEquals(windowHandles.size(), 2);
-    Assert.assertTrue(windowHandles.contains(NATIVE_APP), "Should be able to find native context");
-    Assert.assertTrue(windowHandles.contains("WEBVIEW_0"), "Should be able to find webview context");
+    Assert.assertTrue("Should be able to find native context", windowHandles.contains(NATIVE_APP));
+    Assert
+        .assertTrue("Should be able to find webview context", windowHandles.contains("WEBVIEW_0"));
   }
 
   private void openWebViewActivity() {
     String activityClass = "io.selendroid.testapp." + "WebViewActivity";
-    driver.switchTo().window(NATIVE_APP);
-    driver.get("and-activity://" + activityClass);
-    TestWaiter.waitFor(WaitingConditions.driverUrlToBe(driver, "and-activity://WebViewActivity"));
+    driver().switchTo().window(NATIVE_APP);
+    driver().get("and-activity://" + activityClass);
+    TestWaiter.waitFor(WaitingConditions.driverUrlToBe(driver(), "and-activity://WebViewActivity"));
   }
 }

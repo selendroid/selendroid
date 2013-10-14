@@ -13,21 +13,19 @@
  */
 package io.selendroid.nativetests;
 
-import io.selendroid.TestGroups;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.util.JsonXmlUtil;
 
 import java.io.StringReader;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.json.JSONObject;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
@@ -35,14 +33,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-@Test(groups = {TestGroups.NATIVE})
+
 public class GetWindowSourceTest extends BaseAndroidTest {
   /**
    * TODO update test, because test app was refactored
    */
-  @Test(enabled = false)
+  //@Test()
   public void nativeUiTreeIsBuildCorrectly() throws Exception {
-    JsonObject root = new JsonParser().parse(driver.getPageSource()).getAsJsonObject();
+    JsonObject root = new JsonParser().parse(driver().getPageSource()).getAsJsonObject();
 
     // Verify root element
     // Assert.assertEquals(root.get("name").getAsString(), "android:id/content");
@@ -51,13 +49,13 @@ public class GetWindowSourceTest extends BaseAndroidTest {
     Assert.assertEquals(root.get("activity").getAsString(),
         "{io.selendroid.testapp/HomeScreenActivity}");
     JsonArray child = root.get("children").getAsJsonArray();
-    Assert.assertTrue(child.size() == 1, "Child element count == 1");
+    Assert.assertTrue("Child element count == 1",child.size() == 1);
 
     // Verify child LinearLayout
     JsonObject linearLayout = child.get(0).getAsJsonObject();
     Assert.assertEquals(linearLayout.get("type").getAsString(), "android.widget.LinearLayout");
     JsonArray children = linearLayout.get("children").getAsJsonArray();
-    Assert.assertEquals(children.size(), 3, "Child element count == 5");
+    Assert.assertEquals("Child element count == 5",children.size(), 3 );
 
     System.out.println(children);
     // Verify main ui elements
@@ -69,8 +67,8 @@ public class GetWindowSourceTest extends BaseAndroidTest {
         .assertEquals(startUserRegistration.get("value").getAsString(), "Start User Registration");
 
     JsonObject buttonTest = children.get(1).getAsJsonObject();
-    Assert.assertEquals(buttonTest.get("name").getAsString(),
-        "io.selendroid.testapp:id/buttonTest");
+    Assert
+        .assertEquals(buttonTest.get("name").getAsString(), "io.selendroid.testapp:id/buttonTest");
     Assert.assertEquals(buttonTest.get("type").getAsString(), "Button");
     Assert.assertEquals(buttonTest.get("value").getAsString(), "EN Button",
         "Depends on the device locale");
@@ -98,7 +96,7 @@ public class GetWindowSourceTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindHiddenElementAndGetShownState() throws Exception {
     Element textView =
-        findElementByXpath("//TextView[@name='id/visibleTextView']", driver.getPageSource());
+        findElementByXpath("//TextView[@name='id/visibleTextView']", driver().getPageSource());
 
     Assert.assertEquals(textView.getAttribute("shown"), "false");
   }

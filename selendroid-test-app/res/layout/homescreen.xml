@@ -123,6 +123,14 @@
             android:contentDescription="showToastButtonCD"
             android:onClick="displayToast"
             android:text="Displays a Toast" />
+
+        <Button
+            android:id="@+id/showPopupWindowButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="showPopupWindowButtonCD"
+            android:onClick="displayPopupWindow"
+            android:text="Display Popup Window" />
     </LinearLayout>
 
 </LinearLayout>

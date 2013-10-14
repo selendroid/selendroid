@@ -14,16 +14,15 @@
 package io.selendroid.tests;
 
 import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.waiter.TestWaiter;
 import io.selendroid.waiter.WaitingConditions;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 /**
  * Base Test to demonstrate how to test webviews with Selendroid.
@@ -33,23 +32,23 @@ import org.testng.annotations.Test;
 public class SayHelloWebviewTest extends BaseAndroidTest {
   @Test
   public void assertThatWebviewSaysHello() throws Exception {
-    WebElement button = driver.findElement(By.id("buttonStartWebview"));
-    takeScreenShot("Main Activity started.");
-    button.click();
-    WebDriverWait wait = new WebDriverWait(driver, 10);
-    wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
-    driver.switchTo().window("WEBVIEW");
+    WebElement button = driver().findElement(By.id("buttonStartWebview"));
 
-    WebElement inputField = driver.findElement(By.id("name_input"));
+    button.click();
+    WebDriverWait wait = new WebDriverWait(driver(), 10);
+    wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Go to home screen")));
+    driver().switchTo().window("WEBVIEW");
+
+    WebElement inputField = driver().findElement(By.id("name_input"));
     Assert.assertNotNull(inputField);
     inputField.clear();
     inputField.sendKeys("Dominik");
-    takeScreenShot("After entering the name of the app user.");
-    WebElement car = driver.findElement(By.name("car"));
-    Select preferedCar=new Select(car);
+
+    WebElement car = driver().findElement(By.name("car"));
+    Select preferedCar = new Select(car);
     preferedCar.selectByValue("audi");
     inputField.submit();
-    takeScreenShot("Result of web view: Hello app user.");
-    WaitingConditions.pageTitleToBe(driver, "Hello: Dominik");
+
+    WaitingConditions.pageTitleToBe(driver(), "Hello: Dominik");
   }
 }

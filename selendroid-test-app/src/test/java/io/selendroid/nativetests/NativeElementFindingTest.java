@@ -13,11 +13,13 @@
  */
 package io.selendroid.nativetests;
 
-import io.selendroid.TestGroups;
 import io.selendroid.support.BaseAndroidTest;
 
 import java.util.List;
 
+import junit.framework.Assert;
+
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -25,21 +27,19 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+
 
 /**
  * Element finding test for the native view part of selendroid.
  * 
  * @author ddary
  */
-@Test(groups = {TestGroups.NATIVE})
 public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToFindButtonIdentifiedByPartialText() throws Exception {
     openStartActivity();
     String buttonText = "EN Butto";
-    WebElement clickMe = driver.findElement(By.partialLinkText(buttonText));
+    WebElement clickMe = driver().findElement(By.partialLinkText(buttonText));
     Assert.assertTrue(clickMe.getText().contains(buttonText));
   }
 
@@ -47,7 +47,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindButtonsIdentifiedByPartialText() throws Exception {
     openStartActivity();
     String buttonText = "EN Butto";
-    List<WebElement> elements = driver.findElements(By.partialLinkText(buttonText));
+    List<WebElement> elements = driver().findElements(By.partialLinkText(buttonText));
     Assert.assertEquals(elements.size(), 1);
     Assert.assertTrue(elements.get(0).getText().contains(buttonText));
   }
@@ -56,7 +56,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateASingleElementByPartialTextThatDoesNotExist() {
     openStartActivity();
     try {
-      driver.findElement(By.partialLinkText("nonExistentButton"));
+      driver().findElement(By.partialLinkText("nonExistentButton"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -66,14 +66,14 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByPartialTextThatDoesNotExist() {
     openStartActivity();
-    assertListIsEmpty(driver.findElements(By.partialLinkText("nonExistentButton")));
+    assertListIsEmpty(driver().findElements(By.partialLinkText("nonExistentButton")));
   }
 
   @Test
   public void testShouldBeAbleToFindButtonIdentifiedByText() throws Exception {
     openStartActivity();
     String buttonText = "EN Button";
-    WebElement clickMe = driver.findElement(By.linkText(buttonText));
+    WebElement clickMe = driver().findElement(By.linkText(buttonText));
     Assert.assertEquals(clickMe.getText(), buttonText);
   }
 
@@ -81,7 +81,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindButtonsIdentifiedByText() throws Exception {
     openStartActivity();
     String buttonText = "EN Button";
-    List<WebElement> elements = driver.findElements(By.linkText(buttonText));
+    List<WebElement> elements = driver().findElements(By.linkText(buttonText));
     Assert.assertEquals(elements.size(), 1);
     Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
@@ -90,7 +90,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateASingleElementByTextThatDoesNotExist() {
     openStartActivity();
     try {
-      driver.findElement(By.linkText("nonExistentButton"));
+      driver().findElement(By.linkText("nonExistentButton"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -100,14 +100,14 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByTextThatDoesNotExist() {
     openStartActivity();
-    assertListIsEmpty(driver.findElements(By.linkText("nonExistentButton")));
+    assertListIsEmpty(driver().findElements(By.linkText("nonExistentButton")));
   }
 
   @Test
   public void testShouldBeAbleToFindButtonIdentifiedById() throws Exception {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
-    WebElement clickMe = driver.findElement(By.id("waitingButtonTest"));
+    WebElement clickMe = driver().findElement(By.id("waitingButtonTest"));
     Assert.assertEquals(clickMe.getText(), buttonText);
   }
 
@@ -115,7 +115,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleTofindElementByXpath() throws Exception {
     openStartActivity();
     try {
-      driver.findElement(By.xpath("//a[@id='waitingButtonTest']"));
+      driver().findElement(By.xpath("//a[@id='waitingButtonTest']"));
       Assert.fail("Finding Native elements by css selector is not supported.");
     } catch (NoSuchElementException e) {
       // expected
@@ -126,7 +126,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleTofindElementByCssSelector() throws Exception {
     openStartActivity();
     try {
-      driver.findElement(By.cssSelector("button[id='linkId']"));
+      driver().findElement(By.cssSelector("button[id='linkId']"));
       Assert.fail("Finding Native elements by css selector is not supported.");
     } catch (WebDriverException e) {
       Assert.assertTrue(e.getMessage().contains(
@@ -137,14 +137,14 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void testShouldNotBeAbleTofindElementsByXpath() throws Exception {
     openStartActivity();
-    assertListIsEmpty(driver.findElements(By.xpath("//a[@id='blaBal']")));
+    assertListIsEmpty(driver().findElements(By.xpath("//a[@id='blaBal']")));
   }
 
   @Test
   public void testShouldNotBeAbleTofindElementsByCssSelector() throws Exception {
     openStartActivity();
     try {
-      driver.findElements(By.cssSelector("button[id='linkId']"));
+      driver().findElements(By.cssSelector("button[id='linkId']"));
       Assert.fail("Finding Native elements by css selector is not supported.");
     } catch (WebDriverException e) {
       Assert.assertTrue(e.getMessage().contains(
@@ -156,7 +156,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindButtonsIdentifiedById() throws Exception {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
-    List<WebElement> elements = driver.findElements(By.id("waitingButtonTest"));
+    List<WebElement> elements = driver().findElements(By.id("waitingButtonTest"));
     Assert.assertEquals(elements.size(), 1);
     Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
@@ -165,7 +165,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateASingleElementByIdThatDoesNotExist() {
     openStartActivity();
     try {
-      driver.findElement(By.id("nonExistentButton"));
+      driver().findElement(By.id("nonExistentButton"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -175,7 +175,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByIdThatDoesNotExist() {
     openStartActivity();
-    assertListIsEmpty(driver.findElements(By.id("nonExistentButton")));
+    assertListIsEmpty(driver().findElements(By.id("nonExistentButton")));
 
   }
 
@@ -183,7 +183,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindButtonIdentifiedByClass() throws Exception {
     openStartActivity();
     String buttonText = "EN Button";
-    WebElement clickMe = driver.findElement(By.className("android.widget.Button"));
+    WebElement clickMe = driver().findElement(By.className("android.widget.Button"));
     Assert.assertEquals(clickMe.getText(), buttonText);
   }
 
@@ -191,8 +191,8 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindButtonsIdentifiedByClass() throws Exception {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
-    List<WebElement> elements = driver.findElements(By.className("android.widget.Button"));
-    Assert.assertEquals(elements.size(), 5);
+    List<WebElement> elements = driver().findElements(By.className("android.widget.Button"));
+    Assert.assertEquals(elements.size(), 6);
     Assert.assertEquals(elements.get(1).getText(), buttonText);
   }
 
@@ -200,7 +200,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateASingleElementByClassThatDoesNotExist() {
     openStartActivity();
     try {
-      driver.findElement(By.className("de.dary.MyView"));
+      driver().findElement(By.className("de.dary.MyView"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -210,18 +210,18 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsByClassThatDoesNotExist() {
     openStartActivity();
-    assertListIsEmpty(driver.findElements(By.className("de.dary.MyView")));
+    assertListIsEmpty(driver().findElements(By.className("de.dary.MyView")));
   }
 
   private void assertListIsEmpty(List<WebElement> elements) {
-    Assert.assertTrue(elements.isEmpty(), "Expecting empty list when no elements are found.");
+    Assert.assertTrue("Expecting empty list when no elements are found.", elements.isEmpty());
   }
 
   @Test
   public void testShouldBeAbleToFindButtonIdentifiedByTagName() throws Exception {
     openStartActivity();
     String buttonText = "EN Button";
-    WebElement clickMe = driver.findElement(By.tagName("Button"));
+    WebElement clickMe = driver().findElement(By.tagName("Button"));
     Assert.assertEquals(clickMe.getText(), buttonText);
   }
 
@@ -229,8 +229,8 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindButtonsIdentifiedByTagName() throws Exception {
     openStartActivity();
     String buttonText = "EN Button";
-    List<WebElement> elements = driver.findElements(By.tagName("Button"));
-    Assert.assertEquals(elements.size(), 4);
+    List<WebElement> elements = driver().findElements(By.tagName("Button"));
+    Assert.assertEquals(elements.size(), 5);
     Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
 
@@ -238,7 +238,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateASingleElementByTagNameThatDoesNotExist() {
     openStartActivity();
     try {
-      driver.findElement(By.tagName("de.dary.MyView.l10nView"));
+      driver().findElement(By.tagName("de.dary.MyView.l10nView"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -248,7 +248,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test()
   public void testShouldNotBeAbleToLocateMultipleElementsTagNameThatDoesNotExist() {
     openStartActivity();
-    assertListIsEmpty(driver.findElements(By.tagName("de.dary.MyView.l10nView")));
+    assertListIsEmpty(driver().findElements(By.tagName("de.dary.MyView.l10nView")));
 
   }
 
@@ -256,7 +256,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindButtonIdentifiedByContentDescription() throws Exception {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
-    WebElement clickMe = driver.findElement(By.name("waitingButtonTestCD"));
+    WebElement clickMe = driver().findElement(By.name("waitingButtonTestCD"));
     Assert.assertEquals(clickMe.getText(), buttonText);
   }
 
@@ -264,7 +264,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindButtonsIdentifiedContentDescription() throws Exception {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
-    List<WebElement> elements = driver.findElements(By.name("waitingButtonTestCD"));
+    List<WebElement> elements = driver().findElements(By.name("waitingButtonTestCD"));
     Assert.assertEquals(elements.size(), 1);
     Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
@@ -273,7 +273,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateASingleElementByContentDescriptionThatDoesNotExist() {
     openStartActivity();
     try {
-      driver.findElement(By.name("cdDoesNotExist"));
+      driver().findElement(By.name("cdDoesNotExist"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -284,33 +284,33 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldNotBeAbleToLocateMultipleElementsByContentDescriptionThatDoesNotExist() {
     openStartActivity();
 
-    assertListIsEmpty(driver.findElements(By.name("cdDoesNotExist")));
+    assertListIsEmpty(driver().findElements(By.name("cdDoesNotExist")));
 
   }
 
 
-  @Test
+  @Test()
   public void testShouldNotBeAbleToFindElementByIdFromPreviousActivity() {
     openStartActivity();
-    driver.findElement(By.id("startUserRegistration")).click();
-    new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(By
+    driver().findElement(By.id("startUserRegistration")).click();
+    new WebDriverWait(driver(), 5).until(ExpectedConditions.presenceOfElementLocated(By
         .id("inputUsername")));
 
     try {
-      driver.findElement(By.id("buttonStartWebview"));
+      driver().findElement(By.id("buttonStartWebview"));
       Assert.fail("The element from previous screen should not be found.");
     } catch (NoSuchElementException e) {
       // // this element is located on previous activity and should not be found
     }
   }
 
-  @Test
+  @Test()
   public void testShouldNotBeAbleToInteractWithElementFromPreviousActivity() {
     openStartActivity();
-    WebElement textfield = driver.findElement(By.id("my_text_field"));
-    Assert.assertNotNull(textfield, "textfield should be found.");
-    driver.findElement(By.id("startUserRegistration")).click();
-    new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(By
+    WebElement textfield = driver().findElement(By.id("my_text_field"));
+    Assert.assertNotNull("textfield should be found.", textfield);
+    driver().findElement(By.id("startUserRegistration")).click();
+    new WebDriverWait(driver(), 5).until(ExpectedConditions.presenceOfElementLocated(By
         .id("inputUsername")));
 
     try {
@@ -325,32 +325,36 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   public void testShouldBeAbleToFindElementAndEnterTextWhereScrollingMustBeDone() {
     openStartActivity();
 
-    driver.findElement(By.id("startUserRegistration")).click();
-    new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(By
+    driver().findElement(By.id("startUserRegistration")).click();
+    new WebDriverWait(driver(), 5).until(ExpectedConditions.presenceOfElementLocated(By
         .id("inputUsername")));
-    WebElement acceptAddsCheckbox = driver.findElement(By.id("input_adds"));
-    Assert.assertEquals(acceptAddsCheckbox.isSelected(), false);
-    acceptAddsCheckbox.click();
-    Assert.assertEquals(acceptAddsCheckbox.isSelected(), true);
+    WebElement acceptAddsCheckbox = driver().findElement(By.id("input_adds"));
+    if (acceptAddsCheckbox.isSelected()) {
+      acceptAddsCheckbox.click();
+      Assert.assertEquals(acceptAddsCheckbox.isSelected(), false);
+    } else {
+      acceptAddsCheckbox.click();
+      Assert.assertEquals(acceptAddsCheckbox.isSelected(), true);
+    }
   }
 
-  @Test
+  @Test()
   public void testShouldBeAbleToFindInvisibleElemenById() throws Exception {
     openStartActivity();
-    WebElement textview = driver.findElement(By.id("visibleTextView"));
+    WebElement textview = driver().findElement(By.id("visibleTextView"));
     Assert.assertEquals(textview.isDisplayed(), false);
-    driver.findElement(By.id("visibleButtonTest")).click();
+    driver().findElement(By.id("visibleButtonTest")).click();
     Thread.sleep(1000);
     Assert.assertEquals(textview.getAttribute("shown"), "true");
     Assert.assertEquals(textview.isDisplayed(), true);
   }
 
-  @Test
+  @Test()
   public void testShouldBeAbleToFindInvisibleElemenByText() throws Exception {
     openStartActivity();
-    WebElement textview = driver.findElement(By.linkText("Text is sometimes displayed"));
+    WebElement textview = driver().findElement(By.linkText("Text is sometimes displayed"));
     Assert.assertEquals(textview.isDisplayed(), false);
-    driver.findElement(By.id("visibleButtonTest")).click();
+    driver().findElement(By.id("visibleButtonTest")).click();
     Thread.sleep(1000);
     Assert.assertEquals(textview.isDisplayed(), true);
   }

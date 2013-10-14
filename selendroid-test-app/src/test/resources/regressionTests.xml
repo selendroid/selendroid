@@ -2,7 +2,7 @@
 <suite
     name="Selendroid regression test suite"
     parallel="false"
-    verbose="1" >
+    verbose="3" >
 
     <test name="selendroid element finding tests" >
 
@@ -10,7 +10,7 @@
 
             <class name="io.selendroid.nativetests.NativeChildElementFindingTest" />
 
-            <class name="io.selendroid.nativetests.NativeElementFindingTest" />
+            <!-- class name="io.selendroid.nativetests.NativeElementFindingTest" / -->
 
             <class name="io.selendroid.webviewdrivertests.WebElementFindingTest" />
 
@@ -25,6 +25,26 @@
             <class name="io.selendroid.nativetests.NativeElementInteractionTest" />
 
             <class name="io.selendroid.webviewdrivertests.WebElementInteractionTest" />
+        </classes>
+    </test>
+
+    <test name="the rest" >
+
+        <classes>
+
+            <class name="io.selendroid.driver.MultipleWebviewHandlingTests" />
+
+            <class name="io.selendroid.driver.WindowHandlingTests" />
+
+            <class name="io.selendroid.nativetests.GetWindowSourceTest" />
+
+            <class name="io.selendroid.nativetests.SelendroidUnknownCommandHandlingTest" />
+
+            <class name="io.selendroid.nativetests.SendKeyAndNativeKeyTest" />
+
+            <class name="io.selendroid.nativetests.WaitForProgressBarGoneAwayTest" />
+
+            <class name="io.selendroid.webviewdrivertests.CookieHandlerTest" />
         </classes>
     </test>
 

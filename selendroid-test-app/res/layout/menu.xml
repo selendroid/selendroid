@@ -23,4 +23,8 @@
         android:contentDescription="menu_multiple_web_views"
         android:title="Open Dialog with multiple web views"/>
 
+    <item
+        android:id="@+id/menu_find_employee"
+        android:title="Finds details about &apos;John Williams&apos;"/>
+
 </menu>

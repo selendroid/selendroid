@@ -14,14 +14,17 @@
 package io.selendroid.webviewdrivertests;
 
 
+
 public interface HtmlTestData {
-  public static final String SAY_HELLO_DEMO="'Say Hello'-Demo";
-  public static final String XHTML_TEST_PAGE= "xhtmlTestPage";
-  public static final String FORM_PAGE ="formPage";
-  public static final String SELECTABLE_ITEMS_PAGE="selectableItemsPage";
-  public static final String NESTED_PAGE= "nestedPage";
-  public static final String JAVASCRIPT_PAGE="javascriptPage";
-  public static final String MISSED_JS_REFERENCE_PAGE="missedJsReferencePage";
-  public static final String ACTUAL_XHTML_PAGE="actualXhtmlPage";
-  public static final String ABOUT_BLANK="about:blank";
+  public static final String SAY_HELLO_DEMO = "http://localhost:4450/";
+  public static final String XHTML_TEST_PAGE = "file:///android_asset/web/xhtmlTest.html";
+  public static final String FORM_PAGE = "file:///android_asset/web/formPage.html";
+  public static final String SELECTABLE_ITEMS_PAGE =
+      "file:///android_asset/web/selectableItems.html";
+  public static final String NESTED_PAGE = "file:///android_asset/web/nestedElements.html";
+  public static final String JAVASCRIPT_PAGE = "file:///android_asset/web/javascriptPage.html";
+  public static final String MISSED_JS_REFERENCE_PAGE =
+      "file:///android_asset/web/missedJsReference.html";
+  public static final String ACTUAL_XHTML_PAGE = "file:///android_asset/web/actualXhtmlPage.xhtml";
+  public static final String ABOUT_BLANK = "about:blank";
 }

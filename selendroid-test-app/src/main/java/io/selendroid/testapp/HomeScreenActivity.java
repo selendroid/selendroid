@@ -19,18 +19,23 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,7 +78,26 @@ public class HomeScreenActivity extends Activity {
     super.onResume();
   }
 
+  public void displayPopupWindow(View view) {
+    LayoutInflater layoutInflater =
+        (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+    View popupView = layoutInflater.inflate(io.selendroid.testapp.R.layout.popup_window, null);
+    final PopupWindow popupWindow =
+        new PopupWindow(popupView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
+    Button btnDismiss =
+        (Button) popupView.findViewById(io.selendroid.testapp.R.id.popup_dismiss_button);
+    btnDismiss.setOnClickListener(new Button.OnClickListener() {
+
+      @Override
+      public void onClick(View v) {
+        // TODO Auto-generated method stub
+        popupWindow.dismiss();
+      }
+    });
+    Button btnOpenPopup = (Button) findViewById(io.selendroid.testapp.R.id.showPopupWindowButton);
+    popupWindow.showAsDropDown(btnOpenPopup, -50, -300);
+  }
 
   public void showL10nDialog(View view) {
     showDialog(DIALOG_ALERT);
@@ -98,7 +122,7 @@ public class HomeScreenActivity extends Activity {
     startActivity(nextScreen);
   }
 
-  public void displayToast(View view){
+  public void displayToast(View view) {
     Context context = getApplicationContext();
     CharSequence text = "Hello selendroid toast!";
     int duration = Toast.LENGTH_LONG;
@@ -106,7 +130,7 @@ public class HomeScreenActivity extends Activity {
     Toast toast = Toast.makeText(context, text, duration);
     toast.show();
   }
-  
+
   public void displayTextView(View view) {
     TextView textview = ((TextView) findViewById(io.selendroid.testapp.R.id.visibleTextView));
     if (textview.isShown()) {
@@ -217,7 +241,16 @@ public class HomeScreenActivity extends Activity {
       case io.selendroid.testapp.R.id.menu_multiple_web_views:
         startActivity(new Intent(getApplicationContext(), MultipleWebViewsActivity.class));
         return true;
+      case io.selendroid.testapp.R.id.menu_find_employee:
+        Intent intent = new Intent("android.intent.action.MAIN");
+        intent
+            .setComponent(ComponentName
+                .unflattenFromString("io.selendroid.directory/io.selendroid.directory.EmployeeDirectoy"));
+        intent.addCategory("android.intent.category.LAUNCHER");
+        intent.setData(Uri.parse("http://selendroid.io/directory#employees/4"));
+        startActivity(intent);
 
+        return true;
 
       default:
         return super.onOptionsItemSelected(item);

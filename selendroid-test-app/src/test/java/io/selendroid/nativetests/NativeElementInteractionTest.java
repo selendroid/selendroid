@@ -13,11 +13,12 @@
  */
 package io.selendroid.nativetests;
 
-import io.selendroid.TestGroups;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.waiter.TestWaiter;
 import io.selendroid.waiter.WaitingConditions;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -25,46 +26,44 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.touch.TouchActions;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
-@Test(groups = {TestGroups.NATIVE})
+
 public class NativeElementInteractionTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetTextOfElement() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    WebElement button = driver().findElement(By.id("waitingButtonTest"));
     Assert.assertEquals(button.getText(), "Show Progress Bar for a while");
   }
 
   @Test()
   public void testShouldBeAbleToClickOnElement() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("startUserRegistration"));
+    WebElement button = driver().findElement(By.id("startUserRegistration"));
     button.click();
 
-    TestWaiter.waitFor(WaitingConditions.driverUrlToBe(driver,
+    TestWaiter.waitFor(WaitingConditions.driverUrlToBe(driver(),
         "and-activity://RegisterUserActivity"));
   }
 
   @Test
   public void testShouldBeAbleToGetAttributeOfTextField() {
     openStartActivity();
-    WebElement inputField = driver.findElement(By.id("my_text_field"));
+    WebElement inputField = driver().findElement(By.id("my_text_field"));
     Assert.assertEquals(inputField.getAttribute("enabled"), "true");
   }
 
   @Test
   public void testShouldBeAbleToGetTagName() {
     openStartActivity();
-    WebElement inputField = driver.findElement(By.id("my_text_field"));
+    WebElement inputField = driver().findElement(By.id("my_text_field"));
     Assert.assertEquals(inputField.getTagName(), "EditText");
   }
 
   @Test
   public void testShouldBeAbleToGetAttributeOfButton() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    WebElement button = driver().findElement(By.id("waitingButtonTest"));
     Assert.assertEquals(button.getAttribute("ContentDescription"), "waitingButtonTestCD");
     Assert.assertEquals(button.getAttribute("text"), "Show Progress Bar for a while");
   }
@@ -72,7 +71,7 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToSendKeysAndClearAnElement() {
     openStartActivity();
-    WebElement inputField = driver.findElement(By.id("my_text_field"));
+    WebElement inputField = driver().findElement(By.id("my_text_field"));
     String text = "a.anyString@not.existent%.1.de";
     inputField.sendKeys(text);
     Assert.assertEquals(inputField.getText(), text);
@@ -83,7 +82,7 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetSelectedStateOfElement() {
     openStartActivity();
-    WebElement checkBox = driver.findElement(By.id("input_adds_check_box"));
+    WebElement checkBox = driver().findElement(By.id("input_adds_check_box"));
     Assert.assertEquals(checkBox.isSelected(), true);
     checkBox.click();
     Assert.assertEquals(checkBox.isSelected(), false);
@@ -96,7 +95,7 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetSizeOfElement() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    WebElement button = driver().findElement(By.id("waitingButtonTest"));
     Dimension dimension = button.getSize();
     Assert.assertTrue(dimension.height >= 48);
     Assert.assertTrue(dimension.width >= 210);
@@ -109,40 +108,40 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToGetLocationOfElement() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    WebElement button = driver().findElement(By.id("waitingButtonTest"));
     Point location = button.getLocation();
     Assert.assertEquals(location.x, 0);
     // this is not perfect but guarantees that it works on different screen sizes
     Assert.assertTrue(location.y >= 247);
   }
 
-  @Test(enabled = true)
+  @Test
   public void testShouldNotBeAbleToExecuteSimpleJavaScript() {
     openStartActivity();
 
     Object translatedText =
-        ((JavascriptExecutor) driver).executeScript("getL10nKeyTranslation", "button");
+        ((JavascriptExecutor) driver()).executeScript("getL10nKeyTranslation", "button");
     Assert.assertEquals(translatedText, "EN Button");
   }
 
   @Test
   public void testShouldBeAbleToGetDisplayedStateOfElement() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    WebElement button = driver().findElement(By.id("waitingButtonTest"));
     Assert.assertEquals(button.isDisplayed(), true);
   }
 
   @Test
   public void testShouldBeAbleToGetEnbledStateOfElement() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    WebElement button = driver().findElement(By.id("waitingButtonTest"));
     Assert.assertEquals(button.isEnabled(), true);
   }
 
   @Test
   public void testShouldNotBeAbleToSubmitAnElement() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("waitingButtonTest"));
+    WebElement button = driver().findElement(By.id("waitingButtonTest"));
     try {
       button.submit();
       Assert.fail();
@@ -154,20 +153,20 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToLongPressOnElement() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("buttonTest"));
-    TouchActions longPress = new TouchActions(driver).longPress(button);
+    WebElement button = driver().findElement(By.id("buttonTest"));
+    TouchActions longPress = new TouchActions(driver()).longPress(button);
     longPress.perform();
-    WebElement text = driver.findElement(By.partialLinkText("Long Press Tap"));
+    WebElement text = driver().findElement(By.partialLinkText("Long Press Tap"));
     Assert.assertNotNull(text);
   }
 
   @Test
   public void testShouldBeAbleToTapOnElement() {
     openStartActivity();
-    WebElement button = driver.findElement(By.id("buttonTest"));
-    TouchActions longPress = new TouchActions(driver).singleTap(button);
+    WebElement button = driver().findElement(By.id("buttonTest"));
+    TouchActions longPress = new TouchActions(driver()).singleTap(button);
     longPress.perform();
-    WebElement text = driver.findElement(By.partialLinkText("end the activity"));
+    WebElement text = driver().findElement(By.partialLinkText("end the activity"));
     Assert.assertNotNull(text);
   }
 

@@ -8,18 +8,10 @@
 	</parent>
 	<artifactId>selendroid-test-app</artifactId>
 	<packaging>apk</packaging>
-
 	<properties>
-		<skipTests>true</skipTests>
-		<testngGroups>native,webview</testngGroups>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>6.8</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<!-- Using Gson for JSON marshaling -->
 			<groupId>com.google.code.gson</groupId>
@@ -86,6 +78,12 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -102,6 +100,9 @@
 						<platform>16</platform>
 					</sdk>
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
+					<manifest>
+						<debuggable>true</debuggable>
+					</manifest>
 				</configuration>
 				<extensions>true</extensions>
 				<executions>
@@ -130,31 +131,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.14.1</version>
-				<configuration>
-					<!-- Skip the default running of this plug-in (or everything is run 
-						twice...see below) -->
-					<skip>true</skip>
-					<!-- Show 100% of the lines from the stack trace (doesn't work) -->
-					<trimStackTrace>false</trimStackTrace>
-				</configuration>
-				<executions>
-					<execution>
-						<id>integration-tests</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<suiteXmlFiles>
-								<suiteXmlFile>src/test/resources/regressionTests.xml</suiteXmlFile>
-							</suiteXmlFiles>
-							<groups>${testngGroups}</groups>
-							<skip>false</skip>
-							<!-- skipTests>${skipTests}</skipTests -->
-						</configuration>
-					</execution>
-				</executions>
+				<version>2.16</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit47</artifactId>
+						<version>2.16</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 			<!-- just to be on the safe side that the build jar is taken -->
 			<plugin>
@@ -165,6 +149,29 @@
 					<useProjectReferences>false</useProjectReferences>
 				</configuration>
 			</plugin>
+
 		</plugins>
+
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.16</version>
+				<configuration>
+					<showSuccess>false</showSuccess>
+					<outputDirectory>${basedir}/target/surefire-reports</outputDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<outputDirectory>${basedir}/target/surefire-reports</outputDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
