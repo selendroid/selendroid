@@ -71,8 +71,10 @@ public class StatusServlet implements HttpHandler {
 
     // httpResponse.header("Content-Type", "text/plain");
     httpResponse.header("Content-Type", "application/json");
-
-    httpResponse.content("{status: 0, value: " + json + "}");
+    JSONObject result=new JSONObject();
+    result.put("status",0);
+    result.put("value",json);
+    httpResponse.content(result.toString());
     httpResponse.end();
   }
 }
