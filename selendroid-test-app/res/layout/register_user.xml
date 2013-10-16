@@ -43,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dip"
             android:layout_marginTop="5dip"
+            android:contentDescription="email of the customer"
             android:singleLine="true" />
 
         <TextView
