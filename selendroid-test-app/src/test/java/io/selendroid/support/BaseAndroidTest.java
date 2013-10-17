@@ -42,7 +42,7 @@ public class BaseAndroidTest {
 
   @Before
   public void setup() throws Exception {
-    driver = new SelendroidDriver("http://localhost:8080/wd/hub", getDefaultCapabilities());
+    driver = new SelendroidDriver("http://localhost:38080/wd/hub", getDefaultCapabilities());
     driver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
   }
 
