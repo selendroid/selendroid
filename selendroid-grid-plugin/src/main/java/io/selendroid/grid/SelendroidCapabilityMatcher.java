@@ -20,7 +20,6 @@ import java.util.Map;
 import org.openqa.grid.internal.utils.CapabilityMatcher;
 
 public class SelendroidCapabilityMatcher implements CapabilityMatcher {
-  public static final String LOCALE = "locale";
   public static final String AUT = "aut";
   public static final String ANDROID_TARGET = "androidTarget";
   public static final String SCREEN_SIZE = "screenSize";
@@ -29,7 +28,6 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
 
   public SelendroidCapabilityMatcher() {
     toConsider.add(BROWSER_NAME);
-    toConsider.add(LOCALE);
     toConsider.add(AUT);
     toConsider.add(ANDROID_TARGET);
     toConsider.add(SCREEN_SIZE);
