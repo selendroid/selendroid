@@ -46,9 +46,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:git@github.com:DominikDary/selendroid.git</connection>
-		<developerConnection>scm:git:git@github.com:DominikDary/selendroid.git</developerConnection>
-		<url>http://github.com/DominikDary/selendroid</url>
+		<connection>scm:git:git@github.com:selendroid/selendroid.git</connection>
+		<developerConnection>scm:git:git@github.com:selendroid/selendroid.git</developerConnection>
+		<url>http://github.com/selendroid/selendroid</url>
 	</scm>
 
 	<distributionManagement>
@@ -61,7 +61,7 @@
 
 	<issueManagement>
 		<system>github</system>
-		<url>https://github.com/DominikDary/selendroid/issues</url>
+		<url>https://github.com/selendroid/selendroid/issues</url>
 	</issueManagement>
 
 	<developers>
