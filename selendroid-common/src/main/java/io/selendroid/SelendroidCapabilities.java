@@ -27,215 +27,207 @@ import org.json.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class SelendroidCapabilities extends DesiredCapabilities {
-	public static final String ANDROID_TARGET = "androidTarget";
-	public static final String AUT = "aut";
-	public static final String EMULATOR = "emulator";
-	public static final String DISPLAY = "display";
-	public static final String LANGUAGE = "language";
-	public static final String LOCALE = "locale";
-	public static final String SCREEN_SIZE = "screenSize";
-	private static final long serialVersionUID = -7061568919298342362L;
-	public static final String DEFAULT_SCREEN_SIZE = "320x480";
-	public static final String PRE_SESSION_ADB_COMMANDS = "preSessionAdbCommands";
-	public static final String SERIAL = "serial";
+  public static final String ANDROID_TARGET = "androidTarget";
+  public static final String AUT = "aut";
+  public static final String EMULATOR = "emulator";
+  public static final String DISPLAY = "display";
+  public static final String LANGUAGE = "language";
+  public static final String LOCALE = "locale";
+  public static final String SCREEN_SIZE = "screenSize";
+  private static final long serialVersionUID = -7061568919298342362L;
+  public static final String PRE_SESSION_ADB_COMMANDS = "preSessionAdbCommands";
+  public static final String SERIAL = "serial";
 
-	public SelendroidCapabilities(Map<String, ?> from) {
-		for (String key : from.keySet()) {
-			setCapability(key, from.get(key));
-		}
-	}
-	
-	public String getSerial() {
-		if (getRawCapabilities().get(SERIAL) == null || getRawCapabilities().get(SERIAL).equals(JSONObject.NULL))
-			return null;
-		return (String) getRawCapabilities().get(SERIAL);
-	}
-	
-	public String getAndroidTarget() {
-		return (String) getRawCapabilities().get(ANDROID_TARGET);
-	}
+  public SelendroidCapabilities(Map<String, ?> from) {
+    for (String key : from.keySet()) {
+      setCapability(key, from.get(key));
+    }
+  }
 
-	public String getAut() {
-		return (String) getRawCapabilities().get(AUT);
-	}
+  public String getSerial() {
+    if (getRawCapabilities().get(SERIAL) == null
+        || getRawCapabilities().get(SERIAL).equals(JSONObject.NULL)) return null;
+    return (String) getRawCapabilities().get(SERIAL);
+  }
 
-	public Boolean getEmulator() {
-		if (getRawCapabilities().get(EMULATOR) == null || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL))
-			return null;
-		return (Boolean) getRawCapabilities().get(EMULATOR);
-	}
+  public String getAndroidTarget() {
+    return (String) getRawCapabilities().get(ANDROID_TARGET);
+  }
 
-	public String getLanguage() {
-		return (String) getRawCapabilities().get(LANGUAGE);
-	}
+  public String getAut() {
+    return (String) getRawCapabilities().get(AUT);
+  }
 
-	public String getLocale() {
-		return (String) getRawCapabilities().get(LOCALE);
-	}
+  public Boolean getEmulator() {
+    if (getRawCapabilities().get(EMULATOR) == null
+        || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL)) return null;
+    return (Boolean) getRawCapabilities().get(EMULATOR);
+  }
 
-	public Map<String, Object> getRawCapabilities() {
-		return (Map<String, Object>) asMap();
-	}
+  public String getLanguage() {
+    return (String) getRawCapabilities().get(LANGUAGE);
+  }
 
-	public String getScreenSize() {
-		return (String) getRawCapabilities().get(SCREEN_SIZE);
-	}
-	
-	public void setSerial(String serial) {
-		setCapability(SERIAL, serial);
-	}
-	
-	public void setAndroidTarget(String androidTarget) {
-		setCapability(ANDROID_TARGET, androidTarget);
-	}
+  public String getLocale() {
+    return (String) getRawCapabilities().get(LOCALE);
+  }
 
-	public void setAut(String aut) {
-		setCapability(AUT, aut);
-	}
+  public Map<String, Object> getRawCapabilities() {
+    return (Map<String, Object>) asMap();
+  }
 
-	public void setEmulator(Boolean emulator) {
-		setCapability(EMULATOR, emulator);
-	}
+  public String getScreenSize() {
+    return (String) getRawCapabilities().get(SCREEN_SIZE);
+  }
 
-	public void setLanguage(String language) {
-		setCapability(LANGUAGE, language);
-	}
+  public void setSerial(String serial) {
+    setCapability(SERIAL, serial);
+  }
 
-	public void setLocale(String locale) {
-		setCapability(LOCALE, locale);
-	}
+  public void setAndroidTarget(String androidTarget) {
+    setCapability(ANDROID_TARGET, androidTarget);
+  }
 
-	public void setScreenSize(String screenSize) {
-		setCapability(SCREEN_SIZE, screenSize);
-	}
+  public void setAut(String aut) {
+    setCapability(AUT, aut);
+  }
 
-	public SelendroidCapabilities(JSONObject source) throws JSONException {
-		Iterator<String> iter = source.keys();
-		while (iter.hasNext()) {
-			String key = iter.next();
-			Object value = source.get(key);
+  public void setEmulator(Boolean emulator) {
+    setCapability(EMULATOR, emulator);
+  }
 
-			setCapability(key, decode(value));
-		}
-	}
+  public void setLanguage(String language) {
+    setCapability(LANGUAGE, language);
+  }
 
-	public SelendroidCapabilities() {
-		setEmulator(true);
-		setLocale("en_US");
-	}
-	
-	public SelendroidCapabilities(String serial, String aut) {
-		setAut(aut);
-		setSerial(serial);
-		if (serial == null) {
-			setEmulator(null);
-		} else if (serial.startsWith("emulator")) {
-			setEmulator(true);
-		} else {
-			setEmulator(false);
-		}
-	}
-	
-	/**
-	 * 
-	 * @param aut
-	 *            The application under test. Expected format is
-	 *            basePackage:version. E.g.: io.selendroid.testapp:0.4
-	 * @return Desired Capabilities of an emulator.
-	 */
-	public static SelendroidCapabilities emulator(String aut) {
-		SelendroidCapabilities caps = new SelendroidCapabilities();
-		caps.setAut(aut);
-		return caps;
-	}
+  public void setLocale(String locale) {
+    setCapability(LOCALE, locale);
+  }
 
-	/**
-	 * 
-	 * @param platform
-	 *            The Android target platform to use.
-	 * @param aut
-	 *            The application under test. Expected format is
-	 *            basePackage:version. E.g.: io.selendroid.testapp:0.4
-	 * @return Desired Capabilities of an emulator.
-	 */
-	public static SelendroidCapabilities emulator(
-			DeviceTargetPlatform platform, String aut) {
-		SelendroidCapabilities caps = new SelendroidCapabilities();
-		caps.setAndroidTarget(platform.name());
-		caps.setLocale("en_US");
-		caps.setAut(aut);
-		return caps;
-	}
+  public void setScreenSize(String screenSize) {
+    setCapability(SCREEN_SIZE, screenSize);
+  }
 
-	/**
-	 * @return The list of ADB commands that will be executed before the test
-	 *         session starts on the device.
-	 */
-	@SuppressWarnings("unchecked")
-	public List<String> getPreSessionAdbCommands() {
-		List<String> res = new ArrayList<String>();
+  public SelendroidCapabilities(JSONObject source) throws JSONException {
+    Iterator<String> iter = source.keys();
+    while (iter.hasNext()) {
+      String key = iter.next();
+      Object value = source.get(key);
 
-		Object capa = getCapability(PRE_SESSION_ADB_COMMANDS);
-		if (capa != null) {
-			res.addAll((Collection<String>) capa);
-		}
-		return res;
-	}
+      setCapability(key, decode(value));
+    }
+  }
 
-	/**
-	 * Command like: "shell setprop name selendroid", please note that the adb
-	 * command itself and the serial will be added by selendroid automatically.
-	 * 
-	 * @param commands
-	 *            The list of ADB commands that will be executed before the test
-	 *            session starts on the device.
-	 */
-	public void setPreSessionAdbCommands(List<String> commands) {
-		setCapability(PRE_SESSION_ADB_COMMANDS, commands);
-	}
+  public SelendroidCapabilities() {
+    super();
+    setBrowserName("selendroid");
+    setEmulator(true);
+    setLocale("en_US");
+  }
 
-	/**
-	 * 
-	 * @param platform
-	 *            The Android target platform to use.
-	 * @param aut
-	 *            The application under test. Expected format is
-	 *            basePackage:version. E.g.: io.selendroid.testapp:0.4
-	 * @return Desired Capabilities of an device.
-	 */
-	public static SelendroidCapabilities device(DeviceTargetPlatform platform,
-			String aut) {
-		SelendroidCapabilities caps = emulator(platform, aut);
-		caps.setEmulator(false);
+  public SelendroidCapabilities(String serial, String aut) {
+    setAut(aut);
+    setSerial(serial);
+    if (serial == null) {
+      setEmulator(null);
+    } else if (serial.startsWith("emulator")) {
+      setEmulator(true);
+    } else {
+      setEmulator(false);
+    }
+  }
 
-		return caps;
-	}
+  /**
+   * 
+   * @param aut The application under test. Expected format is basePackage:version. E.g.:
+   *        io.selendroid.testapp:0.4
+   * @return Desired Capabilities of an emulator.
+   */
+  public static SelendroidCapabilities emulator(String aut) {
+    SelendroidCapabilities caps = new SelendroidCapabilities();
+    caps.setAut(aut);
+    return caps;
+  }
 
-	/**
-	 * 
-	 * @param aut
-	 *            The application under test. Expected format is
-	 *            basePackage:version. E.g.: io.selendroid.testapp:0.4
-	 * @return Desired Capabilities of an device.
-	 */
-	public static SelendroidCapabilities device(String aut) {
-		SelendroidCapabilities caps = emulator(aut);
-		caps.setEmulator(false);
+  /**
+   * 
+   * @param platform The Android target platform to use.
+   * @param aut The application under test. Expected format is basePackage:version. E.g.:
+   *        io.selendroid.testapp:0.4
+   * @return Desired Capabilities of an emulator.
+   */
+  public static SelendroidCapabilities emulator(DeviceTargetPlatform platform, String aut) {
+    SelendroidCapabilities caps = new SelendroidCapabilities();
+    caps.setAndroidTarget(platform.name());
+    caps.setLocale("en_US");
+    caps.setAut(aut);
+    return caps;
+  }
 
-		return caps;
-	}
+  /**
+   * @return The list of ADB commands that will be executed before the test session starts on the
+   *         device.
+   */
+  @SuppressWarnings("unchecked")
+  public List<String> getPreSessionAdbCommands() {
+    List<String> res = new ArrayList<String>();
 
-	private Object decode(Object o) throws JSONException {
-		if (o instanceof JSONArray) {
-			List<Object> res = new ArrayList<Object>();
-			JSONArray array = (JSONArray) o;
-			for (int i = 0; i < array.length(); i++) {
-				Object r = array.get(i);
-				res.add(decode(r));
-			}
-			return res;
-		} else {
-			return o;
-		}
-	}
+    Object capa = getCapability(PRE_SESSION_ADB_COMMANDS);
+    if (capa != null) {
+      res.addAll((Collection<String>) capa);
+    }
+    return res;
+  }
+
+  /**
+   * Command like: "shell setprop name selendroid", please note that the adb command itself and the
+   * serial will be added by selendroid automatically.
+   * 
+   * @param commands The list of ADB commands that will be executed before the test session starts
+   *        on the device.
+   */
+  public void setPreSessionAdbCommands(List<String> commands) {
+    setCapability(PRE_SESSION_ADB_COMMANDS, commands);
+  }
+
+  /**
+   * 
+   * @param platform The Android target platform to use.
+   * @param aut The application under test. Expected format is basePackage:version. E.g.:
+   *        io.selendroid.testapp:0.4
+   * @return Desired Capabilities of an device.
+   */
+  public static SelendroidCapabilities device(DeviceTargetPlatform platform, String aut) {
+    SelendroidCapabilities caps = emulator(platform, aut);
+    caps.setEmulator(false);
+
+    return caps;
+  }
+
+  /**
+   * 
+   * @param aut The application under test. Expected format is basePackage:version. E.g.:
+   *        io.selendroid.testapp:0.4
+   * @return Desired Capabilities of an device.
+   */
+  public static SelendroidCapabilities device(String aut) {
+    SelendroidCapabilities caps = emulator(aut);
+    caps.setEmulator(false);
+
+    return caps;
+  }
+
+  private Object decode(Object o) throws JSONException {
+    if (o instanceof JSONArray) {
+      List<Object> res = new ArrayList<Object>();
+      JSONArray array = (JSONArray) o;
+      for (int i = 0; i < array.length(); i++) {
+        Object r = array.get(i);
+        res.add(decode(r));
+      }
+      return res;
+    } else {
+      return o;
+    }
+  }
 }
