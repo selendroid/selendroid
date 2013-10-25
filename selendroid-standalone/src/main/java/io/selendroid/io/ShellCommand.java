@@ -15,7 +15,6 @@ package io.selendroid.io;
 
 import io.selendroid.exceptions.ShellCommandException;
 
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -27,7 +26,6 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.exec.environment.EnvironmentUtils;
-import org.apache.commons.exec.util.StringUtils;
 
 public class ShellCommand {
   private static final Logger log = Logger.getLogger(ShellCommand.class.getName());
@@ -37,8 +35,8 @@ public class ShellCommand {
     verbose = true;
   }
 
-  public static String exec(List<String> command) throws ShellCommandException {
-    return exec(command, 20000);
+  public static String exec(CommandLine commandLine) throws ShellCommandException {
+    return exec(commandLine, 20000);
   }
 
   public static String exec(CommandLine commandline, long timeoutInMillies)
@@ -58,24 +56,13 @@ public class ShellCommand {
     return (outputStream.getOutput());
   }
 
-  public static String exec(List<String> command, long timeoutInMillies)
+  public static void execAsync(CommandLine commandline) throws ShellCommandException {
+    execAsync(null, commandline);
+  }
+
+  public static void execAsync(String display, CommandLine commandline)
       throws ShellCommandException {
-    String cmd = StringUtils.toString(command.toArray(new String[command.size()]), " ");
-
-    log.info("executing command: " + cmd);
-    CommandLine commandline = CommandLine.parse(cmd);
-    return exec(commandline, timeoutInMillies);
-  }
-
-  public static void execAsync(List<String> command) throws ShellCommandException {
-    execAsync(null, command);
-  }
-
-  public static void execAsync(String display, List<String> command) throws ShellCommandException {
-    String cmd = StringUtils.toString(command.toArray(new String[command.size()]), " ");
-
-    log.info("executing async command: " + cmd);
-    CommandLine commandline = CommandLine.parse(cmd);
+    log.info("executing async command: " + commandline);
     DefaultExecutor exec = new DefaultExecutor();
 
     ExecuteResultHandler handler = new DefaultExecuteResultHandler();
@@ -91,7 +78,8 @@ public class ShellCommand {
         exec.execute(commandline, env, handler);
       }
     } catch (Exception e) {
-      throw new ShellCommandException("An error occured while executing shell command: " + cmd, e);
+      throw new ShellCommandException("An error occured while executing shell command: "
+          + commandline, e);
     }
   }
 

@@ -25,7 +25,6 @@ import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultDeviceManager;
 import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.InstalledAndroidApp;
-import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
@@ -75,9 +74,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       throws AndroidSdkException, AndroidDeviceException {
     this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder(serverConfiguration);
-    
+
     selendroidServerPort = serverConfiguration.getSelendroidServerPort();
-    
+
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
   }
@@ -118,7 +117,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
         if (appId != null && !appsStore.containsKey(appId)) {
           appsStore.put(appId, app);
-          appsToInstall.put(appId,app);
+          appsToInstall.put(appId, app);
           log.info("App " + appId + " has been added to selendroid standalone server.");
         }
       } else {
@@ -146,9 +145,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     hardwareDeviceManager.initialize(hardwareDeviceListener);
 
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
-    
-    deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null);	
-   
+
+    deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null);
+
     if (deviceStore.getDevices().isEmpty()) {
       SelendroidException e =
           new SelendroidException(
@@ -159,26 +158,26 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     }
   }
 
-  
-  private String getAvdName(int port) { 
-	if (port == -1) {
-		return null;
-	}
-	String cmd = "(sleep 4; echo 'avd name') | telnet localhost " + port;
+
+  private String getAvdName(int port) {
+    if (port == -1) {
+      return null;
+    }
+    String cmd = "(sleep 4; echo 'avd name') | telnet localhost " + port;
     try {
-        Process proc = Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
-        try {
-            proc.waitFor();
-        } catch (InterruptedException e) { }
-        BufferedReader read = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-        while (read.ready()) {
-           if(read.readLine().equals("OK"))	{
-        	   break;
-           }
+      Process proc = Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
+      try {
+        proc.waitFor();
+      } catch (InterruptedException e) {}
+      BufferedReader read = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+      while (read.ready()) {
+        if (read.readLine().equals("OK")) {
+          break;
         }
-        return read.readLine();
+      }
+      return read.readLine();
     } catch (IOException e) {
-    	return null;
+      return null;
     }
   }
 
@@ -234,9 +233,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       AndroidEmulator emulator = (AndroidEmulator) device;
       try {
         if (emulator.isEmulatorStarted()) {
-        	if (desiredCapabilities.getSerial() != null) {
-        		emulator.setSerial(Integer.parseInt(desiredCapabilities.getSerial().substring(9)));
-        	}
+          if (desiredCapabilities.getSerial() != null) {
+            emulator.setSerial(Integer.parseInt(desiredCapabilities.getSerial().substring(9)));
+          }
           // Allow a local developer to have their emulator up and running without restarting it
           if (!(app instanceof InstalledAndroidApp)) {
             throw new SessionNotCreatedException("The Emulator '" + emulator
@@ -244,6 +243,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           }
         } else {
           Map<String, Object> config = new HashMap<String, Object>();
+          if (serverConfiguration.getEmulatorOptions() != null) {
+            config.put(AndroidEmulator.EMULATOR_OPTIONS, serverConfiguration.getEmulatorOptions());
+          }
           config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
           if (desiredCapabilities.asMap().containsKey(SelendroidCapabilities.DISPLAY)) {
             Object d = desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY);
@@ -254,9 +256,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           emulator.start(locale, deviceStore.nextEmulatorPort(), config);
         }
       } catch (AndroidDeviceException e) {
-        try {
-          deviceStore.release(device, app);
-        } catch (AndroidDeviceException e1) {}
+        deviceStore.release(device, app);
         if (retries > 0) {
           return createNewTestSession(caps, retries - 1);
         }
@@ -268,12 +268,12 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     // Uninstalling looks probably a bit like an overhead, but
     // this prevents errors like INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES
     for (AndroidApp supportedApp : appsToInstall.values()) {
-        if (device.isInstalled(supportedApp)) {
-        	device.uninstall(supportedApp);
-        }
-        if (!device.install(supportedApp)) {
-        	device.install(supportedApp);
-        }
+      if (device.isInstalled(supportedApp)) {
+        device.uninstall(supportedApp);
+      }
+      if (!device.install(supportedApp)) {
+        device.install(supportedApp);
+      }
     }
     AndroidApp selendroidServer = createSelendroidServerApk(app);
 
@@ -291,14 +291,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     }
     if (!selendroidInstalledSuccessfully) {
       if (!device.install(selendroidServer)) {
-        try {
-          deviceStore.release(device, app);
-        } catch (AndroidDeviceException e) {}
+
+        deviceStore.release(device, app);
+
         if (retries > 0) {
           return createNewTestSession(caps, retries - 1);
         }
       }
-    } 
+    }
 
     List<String> adbCommands = desiredCapabilities.getPreSessionAdbCommands();
     if (adbCommands != null && !adbCommands.isEmpty()) {
@@ -312,11 +312,11 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     try {
       device.startSelendroid(app, port);
     } catch (AndroidSdkException e) {
-      try {
-        deviceStore.release(device, app);
-      } catch (AndroidDeviceException e1) {}
+      log.info("error while starting selendroid: " + e.getMessage());
+      
+      deviceStore.release(device, app);
       if (retries > 0) {
-        return createNewTestSession(caps, retries - 1);
+         return createNewTestSession(caps, retries - 1);
       }
       throw new SessionNotCreatedException("Error occured while starting instrumentation: "
           + e.getMessage());
@@ -327,7 +327,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     while (device.isSelendroidRunning() == false) {
       if (timemoutEnd >= System.currentTimeMillis()) {
         try {
-          Thread.sleep(1000);
+          Thread.sleep(2000);
         } catch (InterruptedException e) {}
       } else {
         throw new SelendroidException("Selendroid server on the device didn't came up after "
@@ -338,18 +338,20 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     try {
       Thread.sleep(500);
     } catch (InterruptedException e1) {
-      // TODO Auto-generated catch block
       e1.printStackTrace();
     }
     try {
       HttpResponse r = HttpClientUtil.executeCreateSessionRequest(port, desiredCapabilities);
-      response = HttpClientUtil.parseJsonResponse(r);
+      response=HttpClientUtil.parseJsonResponse(r);
     } catch (Exception e) {
+      e.printStackTrace();
+      deviceStore.release(device, app);
       throw new SessionNotCreatedException(
           "Error occured while creating session on Android device", e);
     }
-    log.info("Create new session response: " + response.toString(2));
+    log.info("Create new session response: " + response.toString());
     if (response.getInt(WD_RESP_KEY_STATUS) != 0) {
+      deviceStore.release(device, app);
       throw new SessionNotCreatedException(
           "Error occured while initilizing wd session on android device.");
     }
@@ -393,11 +395,11 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     AndroidDevice device = null;
     String serial = caps.getSerial();
     if (serial != null) {
-	   if (serial.startsWith("emulator")) {
-	   	 deviceStore.setAvdName(getAvdName(Integer.parseInt(serial.substring(9))));
-	   } else {
-	   	 deviceStore.setDeviceSerial(serial);
-	   }
+      if (serial.startsWith("emulator")) {
+        deviceStore.setAvdName(getAvdName(Integer.parseInt(serial.substring(9))));
+      } else {
+        deviceStore.setDeviceSerial(serial);
+      }
     }
     try {
       device = deviceStore.findAndroidDevice(caps);

@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.webbitserver.HttpRequest;
-import org.webbitserver.HttpResponse;
 
 public class SelendroidServlet extends BaseServlet {
   private static final Logger log = Logger.getLogger(SelendroidServlet.class.getName());
@@ -72,27 +71,27 @@ public class SelendroidServlet extends BaseServlet {
       BaseRequestHandler foundHandler) {
     BaseRequestHandler handler = null;
     if ("/favicon.ico".equals(request.uri()) && foundHandler == null) {
-      response.status(404);
+      response.setStatus(404);
       response.end();
       return;
     }
     if ("/inspector/".equals(request.uri()) || "/inspector".equals(request.uri())) {
       if (driver.getActiceSessions().isEmpty()) {
-        response.status(200);
+        response.setStatus(200);
         response
-            .content(
-                "Selendroid inspector can only be used if there is an active test session running. "
-                    + "To start a test session, add a break point into your test code and run the test in debug mode.")
-            .end();
+            .setContent("Selendroid inspector can only be used if there is an active test session running. "
+                + "To start a test session, add a break point into your test code and run the test in debug mode.");
+        response.end();
         return;
       } else {
-        response.status(302);
+        // response.setStatus(302);
         String session = driver.getActiceSessions().get(0).getSessionKey();
 
         String newSessionUri =
             "http://" + request.header("Host") + "/inspector/session/" + session + "/";
         log.info("new Inspector URL: " + newSessionUri);
-        response.header("location", newSessionUri).end();
+        response.sendRedirect(newSessionUri);
+        response.end();
         return;
       }
     }
@@ -112,7 +111,8 @@ public class SelendroidServlet extends BaseServlet {
         }
       }
       if (handler == null) {
-        response.status(404).end();
+        response.setStatus(404);
+        response.end();
         return;
       }
     } else {
@@ -138,27 +138,29 @@ public class SelendroidServlet extends BaseServlet {
       handleResponse(request, response, (SelendroidResponse) result);
     } else if (result instanceof JsResult) {
       JsResult js = (JsResult) result;
-      response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
-          .content(js.render()).end();
+      response.setContentType("application/x-javascript");
+      response.setEncoding(Charset.forName("UTF-8"));
+      response.setContent(js.render());
+      response.end();
     } else {
       UiResponse uiResponse = (UiResponse) result;
-      response.header("Content-Type", "text/html");
-      response.charset(Charset.forName("UTF-8"));
+      response.setContentType("text/html");
+      response.setEncoding(Charset.forName("UTF-8"));
 
-      response.status(200);
+      response.setStatus(200);
 
       if (uiResponse != null) {
         if (uiResponse.getObject() instanceof byte[]) {
           byte[] data = (byte[]) uiResponse.getObject();
-          response.header("Content-Length", data.length).content(data);
+          
+          response.setContent(data);
         } else {
           String resultString = uiResponse.render();
-          response.content(resultString);
+          response.setContent(resultString);
 
         }
       }
       response.end();
     }
   }
-
 }

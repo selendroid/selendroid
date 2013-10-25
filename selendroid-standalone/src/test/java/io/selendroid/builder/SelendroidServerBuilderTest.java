@@ -19,11 +19,10 @@ import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.io.ShellCommand;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,9 +41,10 @@ public class SelendroidServerBuilderTest {
     builder.cleanUpPrebuildServer();
 
     // Verify apk, if the files have been removed
-    List<String> cmd =
-        Arrays.asList(new String[] {AndroidSdk.aapt().getAbsolutePath(), "list",
-            builder.getSelendroidServer().getAbsolutePath()});
+    CommandLine cmd = new CommandLine(AndroidSdk.aapt());
+    cmd.addArgument("list", false);
+    cmd.addArgument(builder.getSelendroidServer().getAbsolutePath(), false);
+
     String output = ShellCommand.exec(cmd);
 
     assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");
@@ -67,9 +67,10 @@ public class SelendroidServerBuilderTest {
     Assert.assertTrue("Expecting non empty AndroidManifest.xml file", entry.getSize() > 700);
 
     // Verify that apk is not yet signed
-    List<String> cmd =
-        Arrays.asList(new String[] {AndroidSdk.aapt().getAbsolutePath(), "list",
-            builder.getSelendroidServer().getAbsolutePath()});
+    CommandLine cmd = new CommandLine(AndroidSdk.aapt());
+    cmd.addArgument("list", false);
+    cmd.addArgument(builder.getSelendroidServer().getAbsolutePath(), false);
+
     String output = ShellCommand.exec(cmd);
 
     assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");
@@ -85,9 +86,10 @@ public class SelendroidServerBuilderTest {
     Assert.assertEquals("resigned-" + androidApp.getName(),
         new File(app.getAbsolutePath()).getName());
     // Verify that apk is signed
-    List<String> cmd =
-        Arrays.asList(new String[] {AndroidSdk.aapt().getAbsolutePath(), "list",
-            app.getAbsolutePath()});
+    CommandLine cmd = new CommandLine(AndroidSdk.aapt());
+    cmd.addArgument("list", false);
+    cmd.addArgument(app.getAbsolutePath(), false);
+
     String output = ShellCommand.exec(cmd);
 
     assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");
@@ -106,9 +108,10 @@ public class SelendroidServerBuilderTest {
     builder.signTestServer(builder.createAndAddCustomizedAndroidManifestToSelendroidServer(), file);
 
     // Verify that apk is signed
-    List<String> cmd =
-        Arrays.asList(new String[] {AndroidSdk.aapt().getAbsolutePath(), "list",
-            file.getAbsolutePath()});
+    CommandLine cmd = new CommandLine(AndroidSdk.aapt());
+    cmd.addArgument("list", false);
+    cmd.addArgument(file.getAbsolutePath(), false);
+
     String output = ShellCommand.exec(cmd);
 
     assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");

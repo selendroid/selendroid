@@ -13,40 +13,37 @@
  */
 package io.selendroid.android;
 
-import static io.selendroid.android.AndroidSdk.platformExecutableSuffixExe;
+import static io.selendroid.android.OS.platformExecutableSuffixExe;
 import static org.openqa.selenium.Platform.MAC;
-
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
-import org.openqa.selenium.Platform;
-import org.openqa.selenium.os.CommandLine;
 
 import java.io.File;
-import java.util.Arrays;
+
+import org.apache.commons.exec.CommandLine;
+import org.openqa.selenium.Platform;
 
 public class JavaSdk {
   public static String javaHome = null;
 
   public static String javaHome() {
     if (javaHome == null) {
-     // Sniff JAVA_HOME first
-        javaHome = System.getenv("JAVA_HOME");
+      // Sniff JAVA_HOME first
+      javaHome = System.getenv("JAVA_HOME");
 
       // If that's not present, and we're on a Mac...
       if (javaHome == null && Platform.getCurrent() == MAC) {
         try {
-          javaHome = ShellCommand.exec(Arrays.asList("/usr/libexec/java_home"));
+          javaHome = ShellCommand.exec(new CommandLine("/usr/libexec/java_home"));
           if (javaHome != null) {
             javaHome = javaHome.replaceAll("\\r|\\n", "");
           }
-       
-        } catch (ShellCommandException e) {
-        }     
+
+        } catch (ShellCommandException e) {}
       }
       // Finally, check java.home, though this may point to a JRE.
       if (javaHome == null) {
-    	  javaHome = System.getProperty("java.home");
+        javaHome = System.getProperty("java.home");
       }
     }
     return javaHome;

@@ -13,10 +13,8 @@
  */
 package io.selendroid.server.support;
 
-import io.selendroid.android.Abi;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
-import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
@@ -120,11 +118,6 @@ public class DeviceForTest extends DefaultAndroidEmulator {
   }
 
   @Override
-  public String createEmulator() throws AndroidDeviceException {
-    return null;
-  }
-
-  @Override
   public boolean isEmulatorAlreadyExistent() {
     return true;
   }
@@ -132,11 +125,6 @@ public class DeviceForTest extends DefaultAndroidEmulator {
   @Override
   public boolean isEmulatorStarted() {
     return false;
-  }
-
-  @Override
-  public Abi getAbi() {
-    return Abi.X86;
   }
 
   @Override
@@ -180,7 +168,7 @@ public class DeviceForTest extends DefaultAndroidEmulator {
   }
 
   @Override
-  public void kill(InstalledAndroidApp app) throws AndroidDeviceException, AndroidSdkException {}
+  public void kill(AndroidApp app) throws AndroidDeviceException, AndroidSdkException {}
 
   public boolean screenSizeMatches(String requestedScreenSize) {
     // if screen size is not requested, just ignore it

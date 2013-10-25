@@ -52,6 +52,9 @@ public class SelendroidConfiguration {
 	@Parameter(description = "The file of the keystore to be used", names = { "-keystore" })
 	private String keystore = null;
 	
+	@Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio", names = { "-emulatorOptions" })
+    private String emulatorOptions = null;
+	
     @Parameter(description = "if specified, will send a registration request to the given url. Example : http://localhost:4444/grid/register", names = "-hub")
     private String registrationUrl = null;
 
@@ -170,4 +173,12 @@ public class SelendroidConfiguration {
 	public void setServerHost(String serverHost) {
 	    this.serverHost = serverHost;
 	}
+
+  public String getEmulatorOptions() {
+    return emulatorOptions;
+  }
+
+  public void setEmulatorOptions(String qemu) {
+    this.emulatorOptions = qemu;
+  }
 }

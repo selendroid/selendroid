@@ -41,7 +41,7 @@ public class DeviceStore {
   private Boolean installedApp = false;
   private String avdName = null;
   private String deviceSerial = null;
-  
+
   public DeviceStore(Boolean debug, Integer emulatorPort) {
     if (debug) {
       log.setLevel(Level.FINE);
@@ -65,24 +65,24 @@ public class DeviceStore {
    * of devices in use and in case of an emulator it will be stopped.
    * 
    * @param device The device to release
-   * @throws AndroidDeviceException
    * @see {@link #findAndroidDevice(SelendroidCapabilities)}
    */
-  public void release(AndroidDevice device, AndroidApp aut) throws AndroidDeviceException {
+  public void release(AndroidDevice device, AndroidApp aut) {
     if (devicesInUse.contains(device)) {
-      if (device instanceof AndroidEmulator) {
-        if (installedApp) {
-          // kill process instead of shutting down emulator
-          try {
-            ((AndroidEmulator) device).kill((InstalledAndroidApp) aut);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        } else {
-          AndroidEmulator emulator = (AndroidEmulator) device;
+      // stop the app anyway - better in case people do use snapshots
+      try {
+        device.kill(aut);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      if (device instanceof AndroidEmulator && installedApp == false) {
+        AndroidEmulator emulator = (AndroidEmulator) device;
+        try {
           emulator.stop();
-          androidEmulatorPortFinder.release(emulator.getPort());
+        } catch (AndroidDeviceException e) {
+          log.severe("Failed to stop emulator: " + e.getMessage());
         }
+        androidEmulatorPortFinder.release(emulator.getPort());
       }
       devicesInUse.remove(device);
     }
@@ -106,20 +106,20 @@ public class DeviceStore {
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
     addEmulators(emulators, false);
   }
-  
+
   public void setDeviceSerial(String deviceSerial) {
-	  this.deviceSerial = deviceSerial;
+    this.deviceSerial = deviceSerial;
   }
 
   public void setAvdName(String avdName) {
-	  this.avdName = avdName;
+    this.avdName = avdName;
   }
-  
+
   public void addEmulators(List<AndroidEmulator> emulators, Boolean installedApp)
       throws AndroidDeviceException {
     this.installedApp = installedApp;
-    
-    
+
+
     if (emulators == null || emulators.isEmpty()) {
       log.info("No emulators has been found.");
       return;
@@ -206,13 +206,15 @@ public class DeviceStore {
             potentialMatches.add(device);
             continue;
           }
-          if (installedApp && device instanceof AndroidDevice && (deviceSerial == null ||
-        		  ((DefaultHardwareDevice) device).getSerial().equals(deviceSerial))) {
-        	devicesInUse.add(device);
-          	return device;
-          } else if (installedApp && device instanceof AndroidDevice &&
-        		  !((DefaultHardwareDevice) device).getSerial().equals(deviceSerial)) {
-        	 continue;
+          if (installedApp
+              && device instanceof AndroidDevice
+              && (deviceSerial == null || ((DefaultHardwareDevice) device).getSerial().equals(
+                  deviceSerial))) {
+            devicesInUse.add(device);
+            return device;
+          } else if (installedApp && device instanceof AndroidDevice
+              && !((DefaultHardwareDevice) device).getSerial().equals(deviceSerial)) {
+            continue;
           }
           log.fine("device found.");
           devicesInUse.add(device);
@@ -224,8 +226,8 @@ public class DeviceStore {
           continue;
         }
         if (avdName == null || ((DefaultAndroidEmulator) device).getAvdName().equals(avdName)) {
-        	devicesInUse.add(device);
-        	return device;
+          devicesInUse.add(device);
+          return device;
         }
       } else {
         log.info("emulator switched off: " + isEmulatorSwitchedOff(device));
@@ -288,11 +290,8 @@ public class DeviceStore {
     if (hardwareDevice == false) {
       throw new DeviceStoreException("Only devices of type 'DefaultHardwareDevice' can be removed.");
     }
-    try {
-      release(device, null);
-    } catch (AndroidDeviceException e) {
-      throw new DeviceStoreException("An error occured while releasing device", e);
-    }
+
+    release(device, null);
     DeviceTargetPlatform apiLevel = device.getTargetPlatform();
     if (androidDevices.containsKey(apiLevel)) {
       log.info("Removing: " + device);

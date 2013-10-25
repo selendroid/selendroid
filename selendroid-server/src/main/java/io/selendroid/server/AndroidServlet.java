@@ -14,8 +14,8 @@
 package io.selendroid.server;
 
 import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.server.handler.CaptureScreenshot;
 import io.selendroid.server.handler.AddCookie;
+import io.selendroid.server.handler.CaptureScreenshot;
 import io.selendroid.server.handler.ClearElement;
 import io.selendroid.server.handler.ClickElement;
 import io.selendroid.server.handler.DeleteCookies;
@@ -64,8 +64,8 @@ import io.selendroid.server.handler.UnknownCommandHandler;
 import io.selendroid.server.handler.Up;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
+
 import org.webbitserver.HttpRequest;
-import org.webbitserver.HttpResponse;
 
 public class AndroidServlet extends BaseServlet {
   private SelendroidDriver driver = null;
@@ -96,8 +96,7 @@ public class AndroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session/:sessionId/timeouts/implicit_wait",
         SetImplicitWaitTimeout.class);
     postHandler.put("/wd/hub/session/:sessionId/window", SwitchWindow.class);
-    getHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/size",
-        GetWindowSize.class);
+    getHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/size", GetWindowSize.class);
     postHandler.put("/wd/hub/session/:sessionId/element/:id/submit", SubmitForm.class);
     postHandler.put("/wd/hub/session/:sessionId/keys", SendKeyToActiveElement.class);
     getHandler.put("/wd/hub/session/:sessionId/title", GetPageTitle.class);

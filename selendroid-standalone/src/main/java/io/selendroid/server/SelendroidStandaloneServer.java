@@ -19,6 +19,7 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.grid.SelfRegisteringRemote;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -73,7 +74,10 @@ public class SelendroidStandaloneServer {
   }
 
   protected void init() throws AndroidSdkException {
-    webServer.staleConnectionTimeout(604800000); // 1 week
+    // just make sure the connection will not be staled because
+    // the long emulator starting time and therefore long time
+    // it needs to create a session
+    webServer.staleConnectionTimeout(configuration.getTimeoutEmulatorStart());
     webServer.add("/wd/hub/status", new StatusServlet(driver));
     webServer.add(new SelendroidServlet(driver, configuration));
   }

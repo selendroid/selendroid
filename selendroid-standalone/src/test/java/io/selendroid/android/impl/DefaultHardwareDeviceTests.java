@@ -23,15 +23,14 @@ import io.selendroid.server.util.HttpClientUtil;
 import io.selendroid.util.SelendroidAssert;
 
 import java.io.File;
-import java.util.List;
 
+import org.apache.commons.exec.CommandLine;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.android.ddmlib.IDevice;
-import com.beust.jcommander.internal.Lists;
 
 
 /**
@@ -83,14 +82,13 @@ public class DefaultHardwareDeviceTests {
   }
 
   private String listInstalledPackages() throws Exception {
-    List<String> command = Lists.newArrayList();
-    command.add(AndroidSdk.adb().getAbsolutePath());
-    command.add("-s");
-    command.add(serial);
-    command.add("shell");
-    command.add("pm");
-    command.add("list");
-    command.add("packages");
+    CommandLine command = new CommandLine(AndroidSdk.adb().getAbsolutePath());
+    command.addArgument("-s", false);
+    command.addArgument(serial, false);
+    command.addArgument("shell", false);
+    command.addArgument("pm", false);
+    command.addArgument("list", false);
+    command.addArgument("packages", false);
     return ShellCommand.exec(command);
   }
 }

@@ -13,11 +13,6 @@
  */
 package io.selendroid.android.impl;
 
-import com.android.ddmlib.AdbCommandRejectedException;
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.RawImage;
-import com.android.ddmlib.TimeoutException;
-import com.beust.jcommander.internal.Lists;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
@@ -25,6 +20,19 @@ import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
+
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
@@ -37,16 +45,11 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.openqa.selenium.logging.LogEntry;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.RawImage;
+import com.android.ddmlib.TimeoutException;
+import com.beust.jcommander.internal.Lists;
 
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
@@ -147,15 +150,6 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
   }
 
-  protected String executeCommand(List<String> command) {
-    try {
-      return ShellCommand.exec(command);
-    } catch (ShellCommandException e) {
-      e.printStackTrace();
-      return "";
-    }
-  }
-
   @Override
   public void uninstall(AndroidApp app) throws AndroidSdkException {
     if (app instanceof InstalledAndroidApp) {
@@ -178,6 +172,40 @@ public abstract class AbstractDevice implements AndroidDevice {
     executeCommand(command, 20000);
   }
 
+  @Override
+  public void kill(AndroidApp aut) throws AndroidDeviceException, AndroidSdkException {
+    CommandLine command = new CommandLine(AndroidSdk.adb());
+
+    if (isSerialConfigured()) {
+      command.addArgument("-s", false);
+      command.addArgument(serial, false);
+    }
+    command.addArgument("shell", false);
+    command.addArgument("am", false);
+    command.addArgument("force-stop", false);
+    command.addArgument(aut.getBasePackage(), false);
+    try {
+      ShellCommand.exec(command, 20000);
+    } catch (ShellCommandException e) {
+      e.printStackTrace();
+    }
+
+    CommandLine clearCommand = new CommandLine(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      clearCommand.addArgument("-s", false);
+      clearCommand.addArgument(serial, false);
+    }
+    clearCommand.addArgument("shell", false);
+    clearCommand.addArgument("pm", false);
+    clearCommand.addArgument("clear", false);
+    clearCommand.addArgument(aut.getBasePackage(), false);
+    try {
+      ShellCommand.exec(command, 20000);
+    } catch (ShellCommandException e) {
+      e.printStackTrace();
+    }
+  }
+  
   @Override
   public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
     this.port = port;

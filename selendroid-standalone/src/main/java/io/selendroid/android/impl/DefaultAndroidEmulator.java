@@ -13,7 +13,6 @@
  */
 package io.selendroid.android.impl;
 
-import io.selendroid.android.Abi;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.device.DeviceTargetPlatform;
@@ -23,7 +22,11 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -45,23 +48,15 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
   private String screenSize;
   private DeviceTargetPlatform targetPlatform;
-  // TODO ddary just use this as default
-  private Abi abi = Abi.X86;
   private String avdName;
   private File avdRootFolder;
   private Locale locale = null;
 
-  protected DefaultAndroidEmulator(){}
-  
+  protected DefaultAndroidEmulator() {}
+
   public DefaultAndroidEmulator(String avdName, String abi, String screenSize, String target,
       File avdFilePath) {
     this.avdName = avdName;
-    if (Abi.X86.name().equalsIgnoreCase(abi)) {
-      this.abi = Abi.X86;
-    } else {
-      this.abi = Abi.ARM;
-    }
-
     this.screenSize = screenSize;
     this.avdRootFolder = avdFilePath;
     this.targetPlatform = DeviceTargetPlatform.fromInt(target);
@@ -77,45 +72,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
   public DeviceTargetPlatform getTargetPlatform() {
     return targetPlatform;
-  }
-
-  public Abi getAbi() {
-    return abi;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see io.selendroid.android.impl.AndroidEmulator#createEmulator()
-   */
-  @Override
-  public String createEmulator() throws AndroidDeviceException {
-    if (isAndroidApiInstalled() == false) {
-      throw new SelendroidException("Android SDK target version '' not installed."
-          + " Please update sdk with the missing version.");
-    }
-    String avdName = createAvdName();
-    if (!isEmulatorAlreadyExistent()) {
-      List<String> createEmulator = Lists.newArrayList();
-
-      createEmulator.add("echo no |");
-      createEmulator.add(AndroidSdk.android());
-      createEmulator.add("create avd -n");
-      createEmulator.add(avdName);
-      createEmulator.add("-t android");
-      createEmulator.add(String.valueOf(targetPlatform.getVersion()));
-      createEmulator.add("--skin");
-      createEmulator.add(getScreenSize());
-      createEmulator.add("--abi");
-      createEmulator.add(abi.name());
-      createEmulator.add("--force");
-      try {
-        ShellCommand.exec(createEmulator);
-      } catch (ShellCommandException e) {
-        throw new AndroidDeviceException(e);
-      }
-    }
-    return avdName;
   }
 
   /*
@@ -136,7 +92,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   }
 
   private String createAvdName() {
-    return "selendroid" + targetPlatform.getVersion() + "_" + getScreenSize() + "_" + getAbi();
+    return "selendroid" + targetPlatform.getVersion() + "_" + getScreenSize();
   }
 
   private boolean isAndroidApiInstalled() {
@@ -149,13 +105,14 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
   public static List<AndroidEmulator> listAvailableAvds() throws AndroidDeviceException {
     List<AndroidEmulator> avds = Lists.newArrayList();
-    List<String> cmd = new ArrayList<String>();
-    cmd.add(AndroidSdk.android());
-    cmd.add("list");
-    cmd.add("avds");
+
+    CommandLine cmd = new CommandLine(AndroidSdk.android());
+    cmd.addArgument("list", false);
+    cmd.addArgument("avds", false);
+
     String output = null;
     try {
-      output = ShellCommand.exec(cmd);
+      output = ShellCommand.exec(cmd, 20000);
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
     }
@@ -171,7 +128,9 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         String screenSize = extractValue("Skin: (.*?)$", element);
         String target = extractValue("\\(API level (.*?)\\)", element);
         File avdFilePath = new File(extractValue("Path: (.*?)$", element));
-        avds.add(new DefaultAndroidEmulator(avdName, abi, screenSize, target, avdFilePath));
+        DefaultAndroidEmulator emulator =
+            new DefaultAndroidEmulator(avdName, abi, screenSize, target, avdFilePath);
+        avds.add(emulator);
       }
     }
     return avds;
@@ -208,7 +167,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       throw new SelendroidException("Error - Android emulator is already started " + this);
     }
     Long timeout = null;
-
+    String emulatorOptions = null;
     String display = null;
     if (options != null) {
       if (options.containsKey(TIMEOUT_OPTION)) {
@@ -216,6 +175,9 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       }
       if (options.containsKey(DISPLAY_OPTION)) {
         display = (String) options.get(DISPLAY_OPTION);
+      }
+      if (options.containsKey(EMULATOR_OPTIONS)) {
+        emulatorOptions = (String) options.get(EMULATOR_OPTIONS);
       }
     }
 
@@ -227,19 +189,26 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     }
     log.info("Using timeout of '" + timeout / 1000 + "' seconds to start the emulator.");
     this.locale = locale;
-    List<String> cmd = Lists.newArrayList();
-    cmd.add(AndroidSdk.emulator());
-    cmd.add("-no-snapshot-save");
-    cmd.add("-avd");
-    cmd.add(avdName);
-    cmd.add("-port");
-    cmd.add(String.valueOf(emulatorPort));
+
+    CommandLine cmd = new CommandLine(AndroidSdk.emulator());
+
+
+
+    cmd.addArgument("-no-snapshot-save", false);
+    cmd.addArgument("-avd", false);
+    cmd.addArgument(avdName, false);
+    cmd.addArgument("-port", false);
+    cmd.addArgument(String.valueOf(emulatorPort), false);
     if (locale != null) {
-      cmd.add("-prop");
-      cmd.add("persist.sys.language=" + locale.getLanguage());
-      cmd.add("-prop");
-      cmd.add("persist.sys.country=" + locale.getCountry());
+      cmd.addArgument("-prop", false);
+      cmd.addArgument("persist.sys.language=" + locale.getLanguage(), false);
+      cmd.addArgument("-prop", false);
+      cmd.addArgument("persist.sys.country=" + locale.getCountry(), false);
     }
+    if (emulatorOptions != null && emulatorOptions.isEmpty() == false) {
+      cmd.addArgument(emulatorOptions, false);
+    }
+
     long start = System.currentTimeMillis();
     long timemoutEnd = start + timeout;
     try {
@@ -386,7 +355,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       y = y - 30;
     }
 
-    List<String> event1 = new ArrayList<String>();
     List<String> coordinates = new ArrayList<String>();
     coordinates.add("3 0 " + x);
     coordinates.add("3 1 " + y);
@@ -394,23 +362,22 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     coordinates.add("0 0 0");
     coordinates.add("1 330 0");
     coordinates.add("0 0 0");
-    // TODO lukeis: review if this can be refactored to use the CommandLine class.
-    event1.add(AndroidSdk.adb().getAbsolutePath());
-    if (isSerialConfigured()) {
-      event1.add("-s");
-      event1.add(serial);
-    }
-    event1.add("shell");
-    event1.add("sendevent");
-    event1.add("dev/input/event0");
+
     for (String coordinate : coordinates) {
-      event1.add(coordinate);
+      CommandLine event1 = new CommandLine(AndroidSdk.adb());
+      if (isSerialConfigured()) {
+        event1.addArgument("-s", false);
+        event1.addArgument(serial, false);
+      }
+      event1.addArgument("shell", false);
+      event1.addArgument("sendevent", false);
+      event1.addArgument("dev/input/event0", false);
+      event1.addArgument(coordinate, false);
       try {
         ShellCommand.exec(event1);
       } catch (ShellCommandException e) {
         throw new AndroidDeviceException(e);
       }
-      event1.remove(coordinate);
     }
 
     try {
@@ -420,71 +387,52 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     }
   }
 
-  @Override
-  public void stop() throws AndroidDeviceException {
-    this.device = null;
-    CommandLine command = new CommandLine(AndroidSdk.adb());
-    if (isSerialConfigured()) {
-      command.addArgument("-s", false);
-      command.addArgument(serial, false);
-    }
-    command.addArgument("emu", false);
-    command.addArgument("kill", false);
-
+  private void stopEmulator() throws AndroidDeviceException {
+    Socket socket = null;
+    PrintWriter out = null;
+    BufferedReader in = null;
     try {
-      ShellCommand.exec(command, 20000);
-      Boolean killed = false;
-      while (isEmulatorStarted()) {
-        log.info("emulator still running, sleeping 0.5, waiting for it to release the lock");
-        try {
-          Thread.sleep(500);
-        } catch (InterruptedException ie) {
-          throw new RuntimeException(ie);
-        }
-        if (!killed) {
-          try {
-            ShellCommand.exec(command, 20000);
-          } catch (ShellCommandException sce) {
-            killed = true;
-          }
-        }
+      socket = new Socket("127.0.0.1", getPort());
+      out = new PrintWriter(socket.getOutputStream(), true);
+      in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+      if (in.readLine() == null) {
+        throw new AndroidDeviceException("Selendroid was not able to kill the emulator");
       }
-    } catch (ShellCommandException e) {
-      throw new AndroidDeviceException(e);
+
+      out.write("kill");
+      out.write("\r\n");
+    } catch (Exception e) {
+      throw new AndroidDeviceException("Connection to emulator failed with the message: "
+          + e.getMessage());
+    } finally {
+      try {
+        out.close();
+        in.close();
+        socket.close();
+      } catch (Exception e) {
+        // do nothing
+      }
     }
   }
 
   @Override
-  public void kill(InstalledAndroidApp aut) throws AndroidDeviceException, AndroidSdkException {
-    CommandLine command = new CommandLine(AndroidSdk.adb());
-
-    if (isSerialConfigured()) {
-      command.addArgument("-s", false);
-      command.addArgument(serial, false);
-    }
-    command.addArgument("shell", false);
-    command.addArgument("am", false);
-    command.addArgument("force-stop", false);
-    command.addArgument(aut.getBasePackage(), false);
-    try {
-      ShellCommand.exec(command, 20000);
-    } catch (ShellCommandException e) {
-      e.printStackTrace();
-    }
-
-    CommandLine clearCommand = new CommandLine(AndroidSdk.adb());
-    if (isSerialConfigured()) {
-      clearCommand.addArgument("-s", false);
-      clearCommand.addArgument(serial, false);
-    }
-    clearCommand.addArgument("shell", false);
-    clearCommand.addArgument("pm", false);
-    clearCommand.addArgument("clear", false);
-    clearCommand.addArgument(aut.getBasePackage(), false);
-    try {
-      ShellCommand.exec(command, 20000);
-    } catch (ShellCommandException e) {
-      e.printStackTrace();
+  public void stop() throws AndroidDeviceException {
+    stopEmulator();
+    Boolean killed = false;
+    while (isEmulatorStarted()) {
+      log.info("emulator still running, sleeping 0.5, waiting for it to release the lock");
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException ie) {
+        throw new RuntimeException(ie);
+      }
+      if (!killed) {
+        try {
+          stopEmulator();
+        } catch (AndroidDeviceException sce) {
+          killed = true;
+        }
+      }
     }
   }
 

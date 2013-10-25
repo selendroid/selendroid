@@ -13,6 +13,7 @@
  */
 package io.selendroid.android;
 
+import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
@@ -39,6 +40,8 @@ public interface AndroidDevice {
 
   public int getSelendroidsPort();
 
+  public void kill(AndroidApp aut) throws AndroidDeviceException, AndroidSdkException;
+  
   public String getScreenSize();
 
   public List<LogEntry> getLogs();

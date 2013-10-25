@@ -27,14 +27,11 @@ import com.android.ddmlib.IDevice;
 public interface AndroidEmulator {
   public static final String TIMEOUT_OPTION = "TIMEOUT";
   public static final String DISPLAY_OPTION = "DISPLAY";
-
-  public String createEmulator() throws AndroidDeviceException;
+  public static final String EMULATOR_OPTIONS = "OPTIONS";
 
   public boolean isEmulatorAlreadyExistent() throws AndroidDeviceException;
 
   public boolean isEmulatorStarted() throws AndroidDeviceException;
-
-  public Abi getAbi();
 
   public String getAvdName();
 
@@ -48,8 +45,6 @@ public interface AndroidEmulator {
       throws AndroidDeviceException;
 
   public void stop() throws AndroidDeviceException;
-
-  public void kill(InstalledAndroidApp aut) throws AndroidDeviceException, AndroidSdkException;
 
   public Integer getPort();
 

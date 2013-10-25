@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -13,6 +13,8 @@
  */
 package io.selendroid.android;
 
+import static io.selendroid.android.OS.platformExecutableSuffixBat;
+import static io.selendroid.android.OS.platformExecutableSuffixExe;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.SelendroidException;
 
@@ -40,7 +42,7 @@ public class AndroidSdk {
       return platformToolsAapt;
     }
 
-    File buildToolsFolder = new File(buildToolsHome());
+    File buildToolsFolder = buildToolsHome();
 
     return new File(
         findLatestAndroidPlatformFolder(
@@ -49,48 +51,43 @@ public class AndroidSdk {
         command.toString());
   }
 
-  public static String android() {
+  public static File android() {
     StringBuffer command = new StringBuffer();
     command.append(toolsHome());
-    command.append("android");
-    command.append(platformExecutableSuffixBat());
-    return command.toString();
+
+    return new File(toolsHome(), "android" + platformExecutableSuffixBat());
   }
 
-  public static String emulator() {
-    StringBuffer command = new StringBuffer();
-    command.append(toolsHome());
-    command.append("emulator");
-    command.append(platformExecutableSuffixExe());
-    return command.toString();
+  public static File emulator() {
+    return new File(toolsHome(), "emulator" + platformExecutableSuffixExe());
   }
 
-  private static String toolsHome() {
+  private static File toolsHome() {
     StringBuffer command = new StringBuffer();
     command.append(androidHome());
     command.append(File.separator);
     command.append("tools");
     command.append(File.separator);
-    return command.toString();
+    return new File(command.toString());
   }
 
-  private static String buildToolsHome() {
+  private static File buildToolsHome() {
     StringBuffer command = new StringBuffer();
     command.append(androidHome());
     command.append(File.separator);
     command.append("build-tools");
     command.append(File.separator);
 
-    return command.toString();
+    return new File(command.toString());
   }
 
-  private static String platformToolsHome() {
+  private static File platformToolsHome() {
     StringBuffer command = new StringBuffer();
     command.append(androidHome());
     command.append(File.separator);
     command.append("platform-tools");
     command.append(File.separator);
-    return command.toString();
+    return new File(command.toString());
   }
 
   public static String androidHome() {
@@ -102,17 +99,7 @@ public class AndroidSdk {
     return androidHome;
   }
 
-  /* package */static String platformExecutableSuffixExe() {
-    return isWindows() ? ".exe" : "";
-  }
 
-  public static boolean isWindows() {
-    return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
-  }
-
-  /* package */static String platformExecutableSuffixBat() {
-    return isWindows() ? ".bat" : "";
-  }
 
   /**
    * @return path to android.jar of latest android api.

@@ -21,7 +21,6 @@ import java.util.Map;
 import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
-import org.webbitserver.HttpResponse;
 
 public abstract class BaseServlet implements HttpHandler {
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
@@ -68,8 +67,9 @@ public abstract class BaseServlet implements HttpHandler {
   }
 
   @Override
-  public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control)
-      throws Exception {
+  public void handleHttpRequest(HttpRequest request, org.webbitserver.HttpResponse webbitResponse,
+      HttpControl control) throws Exception {
+    HttpResponse response = new WebbitHttpResponse(webbitResponse);
     BaseRequestHandler handler = null;
     if ("GET".equals(request.method())) {
       handler = findMatcher(request, response, getHandler);
@@ -107,7 +107,7 @@ public abstract class BaseServlet implements HttpHandler {
 
   protected void replyWithServerError(HttpResponse response) {
     System.out.println("replyWithServerError 500");
-    response.status(INTERNAL_SERVER_ERROR);
+    response.setStatus(INTERNAL_SERVER_ERROR);
     response.end();
   }
 
@@ -143,24 +143,21 @@ public abstract class BaseServlet implements HttpHandler {
 
   protected void handleResponse(HttpRequest request, HttpResponse response,
       SelendroidResponse result) {
-    response.header("Content-Type", "application/json");
-    response.charset(Charset.forName("UTF-8"));
-
+    response.setContentType("application/json");
+    response.setEncoding(Charset.forName("UTF-8"));
+    if (result != null) {
+      String resultString = result.render();
+      response.setContent(resultString);
+    }
     if (isNewSessionRequest(request) && result.getStatus() == 0) {
-      response.status(301);
       String session = result.getSessionId();
 
       String newSessionUri = "http://" + request.header("Host") + request.uri() + "/" + session;
       System.out.println("new Session URL: " + newSessionUri);
-      response.header("location", newSessionUri);
+      response.sendRedirect(newSessionUri);
     } else {
-      response.status(200);
+      response.setStatus(200);
+      response.end();
     }
-
-    if (result != null) {
-      String resultString = result.render();
-      response.content(resultString);
-    }
-    response.end();
   }
 }
