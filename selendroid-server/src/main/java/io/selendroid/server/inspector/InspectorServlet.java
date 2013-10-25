@@ -47,7 +47,7 @@ public class InspectorServlet implements HttpHandler {
   @Override
   public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse,
       HttpControl httpControl) throws Exception {
-    System.out.println("inspector uri: " + httpRequest.uri());
+
     if (httpRequest.uri().startsWith(INSPECTOR)) {
       if (httpRequest.uri().equals(INSPECTOR) || httpRequest.uri().equals(INSPECTOR + "/")) {
         httpResponse.status(301);
@@ -58,7 +58,7 @@ public class InspectorServlet implements HttpHandler {
           String newSessionUri =
               "http://" + httpRequest.header("Host") + httpRequest.uri() + divider + "session/"
                   + session + "/";
-          System.out.println("new inspector URL: " + newSessionUri);
+          
           httpResponse.header("Location", newSessionUri).end();
         } else {
           httpResponse.header("Content-Type", "text/html").charset(Charset.forName("UTF-8"))
