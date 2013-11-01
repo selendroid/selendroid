@@ -35,6 +35,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.webkit.WebView;
 
@@ -160,7 +161,7 @@ public class AndroidWebElement implements AndroidElement {
 
   public String getTagName() {
     Object result = driver.executeScript("return arguments[0].tagName", this);
-    if(result==null){
+    if (result == null) {
       return null;
     }
     try {
@@ -206,8 +207,13 @@ public class AndroidWebElement implements AndroidElement {
 
   private Point getCenterCoordinates() {
     if (!isDisplayed()) {
-      throw new ElementNotVisibleException(
-          "This WebElement is not visisble and may not be clicked.");
+      final String msg = "This WebElement is not visisble and may not be clicked.";
+      if (android.os.Build.VERSION.SDK_INT <= 18) {
+        throw new ElementNotVisibleException(msg);
+      } else {
+        // just give it a try
+        Log.w("SelendroidWebDriver", msg);
+      }
     }
     driver.setEditAreaHasFocus(false);
     Point topLeft = getLocation();

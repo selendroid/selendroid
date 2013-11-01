@@ -16,7 +16,6 @@ package io.selendroid.android;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.util.InstanceOfPredicate;
 import io.selendroid.util.ListUtil;
-import io.selendroid.util.Preconditions;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -67,7 +66,11 @@ public class ViewHierarchyAnalyzer {
       instanceField.setAccessible(true);
       Object instance = instanceField.get(null);
       synchronized (windowManager) {
-        return new HashSet<View>(Arrays.asList(((View[]) views.get(instance))));
+        if (android.os.Build.VERSION.SDK_INT <= 18) {
+          return new HashSet<View>(Arrays.asList(((View[]) views.get(instance))));
+        } else {
+          return new HashSet<View>((ArrayList) views.get(instance));
+        }
       }
     } catch (SecurityException e) {
       e.printStackTrace();
