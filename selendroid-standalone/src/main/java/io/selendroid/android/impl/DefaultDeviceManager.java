@@ -36,9 +36,11 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
       new HashMap<IDevice, DefaultHardwareDevice>();
   private Map<String, IDevice> virtualDevices = new HashMap<String, IDevice>();
   private AndroidDebugBridge bridge;
+  private boolean shouldKeepAdbAlive;
 
-  public DefaultDeviceManager(String adbPath) {
+  public DefaultDeviceManager(String adbPath, boolean shouldKeepAdbAlive) {
     this.adbPath = adbPath;
+    this.shouldKeepAdbAlive = shouldKeepAdbAlive;
   }
 
   /**
@@ -50,9 +52,13 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
     try {
       AndroidDebugBridge.init(false);
     } catch (IllegalStateException e) {
-      e.printStackTrace();
-      Log.e("The IllegalStateException is not a show "
-          + "stopper. It has been handled. This is just debug spew." + " Please proceed.", e);
+      // When we keep the adb connection alive the AndroidDebugBridge may have been already
+      // initialized at this point and it generates an exception. Do not print it.
+      if (!shouldKeepAdbAlive) {
+        e.printStackTrace();
+        Log.e("The IllegalStateException is not a show "
+            + "stopper. It has been handled. This is just debug spew." + " Please proceed.", e);
+      }
     }
 
     bridge = AndroidDebugBridge.getBridge();
@@ -73,7 +79,7 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
       IDevice[] devices = bridge.getDevices();
 
       for (int i = 0; i < devices.length; i++) {
-        connectedDevices.put(devices[i], new DefaultHardwareDevice(devices[i]));
+        deviceConnected(devices[i]);
       }
     } else {
       long timeout = System.currentTimeMillis() + 10000;
@@ -110,7 +116,9 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
     }
     log.info("Removing Device Manager listener from ADB");
     AndroidDebugBridge.removeDeviceChangeListener(this);
-    
+    if (!shouldKeepAdbAlive) {
+      AndroidDebugBridge.terminate();
+    }
     log.info("stopping Device Manager");
     //TODO add thread interrupt and join handling
   }
@@ -133,10 +141,10 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
     if (device.isEmulator()) {
       virtualDevices.put(device.getSerialNumber(), device);
     } else {
-      for (HardwareDeviceListener listener : deviceListeners) {
-        listener.onDeviceDisconnected(connectedDevices.get(device));
-      }
       connectedDevices.put(device, new DefaultHardwareDevice(device));
+      for (HardwareDeviceListener listener : deviceListeners) {
+        listener.onDeviceConnected(connectedDevices.get(device));
+      }
     }
   }
 
