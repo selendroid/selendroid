@@ -141,7 +141,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     if (hardwareDeviceListener == null) {
       hardwareDeviceListener = new DefaultHardwareDeviceListener(deviceStore);
     }
-    hardwareDeviceManager = new DefaultDeviceManager(AndroidSdk.adb().getAbsolutePath());
+    hardwareDeviceManager = new DefaultDeviceManager(AndroidSdk.adb().getAbsolutePath(),
+      serverConfiguration.shouldKeepAdbAlive());
     hardwareDeviceManager.initialize(hardwareDeviceListener);
 
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
