@@ -63,6 +63,9 @@ public class SelendroidConfiguration {
    
     @Parameter(description = "host of the node. Ip address needs to be specified for registering to a grid hub (guessing can be wrong complex).", names = "-host")
     private String serverHost;
+
+	@Parameter(names = "-keepAdbAlive", description = "If true, adb will not be terminated on server shutdown.")
+	private boolean keepAdbAlive = false;
 	
 	public void setKeystore(String keystore) {
 		this.keystore = keystore;
@@ -180,5 +183,13 @@ public class SelendroidConfiguration {
 
   public void setEmulatorOptions(String qemu) {
     this.emulatorOptions = qemu;
+  }
+
+  public boolean shouldKeepAdbAlive() {
+  	return keepAdbAlive;
+  }
+
+  public void setShouldKeepAdbAlive(boolean keepAdbAlive) {
+  	this.keepAdbAlive = keepAdbAlive;
   }
 }
