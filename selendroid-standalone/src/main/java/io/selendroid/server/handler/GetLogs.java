@@ -35,7 +35,7 @@ public class GetLogs extends BaseSelendroidServerHandler {
     ActiveSession session = getSelendroidDriver().getActiveSession(getSessionId());
     JSONArray logs = new JSONArray();
     for (LogEntry l : session.getDevice().getLogs()) {
-      logs.put(l.toJson());
+      logs.put(l.toString());
     }
     return new SelendroidResponse(getSessionId(), logs);
   }
