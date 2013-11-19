@@ -13,6 +13,9 @@
  */
 package io.selendroid;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+import com.google.common.base.Throwables;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.io.ShellCommand;
 import io.selendroid.server.SelendroidStandaloneServer;
@@ -24,8 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class SelendroidLauncher {
   public static final String LOGGER_NAME = "io.selendroid";
@@ -68,9 +70,11 @@ public class SelendroidLauncher {
       log.severe("Selendroid was not able to interact with the Android SDK: " + e.getMessage());
       log.severe("Please make sure you have the lastest version with the latest updates installed: ");
       log.severe("http://developer.android.com/sdk/index.html");
+      throw Throwables.propagate(e);
     } catch (Exception e) {
       log.severe("Error occured while building server: " + e.getMessage());
       e.printStackTrace();
+      throw Throwables.propagate(e);
     }
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
@@ -124,10 +128,14 @@ public class SelendroidLauncher {
   }
 
   private void waitForServer(int port) {
-    while (HttpClientUtil.isServerStarted(port) == false) {
+    long end = System.currentTimeMillis() + MINUTES.toMillis(3);
+
+    while (!HttpClientUtil.isServerStarted(port) && System.currentTimeMillis() < end ) {
       try {
         Thread.sleep(500);
-      } catch (InterruptedException e) {}
+      } catch (InterruptedException e) {
+        throw Throwables.propagate(e);
+      }
     }
   }
 }
