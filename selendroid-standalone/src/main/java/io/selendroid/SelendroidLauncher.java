@@ -39,14 +39,14 @@ public class SelendroidLauncher {
 	try {
       configureLogging();
     } catch (Exception e1) {
-      log.severe("Error occured while registering loggin file handler.");
+      log.severe("Error occurred while registering logging file handler.");
     }
     log.info("################# Selendroid #################");
     SelendroidConfiguration config = new SelendroidConfiguration();
     try {
       new JCommander(config, args);
     } catch (ParameterException e) {
-      log.severe("An errror occured while starting selendroid: " + e.getMessage());
+      log.severe("An error occurred while starting selendroid: " + e.getMessage());
       System.exit(0);
     }
     if (config.isVerbose()) {
@@ -68,11 +68,11 @@ public class SelendroidLauncher {
       server.start();
     } catch (AndroidSdkException e) {
       log.severe("Selendroid was not able to interact with the Android SDK: " + e.getMessage());
-      log.severe("Please make sure you have the lastest version with the latest updates installed: ");
+      log.severe("Please make sure you have the latest version with the latest updates installed: ");
       log.severe("http://developer.android.com/sdk/index.html");
       throw Throwables.propagate(e);
     } catch (Exception e) {
-      log.severe("Error occured while building server: " + e.getMessage());
+      log.severe("Error occurred while building server: " + e.getMessage());
       e.printStackTrace();
       throw Throwables.propagate(e);
     }
@@ -95,7 +95,7 @@ public class SelendroidLauncher {
     try {
       configureLogging();
     } catch (Exception e1) {
-      log.severe("Error occured while registering loggin file handler.");
+      log.severe("Error occurred while registering logging file handler.");
     }
 
     log.info("################# Selendroid #################");
@@ -103,7 +103,7 @@ public class SelendroidLauncher {
     try {
       new JCommander(config, args);
     } catch (ParameterException e) {
-      log.severe("An errror occured while starting selendroid: " + e.getMessage());
+      log.severe("An error occurred while starting selendroid: " + e.getMessage());
       System.exit(0);
     }
     if (config.isVerbose()) {
