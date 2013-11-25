@@ -13,15 +13,14 @@
  */
 package io.selendroid.android;
 
-import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 
-import org.openqa.selenium.logging.LogEntry;
-
 import java.util.List;
 import java.util.Locale;
+
+import org.openqa.selenium.logging.LogEntry;
 
 public interface AndroidDevice {
   public boolean isDeviceReady();
@@ -57,4 +56,6 @@ public interface AndroidDevice {
   public byte[] takeScreenshot()throws AndroidDeviceException;
 
   public void setVerbose();
+  
+  public String getSerial();
 }
