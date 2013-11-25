@@ -164,7 +164,7 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
   }
 
   @Override
-  public void registerListner(HardwareDeviceListener deviceListener) {
+  public void registerListener(HardwareDeviceListener deviceListener) {
     this.deviceListeners.add(deviceListener);
   }
 
@@ -177,7 +177,7 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
 
   @Override
   public void initialize(HardwareDeviceListener defaultListener) {
-    registerListner(defaultListener);
+    registerListener(defaultListener);
     initializeAdbConnection();
   }
 

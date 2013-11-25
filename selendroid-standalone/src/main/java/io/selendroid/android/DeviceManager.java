@@ -18,7 +18,7 @@ import com.android.ddmlib.IDevice;
 public interface DeviceManager {
   public void initialize(HardwareDeviceListener defaultListener);
 
-  public void registerListner(HardwareDeviceListener deviceListener);
+  public void registerListener(HardwareDeviceListener deviceListener);
 
   public void unregisterListener(HardwareDeviceListener deviceListener);
 
