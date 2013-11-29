@@ -1,12 +1,21 @@
-0.6.0-SNAPSHOT (under current development)
-- #114 Optimizing logcat handling and retry handling for selendroid-server start.
+0.6.0
+-----
+- #114 Optimizing logcat handling and retry handling for selendroid-server start
 - Emulators are started on display configured in capabilities
 - Device logcats are available as logging type "logcat"
 - The feature to restart adb has been removed
 - Selendroid-standalone can register himself as a node to a Selenium Grid hub by using command line parameters (-hub and -host) 
 - Selenium Automation Atoms has been updated to fix #127
+- Support for Android KitKat (Api Level 19)
+- Full support for Windows (#146)
+- Support for running multiple instrumentation servers #112
+- Better support for different platform names Android Sdk #128
+- Smaller refactorings
+- Selendroid-Standalone can be configured to use specific emulator starting options
+- Selendroid-Standalone can be configured to use a specific keystore for signing apks
 
 0.5.1
+-----
 - fix for 'Arbitrary port number binding is broken' #105
 
 0.5.0
