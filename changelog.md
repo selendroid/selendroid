@@ -1,3 +1,7 @@
+0.7.0-SNAPSHOT (under current development)
+---
+
+
 0.6.0
 -----
 - #114 Optimizing logcat handling and retry handling for selendroid-server start
