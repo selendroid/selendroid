@@ -31,6 +31,10 @@ public interface AndroidDevice {
 
   public void uninstall(AndroidApp app) throws AndroidSdkException;
 
+  public boolean start(AndroidApp app) throws AndroidSdkException;
+
+  public void forwardPort(int local, int remote);
+
   public void clearUserData(AndroidApp app) throws AndroidSdkException;
 
   public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException;
@@ -40,7 +44,7 @@ public interface AndroidDevice {
   public int getSelendroidsPort();
 
   public void kill(AndroidApp aut) throws AndroidDeviceException, AndroidSdkException;
-  
+
   public String getScreenSize();
 
   public List<LogEntry> getLogs();
@@ -52,10 +56,10 @@ public interface AndroidDevice {
   public DeviceTargetPlatform getTargetPlatform();
 
   public void runAdbCommand(String parameter);
-  
-  public byte[] takeScreenshot()throws AndroidDeviceException;
+
+  public byte[] takeScreenshot() throws AndroidDeviceException;
 
   public void setVerbose();
-  
+
   public String getSerial();
 }

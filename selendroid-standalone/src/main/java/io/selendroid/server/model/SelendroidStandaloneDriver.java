@@ -141,8 +141,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     if (hardwareDeviceListener == null) {
       hardwareDeviceListener = new DefaultHardwareDeviceListener(deviceStore);
     }
-    hardwareDeviceManager = new DefaultDeviceManager(AndroidSdk.adb().getAbsolutePath(),
-      serverConfiguration.shouldKeepAdbAlive());
+    hardwareDeviceManager =
+        new DefaultDeviceManager(AndroidSdk.adb().getAbsolutePath(),
+            serverConfiguration.shouldKeepAdbAlive());
     hardwareDeviceManager.initialize(hardwareDeviceListener);
 
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
@@ -276,63 +277,69 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         device.install(supportedApp);
       }
     }
-    AndroidApp selendroidServer = createSelendroidServerApk(app);
+    int port = getNextSelendroidServerPort();
+    if ("org.openqa.selenium.android.app".equals(app.getBasePackage())) {
+      device.start(app);
+      device.forwardPort(port, 8080);
+    } else {
+      AndroidApp selendroidServer = createSelendroidServerApk(app);
 
-    // An InstalledAndroidApp won't install/uninstall.
-    // If the SelendroidServer is already installed, don't uninstall/reinstall
-    // when using an InstalledAndroidApp.
-    Boolean selendroidInstalledSuccessfully = true;
-    if (device.isInstalled(selendroidServer)) {
-      if (!(app instanceof InstalledAndroidApp)) {
-        device.uninstall(selendroidServer);
+      // An InstalledAndroidApp won't install/uninstall.
+      // If the SelendroidServer is already installed, don't uninstall/reinstall
+      // when using an InstalledAndroidApp.
+      Boolean selendroidInstalledSuccessfully = true;
+      if (device.isInstalled(selendroidServer)) {
+        if (!(app instanceof InstalledAndroidApp)) {
+          device.uninstall(selendroidServer);
+          selendroidInstalledSuccessfully = device.install(selendroidServer);
+        }
+      } else {
         selendroidInstalledSuccessfully = device.install(selendroidServer);
       }
-    } else {
-      selendroidInstalledSuccessfully = device.install(selendroidServer);
-    }
-    if (!selendroidInstalledSuccessfully) {
-      if (!device.install(selendroidServer)) {
+      if (!selendroidInstalledSuccessfully) {
+        if (!device.install(selendroidServer)) {
+
+          deviceStore.release(device, app);
+
+          if (retries > 0) {
+            return createNewTestSession(caps, retries - 1);
+          }
+        }
+      }
+
+      List<String> adbCommands = desiredCapabilities.getPreSessionAdbCommands();
+      if (adbCommands != null && !adbCommands.isEmpty()) {
+        for (String adbCommandParameter : adbCommands) {
+          device.runAdbCommand(adbCommandParameter);
+        }
+      }
+
+
+
+      try {
+        device.startSelendroid(app, port);
+      } catch (AndroidSdkException e) {
+        log.info("error while starting selendroid: " + e.getMessage());
 
         deviceStore.release(device, app);
-
         if (retries > 0) {
           return createNewTestSession(caps, retries - 1);
         }
+        throw new SessionNotCreatedException("Error occured while starting instrumentation: "
+            + e.getMessage());
       }
-    }
-
-    List<String> adbCommands = desiredCapabilities.getPreSessionAdbCommands();
-    if (adbCommands != null && !adbCommands.isEmpty()) {
-      for (String adbCommandParameter : adbCommands) {
-        device.runAdbCommand(adbCommandParameter);
-      }
-    }
-
-    int port = getNextSelendroidServerPort();
-
-    try {
-      device.startSelendroid(app, port);
-    } catch (AndroidSdkException e) {
-      log.info("error while starting selendroid: " + e.getMessage());
-      
-      deviceStore.release(device, app);
-      if (retries > 0) {
-         return createNewTestSession(caps, retries - 1);
-      }
-      throw new SessionNotCreatedException("Error occured while starting instrumentation: "
-          + e.getMessage());
-    }
-    long start = System.currentTimeMillis();
-    long startTimeOut = 20000;
-    long timemoutEnd = start + startTimeOut;
-    while (device.isSelendroidRunning() == false) {
-      if (timemoutEnd >= System.currentTimeMillis()) {
-        try {
-          Thread.sleep(2000);
-        } catch (InterruptedException e) {}
-      } else {
-        throw new SelendroidException("Selendroid server on the device didn't came up after "
-            + startTimeOut / 1000 + "sec:");
+      long start = System.currentTimeMillis();
+      long startTimeOut = 20000;
+      long timemoutEnd = start + startTimeOut;
+      while (device.isSelendroidRunning() == false) {
+        if (timemoutEnd >= System.currentTimeMillis()) {
+          try {
+            Thread.sleep(2000);
+          } catch (InterruptedException e) {}
+        } else {
+          throw new SelendroidException("Selendroid server on the device didn't came up after "
+              + startTimeOut / 1000 + "sec:");
+        }
       }
     }
     JSONObject response = null;
@@ -343,7 +350,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     }
     try {
       HttpResponse r = HttpClientUtil.executeCreateSessionRequest(port, desiredCapabilities);
-      response=HttpClientUtil.parseJsonResponse(r);
+      response = HttpClientUtil.parseJsonResponse(r);
     } catch (Exception e) {
       e.printStackTrace();
       deviceStore.release(device, app);

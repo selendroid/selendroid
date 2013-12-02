@@ -141,6 +141,26 @@ public abstract class AbstractDevice implements AndroidDevice {
     return out.contains("Success");
   }
 
+  public boolean start(AndroidApp app) throws AndroidSdkException {
+    if (isInstalled(app) == false) {
+      install(app);
+    }
+
+    String mainActivity = app.getMainActivity().replace(app.getBasePackage(), "");
+    CommandLine command =
+        adbCommand("shell", "am", "start", "-a", "android.intent.action.MAIN", "-n",
+            app.getBasePackage() + "/" + mainActivity);
+
+    String out = executeCommand(command, 20000);
+    try {
+      // give it a second to recover from the activity start
+      Thread.sleep(1000);
+    } catch (InterruptedException ie) {
+      throw new RuntimeException(ie);
+    }
+    return out.contains("Starting: Intent");
+  }
+
   protected String executeCommand(CommandLine command, long timeout) {
     try {
       return ShellCommand.exec(command, timeout);
@@ -205,7 +225,7 @@ public abstract class AbstractDevice implements AndroidDevice {
       e.printStackTrace();
     }
   }
-  
+
   @Override
   public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
     this.port = port;
@@ -219,17 +239,18 @@ public abstract class AbstractDevice implements AndroidDevice {
     command.addArgument("shell", false);
     command.addArgument("am", false);
     command.addArgument("instrument", false);
-    
+
     command.addArgument("-e", false);
     command.addArgument("main_activity", false);
     command.addArgument(aut.getMainActivity(), false);
-    
+
     command.addArgument("-e", false);
     command.addArgument("server_port", false);
-    command.addArgument(port+"", false);
-    
-    command.addArgument("io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation", false);
-    
+    command.addArgument(port + "", false);
+
+    command.addArgument("io.selendroid." + aut.getBasePackage()
+        + "/io.selendroid.ServerInstrumentation", false);
+
     if (executeCommand(command, 20000).contains("INSTRUMENTATION_FAILED")) {
       throw new AndroidSdkException("Failed to start instrumentation");
     }
@@ -238,7 +259,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     startLogging();
   }
 
-  private void forwardSelendroidPort(int port) {
+  public void forwardPort(int local, int remote) {
     CommandLine command = new CommandLine(AndroidSdk.adb());
 
     if (isSerialConfigured()) {
@@ -246,10 +267,14 @@ public abstract class AbstractDevice implements AndroidDevice {
       command.addArgument(serial, false);
     }
     command.addArgument("forward", false);
-    command.addArgument("tcp:" + port, false);
-    command.addArgument("tcp:" + port, false);
-    
+    command.addArgument("tcp:" + local, false);
+    command.addArgument("tcp:" + remote, false);
+
     executeCommand(command, 20000);
+  }
+
+  private void forwardSelendroidPort(int port) {
+    forwardPort(port, port);
   }
 
   @Override
@@ -290,7 +315,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   @Override
   public List<LogEntry> getLogs() {
     List<LogEntry> logs = Lists.newArrayList();
-    String result = logoutput.toString();
+    String result = logoutput != null ? logoutput.toString() : "";
     String[] lines = result.split("\\r?\\n");
     int num_lines = lines.length;
     log.fine("getting logcat");
@@ -312,19 +337,17 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   private void startLogging() {
-      logoutput = new ByteArrayOutputStream();
-      DefaultExecutor exec = new DefaultExecutor();
-      exec.setStreamHandler(new PumpStreamHandler(logoutput));
-      CommandLine command = adbCommand("logcat", "-v", "time");
-      System.out.println("starting logcat:");
-      System.out.println(command.toString());
-      try {
-          exec.execute(
-                  command,
-                  new DefaultExecuteResultHandler());
-      } catch (IOException e) {
-          e.printStackTrace();
-      }
+    logoutput = new ByteArrayOutputStream();
+    DefaultExecutor exec = new DefaultExecutor();
+    exec.setStreamHandler(new PumpStreamHandler(logoutput));
+    CommandLine command = adbCommand("logcat", "-v", "time");
+    System.out.println("starting logcat:");
+    System.out.println(command.toString());
+    try {
+      exec.execute(command, new DefaultExecuteResultHandler());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   protected String getProp(String key) {
@@ -436,7 +459,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     return command;
   }
 
-  private CommandLine adbCommand(String ... args) {
+  private CommandLine adbCommand(String... args) {
     CommandLine command = adbCommand();
     for (String arg : args) {
       command.addArgument(arg, false);

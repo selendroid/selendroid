@@ -1,6 +1,6 @@
 0.7.0-SNAPSHOT (under current development)
 ---
-
+- Support for running AndroidDriver to test mobile web pages.
 
 0.6.0
 -----
