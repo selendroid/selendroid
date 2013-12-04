@@ -32,6 +32,7 @@ import io.selendroid.util.Function;
 import io.selendroid.util.Preconditions;
 import io.selendroid.util.SelendroidLogger;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ public class AndroidNativeElement implements AndroidElement {
   protected static final long DURATION_OF_LONG_PRESS = 750L;// (long)
                                                             // (ViewConfiguration.getLongPressTimeout()
                                                             // * 1.5f);
-  private View view;
+  private WeakReference<View> viewRef;
   private Collection<AndroidElement> children = new LinkedHashSet<AndroidElement>();
   private AndroidElement parent;
   private ServerInstrumentation instrumentation;
@@ -67,10 +68,13 @@ public class AndroidNativeElement implements AndroidElement {
   final Object syncObject = new Object();
   private Boolean done = false;
   private KnownElements ke;
+  private int hashCode;
   static final long UI_TIMEOUT = 3000L;
 
   public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KnownElements ke) {
-    this.view = view;
+    Preconditions.checkNotNull(view);
+    this.viewRef = new WeakReference<View>(view);
+    hashCode = view.hashCode() + 31;
     this.instrumentation = instrumentation;
     this.nativeElementSearchScope = new NativeElementSearchScope(instrumentation, ke);
     this.ke = ke;
@@ -82,8 +86,8 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   public boolean isDisplayed() {
-    return view.hasWindowFocus() && view.isEnabled() && view.isShown() && (view.getWidth() > 0)
-        && (view.getHeight() > 0);
+    return getView().hasWindowFocus() && getView().isEnabled() && getView().isShown() && (getView().getWidth() > 0)
+        && (getView().getHeight() > 0);
   }
 
   private void waitUntilIsDisplayed() {
@@ -111,9 +115,9 @@ public class AndroidNativeElement implements AndroidElement {
       @Override
       public void run() {
         synchronized (syncObject) {
-          Rect r = new Rect(left, top, view.getWidth(), view.getHeight());
+          Rect r = new Rect(left, top, getView().getWidth(), getView().getHeight());
 
-          view.requestRectangleOnScreen(r);
+          getView().requestRectangleOnScreen(r);
           done = true;
           syncObject.notify();
         }
@@ -134,7 +138,7 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public void enterText(CharSequence... keysToSend) {
-    final View viewview = view;
+    final View viewview = getView();
     instrumentation.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -152,11 +156,11 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public String getText() {
-    if (view instanceof TextView) {
-      return ((TextView) view).getText().toString();
+    if (getView() instanceof TextView) {
+      return ((TextView) getView()).getText().toString();
     }
     System.err.println("not supported elment for getting the text: "
-        + view.getClass().getSimpleName());
+        + getView().getClass().getSimpleName());
     return null;
   }
 
@@ -169,9 +173,9 @@ public class AndroidNativeElement implements AndroidElement {
       Thread.sleep(300);
     } catch (InterruptedException e) {}
     int[] xy = new int[2];
-    view.getLocationOnScreen(xy);
-    final int viewWidth = view.getWidth();
-    final int viewHeight = view.getHeight();
+    getView().getLocationOnScreen(xy);
+    final int viewWidth = getView().getWidth();
+    final int viewHeight = getView().getHeight();
     final float x = xy[0] + (viewWidth / 2.0f);
     float y = xy[1] + (viewHeight / 2.0f);
 
@@ -199,7 +203,7 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   public Integer getAndroidId() {
-    int viewId = view.getId();
+    int viewId = getView().getId();
     return (viewId == View.NO_ID) ? null : viewId;
   }
 
@@ -228,9 +232,9 @@ public class AndroidNativeElement implements AndroidElement {
 
   public String toString() {
     StringBuilder string = new StringBuilder();
-    string.append("id: " + view.getId());
-    string.append("view class: " + view.getClass());
-    string.append("view content desc: " + view.getContentDescription());
+    string.append("id: " + getView().getId());
+    string.append("view class: " + getView().getClass());
+    string.append("view content desc: " + getView().getContentDescription());
 
     return string.toString();
   }
@@ -276,7 +280,7 @@ public class AndroidNativeElement implements AndroidElement {
     String l10nKey = null;
     // try {
     // l10nKey =
-    // instrumentation.getCurrentActivity().getResources().getText(view.getId()).toString();
+    // instrumentation.getCurrentActivity().getResources().getText(getView().getId()).toString();
     // } catch (Resources.NotFoundException e) {
     // // ignoring, can happen
     // }
@@ -287,7 +291,7 @@ public class AndroidNativeElement implements AndroidElement {
       l10n.put("matches", 0);
     }
     object.put("l10n", l10n);
-    String label = String.valueOf(view.getContentDescription());
+    String label = String.valueOf(getView().getContentDescription());
     object.put("name", label == null ? "" : label);
     String id = getNativeId();
     object.put("id", id.startsWith("id/") ? id.replace("id/", "") : id);
@@ -307,15 +311,15 @@ public class AndroidNativeElement implements AndroidElement {
     rect.put("size", size);
 
     object.put("ref", ke.getIdOfElement(this));
-    object.put("type", view.getClass().getSimpleName());
+    object.put("type", getView().getClass().getSimpleName());
     String value = "";
-    if (view instanceof TextView) {
-      value = String.valueOf(((TextView) view).getText());
+    if (getView() instanceof TextView) {
+      value = String.valueOf(((TextView) getView()).getText());
     }
     object.put("value", value);
-    object.put("shown", view.isShown());
-    if (view instanceof WebView) {
-      final WebView webview = (WebView) view;
+    object.put("shown", getView().isShown());
+    if (getView() instanceof WebView) {
+      final WebView webview = (WebView) getView();
       final MyWebChromeClient client = new MyWebChromeClient();
       String html = null;
       instrumentation.runOnUiThread(new Runnable() {
@@ -376,16 +380,19 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   private String getNativeId() {
-    return ViewHierarchyAnalyzer.getNativeId(view);
+    return ViewHierarchyAnalyzer.getNativeId(getView());
   }
 
   public View getView() {
-    return view;
+    if (viewRef.get() == null) {
+      throw new IllegalStateException("Trying to access a native element that has already been garbage collected");
+    }
+    return viewRef.get();
   }
 
   @Override
   public void clear() {
-    final View viewview = view;
+    final View viewview = getView();
     instrumentation.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -404,8 +411,8 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public boolean isSelected() {
-    if (view instanceof CompoundButton) {
-      return ((CompoundButton) view).isChecked();
+    if (getView() instanceof CompoundButton) {
+      return ((CompoundButton) getView()).isChecked();
     }
 
     throw new UnsupportedOperationException(
@@ -415,7 +422,7 @@ public class AndroidNativeElement implements AndroidElement {
   @Override
   public Point getLocation() {
     int[] xy = new int[2];
-    view.getLocationOnScreen(xy);
+    getView().getLocationOnScreen(xy);
     return new Point(xy[0], xy[1]);
   }
 
@@ -427,25 +434,25 @@ public class AndroidNativeElement implements AndroidElement {
 
     @Override
     protected View getRootView() {
-      return view;
+      return getView();
     }
 
     protected List<View> getTopLevelViews() {
-      return Arrays.asList(view);
+      return Arrays.asList(getView());
     }
   }
 
   @Override
   public Coordinates getCoordinates() {
     if (coordinates == null) {
-      coordinates = new AndroidCoordinates(String.valueOf(view.getId()), getCenterCoordinates());
+      coordinates = new AndroidCoordinates(String.valueOf(getView().getId()), getCenterCoordinates());
     }
     return coordinates;
   }
 
   private Point getCenterCoordinates() {
-    int height = view.getHeight();
-    int width = view.getWidth();
+    int height = getView().getHeight();
+    int width = getView().getWidth();
     Point location = getLocation();
     int x = location.x + (height / 2);
     int y = location.y + (width / 2);
@@ -454,10 +461,7 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((view == null) ? 0 : view.hashCode());
-    return result;
+    return hashCode;
   }
 
   @Override
@@ -466,15 +470,16 @@ public class AndroidNativeElement implements AndroidElement {
     if (obj == null) return false;
     if (getClass() != obj.getClass()) return false;
     AndroidNativeElement other = (AndroidNativeElement) obj;
-    if (view == null) {
-      if (other.view != null) return false;
-    } else if (!view.equals(other.view)) return false;
+    // Not calling getView() here so inserting into a set with stale elements doesn't suddenly start throwing.
+    if (viewRef.get() == null) {
+      if (other.viewRef.get() != null) return false;
+    } else if (!getView().equals(other.viewRef.get())) return false;
     return true;
   }
 
   @Override
   public Dimension getSize() {
-    return new Dimension(view.getWidth(), view.getHeight());
+    return new Dimension(getView().getWidth(), getView().getHeight());
   }
 
   @Override
@@ -492,7 +497,7 @@ public class AndroidNativeElement implements AndroidElement {
       }
     }
     try {
-      Object result = method.invoke(view);
+      Object result = method.invoke(getView());
       return String.valueOf(result);
     } catch (IllegalArgumentException e) {
       throw new SelendroidException(e);
@@ -512,7 +517,7 @@ public class AndroidNativeElement implements AndroidElement {
 
     Method method = null;
     try {
-      method = view.getClass().getMethod(name);
+      method = getView().getClass().getMethod(name);
     } catch (NoSuchMethodException e) {
       // can happen
     }
@@ -521,11 +526,11 @@ public class AndroidNativeElement implements AndroidElement {
 
   @Override
   public boolean isEnabled() {
-    return view.isEnabled();
+    return getView().isEnabled();
   }
 
   @Override
   public String getTagName() {
-    return view.getClass().getSimpleName();
+    return getView().getClass().getSimpleName();
   }
 }

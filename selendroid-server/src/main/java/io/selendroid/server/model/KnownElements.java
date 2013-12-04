@@ -16,6 +16,7 @@ package io.selendroid.server.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 import io.selendroid.android.ViewHierarchyAnalyzer;
 
@@ -24,7 +25,7 @@ import android.view.View;
 public class KnownElements {
   private final Map<String, AndroidElement> cache = new HashMap<String, AndroidElement>();
   private final Map<View, AndroidNativeElement> nativeElementsByView =
-      new HashMap<View, AndroidNativeElement>();
+      new WeakHashMap<View, AndroidNativeElement>();
 
   public String add(AndroidElement element) {
     if (cache.containsValue(element)) {
