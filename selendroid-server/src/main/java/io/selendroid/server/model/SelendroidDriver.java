@@ -13,14 +13,13 @@
  */
 package io.selendroid.server.model;
 
-import java.util.List;
-import java.util.Set;
-
-import io.selendroid.android.WindowType;
 import io.selendroid.android.internal.Dimension;
+import io.selendroid.server.Session;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import io.selendroid.server.Session;
+
+import java.util.List;
+import java.util.Set;
 
 public interface SelendroidDriver {
 
