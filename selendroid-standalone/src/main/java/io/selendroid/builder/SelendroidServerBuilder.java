@@ -99,8 +99,9 @@ public class SelendroidServerBuilder {
     cleanUpPrebuildServer();
     File selendroidServer = createAndAddCustomizedAndroidManifestToSelendroidServer();
     File outputFile =
-        new File(getCurrentDir() + "selendroid-server-" + applicationUnderTest.getBasePackage()
-            + "-" + getJarVersionNumber() + ".apk");
+        new File(
+            FileUtils.getTempDirectory(),
+            String.format("selendroid-server-%s-%s.apk", applicationUnderTest.getBasePackage(), getJarVersionNumber()));
 
     return signTestServer(selendroidServer, outputFile);
   }
@@ -285,10 +286,6 @@ public class SelendroidServerBuilder {
 	  } else {
 		  return new File(serverConfiguration.getKeystore());  
 	  }
-  }
-
-  private String getCurrentDir() {
-    return new File("").getAbsolutePath() + File.separatorChar;
   }
 
   /**
