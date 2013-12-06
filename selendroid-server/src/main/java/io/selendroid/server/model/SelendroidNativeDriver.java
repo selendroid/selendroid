@@ -39,8 +39,6 @@ public class SelendroidNativeDriver {
     this.nativeSearchScope = nativeSearchScope;
   }
 
-
-
   /*
    * (non-Javadoc)
    * 

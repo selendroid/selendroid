@@ -13,8 +13,7 @@
  */
 package io.selendroid;
 
-import java.net.URL;
-
+import com.google.common.collect.ImmutableMap;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -25,16 +24,17 @@ import org.openqa.selenium.remote.DriverCommand;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteTouchScreen;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.Response;
 
 /**
  * {@inheritDoc}
  */
-public class SelendroidDriver extends RemoteWebDriver implements HasTouchScreen, TakesScreenshot {
+public class SelendroidDriver extends RemoteWebDriver implements HasTouchScreen, ScreenBrightness, TakesScreenshot {
 
   private RemoteTouchScreen touchScreen;
 
   public SelendroidDriver(String url, Capabilities caps) throws Exception {
-    super(new URL(url), caps);
+    super(new SelendroidCommandExecutor(url), caps);
     touchScreen = new RemoteTouchScreen(new RemoteExecuteMethod(this));
   }
 
@@ -55,6 +55,21 @@ public class SelendroidDriver extends RemoteWebDriver implements HasTouchScreen,
     return target.convertFromBase64Png(base64);
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int getBrightness() {
+    Response response = execute("selendroid-getBrightness");
+    Number value = (Number) response.getValue();
+    return value.intValue();
+  }
 
-
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setBrightness(int desiredBrightness) {
+    execute("selendroid-setBrightness", ImmutableMap.of("brightness", desiredBrightness));
+  }
 }

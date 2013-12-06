@@ -13,17 +13,17 @@
  */
 package io.selendroid.server;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.util.concurrent.Executors;
-
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.server.inspector.InspectorServlet;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.concurrent.Executors;
 
 public class AndroidServer {
   private int driverPort = 8080;

@@ -15,6 +15,18 @@
 
 package io.selendroid.android;
 
+import android.app.Instrumentation;
+import android.content.Context;
+import android.os.PowerManager;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.Window;
+import android.view.WindowManager;
+import android.webkit.WebView;
+import android.widget.AbsListView;
+import android.widget.ScrollView;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.internal.Point;
 import io.selendroid.exceptions.SelendroidException;
@@ -23,15 +35,6 @@ import io.selendroid.server.model.interactions.Coordinates;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import android.app.Instrumentation;
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewConfiguration;
-import android.webkit.WebView;
-import android.widget.AbsListView;
-import android.widget.ScrollView;
 
 /**
  * Implements touch capabilities of a device.
@@ -280,6 +283,65 @@ public class AndroidTouchScreen implements TouchScreen {
       }
     } catch (SecurityException ignored) {
       ignored.printStackTrace();
+    }
+  }
+
+  @Override
+  public float getBrightness() {
+    PowerManager powerManager = (PowerManager) instrumentation.getContext().getSystemService(Context.POWER_SERVICE);
+
+    if (!powerManager.isScreenOn()) {
+      return 0f;
+    } else {
+      WindowManager.LayoutParams attributes = instrumentation.getCurrentActivity().getWindow().getAttributes();
+      return attributes.screenBrightness;
+    }
+  }
+
+  @Override
+  public void setBrightness(float brightness) {
+    if (brightness < 0) {
+      brightness = 0;
+    }
+    if (brightness > 1) {
+      brightness = 1;
+    }
+
+    PowerManager powerManager = (PowerManager) instrumentation.getContext().getSystemService(Context.POWER_SERVICE);
+    final Window window = instrumentation.getCurrentActivity().getWindow();
+    final WindowManager.LayoutParams attributes = window.getAttributes();
+    PowerManager.WakeLock wakeLock = null;
+    if (brightness != 0) {
+      // Turn on display
+      if (!powerManager.isScreenOn()) {
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "Selendroid screen wake");
+      }
+      // Now set the brightness
+      attributes.screenBrightness = brightness;
+    } else {
+      // Turn off the display. Oh boy. This is derived from a reading of the PowerManager SDK docs.
+      // http://developer.android.com/reference/android/os/PowerManager.html
+      attributes.screenBrightness = 0;
+      wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Selendroid screen sleep");
+    }
+
+    instrumentation.getCurrentActivity().runOnUiThread(
+        new Runnable() {
+          @Override public void run() {
+            window.setAttributes(attributes);
+          }
+        }
+    );
+    instrumentation.waitForIdleSync();
+
+    if (wakeLock != null) {
+      try {
+        wakeLock.acquire();
+        wakeLock.release();
+      } catch (SecurityException ignored) {
+        // We can only turn off the screen if the AUT has the android.permission.WAKE_LOCK permission.
+      }
     }
   }
 

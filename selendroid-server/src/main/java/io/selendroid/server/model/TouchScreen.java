@@ -101,4 +101,16 @@ public interface TouchScreen {
    * @param yOffset The y offset relative to the viewport
    */
   void flick(Coordinates where, int xOffset, int yOffset, int speed);
+
+  /**
+   * @return The current screen brightness as a float between 0 and 1. If the screen is off, 0.0 will be returned.
+   */
+  float getBrightness();
+
+  /**
+   * Set the screen brightness, with a setting of 0 meaning that the screen should be turned off.
+   *
+   * @param brightness The screen brightness to use.
+   */
+  void setBrightness(float brightness);
 }

@@ -40,6 +40,7 @@ import io.selendroid.server.handler.GetElementSelected;
 import io.selendroid.server.handler.GetElementSize;
 import io.selendroid.server.handler.GetElementTagName;
 import io.selendroid.server.handler.GetPageTitle;
+import io.selendroid.server.handler.GetScreenState;
 import io.selendroid.server.handler.GetText;
 import io.selendroid.server.handler.GetWindowHandle;
 import io.selendroid.server.handler.GetWindowHandles;
@@ -57,6 +58,7 @@ import io.selendroid.server.handler.Scroll;
 import io.selendroid.server.handler.SendKeyToActiveElement;
 import io.selendroid.server.handler.SendKeys;
 import io.selendroid.server.handler.SetImplicitWaitTimeout;
+import io.selendroid.server.handler.SetScreenState;
 import io.selendroid.server.handler.SingleTapOnElement;
 import io.selendroid.server.handler.SubmitForm;
 import io.selendroid.server.handler.SwitchWindow;
@@ -196,6 +198,11 @@ public class AndroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session/:sessionId/log", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/log/types", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/tap/2", InspectorTap.class);
+
+    // Custom extensions to wire protocol
+    getHandler.put("/wd/hub/-selendroid/:sessionId/screen/brightness", GetScreenState.class);
+
+    postHandler.put("/wd/hub/-selendroid/:sessionId/screen/brightness", SetScreenState.class);
   }
 
   private void addHandlerAttributesToRequest(HttpRequest request, String mappedUri) {
