@@ -66,42 +66,33 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
     if (bridge == null) {
       bridge = AndroidDebugBridge.createBridge(adbPath, false);
     }
-    IDevice[] devicesss = bridge.getDevices();
-    log.info("has initial list: " + bridge.hasInitialDeviceList());
-    for (int i = 0; i < devicesss.length; i++) {
-      System.out.println("my devices: " + devicesss[i].getAvdName());
-    }
+    IDevice[] devices = bridge.getDevices();
 
     AndroidDebugBridge.addDeviceChangeListener(this);
 
     // Add the existing devices to the list of devices we are tracking.
-    if (hasDevices()) {
-      IDevice[] devices = bridge.getDevices();
-
+    if (devices.length > 0) {
       for (int i = 0; i < devices.length; i++) {
         deviceConnected(devices[i]);
+        log.info("my devices: " + devices[i].getAvdName());
       }
     } else {
-      long timeout = System.currentTimeMillis() + 10000;
-      System.out.println("nothing there");
-      while (hasDevices() == false && System.currentTimeMillis() >= timeout) {
-
+      long timeout = System.currentTimeMillis() + 2000;
+      while ((devices = bridge.getDevices()).length == 0 && System.currentTimeMillis() < timeout) {
+        try {
+          Thread.sleep(50);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
       }
-      System.out.println("after wait");
-      if (hasDevices()) {
-        System.out.println("devices found");
-        IDevice[] devices = bridge.getDevices();
-
+      if (devices.length > 0) {
         for (int i = 0; i < devices.length; i++) {
-          connectedDevices.put(devices[i], new DefaultHardwareDevice(devices[i]));
+          deviceConnected(devices[i]);
+          log.info("my devices: " + devices[i].getAvdName());
         }
       }
     }
 
-  }
-
-  private boolean hasDevices() {
-    return bridge.isConnected() && bridge.hasInitialDeviceList();
   }
 
   /**

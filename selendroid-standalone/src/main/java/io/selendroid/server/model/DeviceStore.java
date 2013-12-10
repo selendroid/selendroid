@@ -17,13 +17,17 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
+import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.DeviceStoreException;
+import io.selendroid.exceptions.ShellCommandException;
+import io.selendroid.io.ShellCommand;
 import io.selendroid.server.model.impl.DefaultPortFinder;
+import org.apache.commons.exec.CommandLine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,6 +133,21 @@ public class DeviceStore {
         if (!installedApp) {
           log.info("Skipping emulator because it is already in use: " + emulator);
           continue;
+        }
+        // TODO: do better than just a grabbing the first running device
+        // The only way to truly get it I found is through telnet:
+        // (sleep 0.5; echo 'avd name') | telnet 127.0.0.1 5554
+        // (but I'm not up to implementing that call right now)
+        CommandLine cmd = new CommandLine(AndroidSdk.adb());
+        cmd.addArgument("devices");
+        String devices = null;
+        try {
+          devices = ShellCommand.exec(cmd);
+        } catch (ShellCommandException e) {
+          e.printStackTrace();
+        }
+        if (devices != null) {
+          emulator.setSerial(Integer.parseInt(devices.split("emulator-")[1].split("\t")[0]));
         }
       }
 
