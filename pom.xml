@@ -8,6 +8,7 @@
 	<name>selendroid</name>
 	<description>"Selenium for Android Apps" (Test automate native or hybrid Android apps with Selendroid.)</description>
 	<modules>
+		<module>android-driver</module>
 		<module>selendroid-server</module>
 		<module>selendroid-grid-plugin</module>
 		<module>selendroid-test-app</module>
