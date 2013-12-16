@@ -1,6 +1,11 @@
 0.7.0-SNAPSHOT (under current development)
 ---
 - Support for running AndroidDriver to test mobile web pages.
+- Introduce an API to control the screen brightness and whether it's on.
+- making screenshots work again for emulators and using the -installedApp option
+- Avoid retaining references to Views that have been disposed.
+- Prevent temporary APKs from cluttering the cwd.
+
 
 0.6.0
 -----
