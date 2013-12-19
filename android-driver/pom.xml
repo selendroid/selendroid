@@ -32,7 +32,7 @@
 					<resourceDirectory>${project.basedir}/res</resourceDirectory>
 					<nativeLibrariesDirectory>${project.basedir}/src</nativeLibrariesDirectory>
 					<sdk>
-						<platform>19</platform>
+						<platform>16</platform>
 					</sdk>
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
 					<manifest>
