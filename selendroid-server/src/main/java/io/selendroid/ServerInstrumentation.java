@@ -126,6 +126,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   public void onStart() {
     synchronized (ServerInstrumentation.class) {
       try {
+        startMainActivity();
         startServer();
       } catch (Exception e) {
         SelendroidLogger.log("Exception when starting selendroid.", e);

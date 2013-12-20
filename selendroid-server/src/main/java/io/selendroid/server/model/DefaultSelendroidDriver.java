@@ -374,7 +374,6 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
     selendroidNativeDriver =
         new SelendroidNativeDriver(serverInstrumentation, (NativeSearchScope) nativeSearchScope);
-    serverInstrumentation.startMainActivity();
     SelendroidLogger.log("new s: " + session.getSessionId());
 
     nativeExecuteScriptMap.put("invokeMenuActionSync", new InvokeMenuAction(session,
