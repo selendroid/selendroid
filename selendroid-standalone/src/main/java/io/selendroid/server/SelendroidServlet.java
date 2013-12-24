@@ -76,7 +76,7 @@ public class SelendroidServlet extends BaseServlet {
       return;
     }
     if ("/inspector/".equals(request.uri()) || "/inspector".equals(request.uri())) {
-      if (driver.getActiceSessions().isEmpty()) {
+      if (driver.getActiveSessions().isEmpty()) {
         response.setStatus(200);
         response
             .setContent("Selendroid inspector can only be used if there is an active test session running. "
@@ -85,7 +85,7 @@ public class SelendroidServlet extends BaseServlet {
         return;
       } else {
         // response.setStatus(302);
-        String session = driver.getActiceSessions().get(0).getSessionKey();
+        String session = driver.getActiveSessions().get(0).getSessionKey();
 
         String newSessionUri =
             "http://" + request.header("Host") + "/inspector/session/" + session + "/";
