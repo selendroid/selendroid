@@ -1,26 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.selendroid"
-    android:versionCode="1"
-    android:versionName="0.7.0-SNAPSHOT" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.7.0" package="io.selendroid">
 
-    <uses-sdk android:minSdkVersion="10" />
+    <uses-sdk android:minSdkVersion="10"/>
 
-    <instrumentation
-        android:name="io.selendroid.ServerInstrumentation"
-        android:targetPackage="io.selendroid.testapp" />
+    <instrumentation android:name="io.selendroid.ServerInstrumentation" android:targetPackage="io.selendroid.testapp"/>
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
-    <uses-permission android:name="android.permission.INJECT_EVENTS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
+    <uses-permission android:name="android.permission.INJECT_EVENTS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
-    <application
-        android:debuggable="true"
-        android:icon="@drawable/selenium_icon"
-        android:label="Selendroid" >
-        <uses-library android:name="android.test.runner" />
+    <application android:debuggable="true" android:icon="@drawable/selenium_icon" android:label="Selendroid">
+        <uses-library android:name="android.test.runner"/>
     </application>
 
 </manifest>
