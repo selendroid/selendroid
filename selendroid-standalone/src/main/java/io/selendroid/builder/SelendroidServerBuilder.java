@@ -342,7 +342,8 @@ public class SelendroidServerBuilder {
     return is;
   }
 
-  public String getJarVersionNumber() {
+  // TODO this should go into a utility method
+  public static String getJarVersionNumber() {
     Class clazz = SelendroidStandaloneDriver.class;
     String className = clazz.getSimpleName() + ".class";
     String classPath = clazz.getResource(className).toString();

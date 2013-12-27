@@ -38,9 +38,9 @@ public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
     log.info("inspector screenshot handler, sessionId: " + sessionId);
 
     if (sessionId == null || sessionId.isEmpty() == true) {
-      if (getSelendroidDriver().getActiceSessions() != null
-          && getSelendroidDriver().getActiceSessions().size() >= 1) {
-        session = getSelendroidDriver().getActiceSessions().get(0);
+      if (getSelendroidDriver().getActiveSessions() != null
+          && getSelendroidDriver().getActiveSessions().size() >= 1) {
+        session = getSelendroidDriver().getActiveSessions().get(0);
         log.info("Selected sessionId: " + session.getSessionKey());
       } else {
         return new UiResponse(

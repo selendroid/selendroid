@@ -22,6 +22,7 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.DeviceManager;
 import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.android.impl.InstalledAndroidApp;
+import io.selendroid.builder.AndroidDriverAPKBuilder;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.builder.SelendroidServerBuilderTest;
 import io.selendroid.device.DeviceTargetPlatform;
@@ -42,6 +43,7 @@ import java.util.UUID;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.remote.BrowserType;
 
 public class SelendroidStandaloneDriverTest {
   public static final String TEST_APP_ID = "io.selendroid.testapp:0.4-SNAPSHOT";
@@ -56,8 +58,7 @@ public class SelendroidStandaloneDriverTest {
   public void testShouldBeAbleToInitDriver() throws Exception {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
-    SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceManager());
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
@@ -67,16 +68,14 @@ public class SelendroidStandaloneDriverTest {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
-    SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceManager());
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     driver.initApplicationsUnderTest(conf);
     assertThatTestappHasBeenSuccessfullyRegistered(driver);
   }
 
   @Test
   public void testShouldNotbBeAbleInitDriverWithoutAnyConfig() throws Exception {
-    SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceManager());
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     try {
       driver.initApplicationsUnderTest(new SelendroidConfiguration());
     } catch (SelendroidException e) {
@@ -85,26 +84,38 @@ public class SelendroidStandaloneDriverTest {
   }
 
   @Test
-  public void testShouldnotBeAbleToInitDriverIfNoValidAppIsAvailable() throws Exception {
+  public void testShouldNotBeAbleToInitDriverIfNoValidAppIsAvailableAndNoWebViewApp() throws Exception {
     SelendroidConfiguration conf = new SelendroidConfiguration();
-    conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
-    SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getRealApkBuilder(), anDeviceManager());
+    conf.setNoWebViewApp(true);
+    conf.addSupportedApp(new File("NonExistentialFile").getAbsolutePath());
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     try {
       driver.initApplicationsUnderTest(conf);
       Assert
           .fail("With complete invalid app configuration the driver should not be able to initialize.");
     } catch (SelendroidException e) {
       Assert.assertEquals(
-          "Fatal error initializing SelendroidDriver: configured app(s) were not been found.",
+          "Fatal error initializing SelendroidDriver: configured app(s) have not been found.",
           e.getMessage());
     }
   }
 
+  @Test
+  public void testShouldBeAbleToInitDriverIfNoValidAppIsAvailable() throws Exception {
+    SelendroidConfiguration conf = new SelendroidConfiguration();
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver(getAndroidApkServerBuilder());
+
+    driver.initApplicationsUnderTest(conf);
+
+    Assert.assertTrue("Expecting only one app to be configured", driver.getConfiguredApps().size() == 1);
+    Assert.assertEquals("Expecting AndroidDriver app to be configured",
+        driver.getConfiguredApps().get(BrowserType.ANDROID).getAppId(), BrowserType.ANDROID );
+  }
+
   protected void assertThatTestappHasBeenSuccessfullyRegistered(SelendroidStandaloneDriver driver) {
     Map<String, AndroidApp> apps = driver.getConfiguredApps();
-    Assert.assertTrue("expecting 1 test app has been registered but was " + apps.size(),
-        apps.size() == 1);
+    Assert.assertTrue("expecting 2 test app has been registered but was " + apps.size(),
+        apps.size() == 2);
 
     Assert.assertTrue("expecting test app has been registered with the right key",
         apps.containsKey(TEST_APP_ID));
@@ -113,8 +124,7 @@ public class SelendroidStandaloneDriverTest {
   @Test
   public void assertThatANewtestSessionCanBeCreated() throws Exception {
     // Setting up driver with test app and device stub
-    SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getApkBuilder(), anDeviceManager());
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);
@@ -147,8 +157,7 @@ public class SelendroidStandaloneDriverTest {
   @Test
   public void assertThatANewtestSessionCanBeCreatedWithAlreadyInstalledApp() throws Exception {
     // Setting up driver with test app and device stub
-    SelendroidStandaloneDriver driver =
-        new SelendroidStandaloneDriver(getInstalledApkBuilder(), anDeviceManager());
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.setInstalledApp(TEST_APP_INSTALLED);
     driver.initApplicationsUnderTest(conf);
@@ -178,8 +187,14 @@ public class SelendroidStandaloneDriverTest {
     }
   }
 
-  protected SelendroidServerBuilder getRealApkBuilder() {
-    return SelendroidServerBuilderTest.getDefaultBuilder();
+  protected SelendroidStandaloneDriver getSelendroidStandaloneDriver() throws IOException, ShellCommandException,
+      AndroidSdkException, AndroidDeviceException {
+    return getSelendroidStandaloneDriver(getApkBuilder());
+  }
+
+  protected SelendroidStandaloneDriver getSelendroidStandaloneDriver(SelendroidServerBuilder builder) throws IOException,
+      ShellCommandException, AndroidSdkException, AndroidDeviceException {
+    return new SelendroidStandaloneDriver(builder, anDeviceManager(), getAndroidDriverAPKBuilder());
   }
 
   protected SelendroidServerBuilder getApkBuilder() throws IOException, ShellCommandException,
@@ -195,12 +210,18 @@ public class SelendroidStandaloneDriverTest {
     return builder;
   }
 
-  protected SelendroidServerBuilder getInstalledApkBuilder() throws IOException,
+  protected AndroidDriverAPKBuilder getAndroidDriverAPKBuilder() {
+    AndroidDriverAPKBuilder builder = mock(AndroidDriverAPKBuilder.class);
+    when(builder.extractAndroidDriverAPK()).thenReturn(new File(""));
+    return builder;
+  }
+
+  protected SelendroidServerBuilder getAndroidApkServerBuilder() throws IOException,
       ShellCommandException, AndroidSdkException {
     SelendroidServerBuilder builder = mock(SelendroidServerBuilder.class);
     AndroidApp server = mock(AndroidApp.class);
     AndroidApp resignedApp = mock(InstalledAndroidApp.class);
-    when(resignedApp.getAppId()).thenReturn(TEST_APP_ID);
+    when(resignedApp.getAppId()).thenReturn(BrowserType.ANDROID);
 
     when(builder.createSelendroidServer(new DefaultAndroidApp(new File(APK_FILE)))).thenReturn(
         server);

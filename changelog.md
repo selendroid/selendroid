@@ -1,4 +1,4 @@
-0.7.0-SNAPSHOT (under current development)
+0.7.0
 ---
 - Support for running AndroidDriver to test mobile web pages.
 - Introduce an API to control the screen brightness and whether it's on.

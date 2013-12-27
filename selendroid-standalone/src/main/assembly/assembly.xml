@@ -15,6 +15,7 @@
 			<scope>runtime</scope>
 			<excludes>
 				<exclude>io.selendroid:selendroid-server</exclude>
+                <exclude>io.selendroid:android-driver-app</exclude>
 			</excludes>
 		</dependencySet>
 		<dependencySet>
@@ -24,6 +25,7 @@
 			<scope>runtime</scope>
 			<includes>
 				<include>io.selendroid:selendroid-server</include>
+                <include>io.selendroid:android-driver-app</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>

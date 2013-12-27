@@ -24,6 +24,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class SelendroidCapabilities extends DesiredCapabilities {
@@ -115,6 +116,9 @@ public class SelendroidCapabilities extends DesiredCapabilities {
       Object value = source.get(key);
 
       setCapability(key, decode(value));
+    }
+    if (source.has(CapabilityType.BROWSER_NAME) && !source.has(AUT)) {
+      setAut(source.getString(CapabilityType.BROWSER_NAME));
     }
   }
 

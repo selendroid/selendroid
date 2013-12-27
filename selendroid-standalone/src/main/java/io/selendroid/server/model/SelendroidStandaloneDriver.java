@@ -25,6 +25,7 @@ import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultDeviceManager;
 import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.InstalledAndroidApp;
+import io.selendroid.builder.AndroidDriverAPKBuilder;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
@@ -37,8 +38,11 @@ import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +50,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONArray;
@@ -53,6 +58,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.beust.jcommander.internal.Lists;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.BrowserType;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class SelendroidStandaloneDriver implements ServerDetails {
   public static final String WD_RESP_KEY_VALUE = "value";
@@ -66,6 +77,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private Map<String, ActiveSession> sessions = new HashMap<String, ActiveSession>();
   private DeviceStore deviceStore = null;
   private SelendroidServerBuilder selendroidApkBuilder = null;
+  private AndroidDriverAPKBuilder androidDriverAPKBuilder = null;
   private SelendroidConfiguration serverConfiguration = null;
   private HardwareDeviceListener hardwareDeviceListener = null;
   private DeviceManager hardwareDeviceManager;
@@ -74,6 +86,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       throws AndroidSdkException, AndroidDeviceException {
     this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder(serverConfiguration);
+    androidDriverAPKBuilder = new AndroidDriverAPKBuilder();
 
     selendroidServerPort = serverConfiguration.getSelendroidServerPort();
 
@@ -84,18 +97,22 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   /**
    * For testing only
    */
-  SelendroidStandaloneDriver(SelendroidServerBuilder builder, DeviceManager deviceManager) {
+  SelendroidStandaloneDriver(SelendroidServerBuilder builder, DeviceManager deviceManager,
+                             AndroidDriverAPKBuilder androidDriverAPKBuilder) {
     this.selendroidApkBuilder = builder;
     hardwareDeviceManager = deviceManager;
+    this.androidDriverAPKBuilder = androidDriverAPKBuilder;
   }
 
   /* package */void initApplicationsUnderTest(SelendroidConfiguration serverConfiguration)
       throws AndroidSdkException {
-    if ((serverConfiguration == null || serverConfiguration.getSupportedApps() == null || serverConfiguration
-        .getSupportedApps().isEmpty()) && serverConfiguration.getInstalledApp() == null) {
-      throw new SelendroidException("Configuration error - no apps has been configured.");
+    if (serverConfiguration == null) {
+      throw new SelendroidException("Configuration error - serverConfiguration can't be null.");
     }
     this.serverConfiguration = serverConfiguration;
+
+    // each of the apps specified on the command line need to get resigned
+    // and 'stored' to be installed on the device
     for (String appPath : serverConfiguration.getSupportedApps()) {
       File file = new File(appPath);
       if (file.exists()) {
@@ -104,14 +121,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         try {
           app = selendroidApkBuilder.resignApp(file);
         } catch (ShellCommandException e1) {
-          throw new SessionNotCreatedException("An error occured while resigning the app '"
+          throw new SessionNotCreatedException("An error occurred while resigning the app '"
               + file.getName() + "'. ", e1);
         }
         String appId = null;
         try {
           appId = app.getAppId();
         } catch (SelendroidException e) {
-          log.info("Ignoring app because an error occured reading the app details: "
+          log.info("Ignoring app because an error occurred reading the app details: "
               + file.getAbsolutePath());
           log.info(e.getMessage());
         }
@@ -121,17 +138,33 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           log.info("App " + appId + " has been added to selendroid standalone server.");
         }
       } else {
-        log.info("Ignoring app because it was not found: " + file.getAbsolutePath());
+        log.severe("Ignoring app because it was not found: " + file.getAbsolutePath());
       }
     }
     if (serverConfiguration.getInstalledApp() != null) {
       AndroidApp app = new InstalledAndroidApp(serverConfiguration.getInstalledApp());
       appsStore.put(app.getAppId(), app);
     }
-    if (appsStore.isEmpty()) {
+
+    if (!serverConfiguration.isNoWebViewApp()) {
+
+      // extract the 'AndroidDriver' app and show it as available
+      try {
+        // using "android" as the app name, because that is the desired capability default in selenium for
+        // DesiredCapabilities.ANDROID
+        AndroidApp app = selendroidApkBuilder.resignApp(androidDriverAPKBuilder.extractAndroidDriverAPK());
+        appsStore.put(BrowserType.ANDROID, app);
+        appsToInstall.put(BrowserType.ANDROID, app);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    } else if (appsStore.isEmpty()) {
+      // note this only happens now when someone uses -noWebViewApp & forgets to specify -aut/app
+      // (or the app doesn't exist or some other error condition above ^ )
       throw new SelendroidException(
-          "Fatal error initializing SelendroidDriver: configured app(s) were not been found.");
+          "Fatal error initializing SelendroidDriver: configured app(s) have not been found.");
     }
+
   }
 
   /* package */void initAndroidDevices() throws AndroidDeviceException {
@@ -148,7 +181,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
 
-    deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null);
+    deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null ||
+        serverConfiguration.getSupportedApps().isEmpty());
 
     if (deviceStore.getDevices().isEmpty()) {
       SelendroidException e =
@@ -210,16 +244,21 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       JSONException {
     SelendroidCapabilities desiredCapabilities = null;
 
+    // Convert the JSON capabilities to SelendroidCapabilities
     try {
       desiredCapabilities = new SelendroidCapabilities(caps);
     } catch (JSONException e) {
       throw new SelendroidException("Desired capabilities cannot be parsed.");
     }
+
+    // Find the App being requested for use
     AndroidApp app = appsStore.get(desiredCapabilities.getAut());
     if (app == null) {
       throw new SessionNotCreatedException(
           "The requested application under test is not configured in selendroid server.");
     }
+
+    // Find a device to match the capabilities
     AndroidDevice device = null;
     try {
       device = getAndroidDevice(desiredCapabilities);
@@ -231,6 +270,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       log.severe(error.getMessage());
       throw error;
     }
+
+    // If we are using an emulator need to start it up
     if (device instanceof AndroidEmulator) {
       AndroidEmulator emulator = (AndroidEmulator) device;
       try {
@@ -239,7 +280,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
             emulator.setSerial(Integer.parseInt(desiredCapabilities.getSerial().substring(9)));
           }
           // Allow a local developer to have their emulator up and running without restarting it
-          if (!(app instanceof InstalledAndroidApp)) {
+          // not only for installedApp but also for 'AndroidDriver'
+          if (!(app instanceof InstalledAndroidApp) && !BrowserType.ANDROID.equals(desiredCapabilities.getAut())) {
             throw new SessionNotCreatedException("The Emulator '" + emulator
                 + "' is already started even though it should be switched off.");
           }
@@ -267,8 +309,10 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       }
       emulator.setIDevice(hardwareDeviceManager.getVirtualDevice(emulator.getSerial()));
     }
+
     // Uninstalling looks probably a bit like an overhead, but
     // this prevents errors like INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES
+    // this is for the AUT
     for (AndroidApp supportedApp : appsToInstall.values()) {
       if (device.isInstalled(supportedApp)) {
         device.uninstall(supportedApp);
@@ -277,14 +321,21 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         device.install(supportedApp);
       }
     }
+
     int port = getNextSelendroidServerPort();
+    // The DEPRECATED original AndroidDriver app provided by SeHQ
+    // it has it's own 'server' running, we won't compete with it
+    // we'll just forward it's default port (8080) on the device
+    // and act as a proxy
     if ("org.openqa.selenium.android.app".equals(app.getBasePackage())) {
       device.start(app);
       device.forwardPort(port, 8080);
     } else {
+      // "Normal" Selendroid usage, not running against the SeHQ AndroidDriver
+
       AndroidApp selendroidServer = createSelendroidServerApk(app);
 
-      // An InstalledAndroidApp won't install/uninstall.
+      // An InstalledAndroidApp won't install/uninstall selendroid server
       // If the SelendroidServer is already installed, don't uninstall/reinstall
       // when using an InstalledAndroidApp.
       Boolean selendroidInstalledSuccessfully = true;
@@ -307,6 +358,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
       }
 
+      // Run any adb commands requested in the capabilities
       List<String> adbCommands = desiredCapabilities.getPreSessionAdbCommands();
       if (adbCommands != null && !adbCommands.isEmpty()) {
         for (String adbCommandParameter : adbCommands) {
@@ -315,7 +367,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       }
 
 
-
+      // It's GO TIME!
+      // start the selendroid server on the device and make sure it's up
       try {
         device.startSelendroid(app, port);
       } catch (AndroidSdkException e) {
@@ -325,7 +378,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         if (retries > 0) {
           return createNewTestSession(caps, retries - 1);
         }
-        throw new SessionNotCreatedException("Error occured while starting instrumentation: "
+        throw new SessionNotCreatedException("Error occurred while starting instrumentation: "
             + e.getMessage());
       }
       long start = System.currentTimeMillis();
@@ -342,33 +395,43 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
       }
     }
-    JSONObject response = null;
+
+    // arbitrary sleeps? yay...
+    // looks like after the server starts responding
+    // we need to give it a moment before starting a session?
     try {
       Thread.sleep(500);
     } catch (InterruptedException e1) {
       e1.printStackTrace();
     }
+
+    // create the new session on the device server
+    RemoteWebDriver driver;
     try {
-      HttpResponse r = HttpClientUtil.executeCreateSessionRequest(port, desiredCapabilities);
-      response = HttpClientUtil.parseJsonResponse(r);
+      driver = new RemoteWebDriver(new URL("http://localhost:" + port + "/wd/hub"), desiredCapabilities);
     } catch (Exception e) {
       e.printStackTrace();
       deviceStore.release(device, app);
       throw new SessionNotCreatedException(
-          "Error occured while creating session on Android device", e);
+          "Error occurred while creating session on Android device", e);
     }
-    log.info("Create new session response: " + response.toString());
-    if (response.getInt(WD_RESP_KEY_STATUS) != 0) {
-      deviceStore.release(device, app);
-      throw new SessionNotCreatedException(
-          "Error occured while initilizing wd session on android device.");
-    }
-    String sessionId = response.optString(WD_RESP_KEY_SESSION_ID);
+    String sessionId = driver.getSessionId().toString();
     SelendroidCapabilities requiredCapabilities =
-        new SelendroidCapabilities(response.getJSONObject(WD_RESP_KEY_VALUE));
+        new SelendroidCapabilities(driver.getCapabilities().asMap());
     ActiveSession session = new ActiveSession(sessionId, requiredCapabilities, app, device, port);
 
     this.sessions.put(sessionId, session);
+
+    // We are requesting an "AndroidDriver" so automatically switch to the webview
+    if (BrowserType.ANDROID.equals(desiredCapabilities.getAut())) {
+      // arbitrarily high wait time, will this cover our slowest possible device/emulator?
+      WebDriverWait wait = new WebDriverWait(driver, 60);
+      // wait for the WebView to appear
+      wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("android.webkit.WebView")));
+      driver.switchTo().window("WEBVIEW");
+      // the 'android-driver' webview has an h1 with id 'AndroidDriver' embedded in it
+      wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("AndroidDriver")));
+    }
 
     return sessionId;
   }
@@ -381,7 +444,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       } catch (Exception e) {
         e.printStackTrace();
         throw new SessionNotCreatedException(
-            "An error occured while building the selendroid-server.apk for aut '" + aut + "': "
+            "An error occurred while building the selendroid-server.apk for aut '" + aut + "': "
                 + e.getMessage());
       }
     }
@@ -414,7 +477,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     } catch (DeviceStoreException e) {
       e.printStackTrace();
       log.fine(caps.getRawCapabilities().toString());
-      throw new AndroidDeviceException("Error occured while looking for devices/emulators.", e);
+      throw new AndroidDeviceException("Error occurred while looking for devices/emulators.", e);
     }
 
     return device;
@@ -439,7 +502,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   }
 
   /** FOR TESTING ONLY */
-  public List<ActiveSession> getActiceSessions() {
+  public List<ActiveSession> getActiveSessions() {
     return Lists.newArrayList(sessions.values());
   }
 

@@ -37,7 +37,7 @@ public class ListSessionsHandler extends BaseSelendroidServerHandler {
   public Response handle() throws JSONException {
     log.info("list sessions command");
     JSONArray sessions = new JSONArray();
-    List<ActiveSession> activeSessions = getSelendroidDriver().getActiceSessions();
+    List<ActiveSession> activeSessions = getSelendroidDriver().getActiveSessions();
     if (activeSessions != null && activeSessions.isEmpty() == false) {
       for (ActiveSession session : activeSessions) {
         JSONObject sessionResponse = new JSONObject();

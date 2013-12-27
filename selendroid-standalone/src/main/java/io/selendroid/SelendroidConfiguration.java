@@ -21,161 +21,164 @@ import com.beust.jcommander.Parameter;
 
 public class SelendroidConfiguration {
 
-	@Parameter(description = "port the server will listen on.", names = "-port")
-	private int port = 5555;
+  @Parameter(description = "port the server will listen on.", names = "-port")
+  private int port = 5555;
 
-	@Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
-	private long timeoutEmulatorStart = 300000;
+  @Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
+  private long timeoutEmulatorStart = 300000;
 
-	@Parameter(description = "if true, adb will be restarted while starting selendroid-standalone.", names = "-restartAdb")
-	private boolean restartAdb = false;
+  @Parameter(description = "if true, adb will be restarted while starting selendroid-standalone.", names = "-restartAdb")
+  private boolean restartAdb = false;
 
-	@Parameter(description = "location of the application under test. Absolute path to the apk", names = {
-			"-app", "-aut" })
-	private List<String> supportedApps = new ArrayList<String>();
+  @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
+      "-app", "-aut" })
+  private List<String> supportedApps = new ArrayList<String>();
 
-	@Parameter(description = "for developers who already have the app installed (and emulator running) format = tld.company.app/ActivityClass:version", names = { "-installedApp" })
-	private String installedApp = null;
+  @Parameter(description = "for developers who already have the app installed (and emulator running) format = tld.company.app/ActivityClass:version", names = { "-installedApp" })
+  private String installedApp = null;
 
-	@Parameter(names = "-verbose", description = "Debug mode")
-	private boolean verbose = false;
+  @Parameter(names = "-verbose", description = "Debug mode")
+  private boolean verbose = false;
 
-	@Parameter(names = "-emulatorPort", description = "port number to start running emulators on")
-	private int emulatorPort = 5560;
+  @Parameter(names = "-emulatorPort", description = "port number to start running emulators on")
+  private int emulatorPort = 5560;
 
-	@Parameter(names = "-deviceScreenshot", description = "if true, screenshots will be taken on the device instead of using the ddmlib libary.")
-	private boolean deviceScreenshot = false;
+  @Parameter(names = "-deviceScreenshot", description = "if true, screenshots will be taken on the device instead of using the ddmlib libary.")
+  private boolean deviceScreenshot = false;
 
-	@Parameter(description = "the port the selendroid-standalone is using to communicate with instrumentation server", names = { "-selendroidServerPort" })
-	private int selendroidServerPort = 8080;
+  @Parameter(description = "the port the selendroid-standalone is using to communicate with instrumentation server", names = { "-selendroidServerPort" })
+  private int selendroidServerPort = 8080;
 
-	@Parameter(description = "The file of the keystore to be used", names = { "-keystore" })
-	private String keystore = null;
-	
-	@Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio", names = { "-emulatorOptions" })
-    private String emulatorOptions = null;
-	
-    @Parameter(description = "if specified, will send a registration request to the given url. Example : http://localhost:4444/grid/register", names = "-hub")
-    private String registrationUrl = null;
+  @Parameter(description = "The file of the keystore to be used", names = { "-keystore" })
+  private String keystore = null;
+  
+  @Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio", names = { "-emulatorOptions" })
+  private String emulatorOptions = null;
+  
+  @Parameter(description = "if specified, will send a registration request to the given url. Example : http://localhost:4444/grid/register", names = "-hub")
+  private String registrationUrl = null;
 
-    @Parameter(description = "if specified, will specify the remote proxy to use on the grid. Example : io.selendroid.grid.SelendroidSessionProxy", names = "-proxy")
-    private String proxy = null;
-   
-    @Parameter(description = "host of the node. Ip address needs to be specified for registering to a grid hub (guessing can be wrong complex).", names = "-host")
-    private String serverHost;
+  @Parameter(description = "if specified, will specify the remote proxy to use on the grid. Example : io.selendroid.grid.SelendroidSessionProxy", names = "-proxy")
+  private String proxy = null;
 
-	@Parameter(names = "-keepAdbAlive", description = "If true, adb will not be terminated on server shutdown.")
-	private boolean keepAdbAlive = false;
-	
-	public void setKeystore(String keystore) {
-		this.keystore = keystore;
-	}
-	
-	public String getKeystore() {
-		return keystore;
-	}
-	
-	public void setSelendroidServerPort(int selendroidServerPort) {
-		this.selendroidServerPort = selendroidServerPort;
-	}
+  @Parameter(description = "host of the node. Ip address needs to be specified for registering to a grid hub (guessing can be wrong complex).", names = "-host")
+  private String serverHost;
 
-	public int getSelendroidServerPort() {
-		return selendroidServerPort;
-	}
-	
-	public void addSupportedApp(String appAbsolutPath) {
-		supportedApps.add(appAbsolutPath);
-	}
+  @Parameter(names = "-keepAdbAlive", description = "If true, adb will not be terminated on server shutdown.")
+  private boolean keepAdbAlive = false;
 
-	public List<String> getSupportedApps() {
-		return supportedApps;
-	}
+  @Parameter(names = "-noWebviewApp", description = "If you don't want selendroid to auto-extract and have 'AndroidDriver' (webview only app) available.")
+  private boolean noWebViewApp = false;
+  
+  public void setKeystore(String keystore) {
+    this.keystore = keystore;
+  }
+  
+  public String getKeystore() {
+    return keystore;
+  }
+  
+  public void setSelendroidServerPort(int selendroidServerPort) {
+    this.selendroidServerPort = selendroidServerPort;
+  }
 
-	public void setInstalledApp(String installedApp) {
-		this.installedApp = installedApp;
-	}
+  public int getSelendroidServerPort() {
+    return selendroidServerPort;
+  }
+  
+  public void addSupportedApp(String appAbsolutPath) {
+    supportedApps.add(appAbsolutPath);
+  }
 
-	public String getInstalledApp() {
-		return installedApp;
-	}
+  public List<String> getSupportedApps() {
+    return supportedApps;
+  }
 
-	public static SelendroidConfiguration create(String[] args) {
-		SelendroidConfiguration res = new SelendroidConfiguration();
-		new JCommander(res).parse(args);
-		return res;
-	}
+  public void setInstalledApp(String installedApp) {
+    this.installedApp = installedApp;
+  }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+  public String getInstalledApp() {
+    return installedApp;
+  }
 
-	public int getPort() {
-		return this.port;
-	}
+  public static SelendroidConfiguration create(String[] args) {
+    SelendroidConfiguration res = new SelendroidConfiguration();
+    new JCommander(res).parse(args);
+    return res;
+  }
 
-	public void setEmulatorPort(int port) {
-		emulatorPort = port;
-	}
+  public void setPort(int port) {
+    this.port = port;
+  }
 
-	public int getEmulatorPort() {
-		return emulatorPort;
-	}
+  public int getPort() {
+    return this.port;
+  }
 
-	public long getTimeoutEmulatorStart() {
-		return timeoutEmulatorStart;
-	}
+  public void setEmulatorPort(int port) {
+    emulatorPort = port;
+  }
 
-	public void setTimeoutEmulatorStart(long timeoutEmulatorStart) {
-		this.timeoutEmulatorStart = timeoutEmulatorStart;
-	}
+  public int getEmulatorPort() {
+    return emulatorPort;
+  }
 
-	public boolean isRestartAdb() {
-		return restartAdb;
-	}
+  public long getTimeoutEmulatorStart() {
+    return timeoutEmulatorStart;
+  }
 
-	public void setRestartAdb(boolean restartAdb) {
-		this.restartAdb = restartAdb;
-	}
+  public void setTimeoutEmulatorStart(long timeoutEmulatorStart) {
+    this.timeoutEmulatorStart = timeoutEmulatorStart;
+  }
 
-	public boolean isVerbose() {
-		return verbose;
-	}
+  public boolean isRestartAdb() {
+    return restartAdb;
+  }
 
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
-	}
+  public void setRestartAdb(boolean restartAdb) {
+    this.restartAdb = restartAdb;
+  }
 
-	public boolean isDeviceScreenshot() {
-		return deviceScreenshot;
-	}
+  public boolean isVerbose() {
+    return verbose;
+  }
 
-	public void setDeviceScreenshot(boolean deviceScreenshot) {
-		this.deviceScreenshot = deviceScreenshot;
-	}
-	
-    public String getRegistrationUrl() {
-	   return registrationUrl;
-	}
-	
-    public void setRegistrationUrl(String registrationUrl) {
-    	this.registrationUrl = registrationUrl;
-    }
-		
-    public String getProxy() {
-	    return proxy;
-	}
-	
-	public void setProxy(String proxy) {
-	    this.proxy = proxy;
-	}
-	
-	public String getServerHost() {
-	    return serverHost;
-	}
-		
-	public void setServerHost(String serverHost) {
-	    this.serverHost = serverHost;
-	}
+  public void setVerbose(boolean verbose) {
+    this.verbose = verbose;
+  }
+
+  public boolean isDeviceScreenshot() {
+    return deviceScreenshot;
+  }
+
+  public void setDeviceScreenshot(boolean deviceScreenshot) {
+    this.deviceScreenshot = deviceScreenshot;
+  }
+  
+  public String getRegistrationUrl() {
+   return registrationUrl;
+  }
+  
+  public void setRegistrationUrl(String registrationUrl) {
+    this.registrationUrl = registrationUrl;
+  }
+    
+  public String getProxy() {
+    return proxy;
+  }
+  
+  public void setProxy(String proxy) {
+    this.proxy = proxy;
+  }
+  
+  public String getServerHost() {
+    return serverHost;
+  }
+    
+  public void setServerHost(String serverHost) {
+    this.serverHost = serverHost;
+  }
 
   public String getEmulatorOptions() {
     return emulatorOptions;
@@ -186,10 +189,18 @@ public class SelendroidConfiguration {
   }
 
   public boolean shouldKeepAdbAlive() {
-  	return keepAdbAlive;
+    return keepAdbAlive;
   }
 
   public void setShouldKeepAdbAlive(boolean keepAdbAlive) {
-  	this.keepAdbAlive = keepAdbAlive;
+    this.keepAdbAlive = keepAdbAlive;
+  }
+
+  public boolean isNoWebViewApp() {
+    return noWebViewApp;
+  }
+
+  public void setNoWebViewApp(boolean noWebViewApp) {
+    this.noWebViewApp = noWebViewApp;
   }
 }
