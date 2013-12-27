@@ -119,6 +119,14 @@ public class SelendroidWebDriver {
       toReturn.append(String.valueOf(obj));
     } else if (obj instanceof String) {
       toReturn.append(escapeAndQuote((String) obj));
+    } else if (obj instanceof JSONObject) {
+      if (((JSONObject)obj).has(ELEMENT_KEY)) {
+        toReturn.append(obj.toString());
+      } else {
+        SelendroidLogger.log("failed to figure out what this is to convert to execute script:" + obj);
+      }
+    } else {
+      SelendroidLogger.log("failed to figure out what this is to convert to execute script:" + obj);
     }
     SelendroidLogger.log("convertToJsArgs: " + toReturn.toString());
     return toReturn.toString();
