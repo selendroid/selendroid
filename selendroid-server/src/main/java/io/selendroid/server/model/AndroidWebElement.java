@@ -58,7 +58,7 @@ public class AndroidWebElement implements AndroidElement {
     @Override
     protected AndroidElement lookupElement(String strategy, String locator) {
       JSONObject result =
-          (JSONObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator,
+          (JSONObject) driver.executeAtom(AndroidAtoms.FIND_ELEMENT, null, strategy, locator,
               AndroidWebElement.this);
       AndroidElement element = replyElement(result);
       if (element == null) {
@@ -70,7 +70,7 @@ public class AndroidWebElement implements AndroidElement {
     @Override
     protected List<AndroidElement> lookupElements(String strategy, String locator) {
       JSONArray result =
-          (JSONArray) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator,
+          (JSONArray) driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, null, strategy, locator,
               AndroidWebElement.this);
 
       List<AndroidElement> elements = replyElements(result);
@@ -128,7 +128,7 @@ public class AndroidWebElement implements AndroidElement {
     // The trick is to set the value after the cursor
     String originalText =
         (String) driver.executeScript("arguments[0].focus();"
-            + "arguments[0].value=arguments[0].value;return arguments[0].value", this);
+            + "arguments[0].value=arguments[0].value;return arguments[0].value", this, null);
 
     EventSender.sendKeys(webview, value);
 
@@ -147,20 +147,20 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public boolean isEnabled() {
-    return (Boolean) driver.executeAtom(AndroidAtoms.IS_ENABLED, this);
+    return (Boolean) driver.executeAtom(AndroidAtoms.IS_ENABLED, null, this);
   }
 
   public boolean isSelected() {
-    return (Boolean) driver.executeAtom(AndroidAtoms.IS_SELECTED, this);
+    return (Boolean) driver.executeAtom(AndroidAtoms.IS_SELECTED, null, this);
   }
 
   @Override
   public String getText() {
-    return (String) driver.executeAtom(AndroidAtoms.GET_TEXT, this);
+    return (String) driver.executeAtom(AndroidAtoms.GET_TEXT, null, this);
   }
 
   public String getTagName() {
-    Object result = driver.executeScript("return arguments[0].tagName", this);
+    Object result = driver.executeScript("return arguments[0].tagName", this, null);
     if (result == null) {
       return null;
     }
@@ -173,7 +173,7 @@ public class AndroidWebElement implements AndroidElement {
   }
 
   public boolean isDisplayed() {
-    return (Boolean) driver.executeAtom(AndroidAtoms.IS_DISPLAYED, this);
+    return (Boolean) driver.executeAtom(AndroidAtoms.IS_DISPLAYED, null, this);
   }
 
   /**
@@ -184,7 +184,7 @@ public class AndroidWebElement implements AndroidElement {
    */
   public Point getLocation() {
     JSONObject result =
-        (JSONObject) driver.executeAtom(AndroidAtoms.GET_TOP_LEFT_COORDINATES, this);
+        (JSONObject) driver.executeAtom(AndroidAtoms.GET_TOP_LEFT_COORDINATES, null, this);
 
     try {
       return new Point(result.getInt("x"), result.getInt("y"));
@@ -197,7 +197,7 @@ public class AndroidWebElement implements AndroidElement {
    * @return a {@link Point} where x is the width, and y is the height.
    */
   public Dimension getSize() {
-    JSONObject dimension = (JSONObject) driver.executeAtom(AndroidAtoms.GET_SIZE, this);
+    JSONObject dimension = (JSONObject) driver.executeAtom(AndroidAtoms.GET_SIZE, null, this);
     try {
       return new Dimension(dimension.getInt("width"), dimension.getInt("height"));
     } catch (JSONException e) {
@@ -227,7 +227,7 @@ public class AndroidWebElement implements AndroidElement {
             + "}; return __webdriver_w + ',' + __webdriver_h;";
     String[] result = null;
     try {
-      JSONObject response = new JSONObject((String) driver.executeScript(sizeJs, this));
+      JSONObject response = new JSONObject((String) driver.executeScript(sizeJs, this, null));
       result = response.getString("value").split(",");
     } catch (JSONException e) {
       throw new SelendroidException(e);
@@ -242,7 +242,7 @@ public class AndroidWebElement implements AndroidElement {
     String tagName = getTagName();
     if (tagName != null && "OPTION".equals(tagName.toUpperCase())) {
       driver.resetPageIsLoading();
-      driver.executeAtom(AndroidAtoms.CLICK, this);
+      driver.executeAtom(AndroidAtoms.CLICK, null, this);
       driver.waitForPageToLoad();
     }
 
@@ -276,17 +276,17 @@ public class AndroidWebElement implements AndroidElement {
       this.click();
     } else {
       driver.resetPageIsLoading();
-      driver.executeAtom(AndroidAtoms.SUBMIT, this);
+      driver.executeAtom(AndroidAtoms.SUBMIT, null, this);
       driver.waitForPageToLoad();
     }
   }
 
   public void clear() {
-    driver.executeAtom(AndroidAtoms.CLEAR, this);
+    driver.executeAtom(AndroidAtoms.CLEAR, null, this);
   }
 
   public String getAttribute(String name) {
-    return (String) driver.executeAtom(AndroidAtoms.GET_ATTRIBUTE_VALUE, this, name);
+    return (String) driver.executeAtom(AndroidAtoms.GET_ATTRIBUTE_VALUE, null, this, name);
   }
 
   public String getId() {
@@ -319,5 +319,10 @@ public class AndroidWebElement implements AndroidElement {
           new AndroidCoordinates(id, id.equals("0") ? new Point(0, 0) : getCenterCoordinates());
     }
     return coordinates;
+  }
+
+  @Override
+  public String toString() {
+    return "{\"ELEMENT\":\"" + id + "\"}";
   }
 }

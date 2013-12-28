@@ -348,7 +348,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   private void initSelendroidWebDriver(String type) {
-    this.selendroidWebDriver = new SelendroidWebDriver(serverInstrumentation, type);
+    this.selendroidWebDriver = new SelendroidWebDriver(serverInstrumentation, type, session);
     webviewSearchScope =
         new WebviewSearchScope(session.getKnownElements(), selendroidWebDriver.getWebview(),
             selendroidWebDriver);
@@ -408,7 +408,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       AndroidElement element = null;
 
 
-      Object result = driver.executeAtom(AndroidAtoms.FIND_ELEMENT, strategy, locator);
+      Object result = driver.executeAtom(AndroidAtoms.FIND_ELEMENT, null, strategy, locator);
       if (result == null) {
         return null;
       }
@@ -420,7 +420,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     protected List<AndroidElement> lookupElements(String strategy, String locator) {
       List<AndroidElement> elements = null;
 
-      Object result = driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, strategy, locator);
+      Object result = driver.executeAtom(AndroidAtoms.FIND_ELEMENTS, null, strategy, locator);
       if (result == null) {
         return new ArrayList<AndroidElement>();
       }
@@ -522,7 +522,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       throw new UnsupportedOperationException(
           "Executing arbitrary script is only available in web views.");
     }
-    return selendroidWebDriver.executeScript(script, args);
+    return selendroidWebDriver.executeScript(script, args, session.getKnownElements());
   }
 
   @Override

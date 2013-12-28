@@ -55,4 +55,6 @@ public interface AndroidElement {
   public String getTagName();
 
   public String getAttribute(String name);
+
+  public String toString();
 }

@@ -18,6 +18,7 @@ import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.android.internal.DomWindow;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.StaleElementReferenceException;
+import io.selendroid.server.Session;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.SelendroidLogger;
 
@@ -52,9 +53,11 @@ public class SelendroidWebDriver {
   private ServerInstrumentation serverInstrumentation = null;
   private SessionCookieManager sm = new SessionCookieManager();
   private SelendroidWebChromeClient chromeClient = null;
+  private Session session = null;
 
-  public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle) {
+  public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle, Session session) {
     this.serverInstrumentation = serverInstrumentation;
+    this.session = session;
     init(handle);
   }
 
@@ -75,33 +78,33 @@ public class SelendroidWebDriver {
   }
 
   @SuppressWarnings("unchecked")
-  private String convertToJsArgs(JSONArray args) throws JSONException {
+  private String convertToJsArgs(JSONArray args, KnownElements ke) throws JSONException {
     StringBuilder toReturn = new StringBuilder();
 
     int length = args.length();
     for (int i = 0; i < length; i++) {
       toReturn.append((i > 0) ? "," : "");
-      toReturn.append(convertToJsArgs(args.get(i)));
+      toReturn.append(convertToJsArgs(args.get(i), ke));
     }
     SelendroidLogger.log("convertToJsArgs: " + toReturn.toString());
     return toReturn.toString();
   }
 
-  private String convertToJsArgs(Object obj) {
+  private String convertToJsArgs(Object obj, KnownElements ke) {
     StringBuilder toReturn = new StringBuilder();
     if (obj instanceof List<?>) {
       toReturn.append("[");
       List<Object> aList = (List<Object>) obj;
       for (int j = 0; j < aList.size(); j++) {
         String comma = ((j == 0) ? "" : ",");
-        toReturn.append(comma + convertToJsArgs(aList.get(j)));
+        toReturn.append(comma + convertToJsArgs(aList.get(j), ke));
       }
       toReturn.append("]");
     } else if (obj instanceof Map<?, ?>) {
       Map<Object, Object> aMap = (Map<Object, Object>) obj;
       String toAdd = "{";
       for (Object key : aMap.keySet()) {
-        toAdd += key + ":" + convertToJsArgs(aMap.get(key)) + ",";
+        toAdd += key + ":" + convertToJsArgs(aMap.get(key), ke) + ",";
       }
       toReturn.append(toAdd.substring(0, toAdd.length() - 1) + "}");
     } else if (obj instanceof AndroidWebElement) {
@@ -121,9 +124,15 @@ public class SelendroidWebDriver {
       toReturn.append(escapeAndQuote((String) obj));
     } else if (obj instanceof JSONObject) {
       if (((JSONObject)obj).has(ELEMENT_KEY)) {
-        toReturn.append(obj.toString());
+        try {
+          AndroidElement ae = ke.get(((JSONObject) obj).getString(ELEMENT_KEY));
+          toReturn.append(ae.toString());
+        } catch (JSONException e) {
+          SelendroidLogger.log("exception getting the element id: " + e.toString());
+        }
       } else {
-        SelendroidLogger.log("failed to figure out what this is to convert to execute script:" + obj);
+        // send across the object since it's not a webelement
+        toReturn.append(obj.toString());
       }
     } else {
       SelendroidLogger.log("failed to figure out what this is to convert to execute script:" + obj);
@@ -132,24 +141,24 @@ public class SelendroidWebDriver {
     return toReturn.toString();
   }
 
-  public Object executeAtom(AndroidAtoms atom, Object... args) {
+  public Object executeAtom(AndroidAtoms atom, KnownElements ke, Object... args) {
     JSONArray array = new JSONArray();
     for (int i = 0; i < args.length; i++) {
       array.put(args[i]);
     }
     try {
-      return executeAtom(atom, array);
+      return executeAtom(atom, array, ke);
     } catch (JSONException je) {
       je.printStackTrace();
       throw new RuntimeException(je);
     }
   }
 
-  public Object executeAtom(AndroidAtoms atom, JSONArray args) throws JSONException {
+  public Object executeAtom(AndroidAtoms atom, JSONArray args, KnownElements ke) throws JSONException {
     final String myScript = atom.getValue();
     String scriptInWindow =
         "(function(){ " + " var win; try{win=window;}catch(e){win=window;}" + "with(win){return ("
-            + myScript + ")(" + convertToJsArgs(args) + ")}})()";
+            + myScript + ")(" + convertToJsArgs(args, ke) + ")}})()";
     String jsResult = executeJavascriptInWebView("alert('selendroid:'+" + scriptInWindow + ")");
 
 
@@ -212,25 +221,25 @@ public class SelendroidWebDriver {
 
   public Object executeScript(String script) {
     try {
-      return injectJavascript(script, false, new JSONArray());
+      return injectJavascript(script, new JSONArray(), null);
     } catch (JSONException je) {
       je.printStackTrace();
       throw new RuntimeException(je);
     }
   }
 
-  public Object executeScript(String script, JSONArray args) {
+  public Object executeScript(String script, JSONArray args, KnownElements ke) {
     try {
-      return injectJavascript(script, false, args);
+      return injectJavascript(script, args, ke);
     } catch (JSONException je) {
       je.printStackTrace();
       throw new RuntimeException(je);
     }
   }
 
-  public Object executeScript(String script, Object args) {
+  public Object executeScript(String script, Object args, KnownElements ke) {
     try {
-      return injectJavascript(script, false, args);
+      return injectJavascript(script, args, ke);
     } catch (JSONException je) {
       je.printStackTrace();
       throw new RuntimeException(je);
@@ -339,7 +348,7 @@ public class SelendroidWebDriver {
     });
   }
 
-  Object injectJavascript(String toExecute, boolean isAsync, Object args) throws JSONException {
+  Object injectJavascript(String toExecute, Object args, KnownElements ke) throws JSONException {
     String executeScript = AndroidAtoms.EXECUTE_SCRIPT.getValue();
     String window = "window;";
     toExecute =
@@ -349,9 +358,9 @@ public class SelendroidWebDriver {
         "(function(){" + "var win; try{win=" + window + "}catch(e){win=window}"
             + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", [";
     if (args instanceof JSONArray) {
-      wrappedScript += convertToJsArgs((JSONArray) args);
+      wrappedScript += convertToJsArgs((JSONArray) args, ke);
     } else {
-      wrappedScript += convertToJsArgs(args);
+      wrappedScript += convertToJsArgs(args, ke);
     }
     wrappedScript += "], true)}})()";
     return executeJavascriptInWebView("alert('selendroid:'+" + wrappedScript + ")");
