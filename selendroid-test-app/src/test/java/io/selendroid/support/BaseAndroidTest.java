@@ -42,7 +42,7 @@ public class BaseAndroidTest {
 
   @Before
   public void setup() throws Exception {
-    driver = new SelendroidDriver("http://localhost:38080/wd/hub", getDefaultCapabilities());
+    driver = new SelendroidDriver("http://localhost:8080/wd/hub", getDefaultCapabilities());
     driver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
   }
 
@@ -71,7 +71,6 @@ public class BaseAndroidTest {
   }
 
   protected DesiredCapabilities getDefaultCapabilities() {
-    return SelendroidCapabilities.device(DeviceTargetPlatform.ANDROID15,
-        "io.selendroid.testapp:0.6.0-SNAPSHOT");
+    return SelendroidCapabilities.emulator("io.selendroid.testapp:0.8.0-SNAPSHOT");
   }
 }
