@@ -30,6 +30,7 @@ import io.selendroid.server.handler.FindChildElements;
 import io.selendroid.server.handler.FindElement;
 import io.selendroid.server.handler.FindElements;
 import io.selendroid.server.handler.Flick;
+import io.selendroid.server.handler.FrameSwitchHandler;
 import io.selendroid.server.handler.GetCapabilities;
 import io.selendroid.server.handler.GetCookies;
 import io.selendroid.server.handler.GetCurrentUrl;
@@ -142,7 +143,7 @@ public class AndroidServlet extends BaseServlet {
     getHandler.put("/wd/hub/session/:sessionId/ime/activated", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/ime/deactivate", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/ime/activate", UnknownCommandHandler.class);
-    postHandler.put("/wd/hub/session/:sessionId/frame", UnknownCommandHandler.class);
+    postHandler.put("/wd/hub/session/:sessionId/frame", FrameSwitchHandler.class);
     deleteHandler.put("/wd/hub/session/:sessionId/window", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/size",
         UnknownCommandHandler.class);

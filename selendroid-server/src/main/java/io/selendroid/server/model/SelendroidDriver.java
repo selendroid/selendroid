@@ -16,6 +16,7 @@ package io.selendroid.server.model;
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.server.Session;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -69,5 +70,5 @@ public interface SelendroidDriver {
 
   public Dimension getWindowSize();
 
-
+  public void setFrameContext(Object index) throws JSONException;
 }

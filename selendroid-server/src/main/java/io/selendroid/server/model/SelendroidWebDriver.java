@@ -54,6 +54,7 @@ public class SelendroidWebDriver {
   private SessionCookieManager sm = new SessionCookieManager();
   private SelendroidWebChromeClient chromeClient = null;
   private Session session = null;
+  private DomWindow currentWindowOrFrame;
 
   public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle, Session session) {
     this.serverInstrumentation = serverInstrumentation;
@@ -90,8 +91,11 @@ public class SelendroidWebDriver {
     return toReturn.toString();
   }
 
-  private String convertToJsArgs(Object obj, KnownElements ke) {
+  private String convertToJsArgs(Object obj, KnownElements ke) throws JSONException {
     StringBuilder toReturn = new StringBuilder();
+    if (obj instanceof JSONArray) {
+      return convertToJsArgs((JSONArray)obj, ke);
+    }
     if (obj instanceof List<?>) {
       toReturn.append("[");
       List<Object> aList = (List<Object>) obj;
@@ -157,7 +161,7 @@ public class SelendroidWebDriver {
   public Object executeAtom(AndroidAtoms atom, JSONArray args, KnownElements ke) throws JSONException {
     final String myScript = atom.getValue();
     String scriptInWindow =
-        "(function(){ " + " var win; try{win=window;}catch(e){win=window;}" + "with(win){return ("
+        "(function(){ " + " var win; try{win=" + getWindowString() + "}catch(e){win=window;}" + "with(win){return ("
             + myScript + ")(" + convertToJsArgs(args, ke) + ")}})()";
     String jsResult = executeJavascriptInWebView("alert('selendroid:'+" + scriptInWindow + ")");
 
@@ -305,6 +309,7 @@ public class SelendroidWebDriver {
       throw new SelendroidException("No webview found on current activity.");
     }
     configureWebView(webview);
+    currentWindowOrFrame = new DomWindow("");
   }
 
   private void configureWebView(final WebView view) {
@@ -349,22 +354,29 @@ public class SelendroidWebDriver {
     });
   }
 
+  private String getWindowString() {
+    String window = "";
+    if (!currentWindowOrFrame.getKey().equals("")) {
+      window = "document['$wdc_']['" + currentWindowOrFrame.getKey() + "'] ||";
+    }
+    return (window += "window;");
+  }
+
   Object injectJavascript(String toExecute, Object args, KnownElements ke) throws JSONException {
     String executeScript = AndroidAtoms.EXECUTE_SCRIPT.getValue();
-    String window = "window;";
     toExecute =
-        "var win_context; try{win_context= " + window + "}catch(e){"
+        "var win_context; try{win_context= " + getWindowString() + "}catch(e){"
             + "win_context=window;}with(win_context){" + toExecute + "}";
     String wrappedScript =
-        "(function(){" + "var win; try{win=" + window + "}catch(e){win=window}"
-            + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", [";
-    if (args instanceof JSONArray) {
-      wrappedScript += convertToJsArgs((JSONArray) args, ke);
-    } else {
-      wrappedScript += convertToJsArgs(args, ke);
-    }
-    wrappedScript += "], true)}})()";
+        "(function(){ var win; try{win=" + getWindowString() + "}catch(e){win=window}"
+        + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", [" +
+        convertToJsArgs(args, ke) + "], true)}})()";
     return executeJavascriptInWebView("alert('selendroid:'+" + wrappedScript + ")");
+  }
+
+  Object injectAtomJavascript(String toExecute, Object args, KnownElements ke) throws JSONException {
+    return executeJavascriptInWebView("alert('selendroid:'+ (" + toExecute + ")(" +
+        convertToJsArgs(args, ke) + "))");
   }
 
   void resetPageIsLoading() {
@@ -504,4 +516,36 @@ public class SelendroidWebDriver {
 
   }
 
+  public void frame(int index) throws JSONException{
+    currentWindowOrFrame = processFrameExecutionResult(injectAtomJavascript(
+        AndroidAtoms.FRAME_BY_INDEX.getValue(), index, null));
+  }
+
+  public void frame(String frameNameOrId) throws  JSONException {
+    currentWindowOrFrame = processFrameExecutionResult(injectAtomJavascript(
+        AndroidAtoms.FRAME_BY_ID_OR_NAME.getValue(), frameNameOrId, null ));
+  }
+
+  public void frame(AndroidWebElement frameElement) {
+    currentWindowOrFrame = processFrameExecutionResult(executeScript("return arguments[0].contentWindow;",
+        frameElement, null));
+  }
+
+  public void switchToDefaultContent() {
+    currentWindowOrFrame = new DomWindow("");
+  }
+
+  private DomWindow processFrameExecutionResult(Object result) {
+    if (result == null || "undefined".equals(result)) {
+      return null;
+    }
+    try {
+      JSONObject json = new JSONObject((String)result);
+      JSONObject value = json.getJSONObject("value");
+      return new DomWindow(value.getString("WINDOW"));
+    } catch (JSONException e) {
+      throw new RuntimeException("Failed to parse JavaScript result: "
+          + result.toString(), e);
+    }
+  }
 }

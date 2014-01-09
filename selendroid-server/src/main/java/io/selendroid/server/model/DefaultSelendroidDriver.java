@@ -597,4 +597,20 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     }
   }
 
+  public void setFrameContext(Object obj) throws JSONException {
+    System.out.println("setting frame context: " + obj);
+    if (obj == null) {
+      selendroidWebDriver.switchToDefaultContent();
+    } else if (obj instanceof Number) {
+      selendroidWebDriver.frame(((Number) obj).intValue());
+    } else if (obj instanceof JSONObject && ((JSONObject)obj).has("ELEMENT")) {
+      selendroidWebDriver.frame((AndroidWebElement)session.getKnownElements()
+          .get(((JSONObject)obj).getString("ELEMENT")));
+    } else if (obj instanceof String) {
+      selendroidWebDriver.frame((String) obj);
+    } else {
+      throw new IllegalArgumentException("Unsupported frame locator: " + obj.getClass().getName());
+    }
+  }
+
 }
