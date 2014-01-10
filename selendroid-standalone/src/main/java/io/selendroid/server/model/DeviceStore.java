@@ -146,7 +146,7 @@ public class DeviceStore {
         } catch (ShellCommandException e) {
           e.printStackTrace();
         }
-        if (devices != null) {
+        if (devices != null && devices.contains("emulator-")) {
           emulator.setSerial(Integer.parseInt(devices.split("emulator-")[1].split("\t")[0]));
         }
       }
