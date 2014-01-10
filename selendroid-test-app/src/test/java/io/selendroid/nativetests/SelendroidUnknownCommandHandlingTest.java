@@ -65,11 +65,6 @@ public class SelendroidUnknownCommandHandlingTest extends BaseAndroidTest {
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToGetWindowSize() {
-    driver().manage().window().getSize();
-  }
-
-  @Test(expected = UnsupportedCommandException.class)
   public void testShouldNotBeAbleToGetWindowsMaximizedState() {
     driver().manage().window().maximize();
   }

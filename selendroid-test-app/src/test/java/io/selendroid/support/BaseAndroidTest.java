@@ -17,27 +17,45 @@ import static io.selendroid.waiter.TestWaiter.waitFor;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidDriver;
 import io.selendroid.SelendroidLauncher;
-import io.selendroid.device.DeviceTargetPlatform;
+import io.selendroid.android.AndroidSdk;
+import io.selendroid.io.ShellCommand;
 import io.selendroid.waiter.WaitingConditions;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
+import org.apache.commons.exec.CommandLine;
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.openqa.selenium.WebDriver;
+import org.junit.BeforeClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 
 public class BaseAndroidTest {
-  private WebDriver driver = null;
+  private static SelendroidDriver driver = null;
   protected SelendroidLauncher selendroidServerLauncher = null;
   final String pathSeparator = File.separator;
   public static final String NATIVE_APP = "NATIVE_APP";
   public static final String WEBVIEW = "WEBVIEW";
 
-  public WebDriver driver() {
+  public static SelendroidDriver driver() {
     return driver;
+  }
+
+  @BeforeClass
+  public static void startSelendroidServer() throws Exception {
+    CommandLine startSelendroid = new CommandLine(AndroidSdk.adb());
+    startSelendroid.addArgument("shell");
+    startSelendroid.addArgument("am");
+    startSelendroid.addArgument("instrument");
+    startSelendroid.addArgument("-e main_activity 'io.selendroid.testapp.HomeScreenActivity'");
+    startSelendroid.addArgument("io.selendroid/.ServerInstrumentation");
+    ShellCommand.exec(startSelendroid);
+    CommandLine forwardPort = new CommandLine(AndroidSdk.adb());
+    forwardPort.addArgument("forward");
+    forwardPort.addArgument("tcp:8080");
+    forwardPort.addArgument("tcp:8080");
+    ShellCommand.exec(forwardPort);
   }
 
   @Before
@@ -46,8 +64,8 @@ public class BaseAndroidTest {
     driver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
   }
 
-  @After
-  public void teardown() {
+  @AfterClass
+  public static void teardown() {
     if (driver() != null) {
       driver().quit();
     }
@@ -66,8 +84,6 @@ public class BaseAndroidTest {
   protected void openStartActivity() {
     driver().switchTo().window(NATIVE_APP);
     driver().get("and-activity://io.selendroid.testapp.HomeScreenActivity");
-    waitFor(WaitingConditions.driverUrlToBe(driver(), "and-activity://HomeScreenActivity"), 5,
-        TimeUnit.SECONDS);
   }
 
   protected DesiredCapabilities getDefaultCapabilities() {

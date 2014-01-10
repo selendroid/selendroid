@@ -158,6 +158,8 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
     longPress.perform();
     WebElement text = driver().findElement(By.partialLinkText("Long Press Tap"));
     Assert.assertNotNull(text);
+    // TODO ddary this is essential, not perfect. must be refactored
+    driver().findElement(By.id("button1")).click();
   }
 
   @Test
@@ -168,6 +170,16 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
     longPress.perform();
     WebElement text = driver().findElement(By.partialLinkText("end the activity"));
     Assert.assertNotNull(text);
+    // TODO ddary this is essential, not perfect. must be refactored
+    driver().findElement(By.id("button2")).click();
+  }
+
+  @Test
+  public void shouldGetWindowSize() {
+    openStartActivity();
+    Dimension dim = driver().manage().window().getSize();
+    Assert.assertTrue(dim.getHeight() > 100);
+    Assert.assertTrue(dim.getWidth() > 100);
   }
 
 }

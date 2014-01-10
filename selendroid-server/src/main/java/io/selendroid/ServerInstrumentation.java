@@ -54,7 +54,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
           "Activity class to start is null."));
       return;
     }
-
+    finishAllActivities();
     // start now the new activity
     Intent intent = new Intent(getTargetContext(), activity);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
