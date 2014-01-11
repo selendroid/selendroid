@@ -34,12 +34,6 @@ public class WebViewActivity extends Activity {
 
   private class AndroidDriverClient extends WebViewClient {
     @Override
-    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-      view.loadUrl(url);
-      return true;
-    }
-
-    @Override
     public void onReceivedSslError (WebView view, SslErrorHandler handler, SslError error) {
       handler.proceed();
     }
