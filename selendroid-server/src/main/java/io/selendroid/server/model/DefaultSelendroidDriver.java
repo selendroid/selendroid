@@ -504,6 +504,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     } else {
       selendroidWebDriver.get(url);
     }
+    getSession().getKnownElements().clear();
   }
 
   public boolean isNativeWindowMode() {
