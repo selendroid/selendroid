@@ -181,8 +181,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
 
-    deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null ||
-        serverConfiguration.getSupportedApps().isEmpty());
+    deviceStore.addEmulators(emulators, serverConfiguration.getInstalledApp() != null);
 
     if (deviceStore.getDevices().isEmpty()) {
       SelendroidException e =
