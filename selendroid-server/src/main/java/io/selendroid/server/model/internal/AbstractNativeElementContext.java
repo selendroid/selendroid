@@ -179,7 +179,7 @@ public abstract class AbstractNativeElementContext
       return findElementsByClass(by.getElementLocator());
     } else if (by instanceof ByName) {
       return findElementsByName(by.getElementLocator());
-    }else if (by instanceof ByXPath) {
+    } else if (by instanceof ByXPath) {
       return findElementsByXPath(by.getElementLocator());
     }
 
@@ -241,8 +241,13 @@ public abstract class AbstractNativeElementContext
     if (nodeList != null && nodeList.getLength() > 0) {
       for (int i = 0; i < nodeList.getLength(); i++) {
         Node node = nodeList.item(i);
-        String id = node.getAttributes().getNamedItem("ref").getTextContent();
-        elements.add(knownElements.get(id));
+        if (node.getAttributes() == null) {
+          continue;
+        }
+        Node namedItem = node.getAttributes().getNamedItem("ref");
+        if (namedItem != null) {
+          elements.add(knownElements.get(namedItem.getTextContent()));
+        }
       }
     }
 
@@ -365,7 +370,7 @@ public abstract class AbstractNativeElementContext
     }
 
     public boolean apply(View view) {
-    	return view.getClass().getSimpleName().equals(tag);
+      return view.getClass().getSimpleName().equals(tag);
     }
   }
 
