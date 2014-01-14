@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -22,7 +22,7 @@ import com.beust.jcommander.Parameter;
 public class SelendroidConfiguration {
 
   @Parameter(description = "port the server will listen on.", names = "-port")
-  private int port = 5555;
+  private int port = 4444;
 
   @Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
   private long timeoutEmulatorStart = 300000;
