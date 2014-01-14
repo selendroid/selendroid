@@ -272,6 +272,7 @@ public class SelendroidWebDriver {
         webview.loadUrl(url);
       }
     });
+    waitForPageToLoad();
   }
 
   public Object getWindowSource() throws JSONException {
