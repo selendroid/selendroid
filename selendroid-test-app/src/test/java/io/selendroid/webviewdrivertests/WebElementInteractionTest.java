@@ -29,14 +29,14 @@ import org.openqa.selenium.WebElement;
 
 public class WebElementInteractionTest extends BaseAndroidTest {
   @Test
-  public void testShouldBeAbleToGetTextOfElement() {
+  public void shouldGetTextOfElement() {
     openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
     WebElement element = driver().findElements(By.name("nameTest")).get(0);
     Assert.assertEquals(element.getText(), "click me");
   }
 
   @Test()
-  public void testShouldBeAbleToClickOnElement() {
+  public void shouldClickOnElement() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     WebElement ckeckbox = driver().findElement(By.id("checkedchecky"));
     Assert.assertEquals(ckeckbox.isSelected(), true);
@@ -45,7 +45,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToGetAttributeOfTextField() {
+  public void shouldGetAttributeOfTextField() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     WebElement button = driver().findElement(By.cssSelector("input[id='inputWithText']"));
     Assert.assertEquals(button.getAttribute("value"), "Example text");
@@ -53,7 +53,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToGetTagNameOfElement() {
+  public void shouldGetTagNameOfElement() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     WebElement button = driver().findElement(By.cssSelector("input[id='inputWithText']"));
 
@@ -61,14 +61,14 @@ public class WebElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToGetAttributeOfButton() {
+  public void shouldGetAttributeOfButton() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     WebElement button = driver().findElement(By.cssSelector("input[id='submitButton']"));
     Assert.assertEquals(button.getAttribute("value"), "Hello there");
   }
 
   @Test
-  public void testShouldBeAbleToSendKeysAndClearAnElement() {
+  public void shouldSendKeysAndClearAnElement() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver(), "We Leave From Here"), 10, TimeUnit.SECONDS);
 
@@ -81,7 +81,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToGetSelectedStateOfElement() {
+  public void shouldGetSelectedStateOfElement() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver(), "We Leave From Here"), 10, TimeUnit.SECONDS);
 
@@ -96,7 +96,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
    * pixels.
    */
   @Test
-  public void testShouldBeAbleToGetSizeOfElement() {
+  public void shouldGetSizeOfElement() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver(), "We Leave From Here"), 10, TimeUnit.SECONDS);
 
@@ -111,7 +111,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
    * pixels.
    */
   @Test
-  public void testShouldBeAbleToGetLocationOfElement() {
+  public void shouldGetLocationOfElement() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver(), "We Leave From Here"), 10, TimeUnit.SECONDS);
 
@@ -122,7 +122,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToExecuteSimpleJavaScript() {
+  public void shouldExecuteSimpleJavaScript() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver(), "We Leave From Here"), 10, TimeUnit.SECONDS);
 
@@ -131,7 +131,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToGetDisplayedStateOfElement() {
+  public void shouldGetDisplayedStateOfElement() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver(), "We Leave From Here"), 10, TimeUnit.SECONDS);
 
@@ -140,7 +140,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToGetEnbledStateOfElement() {
+  public void shouldGetEnbledStateOfElement() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     waitFor(pageTitleToBe(driver(), "We Leave From Here"), 10, TimeUnit.SECONDS);
 
@@ -149,7 +149,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test()
-  public void testShouldBeAbleToSubmitAnElement() {
+  public void shouldSubmitAnElement() {
     openWebdriverTestPage(HtmlTestData.SAY_HELLO_DEMO);
 
     WebElement inputField = driver().findElement(By.id("name_input"));

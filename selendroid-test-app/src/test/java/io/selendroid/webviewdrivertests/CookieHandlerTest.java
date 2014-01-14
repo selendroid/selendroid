@@ -37,7 +37,7 @@ public class CookieHandlerTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToAddCookie() {
+  public void shouldAddCookie() {
     setupWebView();
     Cookie cookie = new Cookie("name", "value", "/", null);
     Set<Cookie> cookies = new HashSet<Cookie>();
@@ -47,14 +47,14 @@ public class CookieHandlerTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToDeleteNamedCookie() {
+  public void shouldDeleteNamedCookie() {
     setupWebView();
     driver().manage().deleteCookieNamed("name");
     Assert.assertEquals(driver().manage().getCookieNamed("name"), null);
   }
 
   @Test
-  public void testShouldBeAbleToDeleteAllCookies() {
+  public void shouldDeleteAllCookies() {
     setupWebView();
     Cookie cookie = new Cookie("name", "value");
     driver().manage().addCookie(cookie);
@@ -63,7 +63,7 @@ public class CookieHandlerTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToGetAllCookies() {
+  public void shouldGetAllCookies() {
     setupWebView();
     Cookie cookie1 = new Cookie("name1", "value1");
     Cookie cookie2 = new Cookie("name2", "value2");
@@ -76,7 +76,7 @@ public class CookieHandlerTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldNotBeAbleToGetNonExistentCookies() {
+  public void shouldNotGetNonExistentCookies() {
     setupWebView();
     driver().manage().deleteAllCookies();
     Assert.assertEquals(driver().manage().getCookies().isEmpty(), true);
@@ -84,7 +84,7 @@ public class CookieHandlerTest extends BaseAndroidTest {
   }
 
   @Test
-  public void testShouldBeAbleToAddCookieAfterDeleting() {
+  public void shouldAddCookieAfterDeleting() {
     setupWebView();
     Cookie cookie1 = new Cookie("name1", "value1");
     Cookie cookie2 = new Cookie("name2", "value2");
