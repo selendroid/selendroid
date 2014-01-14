@@ -33,10 +33,7 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecuteResultHandler;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -58,6 +55,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   protected Integer port = null;
   protected IDevice device;
   private ByteArrayOutputStream logoutput;
+  private ExecuteWatchdog logcatWatchdog;
 
   /**
    * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
@@ -224,6 +222,11 @@ public abstract class AbstractDevice implements AndroidDevice {
     } catch (ShellCommandException e) {
       e.printStackTrace();
     }
+
+    if(logcatWatchdog != null && logcatWatchdog.isWatching()) {
+      logcatWatchdog.destroyProcess();
+      logcatWatchdog = null;
+    }
   }
 
   @Override
@@ -345,6 +348,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     System.out.println(command.toString());
     try {
       exec.execute(command, new DefaultExecuteResultHandler());
+      logcatWatchdog = new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);
+      exec.setWatchdog(logcatWatchdog);
     } catch (IOException e) {
       e.printStackTrace();
     }
