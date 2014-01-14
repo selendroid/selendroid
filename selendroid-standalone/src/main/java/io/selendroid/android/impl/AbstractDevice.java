@@ -218,7 +218,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     clearCommand.addArgument("clear", false);
     clearCommand.addArgument(aut.getBasePackage(), false);
     try {
-      ShellCommand.exec(command, 20000);
+      ShellCommand.exec(clearCommand, 20000);
     } catch (ShellCommandException e) {
       e.printStackTrace();
     }
