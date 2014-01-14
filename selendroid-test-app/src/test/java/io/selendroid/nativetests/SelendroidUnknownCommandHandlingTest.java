@@ -30,64 +30,64 @@ public class SelendroidUnknownCommandHandlingTest extends BaseAndroidTest {
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToGoRefresh() {
+  public void shouldNotRefresh() {
     driver().navigate().refresh();
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToActivateIMEEngine() {
+  public void shouldNotActivateIMEEngine() {
     driver().manage().ime().activateEngine("selendroid");
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToDeactivateIME() {
+  public void shouldNotDeactivateIME() {
     driver().manage().ime().deactivate();
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToGetActiveEngine() {
+  public void shouldNotGetActiveEngine() {
     driver().manage().ime().getActiveEngine();
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToGetAvailableEngines() {
+  public void shouldNotGetAvailableEngines() {
     driver().manage().ime().getAvailableEngines();
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToGetActivatedStateOfIME() {
+  public void shouldNotGetActivatedStateOfIME() {
     driver().manage().ime().isActivated();
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToGetWindowPosition() {
+  public void shouldNotGetWindowPosition() {
     driver().manage().window().getPosition();
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToGetWindowsMaximizedState() {
+  public void shouldNotGetWindowsMaximizedState() {
     driver().manage().window().maximize();
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToSetPosition() {
+  public void testShouldNotSetPosition() {
     Point targetPosition = new Point(1, 2);
     driver().manage().window().setPosition(targetPosition);
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToSetSize() {
+  public void testShouldNotSetSize() {
     Dimension targetSize = new Dimension(320, 480);
     driver().manage().window().setSize(targetSize);
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToSetPageLoadTimeout() {
+  public void testShouldNotSetPageLoadTimeout() {
     driver().manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
   }
 
   @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotBeAbleToSetScriptTimeout() {
+  public void testShouldNotSetScriptTimeout() {
     driver().manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
   }
 }
