@@ -31,7 +31,7 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
   public static final By byIdUsernameLocator = By.id("label_username");
   public static final By byNameUsernameLocator = By.name("label_usernameCD");
   public static final By byLinkTextUsernameLocator = By.linkText("Username");
-
+  private final int timeout = 12;
 
   protected void precondition() {
     driver().switchTo().window(NATIVE_APP);
@@ -42,7 +42,7 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToPassWithCorrectTimeoutAndByIdLocator() {
     precondition();
-    int timeout = 32;
+
     driver().manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
     startTimeOutTest(timeout, byIdUsernameLocator);
   }
@@ -50,7 +50,6 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToPassWithCorrectTimeoutAndByNameLocator() {
     precondition();
-    int timeout = 32;
     driver().manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
     startTimeOutTest(timeout, byNameUsernameLocator);
   }
@@ -58,7 +57,6 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
   @Test
   public void testShouldBeAbleToPassWithCorrectTimeoutAndByLinkTextLocator() {
     precondition();
-    int timeout = 32;
     driver().manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
     startTimeOutTest(timeout, byIdUsernameLocator);
   }
@@ -84,8 +82,9 @@ public class WaitForProgressBarGoneAwayTest extends BaseAndroidTest {
 
   @Test
   public void testShouldBeAbleToWaitUntilToastWasDisplayed() throws Exception {
+    precondition();
     driver().findElement(By.id("showToastButton")).click();
-    WebElement toast = waitForElement(By.linkText(""), 4, driver());
+    WebElement toast = waitForElement(By.linkText("Hello selendroid toast!"), 4, driver());
     Assert.assertNotNull(toast);
   }
 }

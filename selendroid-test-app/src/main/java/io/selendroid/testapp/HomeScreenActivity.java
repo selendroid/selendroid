@@ -195,13 +195,13 @@ public class HomeScreenActivity extends Activity {
     @Override
     protected String doInBackground(String... params) {
       try {
-        Thread.sleep(8000);
+        Thread.sleep(3000);
         progressDialog.setProgress(25);
-        Thread.sleep(8000);
+        Thread.sleep(3000);
         progressDialog.setProgress(50);
-        Thread.sleep(8000);
+        Thread.sleep(3000);
         progressDialog.setProgress(75);
-        Thread.sleep(8000);
+        Thread.sleep(3000);
         progressDialog.setProgress(100);
       } catch (Exception e) {}
       return null;
