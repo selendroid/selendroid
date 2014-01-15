@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openqa.selenium.android.library;
+package io.selendroid.server.model.js;
 
 /**
  * The WebDriver atoms are used to ensure consistent behaviour cross-browser.
