@@ -599,7 +599,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
   public void setFrameContext(Object obj) throws JSONException {
     System.out.println("setting frame context: " + obj);
-    if (obj == null) {
+    if (obj.equals(null)) {
       selendroidWebDriver.switchToDefaultContent();
     } else if (obj instanceof Number) {
       selendroidWebDriver.frame(((Number) obj).intValue());
