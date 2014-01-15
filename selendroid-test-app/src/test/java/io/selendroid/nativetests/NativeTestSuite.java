@@ -13,6 +13,8 @@
  */
 package io.selendroid.nativetests;
 
+import io.selendroid.driver.SelendroidUnknownCommandHandlingTest;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -24,6 +26,7 @@ import org.junit.runners.Suite;
   NativeElementInteractionTest.class,
   SelendroidUnknownCommandHandlingTest.class,
   SendKeyAndNativeKeyTest.class
+  
  // WaitForProgressBarGoneAwayTest.class
 })
 public class NativeTestSuite {

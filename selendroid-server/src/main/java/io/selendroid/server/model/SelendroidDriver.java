@@ -71,4 +71,10 @@ public interface SelendroidDriver {
   public Dimension getWindowSize();
 
   public void setFrameContext(Object index) throws JSONException;
+  
+  public void back();
+  
+  public void forward();
+  
+  public void refresh();
 }

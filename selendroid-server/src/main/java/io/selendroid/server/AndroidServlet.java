@@ -47,6 +47,7 @@ import io.selendroid.server.handler.GetWindowHandle;
 import io.selendroid.server.handler.GetWindowHandles;
 import io.selendroid.server.handler.GetWindowSize;
 import io.selendroid.server.handler.GoBack;
+import io.selendroid.server.handler.GoForward;
 import io.selendroid.server.handler.InspectorTap;
 import io.selendroid.server.handler.ListSessions;
 import io.selendroid.server.handler.LogElement;
@@ -55,6 +56,7 @@ import io.selendroid.server.handler.LongPressOnElement;
 import io.selendroid.server.handler.Move;
 import io.selendroid.server.handler.NewSession;
 import io.selendroid.server.handler.OpenUrl;
+import io.selendroid.server.handler.Refresh;
 import io.selendroid.server.handler.Scroll;
 import io.selendroid.server.handler.SendKeyToActiveElement;
 import io.selendroid.server.handler.SendKeys;
@@ -116,6 +118,10 @@ public class AndroidServlet extends BaseServlet {
     deleteHandler.put("/wd/hub/session/:sessionId/cookie", DeleteCookies.class);
     deleteHandler.put("/wd/hub/session/:sessionId/cookie/:name", DeleteNamedCookie.class);
 
+    postHandler.put("/wd/hub/session/:sessionId/forward", GoForward.class);
+    postHandler.put("/wd/hub/session/:sessionId/back", GoBack.class);
+    postHandler.put("/wd/hub/session/:sessionId/refresh", Refresh.class);
+    
     // Advanced Touch API
     postHandler.put("/wd/hub/session/:sessionId/touch/click", SingleTapOnElement.class);
     postHandler.put("/wd/hub/session/:sessionId/touch/down", Down.class);
@@ -127,6 +133,8 @@ public class AndroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session/:sessionId/touch/flick", Flick.class);
     getHandler.put("/wd/hub/session/:sessionId/window_handle", GetWindowHandle.class);
     getHandler.put("/wd/hub/session/:sessionId/window_handles", GetWindowHandles.class);
+    getHandler.put("/wd/hub/session/:sessionId/element/:id/name", GetElementTagName.class);
+    postHandler.put("/wd/hub/session/:sessionId/frame", FrameSwitchHandler.class);
 
     // currently not yet supported
     getHandler.put("/wd/hub/session/:sessionId/orientation", UnknownCommandHandler.class);
@@ -134,16 +142,12 @@ public class AndroidServlet extends BaseServlet {
     postHandler.put("/wd/hub/session/:sessionId/timeouts", UnknownCommandHandler.class);
     postHandler
         .put("/wd/hub/session/:sessionId/timeouts/async_script", UnknownCommandHandler.class);
-    postHandler.put("/wd/hub/session/:sessionId/forward", UnknownCommandHandler.class);
-    postHandler.put("/wd/hub/session/:sessionId/back", GoBack.class);
-    postHandler.put("/wd/hub/session/:sessionId/refresh", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/execute_async", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/ime/available_engines", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/ime/active_engine", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/ime/activated", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/ime/deactivate", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/ime/activate", UnknownCommandHandler.class);
-    postHandler.put("/wd/hub/session/:sessionId/frame", FrameSwitchHandler.class);
     deleteHandler.put("/wd/hub/session/:sessionId/window", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/window/:windowHandle/size",
         UnknownCommandHandler.class);
@@ -155,7 +159,6 @@ public class AndroidServlet extends BaseServlet {
         UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/element/active", UnknownCommandHandler.class);
-    getHandler.put("/wd/hub/session/:sessionId/element/:id/name", GetElementTagName.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/equals/:other",
         UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/element/:id/css/:propertyName",
@@ -198,11 +201,11 @@ public class AndroidServlet extends BaseServlet {
     getHandler.put("/wd/hub/session/:sessionId/session_storage/size", UnknownCommandHandler.class);
     postHandler.put("/wd/hub/session/:sessionId/log", UnknownCommandHandler.class);
     getHandler.put("/wd/hub/session/:sessionId/log/types", UnknownCommandHandler.class);
-    postHandler.put("/wd/hub/session/:sessionId/tap/2", InspectorTap.class);
 
+    
+    postHandler.put("/wd/hub/session/:sessionId/tap/2", InspectorTap.class);
     // Custom extensions to wire protocol
     getHandler.put("/wd/hub/-selendroid/:sessionId/screen/brightness", GetScreenState.class);
-
     postHandler.put("/wd/hub/-selendroid/:sessionId/screen/brightness", SetScreenState.class);
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
+ * Copyright 2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,6 +13,7 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.exceptions.UnsupportedOperationException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
@@ -21,18 +22,22 @@ import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import org.webbitserver.HttpRequest;
 
-public class GoBack extends RequestHandler {
+public class Refresh extends RequestHandler {
 
-  public GoBack(HttpRequest request, String mappedUri) {
+  public Refresh(HttpRequest request, String mappedUri) {
     super(request, mappedUri);
   }
 
   @Override
   public Response handle() throws JSONException {
-    SelendroidLogger.log("Go Back");
+    SelendroidLogger.log("Do Refresh");
 
-    getSelendroidDriver().back();
-    return new SelendroidResponse(getSessionId(), "");
+    try {
+      getSelendroidDriver().refresh();
+      return new SelendroidResponse(getSessionId(), "");
+    } catch (UnsupportedOperationException e) {
+      return new SelendroidResponse(getSessionId(), 9, e);
+    }
   }
 
 }

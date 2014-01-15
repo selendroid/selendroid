@@ -4,6 +4,7 @@
 - Added support for switching to a frame in webview
 - Fixes: #155, #163, #177, #184, #202, #209, #210, #211, #214, #216
 - Refactoring of our end-to-end tests
+- Support for navigating back, forward and refresh
 
 0.7.0
 ---

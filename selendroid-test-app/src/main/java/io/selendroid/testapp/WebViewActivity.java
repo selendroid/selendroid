@@ -61,6 +61,10 @@ public class WebViewActivity extends Activity {
         "file:///android_asset/web/missedJsReference.html"));
     arrayAdapter.add(new SpinnerItem("actualXhtmlPage",
         "file:///android_asset/web/actualXhtmlPage.xhtml"));
+    arrayAdapter.add(new SpinnerItem("TestClickPage1",
+        "file:///android_asset/web/test_click_page1.html"));
+    arrayAdapter.add(new SpinnerItem("TestClickPage2",
+        "file:///android_asset/web/test_click_page2.html"));
     arrayAdapter.add(new SpinnerItem("about:blank", "about:blank"));
 
     testDataSpinner.setAdapter(arrayAdapter);

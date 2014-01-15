@@ -13,11 +13,10 @@
  */
 package io.selendroid.server.model;
 
-import android.graphics.Point;
-import android.view.Display;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.UnsupportedOperationException;
 import io.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
 
 import java.net.URI;
@@ -27,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.graphics.Point;
+import android.view.Display;
 
 public class SelendroidNativeDriver {
   public final String ACTIVITY_URL_PREFIX = "and-activity://";
@@ -64,7 +65,7 @@ public class SelendroidNativeDriver {
   }
 
   public String getTitle() {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("Get title is not supported for SelendroidNativeDriver.");
   }
 
   private URI getCurrentURI() {
@@ -116,9 +117,18 @@ public class SelendroidNativeDriver {
   }
 
   public Dimension getWindowSize() {
-    Display display = serverInstrumentation.getCurrentActivity().getWindowManager().getDefaultDisplay();
+    Display display =
+        serverInstrumentation.getCurrentActivity().getWindowManager().getDefaultDisplay();
     Point size = new Point();
     display.getSize(size);
     return new Dimension(size.x, size.y);
+  }
+
+  public void forward() {
+    throw new UnsupportedOperationException("Forward is not supported for SelendroidNativeDriver.");
+  }
+
+  public void refresh() {
+    throw new UnsupportedOperationException("Refresh is not supported for SelendroidNativeDriver.");
   }
 }
