@@ -27,6 +27,7 @@ import org.junit.Test;
 import io.selendroid.server.internal.SelendroidAssert;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
+import org.webbitserver.helpers.NamingThreadFactory;
 
 public class HandlerRegisteredTest extends BaseTest {
   private WebServer server = null;
@@ -38,8 +39,10 @@ public class HandlerRegisteredTest extends BaseTest {
         URI.create("http://127.0.0.1"
             + (port == 80 ? "" : (":" + port)) + "/");
 
+    NamingThreadFactory namingThreadFactory =
+            new NamingThreadFactory(Executors.defaultThreadFactory(), "selendroid-test-handler");
     server =
-        WebServers.createWebServer(Executors.newSingleThreadExecutor(),
+        WebServers.createWebServer(Executors.newSingleThreadExecutor(namingThreadFactory),
             new InetSocketAddress(port), remoteUri);
     server.add(new AndroidTestServlet());
     server.start();

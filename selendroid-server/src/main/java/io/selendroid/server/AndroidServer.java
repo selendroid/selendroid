@@ -19,6 +19,7 @@ import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
+import org.webbitserver.helpers.NamingThreadFactory;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -37,15 +38,19 @@ public class AndroidServer {
     URI remoteUri =
         URI.create("http://127.0.0.1" + (driverPort == 80 ? "" : (":" + driverPort)) + "/");
 
+    NamingThreadFactory namingThreadFactory =
+        new NamingThreadFactory(Executors.defaultThreadFactory(), "selendroid-server-handler");
     webServer =
-        WebServers.createWebServer(Executors.newCachedThreadPool(), new InetSocketAddress(
+        WebServers.createWebServer(Executors.newCachedThreadPool(namingThreadFactory), new InetSocketAddress(
             driverPort), remoteUri);
     init(androidInstrumentation);
   }
 
   public AndroidServer(ServerInstrumentation androidInstrumentation, int port) {
     driverPort = port;
-    webServer = WebServers.createWebServer(Executors.newCachedThreadPool(), driverPort);
+    NamingThreadFactory namingThreadFactory =
+        new NamingThreadFactory(Executors.defaultThreadFactory(), "selendroid-server-handler");
+    webServer = WebServers.createWebServer(Executors.newCachedThreadPool(namingThreadFactory), driverPort);
     init(androidInstrumentation);
   }
 

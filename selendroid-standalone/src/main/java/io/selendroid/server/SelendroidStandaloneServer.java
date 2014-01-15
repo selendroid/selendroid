@@ -19,7 +19,6 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.grid.SelfRegisteringRemote;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -29,6 +28,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
+import org.webbitserver.helpers.NamingThreadFactory;
 
 public class SelendroidStandaloneServer {
   private static final Logger log = Logger.getLogger(SelendroidStandaloneServer.class.getName());
@@ -45,8 +45,10 @@ public class SelendroidStandaloneServer {
       SelendroidStandaloneDriver driver) throws AndroidSdkException {
     this.configuration = configuration;
     this.driver = driver;
+    NamingThreadFactory namingThreadFactory =
+        new NamingThreadFactory(Executors.defaultThreadFactory(), "selendroid-standalone-handler");
     webServer =
-        WebServers.createWebServer(Executors.newCachedThreadPool(), new InetSocketAddress(
+        WebServers.createWebServer(Executors.newCachedThreadPool(namingThreadFactory), new InetSocketAddress(
             configuration.getPort()), URI.create("http://127.0.0.1"
             + (configuration.getPort() == 80 ? "" : (":" + configuration.getPort())) + "/"));
     init();
@@ -55,8 +57,10 @@ public class SelendroidStandaloneServer {
   public SelendroidStandaloneServer(SelendroidConfiguration configuration)
       throws AndroidSdkException, AndroidDeviceException {
     this.configuration = configuration;
+    NamingThreadFactory namingThreadFactory =
+        new NamingThreadFactory(Executors.defaultThreadFactory(), "selendroid-standalone-handler");
     webServer =
-        WebServers.createWebServer(Executors.newCachedThreadPool(), new InetSocketAddress(
+        WebServers.createWebServer(Executors.newCachedThreadPool(namingThreadFactory), new InetSocketAddress(
             configuration.getPort()), remoteUri(configuration.getPort()));
     driver = initializeSelendroidServer();
     init();
