@@ -13,7 +13,6 @@
  */
 package io.selendroid;
 
-import com.google.common.collect.ImmutableMap;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -26,15 +25,26 @@ import org.openqa.selenium.remote.RemoteTouchScreen;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.Response;
 
+import com.google.common.collect.ImmutableMap;
+
 /**
  * {@inheritDoc}
  */
-public class SelendroidDriver extends RemoteWebDriver implements HasTouchScreen, ScreenBrightness, TakesScreenshot {
+public class SelendroidDriver extends RemoteWebDriver
+    implements
+      HasTouchScreen,
+      ScreenBrightness,
+      TakesScreenshot {
 
   private RemoteTouchScreen touchScreen;
 
   public SelendroidDriver(String url, Capabilities caps) throws Exception {
     super(new SelendroidCommandExecutor(url), caps);
+    touchScreen = new RemoteTouchScreen(new RemoteExecuteMethod(this));
+  }
+
+  public SelendroidDriver(Capabilities caps) throws Exception {
+    super(caps);
     touchScreen = new RemoteTouchScreen(new RemoteExecuteMethod(this));
   }
 
