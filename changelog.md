@@ -1,3 +1,10 @@
+0.8.0-SNAPSHOT (under developement)
+---
+- Default selendroid-standalone port is changed from 5555 to 4444
+- Added support for switching to a frame in webview
+- Fixes: #155, #163, #177, #184, #202, #209, #210, #211, #214, #216
+- Refactoring of our end-to-end tests
+
 0.7.0
 ---
 - Support for running AndroidDriver to test mobile web pages.
