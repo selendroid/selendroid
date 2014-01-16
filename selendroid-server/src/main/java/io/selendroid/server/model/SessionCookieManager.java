@@ -56,7 +56,7 @@ class SessionCookieManager {
             return result;
         }
         for (String cookie : cookies.split(COOKIE_SEPARATOR)) {
-            String[] cookieValues = cookie.split("=");
+            String[] cookieValues = cookie.split("=",2);
             if (cookieValues.length >= 2) {
                 result.add(new Cookie(cookieValues[0].trim(), cookieValues[1], domain, null, null));
             }
