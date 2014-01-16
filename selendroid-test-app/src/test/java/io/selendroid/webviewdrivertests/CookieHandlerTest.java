@@ -94,6 +94,16 @@ public class CookieHandlerTest extends BaseAndroidTest {
     Assert.assertEquals(driver().manage().getCookies().contains(cookie1), true);
     Assert.assertEquals(driver().manage().getCookies().contains(cookie2), false);
   }
+  
+  @Test
+  public void shouldGetCookieValue() {
+    setupWebView();
+    String cookieName ="name1";
+    String val = "value1=alsoWithEqualSign";
+    Cookie cookie1 = new Cookie(cookieName,val);
+    driver().manage().addCookie(cookie1);
+    Assert.assertEquals(val, river.manage().getCookieNamed(cookieName).getValue());
+  }
 
 
 }
