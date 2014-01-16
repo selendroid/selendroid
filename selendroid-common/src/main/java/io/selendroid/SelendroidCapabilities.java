@@ -13,6 +13,9 @@
  */
 package io.selendroid;
 
+import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
+import static org.openqa.selenium.remote.CapabilityType.PLATFORM;
+import static org.openqa.selenium.remote.CapabilityType.VERSION;
 import io.selendroid.device.DeviceTargetPlatform;
 
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -166,6 +170,15 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     caps.setLocale("en_US");
     caps.setAut(aut);
     return caps;
+  }
+
+  public static DesiredCapabilities android(DeviceTargetPlatform platform) {
+    SelendroidCapabilities capabilities = new SelendroidCapabilities();
+    capabilities.setCapability(BROWSER_NAME, BrowserType.ANDROID);
+    capabilities.setCapability(VERSION, "");
+    capabilities.setCapability(PLATFORM, platform);
+    capabilities.setCapability(ANDROID_TARGET, platform);
+    return capabilities;
   }
 
   /**
