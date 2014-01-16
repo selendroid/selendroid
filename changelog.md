@@ -5,7 +5,7 @@
 - Fixes: #155, #163, #177, #184, #202, #209, #210, #211, #214, #216
 - Refactoring of our end-to-end tests
 - Support for navigating back, forward and refresh
-
+- removed -restartAdb option
 0.7.0
 ---
 - Support for running AndroidDriver to test mobile web pages.
