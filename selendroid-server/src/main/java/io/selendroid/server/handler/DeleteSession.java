@@ -37,4 +37,9 @@ public class DeleteSession extends RequestHandler {
     SelendroidLogger.log("\n\n\n---------Session STOP ---------------\n\n\n");
     return new SelendroidResponse(getSessionId(), "");
   }
+
+  @Override
+  public boolean commandAllowedWithAlertPresentInWebViewMode() {
+    return true;
+  }
 }

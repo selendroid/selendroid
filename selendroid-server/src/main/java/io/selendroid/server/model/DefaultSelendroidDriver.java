@@ -188,7 +188,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       copy.put(BROWSER_NAME, "selendroid");
       copy.put(ROTATABLE, false);
       copy.put(PLATFORM, "android");
-      copy.put(SUPPORTS_ALERTS, false);
+      copy.put(SUPPORTS_ALERTS, true);
       copy.put(SUPPORTS_JAVASCRIPT, true);
       copy.put("version", serverInstrumentation.getServerVersion());
       copy.put(ACCEPT_SSL_CERTS, true);
@@ -640,4 +640,54 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     }
   }
 
+  public boolean isAlertPresent() {
+    if (isNativeWindowMode() || selendroidWebDriver == null) {
+      // alert handling is not done in 'native' mode
+      return false;
+    }
+    if (selendroidWebDriver.isAlertPresent()) {
+      AndroidElement el = findNativeElementWithoutDelay(By.id("button1"));
+      return el != null && el.isDisplayed();
+    }
+    return false;
+  }
+
+  public String getAlertText() {
+    System.out.println("DefaultSelendroidDriver getAlertText");
+    return selendroidWebDriver.getCurrentAlertMessage();
+  }
+
+  public void acceptAlert() {
+    findNativeElementWithoutDelay(By.id("button1")).click();
+    selendroidWebDriver.clearCurrentAlertMessage();
+  }
+
+  public void dismissAlert() {
+    AndroidElement dismiss = findNativeElementWithoutDelay(By.id("button2"));
+    if (dismiss != null && dismiss.isDisplayed()) {
+      dismiss.click();
+      selendroidWebDriver.clearCurrentAlertMessage();
+    } else {
+      acceptAlert();
+    }
+  }
+
+  public void setAlertText(CharSequence... keysToSend) {
+    findNativeElementWithoutDelay(By.id("value")).enterText(keysToSend);
+  }
+
+  private AndroidElement findNativeElementWithoutDelay(By by) {
+    long previousTimeout = serverInstrumentation.getAndroidWait().getTimeoutInMillis();
+    serverInstrumentation.getAndroidWait().setTimeoutInMillis(0);
+    String previousActiveWindow = activeWindowType;
+    activeWindowType = WindowType.NATIVE_APP.name();
+    try {
+      return findElement(by);
+    } catch (NoSuchElementException nse) {
+    } finally {
+      serverInstrumentation.getAndroidWait().setTimeoutInMillis(previousTimeout);
+      activeWindowType = previousActiveWindow;
+    }
+    return null;
+  }
 }

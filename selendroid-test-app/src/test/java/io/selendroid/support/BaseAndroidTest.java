@@ -28,6 +28,10 @@ import org.apache.commons.exec.CommandLine;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 
@@ -48,7 +52,9 @@ public class BaseAndroidTest {
     startSelendroid.addArgument("shell");
     startSelendroid.addArgument("am");
     startSelendroid.addArgument("instrument");
-    startSelendroid.addArgument("-e main_activity 'io.selendroid.testapp.HomeScreenActivity'");
+    startSelendroid.addArgument("-e");
+    startSelendroid.addArgument("main_activity");
+    startSelendroid.addArgument("io.selendroid.testapp.HomeScreenActivity");
     startSelendroid.addArgument("io.selendroid/.ServerInstrumentation");
     ShellCommand.exec(startSelendroid);
     CommandLine forwardPort = new CommandLine(AndroidSdk.adb());
@@ -89,4 +95,25 @@ public class BaseAndroidTest {
   protected DesiredCapabilities getDefaultCapabilities() {
     return SelendroidCapabilities.emulator("io.selendroid.testapp:0.8.0-SNAPSHOT");
   }
+
+  @Rule
+  public TestRule rule = new TestRule() {
+
+    @Override
+    public Statement apply(final Statement base, final Description description) {
+      return new Statement() {
+        @Override
+        public void evaluate() throws Throwable {
+          System.out.println(String.format("%s.%s", description.getTestClass().getName(), description.getMethodName()));
+          try {
+            base.evaluate();
+          } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+          }
+          System.out.println("test completed.");
+        }
+      };
+    }
+  };
 }

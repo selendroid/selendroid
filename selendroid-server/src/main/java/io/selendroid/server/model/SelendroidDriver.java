@@ -77,4 +77,14 @@ public interface SelendroidDriver {
   public void forward();
   
   public void refresh();
+
+  public boolean isAlertPresent();
+
+  public String getAlertText();
+
+  public void acceptAlert();
+
+  public void dismissAlert();
+
+  public void setAlertText(CharSequence... keysToSend);
 }

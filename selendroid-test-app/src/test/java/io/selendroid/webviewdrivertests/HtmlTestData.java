@@ -28,5 +28,6 @@ public interface HtmlTestData {
   public static final String ACTUAL_XHTML_PAGE = "file:///android_asset/web/actualXhtmlPage.xhtml";
   public static final String TEST_CLICK_PAGE_1 = "file:///android_asset/web/test_click_page1.html";
   public static final String TEST_CLICK_PAGE_2= "file:///android_asset/web/test_click_page2.html";
+  public static final String IFRAME_PAGE = "file:///android_asset/web/iframes.html";
   public static final String ABOUT_BLANK = "about:blank";
 }

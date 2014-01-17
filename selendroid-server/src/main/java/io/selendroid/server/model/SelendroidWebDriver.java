@@ -13,6 +13,7 @@
  */
 package io.selendroid.server.model;
 
+import android.webkit.JsPromptResult;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.android.internal.DomWindow;
@@ -22,8 +23,10 @@ import io.selendroid.server.Session;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.SelendroidLogger;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -55,6 +58,7 @@ public class SelendroidWebDriver {
   private SelendroidWebChromeClient chromeClient = null;
   private Session session = null;
   private DomWindow currentWindowOrFrame;
+  private Queue<String> currentAlertMessage = new LinkedList<String>();
 
   public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle,
       Session session) {
@@ -289,7 +293,7 @@ public class SelendroidWebDriver {
   }
 
   protected void init(String handle) {
-    System.out.println("Selendroid webdriver init");
+    SelendroidLogger.log("Selendroid webdriver init");
     long start = System.currentTimeMillis();
     List<WebView> webviews = ViewHierarchyAnalyzer.getDefaultInstance().findWebViews();
 
@@ -442,9 +446,26 @@ public class SelendroidWebDriver {
 
         return true;
       } else {
+        currentAlertMessage.add(message == null ? "null" : message);
+        SelendroidLogger.log("new alert message: " + message);
         return super.onJsAlert(view, url, message, jsResult);
       }
     }
+
+    @Override
+    public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+      currentAlertMessage.add(message == null ? "null" : message);
+      SelendroidLogger.log("new confirm message: " + message);
+      return super.onJsConfirm(view, url, message, result);
+    }
+
+    @Override
+    public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+      currentAlertMessage.add(message == null ? "null" : message);
+      SelendroidLogger.log("new prompt message: " + message);
+      return super.onJsPrompt(view, url, message, defaultValue, result);
+    }
+
   }
 
   public String getTitle() {
@@ -581,5 +602,19 @@ public class SelendroidWebDriver {
       }
     }, 500);
     waitForPageToLoad();
+  }
+
+  public boolean isAlertPresent() {
+    SelendroidLogger.log("checking currentAlertMessage: " + currentAlertMessage.size());
+    return !currentAlertMessage.isEmpty();
+  }
+
+  public String getCurrentAlertMessage() {
+    SelendroidLogger.log("getting currentAlertMessage: " + currentAlertMessage.peek());
+    return currentAlertMessage.peek();
+  }
+
+  public void clearCurrentAlertMessage() {
+    SelendroidLogger.log("clearing the current alert message: " + currentAlertMessage.remove());
   }
 }

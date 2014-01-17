@@ -52,4 +52,8 @@ public class GetCookies extends RequestHandler {
     return new SelendroidResponse(getSessionId(), jsonArray);
   }
 
+  @Override
+  public boolean commandAllowedWithAlertPresentInWebViewMode() {
+    return true;
+  }
 }

@@ -48,4 +48,9 @@ public class AddCookie extends RequestHandler {
     getSelendroidDriver().addCookie(url, cookie1);
     return new SelendroidResponse(getSessionId(), "");
   }
+
+  @Override
+  public boolean commandAllowedWithAlertPresentInWebViewMode() {
+    return true;
+  }
 }

@@ -64,4 +64,8 @@ public abstract class BaseRequestHandler {
   }
   
   public abstract Response handle() throws JSONException;
+
+  public boolean commandAllowedWithAlertPresentInWebViewMode() {
+    return false;
+  }
 }

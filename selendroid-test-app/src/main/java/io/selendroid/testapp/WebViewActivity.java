@@ -42,7 +42,7 @@ public class WebViewActivity extends Activity {
     setContentView(io.selendroid.testapp.R.layout.webview);
 
     mainWebView = (WebView) findViewById(io.selendroid.testapp.R.id.mainWebView);
-    mainWebView.setWebViewClient(new MyWebViewClient());
+    mainWebView.setWebViewClient(new WebViewClient());
     testDataSpinner =
         (Spinner) findViewById(io.selendroid.testapp.R.id.spinner_webdriver_test_data);
     arrayAdapter =
@@ -66,6 +66,7 @@ public class WebViewActivity extends Activity {
     arrayAdapter.add(new SpinnerItem("TestClickPage2",
         "file:///android_asset/web/test_click_page2.html"));
     arrayAdapter.add(new SpinnerItem("about:blank", "about:blank"));
+    arrayAdapter.add(new SpinnerItem("iframes", "file:///android_asset/web/iframes.html"));
 
     testDataSpinner.setAdapter(arrayAdapter);
     testDataSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -108,14 +109,6 @@ public class WebViewActivity extends Activity {
     @Override
     public String toString() {
       return text;
-    }
-  }
-
-  private class MyWebViewClient extends WebViewClient {
-    @Override
-    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-      view.loadUrl(url);
-      return true;
     }
   }
 }

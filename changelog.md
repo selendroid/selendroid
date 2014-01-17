@@ -2,10 +2,11 @@
 ---
 - Default selendroid-standalone port is changed from 5555 to 4444
 - Added support for switching to a frame in webview
-- Fixes:  [#155](../../issues/155), [#163](../../issues/163), [#177](../../issues/177), [#184](../../issues/184), [#202](../../issues/202), [#209](../../issues/209), [#210](../../issues/210), [#211](../../issues/211), [#214](../../issues/214), [#216](../../issues/216) 
+- Fixes:  [#155](../../issues/155), [#163](../../issues/163), [#177](../../issues/177), [#184](../../issues/184), [#202](../../issues/202), [#209](../../issues/209), [#210](../../issues/210), [#211](../../issues/211), [#214](../../issues/214), [#216](../../issues/216), [#188](../../issues/188) 
 - Refactoring of our end-to-end tests
 - Support for navigating back, forward and refresh
 - removed -restartAdb option
+- Adding Alert api support while in a webview
 
 
 0.7.0
@@ -19,7 +20,7 @@
 
 0.6.0
 -----
-- #114 Optimizing logcat handling and retry handling for selendroid-server start
+- [#114](../../issues/114) Optimizing logcat handling and retry handling for selendroid-server start
 - Emulators are started on display configured in capabilities
 - Device logcats are available as logging type "logcat"
 - The feature to restart adb has been removed
