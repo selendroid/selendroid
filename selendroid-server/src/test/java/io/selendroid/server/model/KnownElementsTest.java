@@ -17,6 +17,7 @@ package io.selendroid.server.model;
 import android.view.View;
 import android.webkit.WebView;
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.InstrumentedKeySender;
 import io.selendroid.android.KeySender;
 import org.junit.Assert;
 import org.junit.Test;
@@ -134,7 +135,7 @@ public class KnownElementsTest {
     when(view.getId()).thenReturn(id);
 
     ServerInstrumentation instrumentation = mock(ServerInstrumentation.class);
-    KeySender keys = new KeySender(instrumentation);
+    KeySender keys = new InstrumentedKeySender(instrumentation);
     return new AndroidNativeElement(view, instrumentation, keys, ke);
   }
 
