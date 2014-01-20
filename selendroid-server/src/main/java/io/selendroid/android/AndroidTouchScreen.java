@@ -42,10 +42,12 @@ import java.util.List;
  */
 public class AndroidTouchScreen implements TouchScreen {
 
-  private ServerInstrumentation instrumentation;
+  private final ServerInstrumentation instrumentation;
+  private final MotionSender motions;
 
-  public AndroidTouchScreen(ServerInstrumentation instrumentation) {
+  public AndroidTouchScreen(ServerInstrumentation instrumentation, MotionSender motions) {
     this.instrumentation = instrumentation;
+    this.motions = motions;
   }
 
   public void singleTap(Coordinates where) {
@@ -54,7 +56,7 @@ public class AndroidTouchScreen implements TouchScreen {
     long downTime = SystemClock.uptimeMillis();
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, toTap));
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_UP, toTap));
-    sendMotionEvents(motionEvents);
+    motions.send(motionEvents);
   }
 
   public void down(int x, int y) {
@@ -62,7 +64,7 @@ public class AndroidTouchScreen implements TouchScreen {
     long downTime = SystemClock.uptimeMillis();
     Point coords = new Point(x, y);
     event.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, coords));
-    sendMotionEvents(event);
+    motions.send(event);
   }
 
   public void up(int x, int y) {
@@ -70,7 +72,7 @@ public class AndroidTouchScreen implements TouchScreen {
     long downTime = SystemClock.uptimeMillis();
     Point coords = new Point(x, y);
     event.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_UP, coords));
-    sendMotionEvents(event);
+    motions.send(event);
   }
 
   public void move(int x, int y) {
@@ -78,7 +80,7 @@ public class AndroidTouchScreen implements TouchScreen {
     long downTime = SystemClock.uptimeMillis();
     Point coords = new Point(x, y);
     event.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_MOVE, coords));
-    sendMotionEvents(event);
+    motions.send(event);
   }
 
   public void scroll(Coordinates where, int xOffset, int yOffset) {
@@ -99,7 +101,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
     motionEvents.add(getMotionEvent(downTime,
         (downTime + scroll.getEventTimeForDestinationPoint()), MotionEvent.ACTION_UP, destination));
-    sendMotionEvents(motionEvents);
+    motions.send(motionEvents);
   }
 
   public void doubleTap(Coordinates where) {
@@ -110,7 +112,7 @@ public class AndroidTouchScreen implements TouchScreen {
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_UP, toDoubleTap));
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, toDoubleTap));
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_UP, toDoubleTap));
-    sendMotionEvents(motionEvents);
+    motions.send(motionEvents);
   }
 
   public void longPress(Coordinates where) {
@@ -243,7 +245,7 @@ public class AndroidTouchScreen implements TouchScreen {
         flick.getTimeBetweenEvents()));
     motionEvents.add(getMotionEvent(downTime, flick.getTimeForDestinationPoint(downTime),
         MotionEvent.ACTION_UP, destination));
-    sendMotionEvents(motionEvents);
+    motions.send(motionEvents);
   }
 
   private MotionEvent getMotionEvent(long start, long eventTime, int action, Point coords) {
@@ -272,18 +274,6 @@ public class AndroidTouchScreen implements TouchScreen {
     eventTime += timeBetweenEvents;
     move.add(getMotionEvent(downTime, eventTime, MotionEvent.ACTION_MOVE, destination));
     return move;
-  }
-
-  private void sendMotionEvents(final List<MotionEvent> eventsToSend) {
-
-    try {
-      instrumentation.waitForIdleSync();
-      for (MotionEvent event : eventsToSend) {
-        instrumentation.sendPointerSync(event);
-      }
-    } catch (SecurityException ignored) {
-      ignored.printStackTrace();
-    }
   }
 
   @Override

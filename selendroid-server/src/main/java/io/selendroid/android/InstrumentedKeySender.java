@@ -69,24 +69,13 @@ public class InstrumentedKeySender implements KeySender {
    * @param action {@code KeyEvent.ACTION_*} code representing key action
    * @param keyCode character representing key to press, release, etc.
    */
-  public void sendKeyEvent(int action, char keyCode) {
+  private void sendKeyEvent(int action, char keyCode) {
     instrumentation.waitForIdleSync();
     try {
       instrumentation.sendKeySync(new KeyEvent(action, AndroidKeys.keyCodeFor(keyCode)));
     } catch (SecurityException exception) {
       throw new SelendroidException(exception);
     }
-  }
-
-  /**
-   * A convenience wrapper for {@link #sendKeyEvent(int, char)} which takes an {@code AndroidKeys}
-   * object.
-   * 
-   * @param action {@code KeyEvent.ACTION_*} code representing key action
-   * @param key {@code AndroidKeys} object representing key to press, release, etc.
-   */
-  public void sendKeyEvent(int action, AndroidKeys key) {
-    this.sendKeyEvent(action, key.charAt(0));
   }
 
   /**

@@ -27,6 +27,7 @@ import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.AndroidTouchScreen;
 import io.selendroid.android.AndroidWait;
 import io.selendroid.android.InstrumentedKeySender;
+import io.selendroid.android.InstrumentedMotionSender;
 import io.selendroid.android.KeySender;
 import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.android.WindowType;
@@ -90,7 +91,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   public DefaultSelendroidDriver(ServerInstrumentation instrumentation) {
     serverInstrumentation = instrumentation;
     keySender = new InstrumentedKeySender(serverInstrumentation);
-    touch = new AndroidTouchScreen(serverInstrumentation);
+    touch = new AndroidTouchScreen(serverInstrumentation, new InstrumentedMotionSender(serverInstrumentation));
   }
 
   /*
