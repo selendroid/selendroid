@@ -93,11 +93,11 @@ public class AndroidTouchScreen implements TouchScreen {
     Scroll scroll = new Scroll(origin, destination, downTime);
     // Initial acceleration from origin to reference point
     motionEvents.addAll(getMoveEvents(downTime, downTime, origin, scroll.getDecelerationPoint(),
-        scroll.INITIAL_STEPS, scroll.TIME_BETWEEN_EVENTS));
+        Scroll.INITIAL_STEPS, Scroll.TIME_BETWEEN_EVENTS));
     // Deceleration phase from reference point to destination
     motionEvents.addAll(getMoveEvents(downTime, scroll.getEventTimeForReferencePoint(),
-        scroll.getDecelerationPoint(), destination, scroll.DECELERATION_STEPS,
-        scroll.TIME_BETWEEN_EVENTS));
+        scroll.getDecelerationPoint(), destination, Scroll.DECELERATION_STEPS,
+        Scroll.TIME_BETWEEN_EVENTS));
 
     motionEvents.add(getMotionEvent(downTime,
         (downTime + scroll.getEventTimeForDestinationPoint()), MotionEvent.ACTION_UP, destination));
@@ -241,7 +241,7 @@ public class AndroidTouchScreen implements TouchScreen {
     Point destination = new Point(origin.x + xOffset, origin.y + yOffset);
     Flick flick = new Flick(speed);
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, origin));
-    motionEvents.addAll(getMoveEvents(downTime, downTime, origin, destination, flick.STEPS,
+    motionEvents.addAll(getMoveEvents(downTime, downTime, origin, destination, Flick.STEPS,
         flick.getTimeBetweenEvents()));
     motionEvents.add(getMotionEvent(downTime, flick.getTimeForDestinationPoint(downTime),
         MotionEvent.ACTION_UP, destination));
@@ -255,7 +255,7 @@ public class AndroidTouchScreen implements TouchScreen {
   private List<MotionEvent> getMoveEvents(long downTime, long startingEVentTime, Point origin,
       Point destination, int steps, long timeBetweenEvents) {
     List<MotionEvent> move = new ArrayList<MotionEvent>();
-    MotionEvent event = null;
+    MotionEvent event;
 
     float xStep = (destination.x - origin.x) / steps;
     float yStep = (destination.y - origin.y) / steps;
@@ -345,7 +345,7 @@ public class AndroidTouchScreen implements TouchScreen {
     final static int DECELERATION_STEPS = 5;
     final int TOTAL_STEPS = INITIAL_STEPS + DECELERATION_STEPS;
     // Time in milliseconds to provide a speed similar to scroll
-    final long TIME_BETWEEN_EVENTS = 50;
+    final static long TIME_BETWEEN_EVENTS = 50;
 
     public Scroll(Point origin, Point destination, long downTime) {
       this.origin = origin;
