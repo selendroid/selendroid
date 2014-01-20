@@ -13,7 +13,13 @@
  */
 package io.selendroid.server.model.internal;
 
+import android.app.Activity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.android.internal.util.Predicate;
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.KeySender;
 import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.SelendroidException;
@@ -33,16 +39,6 @@ import io.selendroid.server.model.SearchContext;
 import io.selendroid.util.InstanceOfPredicate;
 import io.selendroid.util.ListUtil;
 import io.selendroid.util.Preconditions;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,12 +46,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import android.app.Activity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.android.internal.util.Predicate;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 public abstract class AbstractNativeElementContext
@@ -68,12 +65,13 @@ public abstract class AbstractNativeElementContext
       FindsByPartialText,
       FindsByClass {
   protected ServerInstrumentation instrumentation;
+  protected KeySender keys;
   protected KnownElements knownElements;
   protected ViewHierarchyAnalyzer viewAnalyzer;
 
-  public AbstractNativeElementContext(ServerInstrumentation instrumentation,
-      KnownElements knownElements) {
+  public AbstractNativeElementContext(ServerInstrumentation instrumentation, KeySender keys, KnownElements knownElements) {
     this.instrumentation = Preconditions.checkNotNull(instrumentation);
+    this.keys = Preconditions.checkNotNull(keys);
     this.knownElements = Preconditions.checkNotNull(knownElements);
     this.viewAnalyzer = ViewHierarchyAnalyzer.getDefaultInstance();
   }
@@ -90,7 +88,7 @@ public abstract class AbstractNativeElementContext
       }
     }
 
-    AndroidNativeElement e = new AndroidNativeElement(view, instrumentation, knownElements);
+    AndroidNativeElement e = new AndroidNativeElement(view, instrumentation, keys, knownElements);
     knownElements.add(e);
     return e;
   }

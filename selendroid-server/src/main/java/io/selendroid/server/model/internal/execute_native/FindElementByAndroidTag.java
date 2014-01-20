@@ -13,21 +13,20 @@
  */
 package io.selendroid.server.model.internal.execute_native;
 
+import android.view.View;
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.KeySender;
 import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.server.model.AndroidNativeElement;
 import io.selendroid.server.model.KnownElements;
 import io.selendroid.util.Preconditions;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.view.View;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This class contains the functionality to find an Android view with the tag name assigned to it
@@ -38,11 +37,16 @@ import android.view.View;
 public class FindElementByAndroidTag implements NativeExecuteScript {
 
   private ServerInstrumentation serverInstrumentation;
+  private KeySender keys;
   protected ViewHierarchyAnalyzer viewAnalyzer;
   private KnownElements knownElements;
 
-  public FindElementByAndroidTag(KnownElements knownElements, ServerInstrumentation serverInstrumentation) {
+  public FindElementByAndroidTag(
+      KnownElements knownElements,
+      ServerInstrumentation serverInstrumentation,
+      KeySender keys) {
     this.serverInstrumentation = serverInstrumentation;
+    this.keys = keys;
     this.knownElements = knownElements;
     this.viewAnalyzer = ViewHierarchyAnalyzer.getDefaultInstance();
   }
@@ -79,7 +83,7 @@ private AndroidNativeElement newAndroidElement(View view) {
         return element;
       }
     }
-    AndroidNativeElement e = new AndroidNativeElement(view, serverInstrumentation, knownElements);
+    AndroidNativeElement e = new AndroidNativeElement(view, serverInstrumentation, keys, knownElements);
     knownElements.add(e);
     return e;
   }

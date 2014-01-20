@@ -14,9 +14,19 @@
 package io.selendroid.server.model;
 
 
+import android.graphics.Rect;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
 import io.selendroid.ServerInstrumentation;
-import io.selendroid.android.AndroidKeys;
 import io.selendroid.android.AndroidWait;
+import io.selendroid.android.KeySender;
 import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.android.internal.Point;
@@ -31,6 +41,8 @@ import io.selendroid.server.model.internal.AbstractNativeElementContext;
 import io.selendroid.util.Function;
 import io.selendroid.util.Preconditions;
 import io.selendroid.util.SelendroidLogger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
@@ -39,20 +51,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.graphics.Rect;
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.view.View;
-import android.webkit.JsResult;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
 
 public class AndroidNativeElement implements AndroidElement {
   // TODO revisit
@@ -63,6 +61,7 @@ public class AndroidNativeElement implements AndroidElement {
   private Collection<AndroidElement> children = new LinkedHashSet<AndroidElement>();
   private AndroidElement parent;
   private ServerInstrumentation instrumentation;
+  private final KeySender keys;
   private SearchContext nativeElementSearchScope = null;
   private Coordinates coordinates = null;
   final Object syncObject = new Object();
@@ -71,12 +70,13 @@ public class AndroidNativeElement implements AndroidElement {
   private int hashCode;
   static final long UI_TIMEOUT = 3000L;
 
-  public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KnownElements ke) {
+  public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KeySender keys, KnownElements ke) {
     Preconditions.checkNotNull(view);
     this.viewRef = new WeakReference<View>(view);
     hashCode = view.hashCode() + 31;
     this.instrumentation = instrumentation;
-    this.nativeElementSearchScope = new NativeElementSearchScope(instrumentation, ke);
+    this.keys = keys;
+    this.nativeElementSearchScope = new NativeElementSearchScope(instrumentation, keys, ke);
     this.ke = ke;
   }
 
@@ -231,46 +231,15 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   public String toString() {
-    StringBuilder string = new StringBuilder();
-    string.append("id: " + getView().getId());
-    string.append("view class: " + getView().getClass());
-    string.append("view content desc: " + getView().getContentDescription());
-
-    return string.toString();
-  }
-
-  private static int indexOfSpecialKey(CharSequence string, int startIndex) {
-    for (int i = startIndex; i < string.length(); i++) {
-      if (AndroidKeys.hasAndroidKeyEvent(string.charAt(i))) {
-        return i;
-      }
-    }
-    return string.length();
+    return new StringBuilder()
+        .append("id: ").append(getView().getId())
+        .append("view class: ").append(getView().getClass())
+        .append("view content desc: ").append(getView().getContentDescription())
+        .toString();
   }
 
   protected void send(CharSequence string) {
-    int currentIndex = 0;
-
-    instrumentation.waitForIdleSync();
-
-    while (currentIndex < string.length()) {
-      char currentCharacter = string.charAt(currentIndex);
-      if (AndroidKeys.hasAndroidKeyEvent(currentCharacter)) {
-        // The next character is special and must be sent individually
-        instrumentation.sendKeyDownUpSync(AndroidKeys.keyCodeFor(currentCharacter));
-        currentIndex++;
-      } else {
-        // There is at least one "normal" character, that is a character
-        // represented by a plain Unicode character that can be sent
-        // with
-        // sendStringSync. So send as many such consecutive normal
-        // characters
-        // as possible in a single String.
-        int nextSpecialKey = indexOfSpecialKey(string, currentIndex);
-        instrumentation.sendStringSync(string.subSequence(currentIndex, nextSpecialKey).toString());
-        currentIndex = nextSpecialKey;
-      }
-    }
+    keys.send(string);
   }
 
   public JSONObject toJson() throws JSONException {
@@ -428,8 +397,9 @@ public class AndroidNativeElement implements AndroidElement {
 
   private class NativeElementSearchScope extends AbstractNativeElementContext {
     public NativeElementSearchScope(ServerInstrumentation instrumentation,
+        KeySender keys,
         KnownElements knownElements) {
-      super(instrumentation, knownElements);
+      super(instrumentation, keys, knownElements);
     }
 
     @Override

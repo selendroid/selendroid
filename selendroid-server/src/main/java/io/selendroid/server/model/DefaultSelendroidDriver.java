@@ -13,6 +13,16 @@
  */
 package io.selendroid.server.model;
 
+import android.app.Activity;
+import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.view.Display;
+import android.view.View;
+import android.webkit.WebView;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.AndroidTouchScreen;
 import io.selendroid.android.AndroidWait;
@@ -33,6 +43,9 @@ import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.Preconditions;
 import io.selendroid.util.SelendroidLogger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -46,21 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
-import android.content.res.Resources.Theme;
-import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.view.Display;
-import android.view.View;
-import android.webkit.WebView;
 
 
 public class DefaultSelendroidDriver implements SelendroidDriver {
@@ -382,7 +380,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     nativeExecuteScriptMap.put("getL10nKeyTranslation", new GetL10nKeyTranslation(
         serverInstrumentation));
     nativeExecuteScriptMap.put("findElementByAndroidTag",
-        new FindElementByAndroidTag(session.getKnownElements(), serverInstrumentation));
+        new FindElementByAndroidTag(session.getKnownElements(), serverInstrumentation, keySender));
 
     return session.getSessionId();
   }
@@ -434,7 +432,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
   public class NativeSearchScope extends AbstractNativeElementContext {
     public NativeSearchScope(ServerInstrumentation instrumentation, KnownElements knownElements) {
-      super(instrumentation, knownElements);
+      super(instrumentation, keySender, knownElements);
     }
 
     @Override
