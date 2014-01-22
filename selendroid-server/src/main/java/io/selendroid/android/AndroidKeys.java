@@ -36,7 +36,11 @@ public enum AndroidKeys implements CharSequence {
       Keys.ARROW_DOWN, KeyEvent.KEYCODE_DPAD_DOWN), DPAD_LEFT(Keys.ARROW_LEFT,
       KeyEvent.KEYCODE_DPAD_LEFT), DPAD_RIGHT(Keys.ARROW_RIGHT, KeyEvent.KEYCODE_DPAD_RIGHT), DPAD_UP(
       Keys.ARROW_UP, KeyEvent.KEYCODE_DPAD_UP), ENTER(Keys.ENTER, KeyEvent.KEYCODE_ENTER), SHIFT_LEFT(
-      Keys.SHIFT, KeyEvent.KEYCODE_SHIFT_LEFT),
+      Keys.SHIFT, KeyEvent.KEYCODE_SHIFT_LEFT), F1(Keys.F1, KeyEvent.KEYCODE_F1),
+      F2(Keys.F2, KeyEvent.KEYCODE_F2), F3(Keys.F3, KeyEvent.KEYCODE_F3), F4(Keys.F4, KeyEvent.KEYCODE_F4),
+      F5(Keys.F5, KeyEvent.KEYCODE_F5), F6(Keys.F6, KeyEvent.KEYCODE_F6), F7(Keys.F7, KeyEvent.KEYCODE_F7),
+      F8(Keys.F8, KeyEvent.KEYCODE_F8), F9(Keys.F9, KeyEvent.KEYCODE_F9), F10(Keys.F10, KeyEvent.KEYCODE_F10),
+      F11(Keys.F11, KeyEvent.KEYCODE_F11), F12(Keys.F12, KeyEvent.KEYCODE_F12),
 
   // Keys only for native Android apps (sorted by key code)
   BACK('\uE100', KeyEvent.KEYCODE_BACK), HOME('\uE101', KeyEvent.KEYCODE_HOME), MENU('\uE102',
