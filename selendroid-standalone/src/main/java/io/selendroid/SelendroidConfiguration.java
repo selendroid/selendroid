@@ -66,6 +66,9 @@ public class SelendroidConfiguration {
 
   @Parameter(names = "-noWebviewApp", description = "If you don't want selendroid to auto-extract and have 'AndroidDriver' (webview only app) available.")
   private boolean noWebViewApp = false;
+
+  @Parameter(names = "-noClearData", description = "When you quit the app, shell pm clear will not be called with this option specified.")
+  private boolean noClearData = false;
   
   public void setKeystore(String keystore) {
     this.keystore = keystore;
@@ -191,5 +194,13 @@ public class SelendroidConfiguration {
 
   public void setNoWebViewApp(boolean noWebViewApp) {
     this.noWebViewApp = noWebViewApp;
+  }
+
+  public boolean isNoClearData() {
+    return noClearData;
+  }
+
+  public void setNoClearData(boolean noClearData) {
+    this.noClearData = noClearData;
   }
 }

@@ -92,6 +92,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
+    deviceStore.setClearData(!serverConfiguration.isNoClearData());
   }
 
   /**

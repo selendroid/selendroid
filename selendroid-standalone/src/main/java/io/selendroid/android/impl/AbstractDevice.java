@@ -196,8 +196,6 @@ public abstract class AbstractDevice implements AndroidDevice {
     CommandLine command = adbCommand("shell", "am", "force-stop", aut.getBasePackage());
     executeCommand(command, 20000);
 
-    clearUserData(aut);
-
     if(logcatWatchdog != null && logcatWatchdog.isWatching()) {
       logcatWatchdog.destroyProcess();
       logcatWatchdog = null;

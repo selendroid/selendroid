@@ -7,6 +7,7 @@
 - Support for navigating back, forward and refresh
 - removed -restartAdb option
 - Adding Alert api support while in a webview
+- adding -noClearData option to avoid calling adb shell pm clear  when calling driver.quit()
 
 
 0.7.0

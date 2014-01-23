@@ -23,6 +23,7 @@ import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
+import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
@@ -45,6 +46,7 @@ public class DeviceStore {
   private Boolean installedApp = false;
   private String avdName = null;
   private String deviceSerial = null;
+  private boolean clearData = true;
 
   public DeviceStore(Boolean debug, Integer emulatorPort) {
     if (debug) {
@@ -78,6 +80,13 @@ public class DeviceStore {
         device.kill(aut);
       } catch (Exception e) {
         e.printStackTrace();
+      }
+      if (clearData) {
+        try {
+          device.clearUserData(aut);
+        } catch (AndroidSdkException e) {
+          e.printStackTrace();
+        }
       }
       if (device instanceof AndroidEmulator && installedApp == false) {
         AndroidEmulator emulator = (AndroidEmulator) device;
@@ -322,5 +331,9 @@ public class DeviceStore {
       log.warning("The target platform version of the device is not found in device store.");
       log.warning("The device was propably already removed.");
     }
+  }
+
+  public void setClearData(boolean clearData) {
+    this.clearData = clearData;
   }
 }
