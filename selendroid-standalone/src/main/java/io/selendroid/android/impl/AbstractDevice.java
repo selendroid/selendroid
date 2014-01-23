@@ -192,36 +192,11 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public void kill(AndroidApp aut) throws AndroidDeviceException, AndroidSdkException {
-    CommandLine command = new CommandLine(AndroidSdk.adb());
 
-    if (isSerialConfigured()) {
-      command.addArgument("-s", false);
-      command.addArgument(serial, false);
-    }
-    command.addArgument("shell", false);
-    command.addArgument("am", false);
-    command.addArgument("force-stop", false);
-    command.addArgument(aut.getBasePackage(), false);
-    try {
-      ShellCommand.exec(command, 20000);
-    } catch (ShellCommandException e) {
-      e.printStackTrace();
-    }
+    CommandLine command = adbCommand("shell", "am", "force-stop", aut.getBasePackage());
+    executeCommand(command, 20000);
 
-    CommandLine clearCommand = new CommandLine(AndroidSdk.adb());
-    if (isSerialConfigured()) {
-      clearCommand.addArgument("-s", false);
-      clearCommand.addArgument(serial, false);
-    }
-    clearCommand.addArgument("shell", false);
-    clearCommand.addArgument("pm", false);
-    clearCommand.addArgument("clear", false);
-    clearCommand.addArgument(aut.getBasePackage(), false);
-    try {
-      ShellCommand.exec(clearCommand, 20000);
-    } catch (ShellCommandException e) {
-      e.printStackTrace();
-    }
+    clearUserData(aut);
 
     if(logcatWatchdog != null && logcatWatchdog.isWatching()) {
       logcatWatchdog.destroyProcess();
@@ -233,46 +208,17 @@ public abstract class AbstractDevice implements AndroidDevice {
   public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
     this.port = port;
 
-    CommandLine command = new CommandLine(AndroidSdk.adb());
-
-    if (isSerialConfigured()) {
-      command.addArgument("-s", false);
-      command.addArgument(serial, false);
-    }
-    command.addArgument("shell", false);
-    command.addArgument("am", false);
-    command.addArgument("instrument", false);
-
-    command.addArgument("-e", false);
-    command.addArgument("main_activity", false);
-    command.addArgument(aut.getMainActivity(), false);
-
-    command.addArgument("-e", false);
-    command.addArgument("server_port", false);
-    command.addArgument(port + "", false);
-
-    command.addArgument("io.selendroid." + aut.getBasePackage()
-        + "/io.selendroid.ServerInstrumentation", false);
-
-    if (executeCommand(command, 20000).contains("INSTRUMENTATION_FAILED")) {
-      throw new AndroidSdkException("Failed to start instrumentation");
-    }
+    CommandLine command = adbCommand("shell", "am", "instrument", "-e", "main_activity",
+        aut.getMainActivity(), "-e", "server_port", port + "",
+        "io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation");
+    executeCommand(command, 20000);
 
     forwardSelendroidPort(port);
     startLogging();
   }
 
   public void forwardPort(int local, int remote) {
-    CommandLine command = new CommandLine(AndroidSdk.adb());
-
-    if (isSerialConfigured()) {
-      command.addArgument("-s", false);
-      command.addArgument(serial, false);
-    }
-    command.addArgument("forward", false);
-    command.addArgument("tcp:" + local, false);
-    command.addArgument("tcp:" + remote, false);
-
+    CommandLine command = adbCommand("forward", "tcp:" + local, "tcp:" + remote);
     executeCommand(command, 20000);
   }
 
