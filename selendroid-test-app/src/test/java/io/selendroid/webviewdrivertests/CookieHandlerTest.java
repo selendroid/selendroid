@@ -102,7 +102,7 @@ public class CookieHandlerTest extends BaseAndroidTest {
     String val = "value1=alsoWithEqualSign";
     Cookie cookie1 = new Cookie(cookieName,val);
     driver().manage().addCookie(cookie1);
-    Assert.assertEquals(val, river.manage().getCookieNamed(cookieName).getValue());
+    Assert.assertEquals(val, driver().manage().getCookieNamed(cookieName).getValue());
   }
 
 
