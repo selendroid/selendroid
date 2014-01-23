@@ -15,12 +15,13 @@ package io.selendroid.server.model;
 
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.server.Session;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public interface SelendroidDriver {
 
@@ -71,11 +72,11 @@ public interface SelendroidDriver {
   public Dimension getWindowSize();
 
   public void setFrameContext(Object index) throws JSONException;
-  
+
   public void back();
-  
+
   public void forward();
-  
+
   public void refresh();
 
   public boolean isAlertPresent();
@@ -87,4 +88,8 @@ public interface SelendroidDriver {
   public void dismissAlert();
 
   public void setAlertText(CharSequence... keysToSend);
+
+  public ScreenOrientation getOrientation();
+
+  public void rotate(ScreenOrientation orientation);
 }

@@ -515,6 +515,30 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     getSession().getKnownElements().clear();
   }
 
+  public ScreenOrientation getOrientation() {
+    Activity activity = serverInstrumentation.getCurrentActivity();
+    
+    int value = activity.getRequestedOrientation();
+    if (value == 0) {
+      return ScreenOrientation.LANDSCAPE;
+    }
+    return ScreenOrientation.PORTRAIT;
+  }
+
+  public void rotate(ScreenOrientation orientation) {
+    Activity activity = serverInstrumentation.getCurrentActivity();
+    if (activity != null) {
+      activity.setRequestedOrientation(getAndroidScreenOrientation(orientation));
+    }
+  }
+
+  private int getAndroidScreenOrientation(ScreenOrientation orientation) {
+    if (ScreenOrientation.LANDSCAPE.equals(orientation)) {
+      return 0;
+    }
+    return 1;
+  }
+
   public boolean isNativeWindowMode() {
     if (WindowType.NATIVE_APP.name().equals(activeWindowType)) {
       return true;
@@ -647,6 +671,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       selendroidWebDriver.refresh();
     }
   }
+
 
   public boolean isAlertPresent() {
     if (isNativeWindowMode() || selendroidWebDriver == null) {
