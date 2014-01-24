@@ -13,13 +13,15 @@
  */
 package io.selendroid.server;
 
-import junit.framework.Assert;
+
+
+import io.selendroid.server.internal.SelendroidAssert;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
-import io.selendroid.server.internal.SelendroidAssert;
 
 public class GetStatusTest extends BaseTest {
   @Test
@@ -37,14 +39,14 @@ public class GetStatusTest extends BaseTest {
   }
 
   @Test
-  public void assertThatGetStatusHanlerIsNotRegisteredForPost() throws Exception {
+  public void assertThatGetStatusHandlerIsNotRegisteredForPost() throws Exception {
     String url = "http://"+host+":" + server.getPort() + "/wd/hub/status";
     HttpResponse response = executeRequest(url, HttpMethod.POST);
     SelendroidAssert.assertResponseIsServerError(response);
   }
 
   @Test
-  public void assertThatGetStatusHanlerIsNotRegisteredForDelete() throws Exception {
+  public void assertThatGetStatusHandlerIsNotRegisteredForDelete() throws Exception {
     String url = "http://"+host+":" + server.getPort() + "/wd/hub/status";
     HttpResponse response = executeRequest(url, HttpMethod.DELETE);
     SelendroidAssert.assertResponseIsServerError(response);

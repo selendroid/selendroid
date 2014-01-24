@@ -13,18 +13,18 @@
  */
 package io.selendroid.server;
 
+import io.selendroid.server.internal.SelendroidAssert;
+
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.concurrent.Executors;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
-import io.selendroid.server.internal.SelendroidAssert;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
 import org.webbitserver.helpers.NamingThreadFactory;

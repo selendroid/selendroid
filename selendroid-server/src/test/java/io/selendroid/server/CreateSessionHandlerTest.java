@@ -14,13 +14,13 @@
 package io.selendroid.server;
 
 import io.selendroid.server.internal.Capabilities;
-import junit.framework.Assert;
+import io.selendroid.server.internal.SelendroidAssert;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
-import io.selendroid.server.internal.SelendroidAssert;
 
 public class CreateSessionHandlerTest extends BaseTest {
 

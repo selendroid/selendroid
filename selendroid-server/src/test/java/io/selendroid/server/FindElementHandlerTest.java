@@ -13,12 +13,14 @@
  */
 package io.selendroid.server;
 
-import junit.framework.Assert;
+
+
+import io.selendroid.server.internal.SelendroidAssert;
 
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
-import io.selendroid.server.internal.SelendroidAssert;
+import org.junit.Assert;
 
 /**
  * TODO rethink find element tests without having an emulator running.
