@@ -242,6 +242,9 @@ public class AndroidWebElement implements AndroidElement {
       driver.resetPageIsLoading();
       driver.executeAtom(AndroidAtoms.CLICK, null, this);
       driver.waitForPageToLoad();
+      if (driver.isInFrame()) {
+        return;
+      }
     }
 
     Point center = getCenterCoordinates();

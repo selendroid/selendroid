@@ -62,6 +62,13 @@ public class BaseAndroidTest {
     forwardPort.addArgument("tcp:8080");
     forwardPort.addArgument("tcp:8080");
     ShellCommand.exec(forwardPort);
+    // instrumentation needs a beat to come up before connecting right away
+    // without this the first test often will fail, there's a similar wait
+    // in the selendroid-standalone
+    try {
+      Thread.sleep(750);
+    } catch (InterruptedException e) {
+    }
   }
 
   @Before

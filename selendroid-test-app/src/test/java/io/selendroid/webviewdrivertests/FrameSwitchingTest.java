@@ -13,11 +13,13 @@
  */
 package io.selendroid.webviewdrivertests;
 
+import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.support.BaseAndroidTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 public class FrameSwitchingTest extends BaseAndroidTest {
 
@@ -66,6 +68,19 @@ public class FrameSwitchingTest extends BaseAndroidTest {
   public void switchToFrameGetCurrentUrlAlwaysReturnsTop() {
     driver().switchTo().frame(0);
     Assert.assertEquals(HtmlTestData.IFRAME_PAGE, driver().getCurrentUrl());
+  }
+
+  @Test
+  public void canClickOnElementInsideFrame() {
+    driver().switchTo().frame(0);
+    WebElement el = driver().findElement(By.tagName("a"));
+    el.click();
+    try {
+      el.getText();
+      throw new RuntimeException("should have gotten a stale element");
+    } catch (StaleElementReferenceException sre) {
+      // pass
+    }
   }
 
   private void verifyInsideFrame() {
