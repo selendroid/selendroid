@@ -13,6 +13,11 @@
  */
 package io.selendroid.server.model;
 
+import android.app.Activity;
+import android.os.SystemClock;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.webkit.WebView;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.android.internal.Point;
@@ -24,20 +29,13 @@ import io.selendroid.server.model.interactions.Coordinates;
 import io.selendroid.server.model.internal.AbstractWebElementContext;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.server.webview.EventSender;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
-import android.os.SystemClock;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.webkit.WebView;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class AndroidWebElement implements AndroidElement {
   private final String id;
@@ -240,7 +238,7 @@ public class AndroidWebElement implements AndroidElement {
   @Override
   public void click() {
     String tagName = getTagName();
-    if (tagName != null && "OPTION".equals(tagName.toUpperCase())) {
+    if ((tagName != null && "OPTION".equals(tagName.toUpperCase())) || driver.isInFrame()) {
       driver.resetPageIsLoading();
       driver.executeAtom(AndroidAtoms.CLICK, null, this);
       driver.waitForPageToLoad();
@@ -251,12 +249,10 @@ public class AndroidWebElement implements AndroidElement {
     final List<MotionEvent> events = new ArrayList<MotionEvent>();
 
     MotionEvent downEvent =
-        MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, center.x,
-            center.y, 0);
+        MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, center.x, center.y, 0);
     events.add(downEvent);
     MotionEvent upEvent =
-        MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, center.x,
-            center.y, 0);
+        MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, center.x, center.y, 0);
 
     events.add(upEvent);
 
