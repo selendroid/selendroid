@@ -13,6 +13,7 @@
  */
 package io.selendroid.server.util;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
 import io.selendroid.SelendroidCapabilities;
 
 import java.util.logging.Logger;
@@ -31,6 +32,8 @@ import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.google.common.base.Throwables;
 
 public class HttpClientUtil {
   private static final Logger log = Logger.getLogger(HttpClientUtil.class.getName());
@@ -95,6 +98,18 @@ public class HttpClientUtil {
       return result.getInt("status") == 0;
     } catch (Exception e) {
       return false;
+    }
+  }
+  
+  public static void waitForServer(int port) {
+    long end = System.currentTimeMillis() + MINUTES.toMillis(3);
+
+    while (!isServerStarted(port) && System.currentTimeMillis() < end ) {
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException e) {
+        throw Throwables.propagate(e);
+      }
     }
   }
 }

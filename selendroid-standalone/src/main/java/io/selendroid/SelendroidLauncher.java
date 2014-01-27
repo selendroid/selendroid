@@ -88,7 +88,7 @@ public class SelendroidLauncher {
 
   public void lauchSelendroid() {
     lauchServer();
-    waitForServer(config.getPort());
+    HttpClientUtil.waitForServer(config.getPort());
   }
 
   public static void main(String[] args) {
@@ -124,18 +124,6 @@ public class SelendroidLauncher {
   public void stopSelendroid() {
     if (server != null) {
       server.stop();
-    }
-  }
-
-  private void waitForServer(int port) {
-    long end = System.currentTimeMillis() + MINUTES.toMillis(3);
-
-    while (!HttpClientUtil.isServerStarted(port) && System.currentTimeMillis() < end ) {
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException e) {
-        throw Throwables.propagate(e);
-      }
     }
   }
 }

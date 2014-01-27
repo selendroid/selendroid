@@ -19,6 +19,7 @@ import io.selendroid.SelendroidDriver;
 import io.selendroid.SelendroidLauncher;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.io.ShellCommand;
+import io.selendroid.server.util.HttpClientUtil;
 import io.selendroid.waiter.WaitingConditions;
 
 import java.io.File;
@@ -61,15 +62,15 @@ public class BaseAndroidTest {
     forwardPort.addArgument("forward");
     forwardPort.addArgument("tcp:8080");
     forwardPort.addArgument("tcp:8080");
+
     ShellCommand.exec(forwardPort);
     // instrumentation needs a beat to come up before connecting right away
     // without this the first test often will fail, there's a similar wait
     // in the selendroid-standalone
-    try {
-      Thread.sleep(750);
-    } catch (InterruptedException e) {
-    }
+    HttpClientUtil.waitForServer(8080);
   }
+
+
 
   @Before
   public void setup() throws Exception {
@@ -111,7 +112,8 @@ public class BaseAndroidTest {
       return new Statement() {
         @Override
         public void evaluate() throws Throwable {
-          System.out.println(String.format("%s.%s", description.getTestClass().getName(), description.getMethodName()));
+          System.out.println(String.format("%s.%s", description.getTestClass().getName(),
+              description.getMethodName()));
           try {
             base.evaluate();
           } catch (Exception e) {
