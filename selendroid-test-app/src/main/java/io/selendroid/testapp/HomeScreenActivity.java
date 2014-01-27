@@ -26,6 +26,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,15 +37,15 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 /**
  * Demo project to verify selendroid actions.
- * 
+ *
  * @author ddary
- * 
  */
 public class HomeScreenActivity extends Activity {
   private static final int DIALOG_ALERT = 10;
@@ -65,8 +67,9 @@ public class HomeScreenActivity extends Activity {
         return true;
       }
     });
+    initExceptionTestButton();
+    initExceptionTestField();
   }
-
 
 
   @Override
@@ -185,6 +188,7 @@ public class HomeScreenActivity extends Activity {
       HomeScreenActivity.this.finish();
     }
   }
+
   class MyAsyncTask extends AsyncTask<String, String, String> {
     @Override
     protected void onPreExecute() {
@@ -255,5 +259,31 @@ public class HomeScreenActivity extends Activity {
       default:
         return super.onOptionsItemSelected(item);
     }
+  }
+
+  private void initExceptionTestButton() {
+    Button exceptionTestButton = (Button) findViewById(io.selendroid.testapp.R.id.exceptionTestButton);
+    exceptionTestButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        throw new RuntimeException("Unhandled Exception Test!");
+      }
+    });
+  }
+
+  private void initExceptionTestField() {
+    EditText exceptionTestField = (EditText) findViewById(io.selendroid.testapp.R.id.exceptionTestField);
+    exceptionTestField.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {}
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+      @Override
+      public void afterTextChanged(Editable editable) {
+        throw new RuntimeException("Unhandled Exception Test!");
+      }
+    });
   }
 }

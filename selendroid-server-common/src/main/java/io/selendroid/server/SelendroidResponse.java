@@ -13,9 +13,11 @@
  */
 package io.selendroid.server;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class SelendroidResponse implements Response {
     private String sessionId;
@@ -32,21 +34,7 @@ public class SelendroidResponse implements Response {
     }
 
     public SelendroidResponse(String sessionId, int status, Exception e) throws JSONException {
-        JSONObject errorValue = new JSONObject();
-        errorValue.put("message", e.getMessage());
-        errorValue.put("class", e.getClass().getCanonicalName());
-
-        JSONArray stacktace = new JSONArray();
-        for (StackTraceElement el : e.getStackTrace()) {
-          JSONObject frame = new JSONObject();
-          frame.put("lineNumber", el.getLineNumber());
-          frame.put("className", el.getClassName());
-          frame.put("methodName", el.getMethodName());
-          frame.put("fileName", el.getFileName());
-          stacktace.put(frame);
-        }
-        errorValue.put("stackTrace", stacktace);
-        this.value = errorValue;
+        this.value = buildErrorValue(e);
         this.sessionId = sessionId;
         this.status = status;
     }
@@ -65,7 +53,7 @@ public class SelendroidResponse implements Response {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see io.selendroid.server.Response#getSessionId()
      */
     @Override
@@ -83,7 +71,7 @@ public class SelendroidResponse implements Response {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see io.selendroid.server.Response#render()
      */
     @Override
@@ -101,5 +89,33 @@ public class SelendroidResponse implements Response {
             e.printStackTrace();
         }
         return o.toString();
+    }
+
+    private JSONObject buildErrorValue(Throwable t) throws JSONException {
+        JSONObject errorValue = new JSONObject();
+        errorValue.put("class", t.getClass().getCanonicalName());
+
+        // TODO: Form exception in a way that will be unpacked nicely on the local end.
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        t.printStackTrace(printWriter);
+        errorValue.put("message", t.getMessage() + "\n" + stringWriter.toString());
+
+        /*
+         * There is no easy way to attach exception 'cause' clauses here.
+         * See workaround above which is used instead.
+         */
+//      JSONArray stackTrace = new JSONArray();
+//      for (StackTraceElement el : t.getStackTrace()) {
+//          JSONObject frame = new JSONObject();
+//          frame.put("lineNumber", el.getLineNumber());
+//          frame.put("className", el.getClassName());
+//          frame.put("methodName", el.getMethodName());
+//          frame.put("fileName", el.getFileName());
+//          stackTrace.put(frame);
+//      }
+//      errorValue.put("stackTrace", stackTrace);
+
+        return errorValue;
     }
 }

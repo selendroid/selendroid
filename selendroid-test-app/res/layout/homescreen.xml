@@ -114,23 +114,40 @@
         android:id="@+id/visibleTestArea"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="visibleTestAreaCD" >
+        android:contentDescription="visibleTestAreaCD">
 
         <Button
             android:id="@+id/showToastButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:contentDescription="showToastButtonCD"
             android:onClick="displayToast"
-            android:text="Displays a Toast" />
+            android:text="Displays a Toast"
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/showPopupWindowButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:contentDescription="showPopupWindowButtonCD"
             android:onClick="displayPopupWindow"
-            android:text="Display Popup Window" />
+            android:text="Display Popup Window"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/exceptionTestButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="exceptionTestButtonCD"
+            android:text="Press to throw unhandled exception"
+            android:layout_weight="1" />
     </LinearLayout>
+
+    <EditText
+        android:id="@+id/exceptionTestField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Type to throw unhandled exception"
+        android:ems="10" />
 
 </LinearLayout>

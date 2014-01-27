@@ -13,6 +13,7 @@
  */
 package io.selendroid.server;
 
+import io.selendroid.exceptions.AppCrashedException;
 import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.server.handler.AddCookie;
 import io.selendroid.server.handler.alert.Alert;
@@ -243,12 +244,20 @@ public class AndroidServlet extends BaseServlet {
         replyWithServerError(response);
         return;
       }
+    } catch (AppCrashedException ae) {
+      try {
+        String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
+        result = new SelendroidResponse(sessionId, 13, ae);
+      } catch (Exception e) {
+        SelendroidLogger.log("Error occurred while handling request and got AppCrashedException.", e);
+        replyWithServerError(response);
+        return;
+      }
     } catch (Exception e) {
       SelendroidLogger.log("Error occurred while handling request.", e);
       replyWithServerError(response);
       return;
     }
-
     handleResponse(request, response, (SelendroidResponse) result);
   }
 }

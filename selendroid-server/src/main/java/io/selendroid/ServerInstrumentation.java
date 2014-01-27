@@ -15,12 +15,15 @@ package io.selendroid;
 
 import io.selendroid.android.ActivitiesReporter;
 import io.selendroid.android.AndroidWait;
+import io.selendroid.exceptions.AppCrashedException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.AndroidServer;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.util.SelendroidLogger;
 
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.FutureTask;
 
 import org.json.JSONArray;
 
@@ -30,8 +33,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class ServerInstrumentation extends Instrumentation implements ServerDetails {
@@ -42,6 +48,9 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   private AndroidWait androidWait = new AndroidWait();
   private PowerManager.WakeLock wakeLock;
   private int serverPort = 8080;
+
+  private UiThreadController uiController;
+  private Executor mainThreadExecutor;
 
   public void startMainActivity() {
     finishAllActivities();
@@ -114,6 +123,9 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       SelendroidLogger.log("Clazz is null - but should be an instance of: " + activityClazzName);
     }
     instance = this;
+
+    mainThreadExecutor = provideMainThreadExecutor(Looper.getMainLooper());
+    uiController = new UiThreadController();
 
     start();
   }
@@ -335,5 +347,81 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   @Override
   public String getOsName() {
     return "Android";
+  }
+
+  public interface InputEventSender {
+    public void sendEvent(Object data);
+  }
+
+  /*
+   * No need to override the following methods:
+   * - sendStringSync()
+   * - sendCharacterSync()
+   * - sendKeyDownUpSync()
+   * All of them just aggregate several calls of sendKeySync().
+   */
+  @Override
+  public void sendKeySync(final KeyEvent event) {
+    sendInputEventSync(
+        new InputEventSender() {
+          @Override
+          public void sendEvent(Object event) {
+            ServerInstrumentation.super.sendKeySync((KeyEvent) event);
+          }
+        },
+        event);
+  }
+
+  @Override
+  public void sendPointerSync(final MotionEvent event) {
+    sendInputEventSync(
+        new InputEventSender() {
+          @Override
+          public void sendEvent(Object event) {
+            ServerInstrumentation.super.sendPointerSync((MotionEvent) event);
+          }
+        },
+        event);
+  }
+
+  @Override
+  public void sendTrackballEventSync(MotionEvent event) {
+    sendInputEventSync(
+        new InputEventSender() {
+          @Override
+          public void sendEvent(Object event) {
+            ServerInstrumentation.super.sendTrackballEventSync((MotionEvent) event);
+          }
+        },
+        event);
+  }
+
+  private void sendInputEventSync(final InputEventSender eventSender, final Object event) {
+    runSynchronouslyOnUiThread(
+        new Runnable() {
+          public void run() {
+            uiController.injectInputEventWaitingForCompletion(eventSender, event);
+          }
+        });
+  }
+
+  private void runSynchronouslyOnUiThread(Runnable action) {
+    FutureTask<Void> uiTask = new FutureTask<Void>(action, null);
+    mainThreadExecutor.execute(uiTask);
+    try {
+      uiTask.get();
+    } catch (Exception e) {
+      throw new AppCrashedException("Unhandled exception from application under test.", e);
+    }
+  }
+
+  private Executor provideMainThreadExecutor(Looper mainLooper) {
+    final Handler handler = new Handler(mainLooper);
+    return new Executor() {
+      @Override
+      public void execute(Runnable runnable) {
+        handler.post(runnable);
+      }
+    };
   }
 }

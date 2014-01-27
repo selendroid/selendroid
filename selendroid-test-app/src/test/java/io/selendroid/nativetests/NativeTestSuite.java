@@ -25,7 +25,8 @@ import org.junit.runners.Suite;
   NativeElementFindingTest.class,
   NativeElementInteractionTest.class,
   SelendroidUnknownCommandHandlingTest.class,
-  SendKeyAndNativeKeyTest.class
+  SendKeyAndNativeKeyTest.class,
+  UnhandledExceptionPropagatingTest.class
   
  // WaitForProgressBarGoneAwayTest.class
 })
