@@ -38,7 +38,12 @@ public class SelendroidResponse implements Response {
 
         JSONArray stacktace = new JSONArray();
         for (StackTraceElement el : e.getStackTrace()) {
-            stacktace.put(el.toString());
+          JSONObject frame = new JSONObject();
+          frame.put("lineNumber", el.getLineNumber());
+          frame.put("className", el.getClassName());
+          frame.put("methodName", el.getMethodName());
+          frame.put("fileName", el.getFileName());
+          stacktace.put(frame);
         }
         errorValue.put("stackTrace", stacktace);
         this.value = errorValue;
