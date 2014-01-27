@@ -239,12 +239,12 @@ public class AndroidServlet extends BaseServlet {
         String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
         result = new SelendroidResponse(sessionId, 13, se);
       } catch (Exception e) {
-        SelendroidLogger.log("Error occured while handling reuqest and got StaleRef.", e);
+        SelendroidLogger.log("Error occurred while handling request and got StaleRef.", e);
         replyWithServerError(response);
         return;
       }
     } catch (Exception e) {
-      SelendroidLogger.log("Error occured while handling reuqest.", e);
+      SelendroidLogger.log("Error occurred while handling request.", e);
       replyWithServerError(response);
       return;
     }
