@@ -40,7 +40,7 @@ public class SelendroidResponse implements Response {
         for (StackTraceElement el : e.getStackTrace()) {
             stacktace.put(el.toString());
         }
-        errorValue.put("stacktrace", stacktace);
+        errorValue.put("stackTrace", stacktace);
         this.value = errorValue;
         this.sessionId = sessionId;
         this.status = status;
