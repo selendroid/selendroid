@@ -45,6 +45,8 @@ public class ClickElement extends RequestHandler {
       return new SelendroidResponse(getSessionId(), 11, ev);
     } catch (StaleElementReferenceException se) {
       return new SelendroidResponse(getSessionId(), 10, se);
+    } catch (IllegalStateException ise) {
+      return new SelendroidResponse(getSessionId(), 10, ise);
     } catch (Exception e) {
       SelendroidLogger.log("error while clicking the element: ", e);
       return new SelendroidResponse(getSessionId(), 13, e);
