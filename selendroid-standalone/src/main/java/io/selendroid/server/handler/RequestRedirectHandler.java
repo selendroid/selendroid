@@ -15,21 +15,19 @@ package io.selendroid.server.handler;
 
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.io.ShellCommand;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
-
-import java.util.logging.Logger;
-
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;
 import org.webbitserver.HttpRequest;
+
+import java.util.logging.Logger;
 
 public class RequestRedirectHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(RequestRedirectHandler.class.getName());
@@ -84,7 +82,12 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     }
     Object value = response.opt("value");
     if (value != null) {
-      log.info("return value from selendroid android server: " + value);
+      String displayed = String.valueOf(value);
+      // 2 lines of an 80 column display
+      if (displayed.length() > 160) {
+        displayed = displayed.substring(0, 157) + "...";
+      }
+      log.info("return value from selendroid android server: " + displayed);
     }
     int status = response.getInt("status");
 
