@@ -129,10 +129,13 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public SelendroidCapabilities() {
     super();
     setBrowserName("selendroid");
-    setEmulator(true);
     setLocale("en_US");
   }
 
+  public SelendroidCapabilities(String aut) {
+    setAut(aut);
+  }
+  
   public SelendroidCapabilities(String serial, String aut) {
     setAut(aut);
     setSerial(serial);
@@ -154,6 +157,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static SelendroidCapabilities emulator(String aut) {
     SelendroidCapabilities caps = new SelendroidCapabilities();
     caps.setAut(aut);
+    caps.setEmulator(true);
     return caps;
   }
 
@@ -169,6 +173,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     caps.setAndroidTarget(platform.name());
     caps.setLocale("en_US");
     caps.setAut(aut);
+    caps.setEmulator(true);
     return caps;
   }
 
