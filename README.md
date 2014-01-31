@@ -13,3 +13,7 @@ You want more details?
 
 Check out our [documentation](http://selendroid.io).
 
+
+License
+-----------
+[The Apache Software License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
