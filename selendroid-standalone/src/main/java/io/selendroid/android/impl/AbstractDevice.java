@@ -92,12 +92,12 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public boolean isDeviceReady() {
-    CommandLine command = adbCommand("shell", "getprop init.svc.bootanim");
+    CommandLine command = adbCommand("shell", "getprop dev.bootcomplete");
     String bootAnimDisplayed = null;
     try {
       bootAnimDisplayed = ShellCommand.exec(command, 20000);
     } catch (ShellCommandException e) {}
-    if (bootAnimDisplayed != null && bootAnimDisplayed.contains("stopped")) {
+    if (bootAnimDisplayed != null && bootAnimDisplayed.contains("1")) {
       return true;
     }
     return false;
