@@ -13,9 +13,11 @@
  */
 package io.selendroid.server;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
+import io.selendroid.ServerInstrumentation;
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
+import io.selendroid.server.handlers.SessionAndPayloadExtractionTestHandler;
+import io.selendroid.server.internal.Capabilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -32,11 +34,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
-import io.selendroid.ServerInstrumentation;
-import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
-import io.selendroid.server.handlers.SessionAndPayloadExtractionTestHandler;
-import io.selendroid.server.internal.Capabilities;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BaseTest {
   public static final int port = 8055;
@@ -74,7 +74,7 @@ public class BaseTest {
   }
 
   public HttpResponse executeRequest(String url, HttpMethod method) throws Exception {
-    HttpRequestBase request = null;
+    HttpRequestBase request;
     if (HttpMethod.GET.equals(method)) {
       request = new HttpGet(url);
     } else if (HttpMethod.POST.equals(method)) {
@@ -102,10 +102,8 @@ public class BaseTest {
 
     @Override
     protected void init() {
-      getHandler.put("/wd/hub/session/:sessionId/element",
-          SessionAndPayloadExtractionTestHandler.class);
-      postHandler.put("/wd/hub/session/:sessionId/element/:id/click",
-          SessionAndIdExtractionTestHandler.class);
+      register(getHandler, new SessionAndPayloadExtractionTestHandler("/wd/hub/session/:sessionId/element"));
+      register(postHandler, new SessionAndIdExtractionTestHandler("/wd/hub/session/:sessionId/element/:id/click"));
     }
   }
 

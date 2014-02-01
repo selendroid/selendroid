@@ -23,6 +23,7 @@ import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class OpenUrl extends RequestHandler {
+
   public OpenUrl(String mappedUri) {
     super(mappedUri);
   }

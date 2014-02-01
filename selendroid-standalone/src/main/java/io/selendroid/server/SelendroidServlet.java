@@ -26,18 +26,16 @@ import io.selendroid.server.handler.InspectorUiHandler;
 import io.selendroid.server.handler.ListSessionsHandler;
 import io.selendroid.server.handler.RequestRedirectHandler;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
+import org.webbitserver.HttpRequest;
 
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.webbitserver.HttpRequest;
-
 public class SelendroidServlet extends BaseServlet {
   private static final Logger log = Logger.getLogger(SelendroidServlet.class.getName());
-  protected Map<String, Class<? extends BaseRequestHandler>> redirectHandler =
-      new HashMap<String, Class<? extends BaseRequestHandler>>();
+  protected Map<String, BaseRequestHandler> redirectHandler = new HashMap<String, BaseRequestHandler>();
   private SelendroidStandaloneDriver driver;
   private SelendroidConfiguration conf;
 
@@ -48,22 +46,22 @@ public class SelendroidServlet extends BaseServlet {
   }
 
   protected void init() {
-    postHandler.put("/wd/hub/session", CreateSessionHandler.class);
-    getHandler.put("/wd/hub/sessions", ListSessionsHandler.class);
-    getHandler.put("/wd/hub/session/:sessionId", GetCapabilities.class);
+    register(postHandler, new CreateSessionHandler("/wd/hub/session"));
+    register(getHandler, new ListSessionsHandler("/wd/hub/sessions"));
+    register(getHandler, new GetCapabilities("/wd/hub/session/:sessionId"));
 
-    getHandler.put("/wd/hub/session/:sessionId/log/types", GetLogTypes.class);
-    postHandler.put("/wd/hub/session/:sessionId/log", GetLogs.class);
-    if (conf.isDeviceScreenshot() == false) {
-      getHandler.put("/wd/hub/session/:sessionId/screenshot", CaptureScreenshot.class);
-    }// otherwise the request will be automatically forwarded to the device
+    register(getHandler, new GetLogTypes("/wd/hub/session/:sessionId/log/types"));
+    register(postHandler, new GetLogs("/wd/hub/session/:sessionId/log"));
+    if (!conf.isDeviceScreenshot()) {
+      register(getHandler, new CaptureScreenshot("/wd/hub/session/:sessionId/screenshot"));
+    } // otherwise the request will be automatically forwarded to the device
 
 
-    getHandler.put("/inspector/session/:sessionId/tree", InspectorTreeHandler.class);
-    getHandler.put("/inspector/session/:sessionId/screenshot", InspectorScreenshotHandler.class);
-    getHandler.put("/inspector/session/:sessionId", InspectorUiHandler.class);
-    deleteHandler.put("/wd/hub/session/:sessionId", DeleteSessionHandler.class);
-    redirectHandler.put("/wd/hub/session/", RequestRedirectHandler.class);
+    register(getHandler, new InspectorTreeHandler("/inspector/session/:sessionId/tree"));
+    register(getHandler, new InspectorScreenshotHandler("/inspector/session/:sessionId/screenshot"));
+    register(getHandler, new InspectorUiHandler("/inspector/session/:sessionId"));
+    register(deleteHandler, new DeleteSessionHandler("/wd/hub/session/:sessionId"));
+    register(redirectHandler, new RequestRedirectHandler("/wd/hub/session/"));
   }
 
   @Override
@@ -96,14 +94,13 @@ public class SelendroidServlet extends BaseServlet {
       }
     }
     if (foundHandler == null) {
-      if (redirectHandler.isEmpty() == false) {
+      if (!redirectHandler.isEmpty()) {
         // trying to find an redirect handler
-        for (Map.Entry<String, Class<? extends BaseRequestHandler>> entry : redirectHandler
-            .entrySet()) {
+        for (Map.Entry<String, BaseRequestHandler> entry : redirectHandler.entrySet()) {
           if (request.uri().startsWith(entry.getKey())) {
             String sessionId =
                 getParameter("/wd/hub/session/:sessionId", request.uri(), ":sessionId", false);
-            handler = instantiateHandler(entry, request);
+            handler = entry.getValue();
             if (driver.isValidSession(sessionId)) {
               request.data().put(SESSION_ID_KEY, sessionId);
             }

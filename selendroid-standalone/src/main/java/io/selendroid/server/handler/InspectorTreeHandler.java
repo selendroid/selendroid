@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 
 public class InspectorTreeHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(InspectorTreeHandler.class.getName());
-  private ActiveSession session = null;
 
   public InspectorTreeHandler(String mappedUri) {
     super(mappedUri);
@@ -41,8 +40,8 @@ public class InspectorTreeHandler extends BaseSelendroidServerHandler {
     String sessionId = getSessionId(request);
     log.info("inspector tree handler, sessionId: " + sessionId);
 
-
-    if (sessionId == null || sessionId.isEmpty() == true) {
+    ActiveSession session;
+    if (sessionId == null || sessionId.isEmpty()) {
       if (getSelendroidDriver(request).getActiveSessions() != null
           && getSelendroidDriver(request).getActiveSessions().size() >= 1) {
         session = getSelendroidDriver(request).getActiveSessions().get(0);

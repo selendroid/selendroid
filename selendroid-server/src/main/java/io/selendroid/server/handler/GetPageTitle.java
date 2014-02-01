@@ -22,6 +22,7 @@ import io.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
 
 public class GetPageTitle extends RequestHandler {
+
   public GetPageTitle(String mappedUri) {
     super(mappedUri);
   }

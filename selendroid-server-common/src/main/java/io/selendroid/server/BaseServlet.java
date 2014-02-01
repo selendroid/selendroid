@@ -17,7 +17,6 @@ import org.webbitserver.HttpControl;
 import org.webbitserver.HttpHandler;
 import org.webbitserver.HttpRequest;
 
-import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,18 +28,18 @@ public abstract class BaseServlet implements HttpHandler {
   public static final String DRIVER_KEY = "DRIVER_KEY";
   public static final int INTERNAL_SERVER_ERROR = 500;
 
-  protected Map<String, Class<? extends BaseRequestHandler>> getHandler =
-      new HashMap<String, Class<? extends BaseRequestHandler>>();
-  protected Map<String, Class<? extends BaseRequestHandler>> postHandler =
-      new HashMap<String, Class<? extends BaseRequestHandler>>();
-  protected Map<String, Class<? extends BaseRequestHandler>> deleteHandler =
-      new HashMap<String, Class<? extends BaseRequestHandler>>();
+  protected Map<String, BaseRequestHandler> getHandler =
+      new HashMap<String, BaseRequestHandler>();
+  protected Map<String, BaseRequestHandler> postHandler =
+      new HashMap<String, BaseRequestHandler>();
+  protected Map<String, BaseRequestHandler> deleteHandler =
+      new HashMap<String, BaseRequestHandler>();
 
-  protected BaseRequestHandler findMatcher(HttpRequest request, HttpResponse response,
-      Map<String, Class<? extends BaseRequestHandler>> handler) {
-    for (Map.Entry<String, Class<? extends BaseRequestHandler>> entry : handler.entrySet()) {
+  // TODO(simons): There must be a more efficient way of handling this.
+  protected BaseRequestHandler findMatcher(HttpRequest request, Map<String, BaseRequestHandler> handler) {
+    for (Map.Entry<String, ? extends BaseRequestHandler> entry : handler.entrySet()) {
       if (isFor(entry.getKey(), request.uri())) {
-        return instantiateHandler(entry, request);
+        return entry.getValue();
       }
     }
     return null;
@@ -52,33 +51,23 @@ public abstract class BaseServlet implements HttpHandler {
    */
   protected abstract void init();
 
-  protected BaseRequestHandler instantiateHandler(
-      Map.Entry<String, Class<? extends BaseRequestHandler>> entry, HttpRequest request) {
-    BaseRequestHandler handler = null;
-    try {
-      Constructor<? extends BaseRequestHandler> handlerConstr =
-          entry.getValue().getConstructor(String.class);
-      handler = handlerConstr.newInstance(entry.getKey());
-    } catch (Exception e) {
-      System.out.println("Error occured while creating handler: " + e);
-    }
-
-    return handler;
-  }
-
   @Override
   public void handleHttpRequest(HttpRequest request, org.webbitserver.HttpResponse webbitResponse,
       HttpControl control) throws Exception {
     HttpResponse response = new WebbitHttpResponse(webbitResponse);
     BaseRequestHandler handler = null;
     if ("GET".equals(request.method())) {
-      handler = findMatcher(request, response, getHandler);
+      handler = findMatcher(request, getHandler);
     } else if ("POST".equals(request.method())) {
-      handler = findMatcher(request, response, postHandler);
+      handler = findMatcher(request, postHandler);
     } else if ("DELETE".equals(request.method())) {
-      handler = findMatcher(request, response, deleteHandler);
+      handler = findMatcher(request, deleteHandler);
     }
     handleRequest(request, response, handler);
+  }
+
+  protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
+    registerOn.put(handler.getMappedUri(), handler);
   }
 
   public abstract void handleRequest(HttpRequest request, HttpResponse response,
@@ -92,7 +81,7 @@ public abstract class BaseServlet implements HttpHandler {
       boolean sectionLengthValidation) {
     String[] configuredSections = configuredUri.split("/");
     String[] currentSections = actualUri.split("/");
-    if (sectionLengthValidation == true) {
+    if (sectionLengthValidation) {
       if (configuredSections.length != currentSections.length) {
         return null;
       }
@@ -135,10 +124,7 @@ public abstract class BaseServlet implements HttpHandler {
   }
 
   protected boolean isNewSessionRequest(HttpRequest request) {
-    if ("POST".equals(request.method()) && "/wd/hub/session".equals(request.uri())) {
-      return true;
-    }
-    return false;
+    return "POST".equals(request.method()) && "/wd/hub/session".equals(request.uri());
   }
 
   protected void handleResponse(HttpRequest request, HttpResponse response,

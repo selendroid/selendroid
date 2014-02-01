@@ -25,6 +25,7 @@ import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class LogElement extends RequestHandler {
+
   public LogElement(String mappedUri) {
     super(mappedUri);
   }

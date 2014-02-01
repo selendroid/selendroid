@@ -33,7 +33,7 @@ public class LogElementTree extends RequestHandler {
         + getSelendroidDriver(request).getSession().getSessionId());
     Object source = getSelendroidDriver(request).getWindowSource();
     if (source instanceof String) {
-      return new SelendroidResponse(getSessionId(request), (String) source);
+      return new SelendroidResponse(getSessionId(request), source);
     }
     JSONObject json = ((JSONObject) source);
 

@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
 public class FrameSwitchHandler extends RequestHandler {
+
   public FrameSwitchHandler(String mappedUri) {
     super(mappedUri);
   }

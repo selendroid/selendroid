@@ -31,7 +31,7 @@ public class SendKeyToActiveElement extends RequestHandler {
   public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("send key to active element command");
 
-    String[] keysToSend = null;
+    String[] keysToSend;
     try {
       keysToSend = extractKeysToSendFromPayload(request);
     } catch (SelendroidException e) {

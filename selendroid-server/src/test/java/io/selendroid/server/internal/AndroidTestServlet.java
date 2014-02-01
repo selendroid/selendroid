@@ -24,10 +24,8 @@ public class AndroidTestServlet extends AndroidServlet {
 
   @Override
   protected void init() {
-    getHandler.put("/wd/hub/session/:sessionId/element",
-        SessionAndPayloadExtractionTestHandler.class);
-    postHandler.put("/wd/hub/session/:sessionId/element/:id/click",
-        SessionAndIdExtractionTestHandler.class);
+    register(getHandler, new SessionAndPayloadExtractionTestHandler("/wd/hub/session/:sessionId/element"));
+    register(postHandler, new SessionAndIdExtractionTestHandler("/wd/hub/session/:sessionId/element/:id/click"));
   }
 
 }

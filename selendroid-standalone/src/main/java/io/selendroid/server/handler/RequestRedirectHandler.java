@@ -49,7 +49,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     if (session.isInvalid()) {
       return new SelendroidResponse(sessionId, 13, new SelendroidException(
           "The test session has been marked as invalid. "
-              + "This happens if a hardware device was diconnected but a "
+              + "This happens if a hardware device was disconnected but a "
               + "test session was still active on the device."));
     }
     String url = "http://localhost:" + session.getSelendroidServerPort() + request.uri();

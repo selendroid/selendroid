@@ -13,17 +13,14 @@
  */
 package io.selendroid.server;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.KnownElements;
 import io.selendroid.server.model.SelendroidDriver;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.webbitserver.HttpRequest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class RequestHandler extends BaseRequestHandler {
 
@@ -64,14 +61,14 @@ public abstract class RequestHandler extends BaseRequestHandler {
     if (valueArr == null || valueArr.length() == 0) {
       throw new SelendroidException("No key to send to an element was found.");
     }
-    List<CharSequence> temp = new ArrayList<CharSequence>();
+
+    String[] toReturn = new String[valueArr.length()];
 
     for (int i = 0; i < valueArr.length(); i++) {
-      temp.add(valueArr.getString(i));
+      toReturn[i] = valueArr.getString(i);
     }
-    String[] keysToSend = temp.toArray(new String[0]);
-    return keysToSend;
+
+    return toReturn;
   }
 
-  
 }

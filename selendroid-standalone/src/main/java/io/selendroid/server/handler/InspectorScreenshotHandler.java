@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(InspectorScreenshotHandler.class.getName());
-  private ActiveSession session = null;
 
   public InspectorScreenshotHandler(String mappedUri) {
     super(mappedUri);
@@ -36,7 +35,8 @@ public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
     String sessionId = getSessionId(request);
     log.info("inspector screenshot handler, sessionId: " + sessionId);
 
-    if (sessionId == null || sessionId.isEmpty() == true) {
+    ActiveSession session;
+    if (sessionId == null || sessionId.isEmpty()) {
       if (getSelendroidDriver(request).getActiveSessions() != null
           && getSelendroidDriver(request).getActiveSessions().size() >= 1) {
         session = getSelendroidDriver(request).getActiveSessions().get(0);
@@ -48,6 +48,7 @@ public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
                 + "To start a test session, add a break point into your test code and run the test in debug mode.");
       }
     } else {
+      // TODO: This doesn't appear to do anything. Delete it?
       session = getSelendroidDriver(request).getActiveSession(sessionId);
     }
     byte[] screenshot = null;

@@ -35,7 +35,7 @@ public class InspectorUiHandler extends BaseSelendroidServerHandler {
     String sessionId = getSessionId(request);
     log.info("inspector command, sessionId: " + sessionId);
     ActiveSession session = null;
-    if (sessionId == null || sessionId.isEmpty() == true) {
+    if (sessionId == null || sessionId.isEmpty()) {
       if (getSelendroidDriver(request).getActiveSessions() != null
           && getSelendroidDriver(request).getActiveSessions().size() >= 1) {
         session = getSelendroidDriver(request).getActiveSessions().get(0);

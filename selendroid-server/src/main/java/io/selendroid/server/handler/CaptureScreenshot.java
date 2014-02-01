@@ -22,6 +22,7 @@ import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class CaptureScreenshot extends RequestHandler {
+
   public CaptureScreenshot(String mappedUri) {
     super(mappedUri);
   }

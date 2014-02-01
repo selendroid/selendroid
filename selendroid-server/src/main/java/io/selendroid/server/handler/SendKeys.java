@@ -38,7 +38,7 @@ public class SendKeys extends RequestHandler {
       return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '" + id
           + "' was not found."));
     }
-    String[] keysToSend = null;
+    String[] keysToSend;
     try {
       keysToSend = extractKeysToSendFromPayload(request);
     } catch (SelendroidException e) {

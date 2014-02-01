@@ -51,7 +51,7 @@ public class FindChildElements extends RequestHandler {
           + elementId + " was not found."));
     }
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
-    List<AndroidElement> elements = null;
+    List<AndroidElement> elements;
     try {
       elements = root.findElements(by);
     } catch (StaleElementReferenceException se) {
