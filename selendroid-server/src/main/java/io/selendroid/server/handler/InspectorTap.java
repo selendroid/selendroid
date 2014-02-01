@@ -27,21 +27,21 @@ import org.webbitserver.HttpRequest;
 
 public class InspectorTap extends RequestHandler {
 
-  public InspectorTap(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public InspectorTap(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("Inspector click on position command");
 
-    JSONObject payload = getPayload();
+    JSONObject payload = getPayload(request);
     int x = payload.getInt("x");
     int y = payload.getInt("y");
 
-    SelendroidDriver driver = getSelendroidDriver();
+    SelendroidDriver driver = getSelendroidDriver(request);
     driver.getTouch().singleTap(new AndroidCoordinates(null, new Point(x, y)));
 
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

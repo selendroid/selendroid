@@ -16,6 +16,7 @@ package io.selendroid.server.handler;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.model.Cookie;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,21 +24,19 @@ import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
 import java.util.Set;
-import io.selendroid.server.model.Cookie;
 
 public class GetCookies extends RequestHandler {
 
-  public GetCookies(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
-
+  public GetCookies(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
 
     SelendroidLogger.log("get cookies of a session command");
-    String url = getSelendroidDriver().getCurrentUrl();
-    Set<Cookie> cookies = getSelendroidDriver().getCookies(url);
+    String url = getSelendroidDriver(request).getCurrentUrl();
+    Set<Cookie> cookies = getSelendroidDriver(request).getCookies(url);
     JSONArray jsonArray = new JSONArray();
     for (Cookie cookie : cookies) {
       JSONObject json = new JSONObject();
@@ -49,7 +48,7 @@ public class GetCookies extends RequestHandler {
       json.put("secure", cookie.isSecure());
       jsonArray.put(json);
     }
-    return new SelendroidResponse(getSessionId(), jsonArray);
+    return new SelendroidResponse(getSessionId(request), jsonArray);
   }
 
   @Override

@@ -24,18 +24,18 @@ import org.webbitserver.HttpRequest;
 
 public class DeleteSession extends RequestHandler {
 
-  public DeleteSession(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public DeleteSession(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException{
+  public Response handle(HttpRequest request) throws JSONException{
     SelendroidLogger.log("delete session command");
-    SelendroidDriver driver = getSelendroidDriver();
+    SelendroidDriver driver = getSelendroidDriver(request);
 
     driver.stopSession();
     SelendroidLogger.log("\n\n\n---------Session STOP ---------------\n\n\n");
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 
   @Override

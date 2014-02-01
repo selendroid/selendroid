@@ -28,25 +28,25 @@ import org.webbitserver.HttpRequest;
 
 public class DoubleTapOnElement extends RequestHandler {
 
-  public DoubleTapOnElement(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public DoubleTapOnElement(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("double tap on element gesture");
-    JSONObject payload = getPayload();
+    JSONObject payload = getPayload(request);
     String elementId = payload.getString("element");
-    TouchScreen touchScreen = getSelendroidDriver().getTouch();
-    AndroidElement element = getElementFromCache(elementId);
+    TouchScreen touchScreen = getSelendroidDriver(request).getTouch();
+    AndroidElement element = getElementFromCache(request, elementId);
     if (element == null) {
-      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '"
+      return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '"
           + elementId + "' was not found."));
     }
     Coordinates elementLocation = element.getCoordinates();
 
     touchScreen.doubleTap(elementLocation);
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 
 }

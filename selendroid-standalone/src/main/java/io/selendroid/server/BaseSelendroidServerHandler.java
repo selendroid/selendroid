@@ -18,12 +18,12 @@ import io.selendroid.server.model.SelendroidStandaloneDriver;
 import org.webbitserver.HttpRequest;
 
 public abstract class BaseSelendroidServerHandler extends BaseRequestHandler {
-  public BaseSelendroidServerHandler(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+
+  public BaseSelendroidServerHandler(String mappedUri) {
+    super(mappedUri);
   }
 
-  protected SelendroidStandaloneDriver getSelendroidDriver() {
-    SelendroidStandaloneDriver driver = (SelendroidStandaloneDriver) request.data().get(BaseServlet.DRIVER_KEY);
-    return driver;
+  protected SelendroidStandaloneDriver getSelendroidDriver(HttpRequest request) {
+    return (SelendroidStandaloneDriver) request.data().get(BaseServlet.DRIVER_KEY);
   }
 }

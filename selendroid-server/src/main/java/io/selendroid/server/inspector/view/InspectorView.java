@@ -18,12 +18,11 @@ import io.selendroid.server.inspector.BaseInspectorViewRenderer;
 import io.selendroid.server.inspector.InspectorServlet;
 import io.selendroid.server.inspector.SelendroidInspectorView;
 import io.selendroid.server.model.SelendroidDriver;
-
-import java.nio.charset.Charset;
-
 import org.json.JSONException;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
+
+import java.nio.charset.Charset;
 
 public class InspectorView extends SelendroidInspectorView {
   public InspectorView(ServerInstrumentation serverInstrumentation, SelendroidDriver driver) {
@@ -33,7 +32,7 @@ public class InspectorView extends SelendroidInspectorView {
   @Override
   public void render(HttpRequest request, HttpResponse response) throws JSONException {
     response.header("Content-Type", "text/html").charset(Charset.forName("UTF-8")).status(200)
-        .content(new MyInspectorViewRenderer().buildHtml()).end();
+        .content(new MyInspectorViewRenderer().buildHtml(request)).end();
   }
 
   public class MyInspectorViewRenderer extends BaseInspectorViewRenderer {
@@ -41,7 +40,7 @@ public class InspectorView extends SelendroidInspectorView {
       return InspectorServlet.INSPECTOR_RESSOURCE + "/" + name;
     }
 
-    public String getScreen() {
+    public String getScreen(HttpRequest request) {
       return getResource(ResourceView.SCREENSHOT);
     }
   }

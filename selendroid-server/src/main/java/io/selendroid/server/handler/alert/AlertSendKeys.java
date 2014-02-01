@@ -22,23 +22,23 @@ import org.webbitserver.HttpRequest;
 
 public class AlertSendKeys extends RequestHandler {
 
-  public AlertSendKeys(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public AlertSendKeys(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    if (!getSelendroidDriver().isAlertPresent()) {
-      return new SelendroidResponse(getSessionId(), 27, "no alert open");
+  public Response handle(HttpRequest request) throws JSONException {
+    if (!getSelendroidDriver(request).isAlertPresent()) {
+      return new SelendroidResponse(getSessionId(request), 27, "no alert open");
     }
     String keysToSend = null;
     try {
-      keysToSend = getPayload().getString("text");
+      keysToSend = getPayload(request).getString("text");
     } catch (SelendroidException e) {
-      return new SelendroidResponse(getSessionId(), 13, e);
+      return new SelendroidResponse(getSessionId(request), 13, e);
     }
-    getSelendroidDriver().setAlertText(keysToSend);
-    return new SelendroidResponse(getSessionId(), null);
+    getSelendroidDriver(request).setAlertText(keysToSend);
+    return new SelendroidResponse(getSessionId(request), null);
   }
 
   @Override

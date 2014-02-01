@@ -28,13 +28,13 @@ import org.webbitserver.HttpRequest;
 
 public class FindElement extends RequestHandler {
 
-  public FindElement(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public FindElement(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    JSONObject payload = getPayload();
+  public Response handle(HttpRequest request) throws JSONException {
+    JSONObject payload = getPayload(request);
     String method = payload.getString("using");
     String selector = payload.getString("value");
     SelendroidLogger.log(String.format("find element command using '%s' with selector '%s'.",
@@ -43,21 +43,21 @@ public class FindElement extends RequestHandler {
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
     AndroidElement element = null;
     try {
-      element = getSelendroidDriver().findElement(by);
+      element = getSelendroidDriver(request).findElement(by);
     } catch (NoSuchElementException e) {
-      return new SelendroidResponse(getSessionId(), 7, e);
+      return new SelendroidResponse(getSessionId(request), 7, e);
     } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(), 32, e);
+      return new SelendroidResponse(getSessionId(request), 32, e);
     }
     JSONObject result = new JSONObject();
 
-    String id = getIdOfKnownElement(element);
+    String id = getIdOfKnownElement(request, element);
 
     if (id == null) {
-      return new SelendroidResponse(getSessionId(), 7, new NoSuchElementException("Element was not found."));
+      return new SelendroidResponse(getSessionId(request), 7, new NoSuchElementException("Element was not found."));
     }
     result.put("ELEMENT", id);
 
-    return new SelendroidResponse(getSessionId(), 0, result);
+    return new SelendroidResponse(getSessionId(request), 0, result);
   }
 }

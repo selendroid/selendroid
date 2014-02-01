@@ -28,17 +28,17 @@ import org.webbitserver.HttpRequest;
 
 public class ElementLocation extends RequestHandler {
 
-  public ElementLocation(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public ElementLocation(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("Get element location command");
-    String id = getElementId();
-    AndroidElement element = getElementFromCache(id);
+    String id = getElementId(request);
+    AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
-      return new SelendroidResponse(getSessionId(), 10, new NoSuchElementException("The element with id '"
+      return new SelendroidResponse(getSessionId(request), 10, new NoSuchElementException("The element with id '"
           + id + "' was not found."));
     }
     Point point = element.getLocation();
@@ -46,9 +46,9 @@ public class ElementLocation extends RequestHandler {
     result.put("x", point.x);
     result.put("y", point.y);
     try {
-      return new SelendroidResponse(getSessionId(), result);
+      return new SelendroidResponse(getSessionId(request), result);
     } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(request), 10, se);
     }
   }
 }

@@ -22,15 +22,15 @@ import org.webbitserver.HttpRequest;
 
 public class SessionAndPayloadExtractionTestHandler extends RequestHandler {
 
-  public SessionAndPayloadExtractionTestHandler(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public SessionAndPayloadExtractionTestHandler(String mappedUri) {
+    super(mappedUri);
   }
 
-  public Response handle() throws JSONException{
-    JSONObject payload = getPayload();
+  public Response handle(HttpRequest request) throws JSONException{
+    JSONObject payload = getPayload(request);
     String method = payload.getString("using");
     String selector = payload.getString("value");
-    return new SelendroidResponse(null, "sessionId#" + getSessionId() + " using#" + method + " value#"
+    return new SelendroidResponse(null, "sessionId#" + getSessionId(request) + " using#" + method + " value#"
         + selector);
   }
 }

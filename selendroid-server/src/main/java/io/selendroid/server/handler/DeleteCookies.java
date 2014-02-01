@@ -23,17 +23,16 @@ import org.webbitserver.HttpRequest;
 
 public class DeleteCookies extends RequestHandler {
 
-  public DeleteCookies(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
-
+  public DeleteCookies(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("delete session cookies command");
-    String url = getSelendroidDriver().getCurrentUrl();
-    getSelendroidDriver().deleteCookie(url);
-    return new SelendroidResponse(getSessionId(), "");
+    String url = getSelendroidDriver(request).getCurrentUrl();
+    getSelendroidDriver(request).deleteCookie(url);
+    return new SelendroidResponse(getSessionId(request), "");
   }
 
   @Override

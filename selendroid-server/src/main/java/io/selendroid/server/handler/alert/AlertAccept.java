@@ -21,17 +21,17 @@ import org.webbitserver.HttpRequest;
 
 public class AlertAccept extends RequestHandler {
 
-  public AlertAccept(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public AlertAccept(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    if (!getSelendroidDriver().isAlertPresent()) {
-      return new SelendroidResponse(getSessionId(), 27, "no alert open");
+  public Response handle(HttpRequest request) throws JSONException {
+    if (!getSelendroidDriver(request).isAlertPresent()) {
+      return new SelendroidResponse(getSessionId(request), 27, "no alert open");
     }
-    getSelendroidDriver().acceptAlert();
-    return new SelendroidResponse(getSessionId(), null);
+    getSelendroidDriver(request).acceptAlert();
+    return new SelendroidResponse(getSessionId(request), null);
   }
 
   @Override

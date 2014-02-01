@@ -16,26 +16,25 @@ package io.selendroid.server.handler;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
+import org.json.JSONException;
+import org.webbitserver.HttpRequest;
 
 import java.util.logging.Logger;
-
-import org.json.JSONException;
-import io.selendroid.server.SelendroidResponse;
-import org.webbitserver.HttpRequest;
 
 public class DeleteSessionHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(DeleteSessionHandler.class.getName());
 
-  public DeleteSessionHandler(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public DeleteSessionHandler(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     log.info("delete session command");
-    SelendroidStandaloneDriver driver = getSelendroidDriver();
-    String sessionId = getSessionId();
+    SelendroidStandaloneDriver driver = getSelendroidDriver(request);
+    String sessionId = getSessionId(request);
     try {
       driver.stopSession(sessionId);
     } catch (AndroidDeviceException e) {

@@ -20,11 +20,11 @@ import org.webbitserver.HttpRequest;
 
 public class SessionAndIdExtractionTestHandler extends RequestHandler {
 
-  public SessionAndIdExtractionTestHandler(HttpRequest request, String mappedUri) {
-    super(request,mappedUri);
+  public SessionAndIdExtractionTestHandler(String mappedUri) {
+    super(mappedUri);
   }
 
-  public Response handle() {
-    return new SelendroidResponse(null, "sessionId#" + getSessionId() + " elementId#" + getElementId());
+  public Response handle(HttpRequest request) {
+    return new SelendroidResponse(null, "sessionId#" + getSessionId(request) + " elementId#" + getElementId(request));
   }
 }

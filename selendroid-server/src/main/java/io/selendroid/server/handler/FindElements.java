@@ -13,11 +13,6 @@
  */
 package io.selendroid.server.handler;
 
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.UnsupportedOperationException;
 import io.selendroid.server.RequestHandler;
@@ -27,17 +22,22 @@ import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.internal.NativeAndroidBySelector;
 import io.selendroid.util.SelendroidLogger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
+
+import java.util.List;
 
 public class FindElements extends RequestHandler {
 
-  public FindElements(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public FindElements(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    JSONObject payload = getPayload();
+  public Response handle(HttpRequest request) throws JSONException {
+    JSONObject payload = getPayload(request);
     String method = payload.getString("using");
     String selector = payload.getString("value");
     SelendroidLogger.log(String.format("find elements command using %s with selector %s.", method,
@@ -46,22 +46,22 @@ public class FindElements extends RequestHandler {
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
     List<AndroidElement> elements = null;
     try {
-      elements = getSelendroidDriver().findElements(by);
+      elements = getSelendroidDriver(request).findElements(by);
     } catch (NoSuchElementException e) {
-      return new SelendroidResponse(getSessionId(), new JSONArray());
+      return new SelendroidResponse(getSessionId(request), new JSONArray());
     } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(), 32, e);
+      return new SelendroidResponse(getSessionId(request), 32, e);
     }
     JSONArray result = new JSONArray();
     for (AndroidElement element : elements) {
       JSONObject jsonElement = new JSONObject();
-      String id = getIdOfKnownElement(element);
+      String id = getIdOfKnownElement(request, element);
       if (id == null) {
         continue;
       }
       jsonElement.put("ELEMENT", id);
       result.put(jsonElement);
     }
-    return new SelendroidResponse(getSessionId(), result);
+    return new SelendroidResponse(getSessionId(request), result);
   }
 }

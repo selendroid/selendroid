@@ -24,18 +24,18 @@ import org.webbitserver.HttpRequest;
 
 public class GoForward extends RequestHandler {
 
-  public GoForward(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public GoForward(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("Go Forward");
     try {
-      getSelendroidDriver().forward();
-      return new SelendroidResponse(getSessionId(), "");
+      getSelendroidDriver(request).forward();
+      return new SelendroidResponse(getSessionId(request), "");
     } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(), 9, e);
+      return new SelendroidResponse(getSessionId(request), 9, e);
     }
   }
 

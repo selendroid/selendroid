@@ -22,18 +22,18 @@ import io.selendroid.server.model.SelendroidDriver;
 import org.webbitserver.HttpRequest;
 
 public class GetPageTitle extends RequestHandler {
-  public GetPageTitle(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public GetPageTitle(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException{
-    SelendroidDriver driver = getSelendroidDriver();
+  public Response handle(HttpRequest request) throws JSONException{
+    SelendroidDriver driver = getSelendroidDriver(request);
 
     try {
-      return new SelendroidResponse(getSessionId(), driver.getTitle());
+      return new SelendroidResponse(getSessionId(request), driver.getTitle());
     } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(), 13, e);
+      return new SelendroidResponse(getSessionId(request), 13, e);
     }
   }
 }

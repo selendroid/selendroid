@@ -26,20 +26,20 @@ import org.webbitserver.HttpRequest;
 
 public class NewSession extends RequestHandler {
 
-  public NewSession(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public NewSession(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("new session command");
-    JSONObject payload = getPayload();
+    JSONObject payload = getPayload(request);
 
     JSONObject desiredCapabilities = payload.getJSONObject("desiredCapabilities");
 
     String sessionID = null;
     try {
-      sessionID = getSelendroidDriver().initializeSession(desiredCapabilities);
+      sessionID = getSelendroidDriver(request).initializeSession(desiredCapabilities);
     } catch (SelendroidException e) {
       SelendroidLogger.log("Error while creating new session: ", e);
       return new SelendroidResponse("", 33, e);

@@ -13,27 +13,28 @@
  */
 package io.selendroid.server.handler;
 
-import java.util.Set;
-
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
-import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
+import java.util.Set;
+
 public class GetWindowHandles extends RequestHandler {
-  public GetWindowHandles(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+
+  public GetWindowHandles(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("get window handles command");
 
-    Set<String> windowHandles = getSelendroidDriver().getWindowHandles();
+    Set<String> windowHandles = getSelendroidDriver(request).getWindowHandles();
 
-    return new SelendroidResponse(getSessionId(), new JSONArray(windowHandles));
+    return new SelendroidResponse(getSessionId(request), new JSONArray(windowHandles));
   }
 }

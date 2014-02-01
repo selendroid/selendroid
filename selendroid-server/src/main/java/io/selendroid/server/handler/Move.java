@@ -24,19 +24,19 @@ import org.webbitserver.HttpRequest;
 
 public class Move extends RequestHandler {
 
-  public Move(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public Move(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("move gesture");
-    JSONObject payload = getPayload();
+    JSONObject payload = getPayload(request);
     int x = payload.getInt("x");
     int y = payload.getInt("y");
 
-    getSelendroidDriver().getTouch().move(x, y);
-    return new SelendroidResponse(getSessionId(), "");
+    getSelendroidDriver(request).getTouch().move(x, y);
+    return new SelendroidResponse(getSessionId(request), "");
   }
 
 }

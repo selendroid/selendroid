@@ -23,20 +23,20 @@ import org.webbitserver.HttpRequest;
 
 public class LogElementTree extends RequestHandler {
 
-  public LogElementTree(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public LogElementTree(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() {
+  public Response handle(HttpRequest request) {
     SelendroidLogger.log("LogElementTree for session: "
-        + getSelendroidDriver().getSession().getSessionId());
-    Object source = getSelendroidDriver().getWindowSource();
+        + getSelendroidDriver(request).getSession().getSessionId());
+    Object source = getSelendroidDriver(request).getWindowSource();
     if (source instanceof String) {
-      return new SelendroidResponse(getSessionId(), (String) source);
+      return new SelendroidResponse(getSessionId(request), (String) source);
     }
     JSONObject json = ((JSONObject) source);
 
-    return new SelendroidResponse(getSessionId(), json.toString());
+    return new SelendroidResponse(getSessionId(request), json.toString());
   }
 }

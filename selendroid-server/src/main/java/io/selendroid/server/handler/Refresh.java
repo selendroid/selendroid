@@ -24,19 +24,19 @@ import org.webbitserver.HttpRequest;
 
 public class Refresh extends RequestHandler {
 
-  public Refresh(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public Refresh(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("Do Refresh");
 
     try {
-      getSelendroidDriver().refresh();
-      return new SelendroidResponse(getSessionId(), "");
+      getSelendroidDriver(request).refresh();
+      return new SelendroidResponse(getSessionId(request), "");
     } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(), 9, e);
+      return new SelendroidResponse(getSessionId(request), 9, e);
     }
   }
 

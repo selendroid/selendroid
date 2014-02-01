@@ -229,12 +229,12 @@ public class AndroidServlet extends BaseServlet {
         DefaultSelendroidDriver driver =
             (DefaultSelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
         if (driver != null && driver.isAlertPresent()) {
-          result = new SelendroidResponse(handler.getSessionId(), 26, "Unhandled Alert present");
+          result = new SelendroidResponse(handler.getSessionId(request), 26, "Unhandled Alert present");
           handleResponse(request, response, (SelendroidResponse) result);
           return;
         }
       }
-      result = handler.handle();
+      result = handler.handle(request);
     } catch (StaleElementReferenceException se) {
       try {
         String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");

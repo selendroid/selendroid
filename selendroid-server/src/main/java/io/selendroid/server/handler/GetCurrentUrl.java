@@ -22,14 +22,15 @@ import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class GetCurrentUrl extends RequestHandler {
-  public GetCurrentUrl(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+
+  public GetCurrentUrl(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException{
+  public Response handle(HttpRequest request) throws JSONException{
     SelendroidLogger.log("get current URL command");
 
-    return new SelendroidResponse(getSessionId(), getSelendroidDriver().getCurrentUrl());
+    return new SelendroidResponse(getSessionId(request), getSelendroidDriver(request).getCurrentUrl());
   }
 }

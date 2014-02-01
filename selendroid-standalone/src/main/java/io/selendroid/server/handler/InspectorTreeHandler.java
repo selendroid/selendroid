@@ -20,33 +20,32 @@ import io.selendroid.server.Response;
 import io.selendroid.server.UiResponse;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
-
-import java.util.logging.Logger;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.webbitserver.HttpRequest;
 
+import java.util.logging.Logger;
+
 public class InspectorTreeHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(InspectorTreeHandler.class.getName());
   private ActiveSession session = null;
 
-  public InspectorTreeHandler(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public InspectorTreeHandler(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    String sessionId = getSessionId();
+  public Response handle(HttpRequest request) throws JSONException {
+    String sessionId = getSessionId(request);
     log.info("inspector tree handler, sessionId: " + sessionId);
 
 
     if (sessionId == null || sessionId.isEmpty() == true) {
-      if (getSelendroidDriver().getActiveSessions() != null
-          && getSelendroidDriver().getActiveSessions().size() >= 1) {
-        session = getSelendroidDriver().getActiveSessions().get(0);
+      if (getSelendroidDriver(request).getActiveSessions() != null
+          && getSelendroidDriver(request).getActiveSessions().size() >= 1) {
+        session = getSelendroidDriver(request).getActiveSessions().get(0);
         log.info("Selected sessionId: " + session.getSessionKey());
       } else {
         return new UiResponse(
@@ -55,7 +54,7 @@ public class InspectorTreeHandler extends BaseSelendroidServerHandler {
                 + "To start a test session, add a break point into your test code and run the test in debug mode.");
       }
     } else {
-      session = getSelendroidDriver().getActiveSession(sessionId);
+      session = getSelendroidDriver(request).getActiveSession(sessionId);
     }
 
     try {

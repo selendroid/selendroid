@@ -25,26 +25,26 @@ import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class LogElement extends RequestHandler {
-  public LogElement(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public LogElement(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("get source of element command");
-    String id = getElementId();
+    String id = getElementId(request);
 
-    AndroidElement element = getElementFromCache(id);
+    AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
-      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '" + id
+      return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '" + id
           + "' was not found."));
     }
     if (element instanceof AndroidWebElement) {
-      return new SelendroidResponse(getSessionId(), 12, new SelendroidException(
+      return new SelendroidResponse(getSessionId(request), 12, new SelendroidException(
           "Get source of element is only supported for native elements."));
     }
 
-    return new SelendroidResponse(getSessionId(), ((AndroidNativeElement) element).toJson().toString());
+    return new SelendroidResponse(getSessionId(request), ((AndroidNativeElement) element).toJson().toString());
   }
 
 }

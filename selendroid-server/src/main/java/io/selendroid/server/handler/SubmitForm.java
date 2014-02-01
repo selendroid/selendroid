@@ -25,24 +25,24 @@ import org.webbitserver.HttpRequest;
 
 public class SubmitForm extends RequestHandler {
 
-  public SubmitForm(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public SubmitForm(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("Submit element command");
-    String id = getElementId();
-    AndroidElement element = getElementFromCache(id);
+    String id = getElementId(request);
+    AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
-      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '"
+      return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '"
           + id + "' was not found."));
     }
-    String sessionId = getSessionId();
+    String sessionId = getSessionId(request);
     try {
       element.submit();
     } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(request), 10, se);
     } catch (Exception e) {
       SelendroidLogger.log("error while submitting the element: ", e);
       return new SelendroidResponse(sessionId, 13, e);

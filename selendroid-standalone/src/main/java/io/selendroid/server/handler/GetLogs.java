@@ -24,19 +24,19 @@ import org.webbitserver.HttpRequest;
 
 public class GetLogs extends BaseSelendroidServerHandler {
 
-  public GetLogs(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public GetLogs(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     // TODO probably should look at the payload for what type of logs ('driver')
     // but really we only support getting the adb logcat
-    ActiveSession session = getSelendroidDriver().getActiveSession(getSessionId());
+    ActiveSession session = getSelendroidDriver(request).getActiveSession(getSessionId(request));
     JSONArray logs = new JSONArray();
     for (LogEntry l : session.getDevice().getLogs()) {
       logs.put(l.toString());
     }
-    return new SelendroidResponse(getSessionId(), logs);
+    return new SelendroidResponse(getSessionId(request), logs);
   }
 }

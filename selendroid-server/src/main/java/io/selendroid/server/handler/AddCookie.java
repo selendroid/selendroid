@@ -18,35 +18,35 @@ import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.Cookie;
 import io.selendroid.util.SelendroidLogger;
-import java.util.Date;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
+import java.util.Date;
+
 public class AddCookie extends RequestHandler {
 
-  public AddCookie(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public AddCookie(String mappedUri) {
+    super(mappedUri);
 
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
 
     Date expiry = null;
     SelendroidLogger.log("set cookie to a session command");
-    String url = getSelendroidDriver().getCurrentUrl();
-    JSONObject cookie = getPayload().getJSONObject("cookie");
+    String url = getSelendroidDriver(request).getCurrentUrl();
+    JSONObject cookie = getPayload(request).getJSONObject("cookie");
     String name = cookie.get("name").toString();
     String value = cookie.get("value").toString();
     if (cookie.has("expiry")) {
-      expiry = new Date(new Long(cookie.get("expiry").toString()).longValue());
+      expiry = new Date(new Long(cookie.get("expiry").toString()));
     }
 
     Cookie cookie1 = new Cookie(name, value, "/", expiry);
-    getSelendroidDriver().addCookie(url, cookie1);
-    return new SelendroidResponse(getSessionId(), "");
+    getSelendroidDriver(request).addCookie(url, cookie1);
+    return new SelendroidResponse(getSessionId(request), "");
   }
 
   @Override

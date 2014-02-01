@@ -21,19 +21,19 @@ import org.webbitserver.HttpRequest;
 
 public class Alert extends RequestHandler {
 
-  public Alert(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public Alert(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     System.out.println("getting alert text");
-    if (!getSelendroidDriver().isAlertPresent()) {
+    if (!getSelendroidDriver(request).isAlertPresent()) {
       System.out.println("alert NOT present");
-      return new SelendroidResponse(getSessionId(), 27, "no alert open");
+      return new SelendroidResponse(getSessionId(request), 27, "no alert open");
     }
     System.out.println("getting the text");
-    return new SelendroidResponse(getSessionId(), getSelendroidDriver().getAlertText());
+    return new SelendroidResponse(getSessionId(request), getSelendroidDriver(request).getAlertText());
   }
 
   @Override

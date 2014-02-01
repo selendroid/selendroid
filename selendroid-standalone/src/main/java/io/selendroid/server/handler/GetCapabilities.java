@@ -13,31 +13,30 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.BaseSelendroidServerHandler;
-import io.selendroid.server.Response;
-
-import java.util.logging.Logger;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.BaseSelendroidServerHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
+
+import java.util.logging.Logger;
 
 public class GetCapabilities extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(GetCapabilities.class.getName());
 
-  public GetCapabilities(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public GetCapabilities(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     log.info("get capabilities command");
-    String sessionId = getSessionId();
+    String sessionId = getSessionId(request);
 
-    SelendroidCapabilities caps = getSelendroidDriver().getSessionCapabilities(sessionId);
+    SelendroidCapabilities caps = getSelendroidDriver(request).getSessionCapabilities(sessionId);
     if (caps == null) {
       return new SelendroidResponse(sessionId, 13, new SelendroidException("Session was not found"));
     }

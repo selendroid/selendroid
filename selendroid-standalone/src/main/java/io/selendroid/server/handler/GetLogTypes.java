@@ -22,12 +22,12 @@ import org.webbitserver.HttpRequest;
 
 public class GetLogTypes extends BaseSelendroidServerHandler {
 
-  public GetLogTypes(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public GetLogTypes(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    return new SelendroidResponse(getSessionId(), new JSONArray("logcat"));
+  public Response handle(HttpRequest request) throws JSONException {
+    return new SelendroidResponse(getSessionId(request), new JSONArray("logcat"));
   }
 }

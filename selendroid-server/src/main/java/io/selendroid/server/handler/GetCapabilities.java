@@ -24,16 +24,17 @@ import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class GetCapabilities extends RequestHandler {
-  public GetCapabilities(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+
+  public GetCapabilities(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("get capabilities command");
-    Session session = getSelendroidDriver().getSession();
+    Session session = getSelendroidDriver(request).getSession();
 
-    JSONObject caps = getSelendroidDriver().getSessionCapabilities(session.getSessionId());
+    JSONObject caps = getSelendroidDriver(request).getSessionCapabilities(session.getSessionId());
 
     return new SelendroidResponse(session.getSessionId(), caps);
   }

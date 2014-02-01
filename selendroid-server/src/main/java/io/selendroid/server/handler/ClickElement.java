@@ -26,31 +26,31 @@ import org.webbitserver.HttpRequest;
 
 public class ClickElement extends RequestHandler {
 
-  public ClickElement(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public ClickElement(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("Click element command");
-    String id = getElementId();
-    AndroidElement element = getElementFromCache(id);
+    String id = getElementId(request);
+    AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
-      return new SelendroidResponse(getSessionId(), 10, new StaleElementReferenceException(
+      return new SelendroidResponse(getSessionId(request), 10, new StaleElementReferenceException(
           "The element with id '" + id + "' was not found."));
     }
     try {
       element.click();
     } catch (ElementNotVisibleException ev) {
-      return new SelendroidResponse(getSessionId(), 11, ev);
+      return new SelendroidResponse(getSessionId(request), 11, ev);
     } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(request), 10, se);
     } catch (IllegalStateException ise) {
-      return new SelendroidResponse(getSessionId(), 10, ise);
+      return new SelendroidResponse(getSessionId(request), 10, ise);
     } catch (Exception e) {
       SelendroidLogger.log("error while clicking the element: ", e);
-      return new SelendroidResponse(getSessionId(), 13, e);
+      return new SelendroidResponse(getSessionId(request), 13, e);
     }
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

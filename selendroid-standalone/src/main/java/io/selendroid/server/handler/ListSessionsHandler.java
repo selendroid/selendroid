@@ -15,30 +15,29 @@ package io.selendroid.server.handler;
 
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.ActiveSession;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.webbitserver.HttpRequest;
 
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import io.selendroid.server.SelendroidResponse;
-import org.webbitserver.HttpRequest;
-
 public class ListSessionsHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(ListSessionsHandler.class.getName());
 
-  public ListSessionsHandler(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public ListSessionsHandler(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     log.info("list sessions command");
     JSONArray sessions = new JSONArray();
-    List<ActiveSession> activeSessions = getSelendroidDriver().getActiveSessions();
-    if (activeSessions != null && activeSessions.isEmpty() == false) {
+    List<ActiveSession> activeSessions = getSelendroidDriver(request).getActiveSessions();
+    if (activeSessions != null && !activeSessions.isEmpty()) {
       for (ActiveSession session : activeSessions) {
         JSONObject sessionResponse = new JSONObject();
         sessionResponse.put("id", session.getSessionKey());

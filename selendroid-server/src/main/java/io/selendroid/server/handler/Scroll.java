@@ -25,27 +25,27 @@ import org.webbitserver.HttpRequest;
 
 public class Scroll extends RequestHandler {
 
-  public Scroll(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public Scroll(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    String elementId = getElementId();
-    JSONObject payload = getPayload();
+  public Response handle(HttpRequest request) throws JSONException {
+    String elementId = getElementId(request);
+    JSONObject payload = getPayload(request);
     int xoffset = payload.getInt("xoffset");
     int yoffset = payload.getInt("yoffset");
     if (elementId == null) {
-      getSelendroidDriver().getTouch().scroll(xoffset, yoffset);
+      getSelendroidDriver(request).getTouch().scroll(xoffset, yoffset);
     } else {
-      AndroidElement element = getElementFromCache(elementId);
+      AndroidElement element = getElementFromCache(request, elementId);
       if (element == null) {
-        return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '"
+        return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '"
             + elementId + "' was not found."));
       }
-      getSelendroidDriver().getTouch().scroll(element.getCoordinates(), xoffset, yoffset);
+      getSelendroidDriver(request).getTouch().scroll(element.getCoordinates(), xoffset, yoffset);
     }
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 
 }

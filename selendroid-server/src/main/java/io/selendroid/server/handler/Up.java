@@ -24,20 +24,20 @@ import org.webbitserver.HttpRequest;
 
 public class Up extends RequestHandler {
 
-  public Up(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public Up(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("up gesture");
-    JSONObject payload = getPayload();
+    JSONObject payload = getPayload(request);
     int x = payload.getInt("x");
     int y = payload.getInt("y");
-    TouchScreen touchScreen = getSelendroidDriver().getTouch();
+    TouchScreen touchScreen = getSelendroidDriver(request).getTouch();
 
     touchScreen.up(x, y);
 
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

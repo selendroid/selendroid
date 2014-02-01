@@ -13,19 +13,19 @@ import org.webbitserver.HttpRequest;
  */
 public class SetScreenState extends RequestHandler {
 
-  public SetScreenState(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public SetScreenState(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    JSONObject payload = getPayload();
+  public Response handle(HttpRequest request) throws JSONException {
+    JSONObject payload = getPayload(request);
     int percentage = payload.getInt("brightness");
 
     float brightness = percentage / 100f;
-    TouchScreen touch = getSelendroidDriver().getTouch();
+    TouchScreen touch = getSelendroidDriver(request).getTouch();
     touch.setBrightness(brightness);
 
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

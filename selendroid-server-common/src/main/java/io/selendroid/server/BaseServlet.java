@@ -13,14 +13,14 @@
  */
 package io.selendroid.server;
 
+import org.webbitserver.HttpControl;
+import org.webbitserver.HttpHandler;
+import org.webbitserver.HttpRequest;
+
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.webbitserver.HttpControl;
-import org.webbitserver.HttpHandler;
-import org.webbitserver.HttpRequest;
 
 public abstract class BaseServlet implements HttpHandler {
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
@@ -57,8 +57,8 @@ public abstract class BaseServlet implements HttpHandler {
     BaseRequestHandler handler = null;
     try {
       Constructor<? extends BaseRequestHandler> handlerConstr =
-          entry.getValue().getConstructor(HttpRequest.class, String.class);
-      handler = handlerConstr.newInstance(request, entry.getKey());
+          entry.getValue().getConstructor(String.class);
+      handler = handlerConstr.newInstance(entry.getKey());
     } catch (Exception e) {
       System.out.println("Error occured while creating handler: " + e);
     }

@@ -23,19 +23,20 @@ import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
 public class GetWindowSize  extends RequestHandler {
-    public GetWindowSize(HttpRequest request, String mappedUri) {
-        super(request, mappedUri);
+
+    public GetWindowSize(String mappedUri) {
+        super(mappedUri);
     }
 
     @Override
-    public Response handle() throws JSONException {
+    public Response handle(HttpRequest request) throws JSONException {
         SelendroidLogger.log("get window size command");
 
-        Dimension size = getSelendroidDriver().getWindowSize();
+        Dimension size = getSelendroidDriver(request).getWindowSize();
         JSONObject dim = new JSONObject();
         dim.put("width", size.getWidth());
         dim.put("height", size.getHeight());
 
-        return new SelendroidResponse(getSessionId(), dim);
+        return new SelendroidResponse(getSessionId(request), dim);
     }
 }

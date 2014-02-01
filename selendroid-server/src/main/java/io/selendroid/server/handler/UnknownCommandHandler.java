@@ -23,13 +23,13 @@ import org.webbitserver.HttpRequest;
 
 public class UnknownCommandHandler extends RequestHandler {
 
-  public UnknownCommandHandler(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public UnknownCommandHandler(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    return new SelendroidResponse(getSessionId(), 9, new SelendroidException(
+  public Response handle(HttpRequest request) throws JSONException {
+    return new SelendroidResponse(getSessionId(request), 9, new SelendroidException(
         "The requested command is currently not yet supported by selendroid."));
   }
 }

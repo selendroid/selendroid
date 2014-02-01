@@ -18,29 +18,28 @@ import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.UiResponse;
 import io.selendroid.server.model.ActiveSession;
-
-import java.util.logging.Logger;
-
 import org.json.JSONException;
 import org.webbitserver.HttpRequest;
+
+import java.util.logging.Logger;
 
 public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(InspectorScreenshotHandler.class.getName());
   private ActiveSession session = null;
 
-  public InspectorScreenshotHandler(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public InspectorScreenshotHandler(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    String sessionId = getSessionId();
+  public Response handle(HttpRequest request) throws JSONException {
+    String sessionId = getSessionId(request);
     log.info("inspector screenshot handler, sessionId: " + sessionId);
 
     if (sessionId == null || sessionId.isEmpty() == true) {
-      if (getSelendroidDriver().getActiveSessions() != null
-          && getSelendroidDriver().getActiveSessions().size() >= 1) {
-        session = getSelendroidDriver().getActiveSessions().get(0);
+      if (getSelendroidDriver(request).getActiveSessions() != null
+          && getSelendroidDriver(request).getActiveSessions().size() >= 1) {
+        session = getSelendroidDriver(request).getActiveSessions().get(0);
         log.info("Selected sessionId: " + session.getSessionKey());
       } else {
         return new UiResponse(
@@ -49,11 +48,11 @@ public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
                 + "To start a test session, add a break point into your test code and run the test in debug mode.");
       }
     } else {
-      session = getSelendroidDriver().getActiveSession(sessionId);
+      session = getSelendroidDriver(request).getActiveSession(sessionId);
     }
     byte[] screenshot = null;
     try {
-      screenshot = getSelendroidDriver().takeScreenshot(sessionId);
+      screenshot = getSelendroidDriver(request).takeScreenshot(sessionId);
     } catch (AndroidDeviceException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

@@ -27,24 +27,24 @@ import org.webbitserver.HttpRequest;
 
 public class Flick extends RequestHandler {
 
-  public Flick(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public Flick(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("flick gesture");
 
-    JSONObject payload = getPayload();
-    TouchScreen touchScreen = getSelendroidDriver().getTouch();
+    JSONObject payload = getPayload(request);
+    TouchScreen touchScreen = getSelendroidDriver(request).getTouch();
     if (payload.has("element")) {
       String elementId=payload.getString("element");
       int xOffset = payload.getInt("xoffset");
       int yOffset = payload.getInt("yoffset");
       int speed = payload.getInt("speed");
-      AndroidElement element = getElementFromCache(elementId);
+      AndroidElement element = getElementFromCache(request, elementId);
       if (element == null) {
-        return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '"
+        return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '"
             + elementId + "' was not found."));
       }
       Coordinates elementLocation = element.getCoordinates();
@@ -55,7 +55,7 @@ public class Flick extends RequestHandler {
       touchScreen.flick(xSpeed, ySpeed);
     }
     
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 
 }

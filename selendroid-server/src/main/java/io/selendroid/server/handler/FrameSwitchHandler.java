@@ -21,14 +21,14 @@ import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
 public class FrameSwitchHandler extends RequestHandler {
-  public FrameSwitchHandler(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public FrameSwitchHandler(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    JSONObject payload = getPayload();
-    getSelendroidDriver().setFrameContext(payload.get("id"));
-    return new SelendroidResponse(getSessionId(), null);
+  public Response handle(HttpRequest request) throws JSONException {
+    JSONObject payload = getPayload(request);
+    getSelendroidDriver(request).setFrameContext(payload.get("id"));
+    return new SelendroidResponse(getSessionId(request), null);
   }
 }

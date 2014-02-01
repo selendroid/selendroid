@@ -23,23 +23,23 @@ import org.webbitserver.HttpRequest;
 
 public class SendKeyToActiveElement extends RequestHandler {
 
-  public SendKeyToActiveElement(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public SendKeyToActiveElement(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("send key to active element command");
 
     String[] keysToSend = null;
     try {
-      keysToSend = extractKeysToSendFromPayload();
+      keysToSend = extractKeysToSendFromPayload(request);
     } catch (SelendroidException e) {
-      return new SelendroidResponse(getSessionId(), 13, e);
+      return new SelendroidResponse(getSessionId(request), 13, e);
     }
 
-    getSelendroidDriver().getKeyboard().sendKeys(keysToSend);
+    getSelendroidDriver(request).getKeyboard().sendKeys(keysToSend);
 
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

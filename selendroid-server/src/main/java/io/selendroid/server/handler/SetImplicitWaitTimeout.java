@@ -22,18 +22,19 @@ import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
 public class SetImplicitWaitTimeout extends RequestHandler {
-  public SetImplicitWaitTimeout(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+
+  public SetImplicitWaitTimeout(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("set implicit wait timeout called");
 
-    Long timeout = getPayload().getLong("ms");
+    Long timeout = getPayload(request).getLong("ms");
     
     ServerInstrumentation.getInstance().setImplicitWait(timeout);
 
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

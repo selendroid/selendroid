@@ -23,19 +23,19 @@ import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class OpenUrl extends RequestHandler {
-  public OpenUrl(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public OpenUrl(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("Open URL command");
-    String url = getPayload().getString("url");
+    String url = getPayload(request).getString("url");
     if (url == null || url.isEmpty()) {
-      return new SelendroidResponse(getSessionId(), 13, new SelendroidException(
+      return new SelendroidResponse(getSessionId(request), 13, new SelendroidException(
           "Not able to open Url because Url is missing."));
     }
-    getSelendroidDriver().get(url);
-    return new SelendroidResponse(getSessionId(), "");
+    getSelendroidDriver(request).get(url);
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

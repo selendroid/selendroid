@@ -14,9 +14,10 @@
 package io.selendroid.server.inspector;
 
 import org.json.JSONException;
+import org.webbitserver.HttpRequest;
 
 public abstract class BaseInspectorViewRenderer {
-  public String buildHtml() throws JSONException {
+  public String buildHtml(HttpRequest request) throws JSONException {
     StringBuilder b = new StringBuilder();
 
     appendLine(b, "<!DOCTYPE html>");
@@ -82,7 +83,7 @@ public abstract class BaseInspectorViewRenderer {
     // appendLine(b, "<img src='"getFrame()"'/>");
 
     appendLine(b, "<div id='screen'>");
-    appendLine(b, "<img id='screenshot' src='" + getScreen() + "\' width='320px'/>");
+    appendLine(b, "<img id='screenshot' src='" + getScreen(request) + "\' width='320px'/>");
     appendLine(b, "</div>");
     appendLine(b, "</div>");
     appendLine(b, "</div>");
@@ -138,7 +139,7 @@ public abstract class BaseInspectorViewRenderer {
 
   public abstract String getResource(String name);
 
-  public abstract String getScreen();
+  public abstract String getScreen(HttpRequest request);
 
   private String getFrame() {
     return getResource("frameNexus4.png");

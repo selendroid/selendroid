@@ -26,25 +26,25 @@ import org.webbitserver.HttpRequest;
 
 public class GetElementSelected extends RequestHandler {
 
-  public GetElementSelected(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public GetElementSelected(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("is element selected command");
-    String id = getElementId();
+    String id = getElementId(request);
 
-    AndroidElement element = getElementFromCache(id);
+    AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
-      return new SelendroidResponse(getSessionId(), 10, new SelendroidException("Element with id '" + id
+      return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '" + id
           + "' was not found."));
     }
     boolean selected=element.isSelected();
     try {
-      return new SelendroidResponse(getSessionId(), selected);
+      return new SelendroidResponse(getSessionId(request), selected);
     } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(request), 10, se);
     }
   }
 }

@@ -23,16 +23,16 @@ import org.webbitserver.HttpRequest;
 
 public class GoBack extends RequestHandler {
 
-  public GoBack(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public GoBack(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("Go Back");
 
-    getSelendroidDriver().back();
-    return new SelendroidResponse(getSessionId(), "");
+    getSelendroidDriver(request).back();
+    return new SelendroidResponse(getSessionId(request), "");
   }
 
 }

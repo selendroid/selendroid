@@ -26,26 +26,26 @@ import org.webbitserver.HttpRequest;
 
 public class SwitchWindow extends RequestHandler {
 
-  public SwitchWindow(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public SwitchWindow(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("Switch Window command");
-    String windowName = getPayload().getString("name");
+    String windowName = getPayload(request).getString("name");
     if (windowName == null || windowName.isEmpty()) {
-      return new SelendroidResponse(getSessionId(), 13, new SelendroidException(
+      return new SelendroidResponse(getSessionId(request), 13, new SelendroidException(
           "Window name is missing."));
     }
-    SelendroidDriver driver = getSelendroidDriver();
+    SelendroidDriver driver = getSelendroidDriver(request);
     if (windowName.startsWith(WindowType.NATIVE_APP.name())
         || windowName.startsWith(WindowType.WEBVIEW.name())) {
       driver.switchDriverMode(windowName);
     } else {
-      return new SelendroidResponse(getSessionId(), 23, new SelendroidException(
+      return new SelendroidResponse(getSessionId(request), 23, new SelendroidException(
           "Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
     }
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

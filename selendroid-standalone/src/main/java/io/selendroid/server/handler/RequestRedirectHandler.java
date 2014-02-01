@@ -32,16 +32,16 @@ import java.util.logging.Logger;
 public class RequestRedirectHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(RequestRedirectHandler.class.getName());
 
-  public RequestRedirectHandler(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public RequestRedirectHandler(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
-    String sessionId = getSessionId();
+  public Response handle(HttpRequest request) throws JSONException {
+    String sessionId = getSessionId(request);
     log.info("forward request command: for session " + sessionId);
 
-    ActiveSession session = getSelendroidDriver().getActiveSession(sessionId);
+    ActiveSession session = getSelendroidDriver(request).getActiveSession(sessionId);
     if (session == null) {
       return new SelendroidResponse(sessionId, 13, new SelendroidException(
           "No session found for given sessionId: " + sessionId));
@@ -61,7 +61,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     int retries = 3;
     while (retries-- > 0) {
       try {
-        response = redirectRequest(session, url, method);
+        response = redirectRequest(request, session, url, method);
         break;
       } catch (Exception e) {
         if (retries == 0) {
@@ -97,7 +97,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     return new SelendroidResponse(sessionId, status, value);
   }
 
-  private JSONObject redirectRequest(ActiveSession session, String url, String method)
+  private JSONObject redirectRequest(HttpRequest request, ActiveSession session, String url, String method)
       throws Exception, JSONException {
 
     HttpResponse r = null;
@@ -106,7 +106,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
       r = HttpClientUtil.executeRequest(url, HttpMethod.GET);
     } else if ("post".equalsIgnoreCase(method)) {
       log.info("POST redirect to: " + url);
-      JSONObject payload = getPayload();
+      JSONObject payload = getPayload(request);
       log.info("Payload? " + payload);
       r =
           HttpClientUtil.executeRequestWithPayload(url, session.getSelendroidServerPort(),

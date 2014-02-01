@@ -22,16 +22,16 @@ import io.selendroid.util.SelendroidLogger;
 import org.webbitserver.HttpRequest;
 
 public class CaptureScreenshot extends RequestHandler {
-  public CaptureScreenshot(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public CaptureScreenshot(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException{
+  public Response handle(HttpRequest request) throws JSONException{
     SelendroidLogger.log("take screenshot command");
-    byte[] rawPng = getSelendroidDriver().takeScreenshot();
+    byte[] rawPng = getSelendroidDriver(request).takeScreenshot();
     String base64Png = new Base64Encoder().encode(rawPng);
     
-    return new SelendroidResponse(getSessionId(), base64Png);
+    return new SelendroidResponse(getSessionId(request), base64Png);
   }
 }

@@ -25,27 +25,27 @@ import org.webbitserver.HttpRequest;
 
 public class ClearElement extends RequestHandler {
 
-  public ClearElement(HttpRequest request,String mappedUri) {
-    super(request,mappedUri);
+  public ClearElement(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle()throws JSONException {
+  public Response handle(HttpRequest request)throws JSONException {
     SelendroidLogger.log("Clear element command");
-    String id = getElementId();
-    AndroidElement element = getElementFromCache(id);
+    String id = getElementId(request);
+    AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
-      return new SelendroidResponse(getSessionId(), 10, new NoSuchElementException("The element with id '"
+      return new SelendroidResponse(getSessionId(request), 10, new NoSuchElementException("The element with id '"
           + id + "' was not found."));
     }
     try {
       element.clear();
     } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(), 10, se);
+      return new SelendroidResponse(getSessionId(request), 10, se);
     } catch (Exception e) {
       SelendroidLogger.log("error while clearing the element: ", e);
-      return new SelendroidResponse(getSelendroidDriver().getSession().getSessionId(), 33, e);
+      return new SelendroidResponse(getSelendroidDriver(request).getSession().getSessionId(), 33, e);
     }
-    return new SelendroidResponse(getSessionId(), "");
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

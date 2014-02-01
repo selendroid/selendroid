@@ -27,25 +27,25 @@ import org.webbitserver.HttpRequest;
 
 public class ExecuteScript extends RequestHandler {
 
-  public ExecuteScript(HttpRequest request, String mappedUri) {
-    super(request, mappedUri);
+  public ExecuteScript(String mappedUri) {
+    super(mappedUri);
   }
 
   @Override
-  public Response handle() throws JSONException {
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.log("execute script command");
-    JSONObject payload = getPayload();
+    JSONObject payload = getPayload(request);
     String script = payload.getString("script");
     JSONArray args = payload.optJSONArray("args");
     Object value = null;
     try {
       if (args.length() > 0) {
-        value = getSelendroidDriver().executeScript(script, args);
+        value = getSelendroidDriver(request).executeScript(script, args);
       } else {
-        value = getSelendroidDriver().executeScript(script);
+        value = getSelendroidDriver(request).executeScript(script);
       }
     } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(), 13, e);
+      return new SelendroidResponse(getSessionId(request), 13, e);
     }
     if (value instanceof String) {
       String result = (String) value;
@@ -53,17 +53,17 @@ public class ExecuteScript extends RequestHandler {
         JSONObject json = new JSONObject(result);
         int status = json.optInt("status");
         if (0 != status) {
-          return new SelendroidResponse(getSessionId(), status, new SelendroidException(
+          return new SelendroidResponse(getSessionId(request), status, new SelendroidException(
               json.optString("value")));
         }
         if (json.isNull("value")) {
-          return new SelendroidResponse(getSessionId(), null);
+          return new SelendroidResponse(getSessionId(request), null);
         } else {
-          return new SelendroidResponse(getSessionId(), json.get("value"));
+          return new SelendroidResponse(getSessionId(request), json.get("value"));
         }
       }
     }
 
-    return new SelendroidResponse(getSessionId(), value);
+    return new SelendroidResponse(getSessionId(request), value);
   }
 }

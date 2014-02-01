@@ -111,9 +111,7 @@ public class BaseTest {
 
   protected HttpResponse executeCreateSessionRequest() throws Exception {
     String url = "http://" + host + ":" + port + "/wd/hub/session";
-    HttpResponse response =
-        executeRequestWithPayload(url, HttpMethod.POST, getCapabilityPayload().toString());
-    return response;
+    return executeRequestWithPayload(url, HttpMethod.POST, getCapabilityPayload().toString());
   }
 
   protected JSONObject getCapabilityPayload() {
