@@ -19,7 +19,7 @@ import io.selendroid.server.handlers.SessionAndPayloadExtractionTestHandler;
 
 public class AndroidTestServlet extends AndroidServlet {
   public AndroidTestServlet() {
-    super(null, null);
+    super(null);
   }
 
   @Override

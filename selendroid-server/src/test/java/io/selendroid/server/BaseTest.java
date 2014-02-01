@@ -13,7 +13,6 @@
  */
 package io.selendroid.server;
 
-import android.app.Activity;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
@@ -49,8 +48,6 @@ public class BaseTest {
   public void setup() throws Exception{
     ServerInstrumentation instrumentation = mock(ServerInstrumentation.class);
     when(instrumentation.getServerVersion()).thenReturn("0.2");
-    Activity currentActivity = mock(Activity.class);
-    when(instrumentation.getCurrentActivity()).thenReturn(currentActivity);
     server = new AndroidServer(port, instrumentation);
     server.start();
   }
@@ -100,7 +97,7 @@ public class BaseTest {
   /** Configuring AndroidServlet to use special test handler. */
   public class AndroidTestServlet extends AndroidServlet {
     public AndroidTestServlet() {
-      super(null, null);
+      super(null);
     }
 
     @Override
