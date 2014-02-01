@@ -34,8 +34,7 @@ public class GetStatusTest extends BaseTest {
 
     Assert.assertFalse(result.has("sessionId"));
     JSONObject value = result.getJSONObject("value");
-    Assert.assertEquals("0.2", value.getJSONObject("build").getString("version")
-               );
+    Assert.assertEquals("0.2", value.getJSONObject("build").getString("version"));
   }
 
   @Test

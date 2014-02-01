@@ -34,7 +34,7 @@ public class InspectorUiHandler extends BaseSelendroidServerHandler {
   public Response handle(HttpRequest request) throws JSONException {
     String sessionId = getSessionId(request);
     log.info("inspector command, sessionId: " + sessionId);
-    ActiveSession session = null;
+    ActiveSession session;
     if (sessionId == null || sessionId.isEmpty()) {
       if (getSelendroidDriver(request).getActiveSessions() != null
           && getSelendroidDriver(request).getActiveSessions().size() >= 1) {
