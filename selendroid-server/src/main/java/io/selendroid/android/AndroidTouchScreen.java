@@ -182,21 +182,21 @@ public class AndroidTouchScreen implements TouchScreen {
     for (View view : scrollableContainer) {
       if (view instanceof AbsListView) {
         final AbsListView absListView = (AbsListView) view;
-        instrumentation.runOnUiThread(new Runnable() {
+        instrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
           public void run() {
             absListView.scrollBy(xOffset, yOffset);
           }
         });
       } else if (view instanceof ScrollView) {
         final ScrollView scrollView = (ScrollView) view;
-        instrumentation.runOnUiThread(new Runnable() {
+        instrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
           public void run() {
             scrollView.scrollBy(xOffset, yOffset);
           }
         });
       } else if (view instanceof WebView) {
         final WebView webView = (WebView) view;
-        instrumentation.runOnUiThread(new Runnable() {
+        instrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
           public void run() {
             webView.scrollBy(xOffset, yOffset);
           }
@@ -218,14 +218,14 @@ public class AndroidTouchScreen implements TouchScreen {
         // ignore
       } else if (view instanceof ScrollView) {
         final ScrollView scrollView = (ScrollView) view;
-        instrumentation.runOnUiThread(new Runnable() {
+        instrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
           public void run() {
             scrollView.fling(speedY);
           }
         });
       } else if (view instanceof WebView) {
         final WebView webView = (WebView) view;
-        instrumentation.runOnUiThread(new Runnable() {
+        instrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
           public void run() {
             webView.flingScroll(speedX, speedY);
           }

@@ -201,7 +201,7 @@ public class SelendroidWebDriver {
 
   private String executeJavascriptInWebView(final String script) {
     result = null;
-    ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
+    ServerInstrumentation.getInstance().getCurrentActivity().runOnUiThread(new Runnable() {
       public void run() {
         if (webview.getUrl() == null) {
           return;
@@ -278,7 +278,7 @@ public class SelendroidWebDriver {
 
 
   public void get(final String url) {
-    serverInstrumentation.runOnUiThread(new Runnable() {
+    serverInstrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
       public void run() {
         webview.loadUrl(url);
       }
@@ -320,7 +320,7 @@ public class SelendroidWebDriver {
   }
 
   private void configureWebView(final WebView view) {
-    ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
+    ServerInstrumentation.getInstance().getCurrentActivity().runOnUiThread(new Runnable() {
 
       @Override
       public void run() {
@@ -506,7 +506,7 @@ public class SelendroidWebDriver {
     long end = System.currentTimeMillis() + UI_TIMEOUT;
     final String[] title = new String[1];
     done = false;
-    serverInstrumentation.runOnUiThread(new Runnable() {
+    serverInstrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
       public void run() {
         synchronized (syncObject) {
           title[0] = webview.getTitle();

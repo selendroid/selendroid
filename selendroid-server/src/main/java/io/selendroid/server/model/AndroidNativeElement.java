@@ -290,8 +290,7 @@ public class AndroidNativeElement implements AndroidElement {
     if (getView() instanceof WebView) {
       final WebView webview = (WebView) getView();
       final MyWebChromeClient client = new MyWebChromeClient();
-      String html = null;
-      instrumentation.runOnUiThread(new Runnable() {
+      instrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
         public void run() {
           synchronized (syncObject) {
             webview.getSettings().setJavaScriptEnabled(true);
