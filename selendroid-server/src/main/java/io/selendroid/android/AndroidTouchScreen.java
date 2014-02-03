@@ -241,7 +241,7 @@ public class AndroidTouchScreen implements TouchScreen {
     Point destination = new Point(origin.x + xOffset, origin.y + yOffset);
     Flick flick = new Flick(speed);
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, origin));
-    motionEvents.addAll(getMoveEvents(downTime, downTime, origin, destination, Flick.STEPS,
+    motionEvents.addAll(getMoveEvents(downTime, downTime, origin, destination, flick.getNumberOfSteps(),
         flick.getTimeBetweenEvents()));
     motionEvents.add(getMotionEvent(downTime, flick.getTimeForDestinationPoint(downTime),
         MotionEvent.ACTION_UP, destination));
@@ -378,25 +378,36 @@ public class AndroidTouchScreen implements TouchScreen {
 
     private final int SPEED_NORMAL = 0;
     private final int SPEED_FAST = 1;
-    // A regular scroll usually has 4 gestures
-    private final static int STEPS = 4;
+    private final int SPEED_SLOW = 2;
+
     private int speed;
 
     public Flick(int speed) {
       this.speed = speed;
     }
 
+    public int getNumberOfSteps() {
+      return speed == SPEED_SLOW ? 8 : 4;
+    }
+
     private long getTimeBetweenEvents() {
-      if (speed == SPEED_NORMAL) {
-        return 25; // Time in milliseconds to provide a speed similar to normal flick
-      } else if (speed == SPEED_FAST) {
-        return 9; // Time in milliseconds to provide a speed similar to fast flick
+      switch (speed) {
+        case SPEED_SLOW:
+          return 50;
+
+        case SPEED_NORMAL:
+          return 25; // Time in milliseconds to provide a speed similar to normal flick
+
+        case SPEED_FAST:
+          return 9;
+
+        default:
+          return 0;
       }
-      return 0;
     }
 
     private long getTimeForDestinationPoint(long downTime) {
-      return (downTime + STEPS * getTimeBetweenEvents());
+      return (downTime + getNumberOfSteps() * getTimeBetweenEvents());
     }
   }
 }
