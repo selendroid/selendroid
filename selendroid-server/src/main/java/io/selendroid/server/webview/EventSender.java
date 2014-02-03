@@ -103,7 +103,7 @@ public class EventSender {
     // synchronized (syncObject) {
     done = false;
 
-    ServerInstrumentation.getInstance().runOnUiThread(new Runnable() {
+    ServerInstrumentation.getInstance().runOnMainSync(new Runnable() {
       public void run() {
         for (CharSequence sequence : text) {
           for (int i = 0; i < sequence.length(); i++) {

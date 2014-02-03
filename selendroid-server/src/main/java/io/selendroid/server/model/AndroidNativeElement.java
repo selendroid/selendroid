@@ -111,7 +111,7 @@ public class AndroidNativeElement implements AndroidElement {
     final int left = leftTopLocation.x;
     final int top = leftTopLocation.y;
 
-    instrumentation.runOnUiThread(new Runnable() {
+    instrumentation.runOnMainSync(new Runnable() {
       @Override
       public void run() {
         synchronized (syncObject) {
@@ -139,7 +139,7 @@ public class AndroidNativeElement implements AndroidElement {
   @Override
   public void enterText(CharSequence... keysToSend) {
     final View viewview = getView();
-    instrumentation.runOnUiThread(new Runnable() {
+    instrumentation.runOnMainSync(new Runnable() {
       @Override
       public void run() {
         viewview.requestFocus();
@@ -361,7 +361,7 @@ public class AndroidNativeElement implements AndroidElement {
   @Override
   public void clear() {
     final View viewview = getView();
-    instrumentation.runOnUiThread(new Runnable() {
+    instrumentation.runOnMainSync(new Runnable() {
       @Override
       public void run() {
         viewview.requestFocus();

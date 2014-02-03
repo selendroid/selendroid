@@ -152,10 +152,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     return instance;
   }
 
-  public void runOnUiThread(Runnable runner) {
-    runOnMainSync(runner);
-  }
-
   @Override
   public void callActivityOnResume(Activity activity) {
     super.callActivityOnResume(activity);
