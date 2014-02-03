@@ -242,37 +242,13 @@ Inspector.prototype.selectOne = function (node, displayDetails) {
  * @param html
  */
 Inspector.prototype.showDetails = function (type, ref, na, id, value, rect, l10n, html) {
-    var prettyL10N = "";
-
-    if (l10n) {
-        prettyL10N = "<h3>L10N</h3>";
-        var matches = l10n.matches;
-        prettyL10N += "<p><b>Matches</b>: " + matches + "</p>";
-
-        if (matches > 0) {
-            prettyL10N += "<p><b>Key</b>: " + l10n.key + "</p>";
-            var langs = l10n.langs;
-            for (var name in langs) {
-                var result = langs[name];
-                for (var a in result) {
-                    prettyL10N += "<p><b>" + a + "</b> : " + result[a] + "</p>";
-                }
-
-            }
-        }
-
-    } else {
-        prettyL10N = "no l10n for --" + name + "--";
-    }
-
     $('#details').html(
         "<h3>Details</h3>" + "<p><b>Type</b>: " + type + "</p>"
             + "<p><b>Reference</b>: " + ref + "</p>"
             + "<p><b>Name</b>: " + na + "</p>" + "<p><b>Id</b>: " + id
             + "</p>" + "<p><b>Value</b>: " + value + "</p>"
             + "<p><b>Rect</b>: x=" + rect.x + ",y=" + rect.y + ",h="
-            + rect.h + "w=" + rect.w + "</p>"
-            + prettyL10N);
+            + rect.h + "w=" + rect.w + "</p>");
 
     var content = $('#htmlSource').html() + "\n" + html;
 
