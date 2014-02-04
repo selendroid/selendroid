@@ -13,12 +13,6 @@
  */
 package io.selendroid.server.model;
 
-import android.app.Activity;
-import android.os.SystemClock;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.webkit.WebView;
-import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.android.internal.Point;
 import io.selendroid.exceptions.ElementNotVisibleException;
@@ -28,14 +22,19 @@ import io.selendroid.server.model.interactions.AndroidCoordinates;
 import io.selendroid.server.model.interactions.Coordinates;
 import io.selendroid.server.model.internal.AbstractWebElementContext;
 import io.selendroid.server.model.js.AndroidAtoms;
-import io.selendroid.server.webview.EventSender;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.os.SystemClock;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.webkit.WebView;
 
 public class AndroidWebElement implements AndroidElement {
   private final String id;
@@ -128,7 +127,7 @@ public class AndroidWebElement implements AndroidElement {
         (String) driver.executeScript("arguments[0].focus();"
             + "arguments[0].value=arguments[0].value;return arguments[0].value", this, null);
 
-    EventSender.sendKeys(webview, value);
+    driver.getKeySender().send(value);
 
     // wait for keys to have been sent to the element
     long timeout = System.currentTimeMillis() + SENDKEYS_TIMEOUT;
@@ -252,16 +251,17 @@ public class AndroidWebElement implements AndroidElement {
     final List<MotionEvent> events = new ArrayList<MotionEvent>();
 
     MotionEvent downEvent =
-        MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, center.x, center.y, 0);
+        MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, center.x,
+            center.y, 0);
     events.add(downEvent);
     MotionEvent upEvent =
-        MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, center.x, center.y, 0);
+        MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, center.x,
+            center.y, 0);
 
     events.add(upEvent);
 
     driver.resetPageIsLoading();
-    Activity current = ServerInstrumentation.getInstance().getCurrentActivity();
-    EventSender.sendMotion(events, webview, current);
+    driver.getMotionSender().send(events);
 
     // If the page started loading we should wait
     // until the page is done loading.

@@ -35,14 +35,13 @@ import android.view.KeyEvent;
  */
 public class InstrumentedKeySender implements KeySender {
 
-  private final Instrumentation instrumentation;
+  protected final Instrumentation instrumentation;
   private final KeyboardImpl keyboardImpl;
 
   /**
    * Creates a new instance which sends keys to the given {@code Instrumentation}.
    */
   public InstrumentedKeySender(Instrumentation instrumentation) {
-    //this.instrumentation = Preconditions.checkNotNull(instrumentation);
     this.instrumentation = instrumentation;
     this.keyboardImpl = new KeyboardImpl();
   }

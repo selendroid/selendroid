@@ -14,6 +14,8 @@
 package io.selendroid.server.model;
 
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.AndroidTouchScreen;
+import io.selendroid.android.InstrumentedMotionSender;
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.UnsupportedOperationException;
@@ -33,11 +35,19 @@ public class SelendroidNativeDriver {
   public final String ACTIVITY_URL_PREFIX = "and-activity://";
   private ServerInstrumentation serverInstrumentation;
   private NativeSearchScope nativeSearchScope;
+  private TouchScreen touch;
 
   public SelendroidNativeDriver(ServerInstrumentation serverInstrumentation,
       NativeSearchScope nativeSearchScope) {
     this.serverInstrumentation = serverInstrumentation;
     this.nativeSearchScope = nativeSearchScope;
+    this.touch =
+        new AndroidTouchScreen(serverInstrumentation, new InstrumentedMotionSender(
+            serverInstrumentation));
+  }
+
+  public TouchScreen getTouch() {
+    return touch;
   }
 
   /*
@@ -65,7 +75,8 @@ public class SelendroidNativeDriver {
   }
 
   public String getTitle() {
-    throw new UnsupportedOperationException("Get title is not supported for SelendroidNativeDriver.");
+    throw new UnsupportedOperationException(
+        "Get title is not supported for SelendroidNativeDriver.");
   }
 
   private URI getCurrentURI() {

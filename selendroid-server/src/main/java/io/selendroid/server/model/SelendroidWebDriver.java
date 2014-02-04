@@ -13,28 +13,34 @@
  */
 package io.selendroid.server.model;
 
-import android.webkit.JsPromptResult;
-import android.webkit.JsResult;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.AndroidTouchScreen;
+import io.selendroid.android.KeySender;
+import io.selendroid.android.MotionSender;
 import io.selendroid.android.ViewHierarchyAnalyzer;
+import io.selendroid.android.WebViewKeySender;
+import io.selendroid.android.WebViewMotionSender;
 import io.selendroid.android.internal.DomWindow;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.server.Session;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.SelendroidLogger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 public class SelendroidWebDriver {
   private static final String ELEMENT_KEY = "ELEMENT";
@@ -54,15 +60,16 @@ public class SelendroidWebDriver {
   private ServerInstrumentation serverInstrumentation = null;
   private SessionCookieManager sm = new SessionCookieManager();
   private SelendroidWebChromeClient chromeClient = null;
-  private Session session = null;
   private DomWindow currentWindowOrFrame;
   private Queue<String> currentAlertMessage = new LinkedList<String>();
+  private TouchScreen touch;
+  private KeySender keySender;
+  private MotionSender motionSender;
 
-  public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle,
-      Session session) {
+  public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle) {
     this.serverInstrumentation = serverInstrumentation;
-    this.session = session;
     init(handle);
+    keySender = new WebViewKeySender(serverInstrumentation, webview);
   }
 
   private static String escapeAndQuote(final String toWrap) {
@@ -317,6 +324,20 @@ public class SelendroidWebDriver {
     }
     configureWebView(webview);
     currentWindowOrFrame = new DomWindow("");
+    motionSender = new WebViewMotionSender(webview, serverInstrumentation);
+    touch = new AndroidTouchScreen(serverInstrumentation, motionSender);
+  }
+
+  public TouchScreen getTouch() {
+    return touch;
+  }
+
+  KeySender getKeySender() {
+    return keySender;
+  }
+
+  MotionSender getMotionSender() {
+    return motionSender;
   }
 
   private void configureWebView(final WebView view) {
@@ -391,29 +412,20 @@ public class SelendroidWebDriver {
   }
 
   /*
-   * an attempt to help get the proper coordinates of the frame
-   * there are seemingly too many other factors to get this adequately
-   * this would be to facilitate 'native' clicks on webelements in frames
-   * see AndroidWebElement#click
-   Point getFrameLocation() {
-    if (!currentWindowOrFrame.getKey().equals("")) {
-      String script = "function(){var w = " + getWindowString() +
-          "getFrameTop = function(f_win){return f_win.frameElement.getBoundingClientRect().top + " +
-          "(f_win.parent.frameElement ? getFrameTop(f_win.parent):0);};" +
-          "getFrameLeft = function(f_win){return f_win.frameElement.getBoundingClientRect().left + " +
-          "(f_win.parent.frameElement ? getFrameLeft(f_win.parent):0);};" +
-          "return [getFrameTop(w), getFrameLeft(w)]}";
-      JSONArray ret = null;
-      try {
-        String val = (String)injectAtomJavascript(script, null, null);
-        SelendroidLogger.log("val - frame location: " + val);
-        ret = new JSONArray("[" + val + "]");
-        return new Point(ret.getInt(0), ret.getInt(1));
-      } catch (JSONException e) {
-      }
-    }
-    return new Point(0, 0);
-  }*/
+   * an attempt to help get the proper coordinates of the frame there are seemingly too many other
+   * factors to get this adequately this would be to facilitate 'native' clicks on webelements in
+   * frames see AndroidWebElement#click Point getFrameLocation() { if
+   * (!currentWindowOrFrame.getKey().equals("")) { String script = "function(){var w = " +
+   * getWindowString() +
+   * "getFrameTop = function(f_win){return f_win.frameElement.getBoundingClientRect().top + " +
+   * "(f_win.parent.frameElement ? getFrameTop(f_win.parent):0);};" +
+   * "getFrameLeft = function(f_win){return f_win.frameElement.getBoundingClientRect().left + " +
+   * "(f_win.parent.frameElement ? getFrameLeft(f_win.parent):0);};" +
+   * "return [getFrameTop(w), getFrameLeft(w)]}"; JSONArray ret = null; try { String val =
+   * (String)injectAtomJavascript(script, null, null); SelendroidLogger.log("val - frame location: "
+   * + val); ret = new JSONArray("[" + val + "]"); return new Point(ret.getInt(0), ret.getInt(1)); }
+   * catch (JSONException e) { } } return new Point(0, 0); }
+   */
 
 
   void resetPageIsLoading() {
@@ -491,7 +503,8 @@ public class SelendroidWebDriver {
     }
 
     @Override
-    public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+    public boolean onJsPrompt(WebView view, String url, String message, String defaultValue,
+        JsPromptResult result) {
       currentAlertMessage.add(message == null ? "null" : message);
       SelendroidLogger.log("new prompt message: " + message);
       return super.onJsPrompt(view, url, message, defaultValue, result);

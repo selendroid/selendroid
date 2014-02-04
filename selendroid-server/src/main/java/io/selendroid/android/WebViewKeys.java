@@ -14,19 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package io.selendroid.server.webview;
+package io.selendroid.android;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import io.selendroid.android.Keys;
 
 import android.view.KeyEvent;
 
 /**
  * Maps unicode keys to Android keys codes.
  */
-class AndroidWebKeys {
+class WebViewKeys {
 
   private static final Map<Keys, Integer> keyMapping = new HashMap<Keys, Integer>() {{
     put(Keys.SPACE, KeyEvent.KEYCODE_SPACE);
