@@ -28,7 +28,7 @@ public class WebViewActivity extends Activity {
     setContentView(R.layout.activity_web_view);
     WebView webview = (WebView) findViewById(R.id.webview);
     webview.setWebViewClient(new AndroidDriverClient());
-    webview.loadData("<html><body><h1 id='AndroidDriver'>Android Driver</h1>" +
+    webview.loadData("<html><body><h1 id='AndroidDriver'>Android driver webview app</h1>" +
         "</body></html>", "text/html", "UTF-8");
   }
 
