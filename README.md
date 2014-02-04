@@ -1,4 +1,4 @@
-[![Selendroid](http://selendroid.io/images/selendroid-logo.jpg =400x108)](http://selendroid.io)
+Selendroid
 ==========
 
 [![Build Status](http://ci.selendroid.io/buildStatus/icon?job=selendroid)](http://ci.selendroid.io/job/selendroid/)
