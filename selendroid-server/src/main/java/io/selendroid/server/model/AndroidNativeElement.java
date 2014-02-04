@@ -289,7 +289,7 @@ public class AndroidNativeElement implements AndroidElement {
     object.put("shown", getView().isShown());
     if (getView() instanceof WebView) {
       final WebView webview = (WebView) getView();
-      final MyWebChromeClient client = new MyWebChromeClient();
+      final WebViewSourceClient client = new WebViewSourceClient();
       instrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
         public void run() {
           synchronized (syncObject) {
@@ -309,7 +309,7 @@ public class AndroidNativeElement implements AndroidElement {
     return object;
   }
 
-  public class MyWebChromeClient extends WebChromeClient {
+  public class WebViewSourceClient extends WebChromeClient {
     public Object result = null;
 
     /**
@@ -318,7 +318,6 @@ public class AndroidNativeElement implements AndroidElement {
      */
     @Override
     public boolean onJsAlert(WebView view, String url, String message, JsResult jsResult) {
-      System.out.println("alert message: " + message);
       if (message != null && message.startsWith("selendroidSource:")) {
         jsResult.confirm();
 
