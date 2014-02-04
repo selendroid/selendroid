@@ -88,7 +88,7 @@ public class SelendroidServlet extends BaseServlet {
         String newSessionUri =
             "http://" + request.header("Host") + "/inspector/session/" + session + "/";
         log.info("new Inspector URL: " + newSessionUri);
-        response.sendRedirect(newSessionUri);
+        response.sendTemporaryRedirect(newSessionUri);
         response.end();
         return;
       }

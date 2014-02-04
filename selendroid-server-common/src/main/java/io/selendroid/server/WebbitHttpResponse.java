@@ -51,6 +51,12 @@ public class WebbitHttpResponse implements HttpResponse {
     end();
   }
 
+  public void sendTemporaryRedirect(String to) {
+    response.status(302);
+    response.header("location", to);
+    end();
+  }
+
   public void end() {
     if (closed) {
       return;

@@ -29,7 +29,7 @@ public interface HttpResponse {
 
   void sendRedirect(String to);
 
+  void sendTemporaryRedirect(String to);
+
   void end();
-
-
 }
