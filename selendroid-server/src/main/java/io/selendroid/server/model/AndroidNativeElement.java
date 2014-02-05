@@ -14,16 +14,6 @@
 package io.selendroid.server.model;
 
 
-import android.graphics.Rect;
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.view.View;
-import android.webkit.JsResult;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.AndroidWait;
 import io.selendroid.android.KeySender;
@@ -41,8 +31,6 @@ import io.selendroid.server.model.internal.AbstractNativeElementContext;
 import io.selendroid.util.Function;
 import io.selendroid.util.Preconditions;
 import io.selendroid.util.SelendroidLogger;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
@@ -51,6 +39,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.graphics.Rect;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class AndroidNativeElement implements AndroidElement {
   // TODO revisit
@@ -70,7 +72,8 @@ public class AndroidNativeElement implements AndroidElement {
   private int hashCode;
   static final long UI_TIMEOUT = 3000L;
 
-  public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KeySender keys, KnownElements ke) {
+  public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KeySender keys,
+      KnownElements ke) {
     Preconditions.checkNotNull(view);
     this.viewRef = new WeakReference<View>(view);
     hashCode = view.hashCode() + 31;
@@ -86,8 +89,17 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   public boolean isDisplayed() {
-    return getView().hasWindowFocus() && getView().isEnabled() && getView().isShown() && (getView().getWidth() > 0)
-        && (getView().getHeight() > 0);
+    boolean hasWindowFocus = getView().hasWindowFocus();
+    boolean enabled = getView().isEnabled();
+    int width = getView().getWidth();
+    int height = getView().getHeight();
+    // In the past we used `getView().isShown()` to identify if the element
+    // is displayed. It seems like that it is better to look just at the
+    // visibility of the view instead of verifying the ancestors as well.
+    boolean isElementDisplayed = View.VISIBLE == getView().getVisibility();
+
+
+    return hasWindowFocus && enabled && isElementDisplayed && (width > 0) && (height > 0);
   }
 
   private void waitUntilIsDisplayed() {
@@ -231,11 +243,9 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   public String toString() {
-    return new StringBuilder()
-        .append("id: ").append(getView().getId())
-        .append("view class: ").append(getView().getClass())
-        .append("view content desc: ").append(getView().getContentDescription())
-        .toString();
+    return new StringBuilder().append("id: ").append(getView().getId()).append("view class: ")
+        .append(getView().getClass()).append("view content desc: ")
+        .append(getView().getContentDescription()).toString();
   }
 
   protected void send(CharSequence string) {
@@ -245,21 +255,9 @@ public class AndroidNativeElement implements AndroidElement {
   public JSONObject toJson() throws JSONException {
     JSONObject object = new JSONObject();
     JSONObject l10n = new JSONObject();
-
-    String l10nKey = null;
-    // try {
-    // l10nKey =
-    // instrumentation.getCurrentActivity().getResources().getText(getView().getId()).toString();
-    // } catch (Resources.NotFoundException e) {
-    // // ignoring, can happen
-    // }
-    if (l10nKey != null) {
-      l10n.put("matches", 1);
-      l10n.put("key", l10nKey);
-    } else {
-      l10n.put("matches", 0);
-    }
+    l10n.put("matches", 0);
     object.put("l10n", l10n);
+    
     String label = String.valueOf(getView().getContentDescription());
     object.put("name", label == null ? "" : label);
     String id = getNativeId();
@@ -303,7 +301,7 @@ public class AndroidNativeElement implements AndroidElement {
       });
       long end = System.currentTimeMillis() + 10000;
       waitForDone(end, UI_TIMEOUT, "Error while grabbing web view source code.");
-      object.put("source", "<html>"+ client.result+"</html>");
+      object.put("source", "<html>" + client.result + "</html>");
     }
 
     return object;
@@ -352,7 +350,8 @@ public class AndroidNativeElement implements AndroidElement {
 
   public View getView() {
     if (viewRef.get() == null) {
-      throw new IllegalStateException("Trying to access a native element that has already been garbage collected");
+      throw new IllegalStateException(
+          "Trying to access a native element that has already been garbage collected");
     }
     return viewRef.get();
   }
@@ -394,8 +393,7 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   private class NativeElementSearchScope extends AbstractNativeElementContext {
-    public NativeElementSearchScope(ServerInstrumentation instrumentation,
-        KeySender keys,
+    public NativeElementSearchScope(ServerInstrumentation instrumentation, KeySender keys,
         KnownElements knownElements) {
       super(instrumentation, keys, knownElements);
     }
@@ -413,7 +411,8 @@ public class AndroidNativeElement implements AndroidElement {
   @Override
   public Coordinates getCoordinates() {
     if (coordinates == null) {
-      coordinates = new AndroidCoordinates(String.valueOf(getView().getId()), getCenterCoordinates());
+      coordinates =
+          new AndroidCoordinates(String.valueOf(getView().getId()), getCenterCoordinates());
     }
     return coordinates;
   }
@@ -438,7 +437,8 @@ public class AndroidNativeElement implements AndroidElement {
     if (obj == null) return false;
     if (getClass() != obj.getClass()) return false;
     AndroidNativeElement other = (AndroidNativeElement) obj;
-    // Not calling getView() here so inserting into a set with stale elements doesn't suddenly start throwing.
+    // Not calling getView() here so inserting into a set with stale elements doesn't suddenly start
+    // throwing.
     if (viewRef.get() == null) {
       if (other.viewRef.get() != null) return false;
     } else if (!getView().equals(other.viewRef.get())) return false;
