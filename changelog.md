@@ -2,7 +2,7 @@
 ---
 - Default selendroid-standalone port is changed from 5555 to 4444
 - Added support for switching to a frame in webview
-- Fixes:  [#155](../../issues/155), [#163](../../issues/163), [#177](../../issues/177), [#184](../../issues/184), [#188](../../issues/188), [#202](../../issues/202), [#209](../../issues/209), [#210](../../issues/210), [#211](../../issues/211), [#213](../../issues/213), [#214](../../issues/214),[#216](../../issues/216), [#223](../../issues/223), [#231](../../issues/231)
+- Fixes:  [#155](../../issues/155), [#163](../../issues/163), [#177](../../issues/177), [#179](../../issues/179), [#184](../../issues/184), [#188](../../issues/188), [#202](../../issues/202), [#209](../../issues/209), [#210](../../issues/210), [#211](../../issues/211), [#213](../../issues/213), [#214](../../issues/214),[#216](../../issues/216), [#223](../../issues/223), [#231](../../issues/231)
 - Refactoring of our end-to-end tests
 - Support for navigating back, forward and refresh
 - removed -restartAdb option
