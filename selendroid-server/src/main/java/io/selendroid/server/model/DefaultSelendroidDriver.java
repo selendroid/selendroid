@@ -29,6 +29,7 @@ import io.selendroid.server.model.internal.execute_native.FindElementByAndroidTa
 import io.selendroid.server.model.internal.execute_native.FindRId;
 import io.selendroid.server.model.internal.execute_native.GetL10nKeyTranslation;
 import io.selendroid.server.model.internal.execute_native.InvokeMenuAction;
+import io.selendroid.server.model.internal.execute_native.IsElementDisplayedInViewport;
 import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.Preconditions;
@@ -381,6 +382,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
         serverInstrumentation));
     nativeExecuteScriptMap.put("findElementByAndroidTag",
         new FindElementByAndroidTag(session.getKnownElements(), serverInstrumentation, keySender));
+    nativeExecuteScriptMap.put("isElementDisplayedInViewport", new IsElementDisplayedInViewport(
+        session.getKnownElements(), serverInstrumentation));
 
     return session.getSessionId();
   }
