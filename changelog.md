@@ -1,4 +1,8 @@
-0.8.0-SNAPSHOT (under developement)
+0.9.0-SNAPSHOT (under developement)
+---
+- (nothing yet)
+
+0.8.0
 ---
 - Default selendroid-standalone port is changed from 5555 to 4444
 - Added support for switching to a frame in webview
