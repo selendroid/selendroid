@@ -24,7 +24,6 @@ import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.AndroidDriverAPKBuilder;
 import io.selendroid.builder.SelendroidServerBuilder;
-import io.selendroid.builder.SelendroidServerBuilderTest;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
@@ -38,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.UUID;
 
 import org.json.JSONObject;
@@ -131,7 +131,9 @@ public class SelendroidStandaloneDriverTest {
     DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
-    final UUID definedSessionId = UUID.randomUUID();
+    Random random = new Random();
+    final UUID definedSessionId = new UUID(random.nextLong(), random.nextLong());
+
     emulator.testSessionListener = new TestSessionListener(definedSessionId.toString(), "test") {
       @Override
       public SelendroidResponse executeSelendroidRequest(Properties params) {
@@ -164,7 +166,9 @@ public class SelendroidStandaloneDriverTest {
     DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
-    final UUID definedSessionId = UUID.randomUUID();
+    Random random = new Random();
+    final UUID definedSessionId = new UUID(random.nextLong(), random.nextLong());
+
     emulator.testSessionListener = new TestSessionListener(definedSessionId.toString(), "test") {
       @Override
       public SelendroidResponse executeSelendroidRequest(Properties params) {

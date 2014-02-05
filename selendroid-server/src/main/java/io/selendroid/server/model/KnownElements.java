@@ -15,6 +15,7 @@ package io.selendroid.server.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
@@ -31,7 +32,8 @@ public class KnownElements {
     if (cache.containsValue(element)) {
       return getCacheKey(element);
     }
-    String id = UUID.randomUUID().toString();
+    Random random = new Random();
+    String id = new UUID(random.nextLong(), random.nextLong()).toString();
 
     cache.put(id, element);
     if (element instanceof AndroidNativeElement) {

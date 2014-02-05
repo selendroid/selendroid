@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -367,7 +368,9 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       return session.getSessionId();
     }
     activeWindowType = WindowType.NATIVE_APP.name();
-    this.session = new Session(desiredCapabilities, UUID.randomUUID().toString());
+    Random random = new Random();
+    this.session = new Session(desiredCapabilities,
+        new UUID(random.nextLong(), random.nextLong()).toString());
     nativeSearchScope =
         new NativeSearchScope(serverInstrumentation, getSession().getKnownElements());
 
