@@ -35,10 +35,14 @@ public abstract class BaseServlet implements HttpHandler {
   protected Map<String, BaseRequestHandler> deleteHandler =
       new HashMap<String, BaseRequestHandler>();
 
-  // TODO(simons): There must be a more efficient way of handling this.
+  private Map<String, String[]> mapperUrlSectionsCache =
+      new HashMap<String, String[]>();
+
   protected BaseRequestHandler findMatcher(HttpRequest request, Map<String, BaseRequestHandler> handler) {
+    String[] urlToMatchSections = getRequestUrlSections(request.uri());
     for (Map.Entry<String, ? extends BaseRequestHandler> entry : handler.entrySet()) {
-      if (isFor(entry.getKey(), request.uri())) {
+      String[] mapperUrlSections = getMapperUrlSectionsCached(entry.getKey());
+      if (isFor(mapperUrlSections, urlToMatchSections)) {
         return entry.getValue();
       }
     }
@@ -100,26 +104,19 @@ public abstract class BaseServlet implements HttpHandler {
     response.end();
   }
 
-  protected boolean isFor(String mapperUrl, String urlToMatch) {
-    String[] sections = mapperUrl.split("/");
-    if (urlToMatch == null) {
-      return sections.length == 0;
+  protected boolean isFor(String[] mapperUrlSections, String[] urlToMatchSections) {
+    if (urlToMatchSections == null) {
+      return mapperUrlSections.length == 0;
     }
-    if (urlToMatch.contains("?")) {
-      urlToMatch = urlToMatch.substring(0, urlToMatch.indexOf("?"));
-    }
-    String[] allParts = urlToMatch.split("/");
-    if (sections.length != allParts.length) {
+    if (mapperUrlSections.length != urlToMatchSections.length) {
       return false;
     }
-    for (int i = 0; i < sections.length; i++) {
-      // to work around a but in Selenium Grid 2.31.0
-      String sectionElement = sections[i].replaceAll("\\?.*", "");
-      if (!(sectionElement.startsWith(":") || sectionElement.equals(allParts[i]))) {
+    for (int i = 0; i < mapperUrlSections.length; i++) {
+      if (!(mapperUrlSections[i].startsWith(":")
+          || mapperUrlSections[i].equals(urlToMatchSections[i]))) {
         return false;
       }
     }
-
     return true;
   }
 
@@ -145,5 +142,33 @@ public abstract class BaseServlet implements HttpHandler {
       response.setStatus(200);
       response.end();
     }
+  }
+
+  private String[] getRequestUrlSections(String urlToMatch) {
+    if (urlToMatch == null) {
+      return null;
+    }
+    int qPos = urlToMatch.indexOf('?');
+    if (qPos != -1) {
+      urlToMatch = urlToMatch.substring(0, urlToMatch.indexOf("?"));
+    }
+    return urlToMatch.split("/");
+  }
+
+  private String[] getMapperUrlSectionsCached(String mapperUrl) {
+    String[] sections = mapperUrlSectionsCache.get(mapperUrl);
+    if (sections == null) {
+      sections = mapperUrl.split("/");
+      for (int i = 0; i < sections.length; i++) {
+        String section = sections[i];
+        // To work around a but in Selenium Grid 2.31.0.
+        int qPos = section.indexOf('?');
+        if (qPos != -1) {
+          sections[i] = section.substring(0, qPos);
+        }
+      }
+      mapperUrlSectionsCache.put(mapperUrl, sections);
+    }
+    return sections;
   }
 }
