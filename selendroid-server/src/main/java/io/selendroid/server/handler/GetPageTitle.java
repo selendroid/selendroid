@@ -15,10 +15,10 @@ package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
-
-import org.json.JSONException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.SelendroidDriver;
+
+import org.json.JSONException;
 import org.webbitserver.HttpRequest;
 
 public class GetPageTitle extends RequestHandler {
@@ -28,13 +28,13 @@ public class GetPageTitle extends RequestHandler {
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException{
+  public Response handle(HttpRequest request) throws JSONException {
     SelendroidDriver driver = getSelendroidDriver(request);
 
     try {
       return new SelendroidResponse(getSessionId(request), driver.getTitle());
     } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(request), 13, e);
+      return new SelendroidResponse(getSessionId(request), 9, e);
     }
   }
 }

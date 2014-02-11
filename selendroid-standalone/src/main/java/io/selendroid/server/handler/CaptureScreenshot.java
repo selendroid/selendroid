@@ -38,7 +38,7 @@ public class CaptureScreenshot extends BaseSelendroidServerHandler {
       rawPng = getSelendroidDriver(request).takeScreenshot(getSessionId(request));
     } catch (AndroidDeviceException e) {
       e.printStackTrace();
-      return new SelendroidResponse(getSessionId(request), 33, e);
+      return new SelendroidResponse(getSessionId(request), 13, e);
     }
     String base64Png = new Base64Encoder().encode(rawPng);
 
