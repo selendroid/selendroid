@@ -1,6 +1,6 @@
 0.9.0-SNAPSHOT (under developement)
 ---
-- (nothing yet)
+- Rotation Support
 
 0.8.0
 ---
