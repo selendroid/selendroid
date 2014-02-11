@@ -30,4 +30,9 @@ public interface HtmlTestData {
   public static final String TEST_CLICK_PAGE_2= "file:///android_asset/web/test_click_page2.html";
   public static final String IFRAME_PAGE = "file:///android_asset/web/iframes.html";
   public static final String ABOUT_BLANK = "about:blank";
+  public static final String LONG_CONTENT_PAGE="file:///android_asset/web/longContentPage.html";
+  public static final String CLICKS_PAGE="file:///android_asset/web/clicks.html"; 
+  public static final String CLICK_SOURCE="file:///android_asset/web/click_source.html";
+ 
+  
 }
