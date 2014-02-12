@@ -1,6 +1,7 @@
 0.9.0-SNAPSHOT (under developement)
 ---
 - Rotation Support
+- Fixes: [#268](../../issues/268)
 
 0.8.0
 ---
