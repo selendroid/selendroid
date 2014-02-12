@@ -186,7 +186,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       }
       copy.put(TAKES_SCREENSHOT, true);
       copy.put(BROWSER_NAME, "selendroid");
-      copy.put(ROTATABLE, false);
+      copy.put(ROTATABLE, true);
       copy.put(PLATFORM, "android");
       copy.put(SUPPORTS_ALERTS, true);
       copy.put(SUPPORTS_JAVASCRIPT, true);
@@ -369,8 +369,8 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     }
     activeWindowType = WindowType.NATIVE_APP.name();
     Random random = new Random();
-    this.session = new Session(desiredCapabilities,
-        new UUID(random.nextLong(), random.nextLong()).toString());
+    this.session =
+        new Session(desiredCapabilities, new UUID(random.nextLong(), random.nextLong()).toString());
     nativeSearchScope =
         new NativeSearchScope(serverInstrumentation, getSession().getKnownElements());
 
@@ -517,7 +517,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
   public ScreenOrientation getOrientation() {
     Activity activity = serverInstrumentation.getCurrentActivity();
-    
+
     int value = activity.getRequestedOrientation();
     if (value == 0) {
       return ScreenOrientation.LANDSCAPE;
@@ -525,10 +525,18 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     return ScreenOrientation.PORTRAIT;
   }
 
-  public void rotate(ScreenOrientation orientation) {
-    Activity activity = serverInstrumentation.getCurrentActivity();
+  public void rotate(final ScreenOrientation orientation) {
+    final Activity activity = serverInstrumentation.getCurrentActivity();
+    final int screenOrientation = getAndroidScreenOrientation(orientation);
     if (activity != null) {
-      activity.setRequestedOrientation(getAndroidScreenOrientation(orientation));
+      activity.runOnUiThread(new Runnable() {
+
+        @Override
+        public void run() {
+          activity.setRequestedOrientation(screenOrientation);
+        }
+      });
+      serverInstrumentation.waitForIdleSync();
     }
   }
 

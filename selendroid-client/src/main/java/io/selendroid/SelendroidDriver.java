@@ -15,6 +15,8 @@ package io.selendroid;
 
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Rotatable;
+import org.openqa.selenium.ScreenOrientation;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.interactions.HasTouchScreen;
@@ -34,7 +36,8 @@ public class SelendroidDriver extends RemoteWebDriver
     implements
       HasTouchScreen,
       ScreenBrightness,
-      TakesScreenshot {
+      TakesScreenshot,
+      Rotatable {
 
   private RemoteTouchScreen touchScreen;
 
@@ -82,4 +85,16 @@ public class SelendroidDriver extends RemoteWebDriver
   public void setBrightness(int desiredBrightness) {
     execute("selendroid-setBrightness", ImmutableMap.of("brightness", desiredBrightness));
   }
+
+  @Override
+  public void rotate(ScreenOrientation orientation) {
+    execute(DriverCommand.SET_SCREEN_ORIENTATION, ImmutableMap.of("orientation", orientation));
+  }
+
+  @Override
+  public ScreenOrientation getOrientation() {
+    return ScreenOrientation.valueOf((String) execute(DriverCommand.GET_SCREEN_ORIENTATION)
+        .getValue());
+  }
+
 }
