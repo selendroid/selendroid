@@ -96,7 +96,8 @@ public class AndroidNativeElement implements AndroidElement {
     // In the past we used `getView().isShown()` to identify if the element
     // is displayed. It seems like that it is better to look just at the
     // visibility of the view instead of verifying the ancestors as well.
-    boolean isElementDisplayed = View.VISIBLE == getView().getVisibility();
+    boolean isElementDisplayed = (View.VISIBLE == getView().getVisibility())
+        && getView().isShown();
 
 
     return hasWindowFocus && enabled && isElementDisplayed && (width > 0) && (height > 0);
