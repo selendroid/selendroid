@@ -17,6 +17,8 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidDriver;
 import io.selendroid.device.DeviceTargetPlatform;
 
+import java.net.URL;
+
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,60 +32,54 @@ import org.openqa.selenium.WebElement;
  * Test is currently only executed in manual mode
  */
 public class SessionCreationE2ETests {
-	public static final String TEST_APP_ID = "io.selendroid.testapp:0.5.0-SNAPSHOT";
+  public static final String TEST_APP_ID = "io.selendroid.testapp:0.5.0-SNAPSHOT";
 
-	@Ignore
-	@Test()
-	public void assertThatSessionCanBeExecutedOnAndroid10Emulator()
-			throws Exception {
-		testMethod(SelendroidCapabilities.emulator(
-				DeviceTargetPlatform.ANDROID10, TEST_APP_ID));
-	}
+  @Ignore
+  @Test()
+  public void assertThatSessionCanBeExecutedOnAndroid10Emulator() throws Exception {
+    testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID10, TEST_APP_ID));
+  }
 
-	@Ignore
-	@Test
-	public void assertThatSessionCanBeExecutedOnAndroid16Emulator()
-			throws Exception {
-		testMethod(SelendroidCapabilities.emulator(
-				DeviceTargetPlatform.ANDROID16, TEST_APP_ID));
-	}
+  @Ignore
+  @Test
+  public void assertThatSessionCanBeExecutedOnAndroid16Emulator() throws Exception {
+    testMethod(SelendroidCapabilities.emulator(DeviceTargetPlatform.ANDROID16, TEST_APP_ID));
+  }
 
-	@Ignore
-	@Test
-	public void assertThatSessionCanBeExecutedOnAndroid17Device()
-			throws Exception {
-		SelendroidCapabilities capa = SelendroidCapabilities.device(
-				DeviceTargetPlatform.ANDROID17, TEST_APP_ID);
+  @Ignore
+  @Test
+  public void assertThatSessionCanBeExecutedOnAndroid17Device() throws Exception {
+    SelendroidCapabilities capa =
+        SelendroidCapabilities.device(DeviceTargetPlatform.ANDROID17, TEST_APP_ID);
 
-		testMethod(capa);
-	}
+    testMethod(capa);
+  }
 
-	private void testMethod(SelendroidCapabilities capa) throws Exception {
-		WebDriver driver = new SelendroidDriver("http://localhost:5555/wd/hub",
-				capa);
-		String activityClass = "io.selendroid.testapp." + "HomeScreenActivity";
-		driver.get("and-activity://" + activityClass);
-		driver.getCurrentUrl();
-		try {
-			driver.findElement(By.id("not there"));
-			Assert.fail();
-		} catch (NoSuchElementException e) {
-			// expected
-		}
+  private void testMethod(SelendroidCapabilities capa) throws Exception {
+    WebDriver driver = new SelendroidDriver(new URL("http://localhost:5555/wd/hub"), capa);
+    String activityClass = "io.selendroid.testapp." + "HomeScreenActivity";
+    driver.get("and-activity://" + activityClass);
+    driver.getCurrentUrl();
+    try {
+      driver.findElement(By.id("not there"));
+      Assert.fail();
+    } catch (NoSuchElementException e) {
+      // expected
+    }
 
-		WebElement inputField = driver.findElement(By.id("my_text_field"));
-		Assert.assertEquals("true", inputField.getAttribute("enabled"));
-		inputField.sendKeys("Selendroid");
-		Assert.assertEquals("Selendroid", inputField.getText());
-		driver.findElement(By.id("buttonStartWebview")).click();
-		driver.switchTo().window("WEBVIEW");
-		WebElement element = driver.findElement(By.id("name_input"));
-		element.clear();
-		((JavascriptExecutor) driver)
-				.executeScript("var inputs = document.getElementsByTagName('input');"
-						+ "for(var i = 0; i < inputs.length; i++) { "
-						+ "    inputs[i].value = 'helloJavascript';" + "}");
-		Assert.assertEquals("helloJavascript", element.getAttribute("value"));
-		driver.quit();
-	}
+    WebElement inputField = driver.findElement(By.id("my_text_field"));
+    Assert.assertEquals("true", inputField.getAttribute("enabled"));
+    inputField.sendKeys("Selendroid");
+    Assert.assertEquals("Selendroid", inputField.getText());
+    driver.findElement(By.id("buttonStartWebview")).click();
+    driver.switchTo().window("WEBVIEW");
+    WebElement element = driver.findElement(By.id("name_input"));
+    element.clear();
+    ((JavascriptExecutor) driver)
+        .executeScript("var inputs = document.getElementsByTagName('input');"
+            + "for(var i = 0; i < inputs.length; i++) { "
+            + "    inputs[i].value = 'helloJavascript';" + "}");
+    Assert.assertEquals("helloJavascript", element.getAttribute("value"));
+    driver.quit();
+  }
 }

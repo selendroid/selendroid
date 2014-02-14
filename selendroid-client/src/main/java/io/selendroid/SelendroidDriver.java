@@ -13,6 +13,8 @@
  */
 package io.selendroid;
 
+import java.net.URL;
+
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rotatable;
@@ -41,7 +43,7 @@ public class SelendroidDriver extends RemoteWebDriver
 
   private RemoteTouchScreen touchScreen;
 
-  public SelendroidDriver(String url, Capabilities caps) throws Exception {
+  public SelendroidDriver(URL url, Capabilities caps) throws Exception {
     super(new SelendroidCommandExecutor(url), caps);
     touchScreen = new RemoteTouchScreen(new RemoteExecuteMethod(this));
   }

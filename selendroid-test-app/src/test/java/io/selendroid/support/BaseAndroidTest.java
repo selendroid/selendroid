@@ -23,6 +23,7 @@ import io.selendroid.server.util.HttpClientUtil;
 import io.selendroid.waiter.WaitingConditions;
 
 import java.io.File;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.exec.CommandLine;
@@ -74,7 +75,8 @@ public class BaseAndroidTest {
 
   @Before
   public void setup() throws Exception {
-    driver = new SelendroidDriver("http://localhost:8080/wd/hub", getDefaultCapabilities());
+    driver =
+        new SelendroidDriver(new URL("http://localhost:8080/wd/hub"), getDefaultCapabilities());
     driver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
   }
 

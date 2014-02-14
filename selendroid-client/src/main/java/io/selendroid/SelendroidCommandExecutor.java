@@ -19,7 +19,7 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
     put("selendroid-setBrightness", new CommandInfo("-selendroid/:sessionId/screen/brightness", HttpVerb.POST));
   }};
 
-  public SelendroidCommandExecutor(String url) throws MalformedURLException {
-    super(SELENDROID_COMMANDS, new URL(url));
+  public SelendroidCommandExecutor(URL url) throws MalformedURLException {
+    super(SELENDROID_COMMANDS, url);
   }
 }
