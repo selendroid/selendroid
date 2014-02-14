@@ -13,10 +13,8 @@
  */
 package io.selendroid.android;
 
-import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
-import io.selendroid.exceptions.AndroidSdkException;
 
 import java.io.File;
 import java.util.Locale;
@@ -49,8 +47,8 @@ public interface AndroidEmulator {
   public Integer getPort();
 
   public void setIDevice(IDevice iDevice);
-  
+
   public String getSerial();
-  
+
   public void setSerial(int port);
 }
