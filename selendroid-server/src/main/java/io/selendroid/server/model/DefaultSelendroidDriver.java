@@ -14,6 +14,7 @@
 package io.selendroid.server.model;
 
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.android.AndroidTouchScreen;
 import io.selendroid.android.AndroidWait;
 import io.selendroid.android.InstrumentedKeySender;
 import io.selendroid.android.KeySender;
@@ -31,6 +32,7 @@ import io.selendroid.server.model.internal.execute_native.GetL10nKeyTranslation;
 import io.selendroid.server.model.internal.execute_native.InvokeMenuAction;
 import io.selendroid.server.model.internal.execute_native.IsElementDisplayedInViewport;
 import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
+import io.selendroid.server.model.internal.execute_native.TwoPointerGestureAction;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.Preconditions;
 import io.selendroid.util.SelendroidLogger;
@@ -387,6 +389,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
         new FindElementByAndroidTag(session.getKnownElements(), serverInstrumentation, keySender));
     nativeExecuteScriptMap.put("isElementDisplayedInViewport", new IsElementDisplayedInViewport(
         session.getKnownElements(), serverInstrumentation));
+   nativeExecuteScriptMap.put("TwoPointerGesture", new TwoPointerGestureAction((AndroidTouchScreen) selendroidNativeDriver.getTouch()));
 
     return session.getSessionId();
   }
