@@ -65,10 +65,10 @@ public class InspectorServlet implements HttpHandler {
               .status(200)
               .content("Selendroid Inspector can only be used with an active test session.").end();
         }
+      } else if (httpRequest.uri().startsWith(INSPECTOR)&& httpRequest.uri().endsWith("/tree")) {
+        treeView.render(httpRequest, httpResponse);
       } else if (httpRequest.uri().startsWith(INSPECTOR + "/session/")) {
         inspectorView.render(httpRequest, httpResponse);
-      } else if (httpRequest.uri().equals(INSPECTOR + "/tree")) {
-        treeView.render(httpRequest, httpResponse);
       } else if (httpRequest.uri().startsWith(INSPECTOR_RESSOURCE)) {
         resourceView.render(httpRequest, httpResponse);
       } else if (httpRequest.uri().equals(INSPECTOR + "/latestWebView")) {
