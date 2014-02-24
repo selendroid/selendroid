@@ -293,7 +293,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     logoutput = new ByteArrayOutputStream();
     DefaultExecutor exec = new DefaultExecutor();
     exec.setStreamHandler(new PumpStreamHandler(logoutput));
-    CommandLine command = adbCommand("logcat", "-v", "time");
+    CommandLine command = adbCommand("logcat", "ResourceType:S", "dalvikvm:S", "Trace:S", "SurfaceFlinger:S",
+        "StrictMode:S", "ExchangeService:S", "SVGAndroid:S", "skia:S", "LoaderManager:S", "ActivityThread:S", "-v", "time");
     log.info("starting logcat:");
     log.fine(command.toString());
     try {
