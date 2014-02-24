@@ -97,8 +97,8 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
     openStartActivity();
     WebElement button = driver().findElement(By.id("waitingButtonTest"));
     Dimension dimension = button.getSize();
-    Assert.assertTrue(dimension.height >= 48);
-    Assert.assertTrue(dimension.width >= 210);
+    Assert.assertTrue("width should be >=48, but was " + dimension.height, dimension.height >= 48);
+    Assert.assertTrue("width should be >=200, but was " + dimension.width, dimension.width >= 200);
   }
 
   /**
@@ -180,6 +180,14 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
     Dimension dim = driver().manage().window().getSize();
     Assert.assertTrue(dim.getHeight() > 100);
     Assert.assertTrue(dim.getWidth() > 100);
+  }
+
+  @Test
+  public void shoudlGetJapaneseText() {
+    openStartActivity();
+    WebElement inputField = driver().findElement(By.id("encodingTextview"));
+
+    Assert.assertEquals("パソコン版にする", inputField.getText());
   }
 
 }

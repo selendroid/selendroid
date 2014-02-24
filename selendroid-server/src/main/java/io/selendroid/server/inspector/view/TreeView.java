@@ -54,7 +54,6 @@ public class TreeView extends SelendroidInspectorView {
       return;
     }
 
-
     JSONObject convertedTree = TreeUtil.createFromNativeWindowsSource(source);
     convertedTree.getJSONObject("metadata").put("xml", getXMLSource(source));
     response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
@@ -69,19 +68,21 @@ public class TreeView extends SelendroidInspectorView {
     try {
       transformer = tFactory.newTransformer();
     } catch (TransformerConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new SelendroidException(e);
     }
+
+    transformer.setParameter("encoding", "UTF-8");
 
     DOMSource domSource = new DOMSource(document);
     Writer outWriter = new StringWriter();
+
     StreamResult result = new StreamResult(outWriter);
     try {
       transformer.transform(domSource, result);
     } catch (TransformerException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new SelendroidException(e);
     }
+
     return outWriter.toString();
   }
 }

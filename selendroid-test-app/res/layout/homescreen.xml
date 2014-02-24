@@ -114,40 +114,46 @@
         android:id="@+id/visibleTestArea"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="visibleTestAreaCD">
+        android:contentDescription="visibleTestAreaCD" >
 
         <Button
             android:id="@+id/showToastButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:contentDescription="showToastButtonCD"
             android:onClick="displayToast"
-            android:text="Displays a Toast"
-            android:layout_weight="1" />
+            android:text="Displays a Toast" />
 
         <Button
             android:id="@+id/showPopupWindowButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:contentDescription="showPopupWindowButtonCD"
             android:onClick="displayPopupWindow"
-            android:text="Display Popup Window"
-            android:layout_weight="1" />
+            android:text="Display Popup Window" />
 
         <Button
             android:id="@+id/exceptionTestButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:contentDescription="exceptionTestButtonCD"
-            android:text="Press to throw unhandled exception"
-            android:layout_weight="1" />
+            android:text="Press to throw unhandled exception" />
     </LinearLayout>
 
     <EditText
         android:id="@+id/exceptionTestField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Type to throw unhandled exception"
-        android:ems="10" />
+        android:ems="10"
+        android:hint="Type to throw unhandled exception" />
+
+    <TextView
+        android:id="@+id/encodingTextview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="パソコン版にする" />
 
 </LinearLayout>

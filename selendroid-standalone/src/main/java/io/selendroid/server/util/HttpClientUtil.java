@@ -52,13 +52,13 @@ public class HttpClientUtil {
   }
 
   public static JSONObject parseJsonResponse(HttpResponse response) throws Exception {
-    String r = IOUtils.toString(response.getEntity().getContent());
-      try {
-          return new JSONObject(r);
-      } catch (JSONException e) {
-          log.severe("Failed to parse json response: " + r);
-          throw e;
-      }
+    String r = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+    try {
+      return new JSONObject(r);
+    } catch (JSONException e) {
+      log.severe("Failed to parse json response: " + r);
+      throw e;
+    }
   }
 
   public static HttpResponse executeRequest(String url, HttpMethod method) throws Exception {
@@ -100,11 +100,11 @@ public class HttpClientUtil {
       return false;
     }
   }
-  
+
   public static void waitForServer(int port) {
     long end = System.currentTimeMillis() + MINUTES.toMillis(3);
 
-    while (!isServerStarted(port) && System.currentTimeMillis() < end ) {
+    while (!isServerStarted(port) && System.currentTimeMillis() < end) {
       try {
         Thread.sleep(500);
       } catch (InterruptedException e) {

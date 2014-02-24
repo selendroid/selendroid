@@ -20,12 +20,14 @@ import io.selendroid.server.Response;
 import io.selendroid.server.UiResponse;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.webbitserver.HttpRequest;
 
+import java.nio.charset.Charset;
 import java.util.logging.Logger;
 
 public class InspectorTreeHandler extends BaseSelendroidServerHandler {
@@ -60,7 +62,7 @@ public class InspectorTreeHandler extends BaseSelendroidServerHandler {
       HttpResponse r =
           HttpClientUtil.executeRequest("http://localhost:" + session.getSelendroidServerPort()
               + "/inspector/tree", HttpMethod.GET);
-      return new JsResult(EntityUtils.toString(r.getEntity()));
+      return new JsResult(EntityUtils.toString(r.getEntity(),Charset.forName("UTF-8")));
     } catch (Exception e) {
       e.printStackTrace();
       throw new SelendroidException(e);

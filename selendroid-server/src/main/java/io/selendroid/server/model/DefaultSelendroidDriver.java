@@ -485,11 +485,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   public Object getWindowSource() {
     Object source = null;
     try {
-      // if (isNativeWindowMode()) {
       source = selendroidNativeDriver.getWindowSource();
-      // } else {
-      // source = selendroidWebDriver.getWindowSource();
-      // }
     } catch (JSONException e) {
       throw new SelendroidException(e);
     }
