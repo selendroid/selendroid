@@ -22,7 +22,6 @@ import io.selendroid.android.WindowType;
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.Session;
 import io.selendroid.server.model.internal.AbstractNativeElementContext;
 import io.selendroid.server.model.internal.AbstractWebElementContext;
 import io.selendroid.server.model.internal.execute_native.FindElementByAndroidTag;

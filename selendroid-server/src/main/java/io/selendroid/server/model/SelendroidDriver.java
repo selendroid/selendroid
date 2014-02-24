@@ -14,7 +14,6 @@
 package io.selendroid.server.model;
 
 import io.selendroid.android.internal.Dimension;
-import io.selendroid.server.Session;
 
 import java.util.List;
 import java.util.Set;

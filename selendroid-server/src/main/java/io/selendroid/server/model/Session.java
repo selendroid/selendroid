@@ -11,9 +11,8 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.server;
+package io.selendroid.server.model;
 
-import io.selendroid.server.model.KnownElements;
 import org.json.JSONObject;
 
 public class Session {

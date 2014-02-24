@@ -14,8 +14,9 @@
 package io.selendroid.server.model.internal.execute_native;
 
 import io.selendroid.ServerInstrumentation;
-import io.selendroid.server.Session;
 import io.selendroid.server.model.AndroidRElement;
+import io.selendroid.server.model.Session;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
