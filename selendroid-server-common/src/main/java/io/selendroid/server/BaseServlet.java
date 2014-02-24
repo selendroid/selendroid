@@ -24,6 +24,7 @@ import java.util.Map;
 public abstract class BaseServlet implements HttpHandler {
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
   public static final String ELEMENT_ID_KEY = "ELEMENT_ID_KEY";
+  public static final String COMMAND_NAME_KEY = "COMMAND_KEY";
   public static final String NAME_ID_KEY = "NAME_ID_KEY";
   public static final String DRIVER_KEY = "DRIVER_KEY";
   public static final int INTERNAL_SERVER_ERROR = 500;

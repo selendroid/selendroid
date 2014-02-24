@@ -13,13 +13,16 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
-import io.selendroid.util.SelendroidLogger;
-import org.json.JSONException;
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
+import io.selendroid.server.model.Session;
+import io.selendroid.util.SelendroidLogger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
 public class SendKeys extends RequestHandler {
@@ -35,8 +38,8 @@ public class SendKeys extends RequestHandler {
 
     AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
-      return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '" + id
-          + "' was not found."));
+      return new SelendroidResponse(getSessionId(request), 10, new SelendroidException(
+          "Element with id '" + id + "' was not found."));
     }
     String[] keysToSend;
     try {
@@ -44,8 +47,26 @@ public class SendKeys extends RequestHandler {
     } catch (SelendroidException e) {
       return new SelendroidResponse(getSessionId(request), 13, e);
     }
-    element.enterText(keysToSend);
+
+    if (isNativeEvents(request)) {
+      element.enterText(keysToSend);
+    }else{
+      element.setText(keysToSend);
+    }
     return new SelendroidResponse(getSessionId(request), "");
+  }
+
+  boolean isNativeEvents(HttpRequest request) {
+    JSONObject config =
+        getSelendroidDriver(request).getSession().getCommandConfiguration(
+            Session.SEND_KEYS_TO_ELEMENT);
+    if (config != null && config.has(Session.NATIVE_EVENTS_PROPERTY)) {
+      try {
+        return config.getBoolean(Session.NATIVE_EVENTS_PROPERTY);
+      } catch (JSONException e) {}
+    }
+    // default is native events
+    return true;
   }
 
 }

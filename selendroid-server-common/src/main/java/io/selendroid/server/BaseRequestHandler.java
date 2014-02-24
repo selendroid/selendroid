@@ -34,6 +34,13 @@ public abstract class BaseRequestHandler {
     }
     return null;
   }
+  
+  public String getCommandName(HttpRequest request) {
+    if (request.data().containsKey(BaseServlet.COMMAND_NAME_KEY)) {
+      return (String) request.data().get(BaseServlet.COMMAND_NAME_KEY);
+    }
+    return null;
+  }
 
   public String getElementId(HttpRequest request) {
     if (request.data().containsKey(BaseServlet.ELEMENT_ID_KEY)) {

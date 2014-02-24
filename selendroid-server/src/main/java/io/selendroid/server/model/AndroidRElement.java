@@ -116,4 +116,9 @@ public class AndroidRElement implements AndroidElement {
   public String getTagName() {
     throw new RuntimeException(NOT_IMPLEMENTED_ERROR_MSG);
   }
+
+  @Override
+  public void setText(CharSequence... keysToSend) {
+    throw new RuntimeException(NOT_IMPLEMENTED_ERROR_MSG);
+  }
 }

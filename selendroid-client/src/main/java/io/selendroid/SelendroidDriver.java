@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -14,7 +14,12 @@
 package io.selendroid;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rotatable;
@@ -23,7 +28,6 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.interactions.HasTouchScreen;
 import org.openqa.selenium.interactions.TouchScreen;
-import org.openqa.selenium.remote.DriverCommand;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteTouchScreen;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -39,7 +43,8 @@ public class SelendroidDriver extends RemoteWebDriver
       HasTouchScreen,
       ScreenBrightness,
       TakesScreenshot,
-      Rotatable {
+      Rotatable,
+      Configuration {
 
   private RemoteTouchScreen touchScreen;
 
@@ -66,7 +71,8 @@ public class SelendroidDriver extends RemoteWebDriver
    */
   @Override
   public <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException {
-    String base64 = execute(DriverCommand.SCREENSHOT).getValue().toString();
+    String base64 =
+        execute(org.openqa.selenium.remote.DriverCommand.SCREENSHOT).getValue().toString();
     return target.convertFromBase64Png(base64);
   }
 
@@ -90,13 +96,30 @@ public class SelendroidDriver extends RemoteWebDriver
 
   @Override
   public void rotate(ScreenOrientation orientation) {
-    execute(DriverCommand.SET_SCREEN_ORIENTATION, ImmutableMap.of("orientation", orientation));
+    execute(org.openqa.selenium.remote.DriverCommand.SET_SCREEN_ORIENTATION,
+        ImmutableMap.of("orientation", orientation));
   }
 
   @Override
   public ScreenOrientation getOrientation() {
-    return ScreenOrientation.valueOf((String) execute(DriverCommand.GET_SCREEN_ORIENTATION)
-        .getValue());
+    return ScreenOrientation.valueOf((String) execute(
+        org.openqa.selenium.remote.DriverCommand.GET_SCREEN_ORIENTATION).getValue());
+  }
+
+  @Override
+  public void setConfiguration(DriverCommand command, String key, Object value) {
+    Map<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("command", command.command);
+    parameters.put(key, value);
+    execute("selendroid-setCommandConfiguration", parameters);
+  }
+
+  @Override
+  public Map<String, Object> getConfiguration(DriverCommand command) {
+    Response response =
+        execute("selendroid-getCommandConfiguration", ImmutableMap.of("command", command.command));
+    
+    return (Map<String, Object>)response.getValue();
   }
 
 }

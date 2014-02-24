@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 eBay Software Foundation and selendroid committers.
+ * Copyright 2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,17 +13,23 @@
  */
 package io.selendroid;
 
+import java.util.Map;
+
 /**
- * Allow the user to set the brightness of the screen, turning it on or off as necessary.
+ * Allow the user to set the configuration of a {@link DriverCommand}.
  */
-public interface ScreenBrightness {
-  /**
-   * @return The brightness of the screen, with 0% meaning off and 100% being at full brightness.
-   */
-  int getBrightness();
+public interface Configuration {
 
   /**
-   * @param desiredBrightness The brightness to set the screen to, as a percentage.
+   * @param command The driver command to configure from Interface {@link DriverCommand}
+   * @param key The key
+   * @param value value of the configuration
    */
-  void setBrightness(int desiredBrightness);
+  public void setConfiguration(DriverCommand command, String key, Object value);
+
+  /**
+   * @param command The driver command
+   * @return The configuration of the driver command.
+   */
+  public Map<String, Object> getConfiguration(DriverCommand command);
 }

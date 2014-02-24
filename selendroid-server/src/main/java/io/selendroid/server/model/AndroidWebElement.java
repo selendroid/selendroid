@@ -39,6 +39,7 @@ import android.webkit.WebView;
 public class AndroidWebElement implements AndroidElement {
   private final String id;
   private WebView webview;
+  private KnownElements ke;
   private SelendroidWebDriver driver;
   private SearchContext elementContext = null;
   private Coordinates coordinates = null;
@@ -84,6 +85,7 @@ public class AndroidWebElement implements AndroidElement {
     this.webview = webview;
     this.driver = driver;
     this.elementContext = new ElementSearchContext(knownElements, webview, driver);
+    this.ke = knownElements;
   }
 
   @Override
@@ -323,5 +325,18 @@ public class AndroidWebElement implements AndroidElement {
   @Override
   public String toString() {
     return "{\"ELEMENT\":\"" + id + "\"}";
+  }
+
+  @Override
+  public void setText(CharSequence... keysToSend) {
+    StringBuilder sb = new StringBuilder();
+    for (CharSequence keys : keysToSend) {
+      sb.append(keys);
+    }
+    JSONArray parameter = new JSONArray();
+    parameter.put(this);
+    parameter.put(getText() + sb.toString());
+
+    driver.executeScript("arguments[0].value = arguments[1]", parameter, ke);
   }
 }

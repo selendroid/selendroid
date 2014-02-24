@@ -33,6 +33,7 @@ import io.selendroid.server.handler.FindElements;
 import io.selendroid.server.handler.Flick;
 import io.selendroid.server.handler.FrameSwitchHandler;
 import io.selendroid.server.handler.GetCapabilities;
+import io.selendroid.server.handler.GetCommandConfiguration;
 import io.selendroid.server.handler.GetCookies;
 import io.selendroid.server.handler.GetCurrentUrl;
 import io.selendroid.server.handler.GetElementAttribute;
@@ -63,6 +64,7 @@ import io.selendroid.server.handler.RotateScreen;
 import io.selendroid.server.handler.Scroll;
 import io.selendroid.server.handler.SendKeyToActiveElement;
 import io.selendroid.server.handler.SendKeys;
+import io.selendroid.server.handler.SetCommandConfiguration;
 import io.selendroid.server.handler.SetImplicitWaitTimeout;
 import io.selendroid.server.handler.SetScreenState;
 import io.selendroid.server.handler.SingleTapOnElement;
@@ -154,6 +156,10 @@ public class AndroidServlet extends BaseServlet {
     register(getHandler, new GetScreenState("/wd/hub/-selendroid/:sessionId/screen/brightness"));
     register(postHandler, new SetScreenState("/wd/hub/-selendroid/:sessionId/screen/brightness"));
     register(postHandler, new InspectorTap("/wd/hub/session/:sessionId/tap/2"));
+    register(getHandler, new GetCommandConfiguration(
+        "/wd/hub/-selendroid/:sessionId/configure/command/:command"));
+    register(postHandler, new SetCommandConfiguration(
+        "/wd/hub/-selendroid/:sessionId/configure/command/:command"));
 
     // currently not yet supported
     register(postHandler, new UnknownCommandHandler("/wd/hub/session/:sessionId/timeouts"));
@@ -222,6 +228,11 @@ public class AndroidServlet extends BaseServlet {
     String sessionId = getParameter(mappedUri, request.uri(), ":sessionId");
     if (sessionId != null) {
       request.data().put(SESSION_ID_KEY, sessionId);
+    }
+    
+    String command = getParameter(mappedUri, request.uri(), ":command");
+    if (command != null) {
+      request.data().put(COMMAND_NAME_KEY, command);
     }
 
     String id = getParameter(mappedUri, request.uri(), ":id");
