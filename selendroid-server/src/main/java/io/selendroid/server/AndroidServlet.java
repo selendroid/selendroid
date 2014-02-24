@@ -238,7 +238,12 @@ public class AndroidServlet extends BaseServlet {
 
   @Override
   public void handleRequest(HttpRequest request, HttpResponse response, BaseRequestHandler handler) {
-    if (handler == null) {
+    if ("/favicon.ico".equals(request.uri()) && handler == null) {
+      response.setStatus(404);
+      response.end();
+      return;
+    } else if (handler == null) {
+      SelendroidLogger.log("handler is null. not support uri is: " + request.uri());
       replyWithServerError(response);
       return;
     }
