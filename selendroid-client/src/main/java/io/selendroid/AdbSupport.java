@@ -11,20 +11,16 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.driver;
+package io.selendroid;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import io.selendroid.adb.AdbConnection;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-  MultipleWebviewHandlingTests.class,
-  NavigationTests.class,
-  SelendroidUnknownCommandHandlingTest.class,
-  WindowHandlingTests.class,
-})
-public class DriverTestSuite {
-  // the class remains empty,
-  // used only as a holder for the above annotations
-
+/**
+ * Allows the user to interact with the device based on <code>adb</code>.
+ */
+public interface AdbSupport {
+  /**
+   * @return the {@link AdbConnection} of the device under test.
+   */
+  AdbConnection getAdbConnection();
 }

@@ -35,10 +35,20 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
               "-selendroid/:sessionId/configure/command/:command", HttpVerb.GET));
           put("selendroid-setCommandConfiguration", new CommandInfo(
               "-selendroid/:sessionId/configure/command/:command", HttpVerb.POST));
+          put("selendroid-adb-sendKeyEvent", new CommandInfo(
+              "-selendroid/:sessionId/adb/sendKeyEvent", HttpVerb.POST));
+          put("selendroid-adb-sendText", new CommandInfo("-selendroid/:sessionId/adb/sendText",
+              HttpVerb.POST));
+          put("selendroid-adb-tap",
+              new CommandInfo("-selendroid/:sessionId/adb/tap", HttpVerb.POST));
         }
       };
 
   public SelendroidCommandExecutor(URL url) throws MalformedURLException {
     super(SELENDROID_COMMANDS, url);
+  }
+
+  public SelendroidCommandExecutor() throws MalformedURLException {
+    super(SELENDROID_COMMANDS, (URL) null);
   }
 }
