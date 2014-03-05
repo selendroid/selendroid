@@ -4,7 +4,8 @@
 - Fixes: [#268](../../issues/268), [#284](../../issues/284)
 - Adding support for disabling native events for sendKeys command to support e.g. German umlauts (#7,#110)
 - Added support for sending key events, send text and tap via adb connection
-
+- removed -installedApp command line parameter of the selendroid-standalone jar
+- Selendroid standalone supports by default already started emulators. Even if they are started manually after selendroid-standalone has been started, they are identified and can be used for test sessions.
 
 0.8.0
 ---

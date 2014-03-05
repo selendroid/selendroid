@@ -14,8 +14,11 @@
 package io.selendroid.android.impl;
 
 import io.selendroid.android.AndroidDevice;
+import io.selendroid.android.AndroidEmulatorPowerStateListener;
 import io.selendroid.android.DeviceManager;
 import io.selendroid.android.HardwareDeviceListener;
+import io.selendroid.android.TelnetClient;
+import io.selendroid.exceptions.AndroidDeviceException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +35,8 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
   private static final Logger log = Logger.getLogger(DefaultDeviceManager.class.getName());
   private String adbPath;
   private List<HardwareDeviceListener> deviceListeners = new ArrayList<HardwareDeviceListener>();
+  private List<AndroidEmulatorPowerStateListener> emulatorPowerStateListener =
+      new ArrayList<AndroidEmulatorPowerStateListener>();
   private Map<IDevice, DefaultHardwareDevice> connectedDevices =
       new HashMap<IDevice, DefaultHardwareDevice>();
   private Map<String, IDevice> virtualDevices = new HashMap<String, IDevice>();
@@ -56,8 +61,8 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
       // initialized at this point and it generates an exception. Do not print it.
       if (!shouldKeepAdbAlive) {
         e.printStackTrace();
-        Log.e("The IllegalStateException is not a show " +
-            "stopper. It has been handled. This is just debug spew. Please proceed.", e);
+        Log.e("The IllegalStateException is not a show "
+            + "stopper. It has been handled. This is just debug spew. Please proceed.", e);
       }
     }
 
@@ -111,15 +116,19 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
       AndroidDebugBridge.terminate();
     }
     log.info("stopping Device Manager");
-    //TODO add thread interrupt and join handling
+    // TODO add thread interrupt and join handling
   }
 
   @Override
   public void deviceChanged(IDevice device, int changeMask) {
     // Only fire events if the phone properties are available
-    if (IDevice.CHANGE_BUILD_INFO == changeMask && device.isEmulator() == false) {
-      for (HardwareDeviceListener listener : deviceListeners) {
-        listener.onDeviceConnected(connectedDevices.get(device));
+    if (IDevice.CHANGE_BUILD_INFO == changeMask) {
+      if (device.isEmulator()) {
+
+      } else {
+        for (HardwareDeviceListener listener : deviceListeners) {
+          listener.onDeviceConnected(connectedDevices.get(device));
+        }
       }
     }
   }
@@ -130,7 +139,22 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
       return;
     }
     if (device.isEmulator()) {
-      virtualDevices.put(device.getSerialNumber(), device);
+      String serial = device.getSerialNumber();
+      Integer port = Integer.parseInt(serial.replace("emulator-", ""));
+      String avdName = null;
+      TelnetClient client = null;
+      try {
+        client = new TelnetClient(port);
+        avdName = client.sendCommand("avd name");
+      } catch (AndroidDeviceException e) {
+        // ignore
+      } finally {
+        client.close();
+      }
+      virtualDevices.put(avdName, device);
+      for (AndroidEmulatorPowerStateListener listener : emulatorPowerStateListener) {
+        listener.onDeviceStarted(avdName, device.getSerialNumber());
+      }
     } else {
       connectedDevices.put(device, new DefaultHardwareDevice(device));
       for (HardwareDeviceListener listener : deviceListeners) {
@@ -145,7 +169,10 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
       return;
     }
     if (device.isEmulator()) {
-      virtualDevices.remove(device.getSerialNumber());
+      virtualDevices.remove(device.getAvdName());
+      for (AndroidEmulatorPowerStateListener listener : emulatorPowerStateListener) {
+        listener.onDeviceStopped(device.getSerialNumber());
+      }
     } else if (connectedDevices.containsKey(device)) {
       for (HardwareDeviceListener listener : deviceListeners) {
         listener.onDeviceDisconnected(connectedDevices.get(device));
@@ -167,12 +194,24 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
   }
 
   @Override
+  public void registerListener(AndroidEmulatorPowerStateListener deviceListener) {
+    this.emulatorPowerStateListener.add(deviceListener);
+  }
+
+  @Override
+  public void unregisterListener(AndroidEmulatorPowerStateListener deviceListener) {
+    if (emulatorPowerStateListener.contains(deviceListener)) {
+      emulatorPowerStateListener.remove(deviceListener);
+    }
+  }
+
+  @Override
   public void initialize(HardwareDeviceListener defaultListener) {
     registerListener(defaultListener);
     initializeAdbConnection();
   }
 
-  public IDevice getVirtualDevice(String serial) {
-    return virtualDevices.get(serial);
+  public IDevice getVirtualDevice(String avdName) {
+    return virtualDevices.get(avdName);
   }
 }

@@ -33,7 +33,11 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.exec.*;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -115,18 +119,12 @@ public abstract class AbstractDevice implements AndroidDevice {
     if (result != null && result.contains(apkPackage)) {
       return true;
     }
-    if (app instanceof InstalledAndroidApp) {
-      throw new RuntimeException("The specified app is not installed on the device: "
-          + app.getAppId());
-    }
+
     return false;
   }
 
   @Override
   public Boolean install(AndroidApp app) {
-    if (app instanceof InstalledAndroidApp) {
-      return true;
-    }
     CommandLine command = adbCommand("install", app.getAbsolutePath());
 
     String out = executeCommand(command, 120000);
@@ -170,9 +168,6 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public void uninstall(AndroidApp app) throws AndroidSdkException {
-    if (app instanceof InstalledAndroidApp) {
-      return;
-    }
     CommandLine command = adbCommand("uninstall", app.getBasePackage());
 
     executeCommand(command, 20000);
@@ -196,7 +191,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     CommandLine command = adbCommand("shell", "am", "force-stop", aut.getBasePackage());
     executeCommand(command, 20000);
 
-    if(logcatWatchdog != null && logcatWatchdog.isWatching()) {
+    if (logcatWatchdog != null && logcatWatchdog.isWatching()) {
       logcatWatchdog.destroyProcess();
       logcatWatchdog = null;
     }
@@ -206,9 +201,10 @@ public abstract class AbstractDevice implements AndroidDevice {
   public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
     this.port = port;
 
-    CommandLine command = adbCommand("shell", "am", "instrument", "-e", "main_activity",
-        aut.getMainActivity(), "-e", "server_port", port + "",
-        "io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation");
+    CommandLine command =
+        adbCommand("shell", "am", "instrument", "-e", "main_activity", aut.getMainActivity(), "-e",
+            "server_port", port + "", "io.selendroid." + aut.getBasePackage()
+                + "/io.selendroid.ServerInstrumentation");
     executeCommand(command, 20000);
 
     forwardSelendroidPort(port);

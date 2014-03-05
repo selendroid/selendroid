@@ -31,9 +31,6 @@ public class SelendroidConfiguration {
       "-app", "-aut" })
   private List<String> supportedApps = new ArrayList<String>();
 
-  @Parameter(description = "for developers who already have the app installed (and emulator running) format = tld.company.app/ActivityClass:version", names = { "-installedApp" })
-  private String installedApp = null;
-
   @Parameter(names = "-verbose", description = "Debug mode")
   private boolean verbose = false;
 
@@ -92,14 +89,6 @@ public class SelendroidConfiguration {
 
   public List<String> getSupportedApps() {
     return supportedApps;
-  }
-
-  public void setInstalledApp(String installedApp) {
-    this.installedApp = installedApp;
-  }
-
-  public String getInstalledApp() {
-    return installedApp;
   }
 
   public static SelendroidConfiguration create(String[] args) {

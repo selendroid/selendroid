@@ -17,18 +17,19 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
+import io.selendroid.android.AndroidEmulatorPowerStateListener;
 import io.selendroid.android.AndroidSdk;
+import io.selendroid.android.DeviceManager;
+import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
+import io.selendroid.android.impl.DefaultDeviceManager;
 import io.selendroid.android.impl.DefaultHardwareDevice;
-import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.DeviceStoreException;
-import io.selendroid.exceptions.ShellCommandException;
-import io.selendroid.io.ShellCommand;
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.impl.DefaultPortFinder;
-import org.apache.commons.exec.CommandLine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,22 +44,24 @@ public class DeviceStore {
   private Map<DeviceTargetPlatform, List<AndroidDevice>> androidDevices =
       new HashMap<DeviceTargetPlatform, List<AndroidDevice>>();
   private EmulatorPortFinder androidEmulatorPortFinder = null;
-  private Boolean installedApp = false;
-  private String avdName = null;
-  private String deviceSerial = null;
   private boolean clearData = true;
+  private AndroidEmulatorPowerStateListener emulatorPowerStateListener = null;
+  private DeviceManager deviceManager = null;
 
-  public DeviceStore(Boolean debug, Integer emulatorPort) {
+  public DeviceStore(Boolean debug, Integer emulatorPort, DeviceManager deviceManager) {
     if (debug) {
       log.setLevel(Level.FINE);
     }
+    this.deviceManager = deviceManager;
     androidEmulatorPortFinder = new DefaultPortFinder(emulatorPort, emulatorPort + 30);
   }
 
-  public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder, Boolean debug) {
+  public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder, Boolean debug,
+      DeviceManager deviceManager) {
     if (debug) {
       log.setLevel(Level.FINE);
     }
+    this.deviceManager = deviceManager;
     this.androidEmulatorPortFinder = androidEmulatorPortFinder;
   }
 
@@ -88,7 +91,7 @@ public class DeviceStore {
           e.printStackTrace();
         }
       }
-      if (device instanceof AndroidEmulator && installedApp == false) {
+      if (device instanceof AndroidEmulator) {
         AndroidEmulator emulator = (AndroidEmulator) device;
         try {
           emulator.stop();
@@ -101,6 +104,29 @@ public class DeviceStore {
     }
   }
 
+  /* package */void initAndroidDevices(HardwareDeviceListener hardwareDeviceListener,
+      boolean shouldKeepAdbAlive) throws AndroidDeviceException {
+    deviceManager =
+        new DefaultDeviceManager(AndroidSdk.adb().getAbsolutePath(), shouldKeepAdbAlive);
+    deviceManager.initialize(hardwareDeviceListener);
+
+    emulatorPowerStateListener = new DefaultEmulatorPowerStateListener();
+    deviceManager.registerListener(emulatorPowerStateListener);
+
+    List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
+    addEmulators(emulators);
+
+    if (getDevices().isEmpty()) {
+      SelendroidException e =
+          new SelendroidException(
+              "No android virtual devices were found. "
+                  + "Please start the android tool and create emulators and restart the selendroid-standalone "
+                  + "or plugin an Android hardware device via USB.");
+      log.warning("Warning: " + e);
+    }
+  }
+
+
   public synchronized void addDevice(AndroidDevice androidDevice) throws AndroidDeviceException {
     if (androidDevice == null) {
       log.info("No Android devices were found.");
@@ -111,59 +137,22 @@ public class DeviceStore {
           "For adding emulator instances please use #addEmulator method.");
     }
     if (androidDevice.isDeviceReady() == true) {
-      System.out.println("Adding: " + androidDevice);
+      log.info("Adding: " + androidDevice);
       addDeviceToStore(androidDevice);
     }
   }
 
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
-    addEmulators(emulators, false);
-  }
-
-  public void setDeviceSerial(String deviceSerial) {
-    this.deviceSerial = deviceSerial;
-  }
-
-  public void setAvdName(String avdName) {
-    this.avdName = avdName;
-  }
-
-  public void addEmulators(List<AndroidEmulator> emulators, Boolean installedApp)
-      throws AndroidDeviceException {
-    this.installedApp = installedApp;
-
-
     if (emulators == null || emulators.isEmpty()) {
       log.info("No emulators has been found.");
       return;
     }
     for (AndroidEmulator emulator : emulators) {
-      if (emulator.isEmulatorStarted()) {
-        if (!installedApp) {
-          log.info("Skipping emulator because it is already in use: " + emulator);
-          continue;
-        }
-        // TODO: do better than just a grabbing the first running device
-        // The only way to truly get it I found is through telnet:
-        // (sleep 0.5; echo 'avd name') | telnet 127.0.0.1 5554
-        // (but I'm not up to implementing that call right now)
-        CommandLine cmd = new CommandLine(AndroidSdk.adb());
-        cmd.addArgument("devices");
-        String devices = null;
-        try {
-          devices = ShellCommand.exec(cmd);
-        } catch (ShellCommandException e) {
-          e.printStackTrace();
-        }
-        if (devices != null && devices.contains("emulator-")) {
-          emulator.setSerial(Integer.parseInt(devices.split("emulator-")[1].split("\t")[0]));
-        }
-      }
-
       log.info("Adding: " + emulator);
       addDeviceToStore((AndroidDevice) emulator);
     }
   }
+
 
   /**
    * Internal method to add an actual device to the store.
@@ -218,11 +207,10 @@ public class DeviceStore {
     }
 
     // keep a list of emulators that aren't started to be used as backup
-    // when installedApp is used, want to default to the already running emulator
     List<AndroidDevice> potentialMatches = new ArrayList<AndroidDevice>();
     for (AndroidDevice device : devices) {
       log.fine("Evaluating if this device is a match for us: " + device.toString());
-      if (isEmulatorSwitchedOff(device) && device.screenSizeMatches(caps.getScreenSize())) {
+      if (device.screenSizeMatches(caps.getScreenSize())) {
         if (devicesInUse.contains(device)) {
           log.fine("Device is in use.");
           continue;
@@ -230,33 +218,32 @@ public class DeviceStore {
         if (caps.getEmulator() == null
             || (caps.getEmulator() == true && device instanceof DefaultAndroidEmulator)
             || (caps.getEmulator() == false && device instanceof DefaultHardwareDevice)) {
-          if (installedApp && device instanceof AndroidEmulator) {
+          if (device instanceof AndroidEmulator) {
             potentialMatches.add(device);
             continue;
           }
-          if (installedApp
-              && device instanceof AndroidDevice
-              && (deviceSerial == null || ((DefaultHardwareDevice) device).getSerial().equals(
-                  deviceSerial))) {
+          String serial = caps.getSerial();
+          if (device instanceof AndroidDevice
+              && (serial == null || ((DefaultHardwareDevice) device).getSerial().equals(serial))) {
             devicesInUse.add(device);
             return device;
-          } else if (installedApp && device instanceof AndroidDevice
-              && !((DefaultHardwareDevice) device).getSerial().equals(deviceSerial)) {
+          } else if (device instanceof AndroidDevice
+              && !((DefaultHardwareDevice) device).getSerial().equals(serial)) {
             continue;
           }
           log.fine("device found.");
           devicesInUse.add(device);
           return device;
         }
-      } else if (installedApp) {
-        if (devicesInUse.contains(device)) {
-          log.fine("device already in use");
-          continue;
-        }
-        if (avdName == null || ((DefaultAndroidEmulator) device).getAvdName().equals(avdName)) {
-          devicesInUse.add(device);
-          return device;
-        }
+        // } else if (installedApp) {
+        // if (devicesInUse.contains(device)) {
+        // log.fine("device already in use");
+        // continue;
+        // }
+        // if (avdName == null || ((DefaultAndroidEmulator) device).getAvdName().equals(avdName)) {
+        // devicesInUse.add(device);
+        // return device;
+        // }
       } else {
         log.info("emulator switched off: " + isEmulatorSwitchedOff(device));
       }
@@ -335,5 +322,36 @@ public class DeviceStore {
 
   public void setClearData(boolean clearData) {
     this.clearData = clearData;
+  }
+
+  class DefaultEmulatorPowerStateListener implements AndroidEmulatorPowerStateListener {
+
+    @Override
+    public void onDeviceStarted(String avdName, String serial) {
+      AndroidEmulator emulator = findEmulator(avdName);
+      if (emulator != null) {
+        Integer port = Integer.parseInt(serial.replace("emulator-", ""));
+        emulator.setSerial(port);
+        emulator.setWasStartedBySelendroid(false);
+      }
+    }
+
+    AndroidEmulator findEmulator(String avdName) {
+      for (AndroidDevice device : getDevices()) {
+        if (device instanceof AndroidEmulator) {
+          AndroidEmulator emulator = (AndroidEmulator) device;
+          if (avdName.equals(emulator.getAvdName())) {
+            return emulator;
+          }
+        }
+      }
+      return null;
+    }
+
+    @Override
+    public void onDeviceStopped(String avdName) {
+      // do nothing
+    }
+
   }
 }

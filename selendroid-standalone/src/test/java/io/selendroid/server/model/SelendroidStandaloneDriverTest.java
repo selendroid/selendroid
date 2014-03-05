@@ -13,6 +13,7 @@
  */
 package io.selendroid.server.model;
 
+import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.anDeviceManager;
 import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.getAndroidApkServerBuilder;
 import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.getSelendroidStandaloneDriver;
 import io.selendroid.SelendroidCapabilities;
@@ -119,7 +120,7 @@ public class SelendroidStandaloneDriverTest {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);
-    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
+    DeviceStore store = new DeviceStore(false, EMULATOR_PORT, anDeviceManager());
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
     Random random = new Random();
@@ -148,37 +149,12 @@ public class SelendroidStandaloneDriverTest {
   }
 
   @Test
-  public void shouldCreateNewSessionUsingInstalledAppOption() throws Exception {
+  public void shouldIdentifyStartedAndStoppedEmulators() throws Exception {
     // Setting up driver with test app and device stub
     SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     SelendroidConfiguration conf = new SelendroidConfiguration();
-    conf.setInstalledApp(TEST_APP_INSTALLED);
+    conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);
-    DeviceStore store = new DeviceStore(false, EMULATOR_PORT);
-
-    DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
-    Random random = new Random();
-    final UUID definedSessionId = new UUID(random.nextLong(), random.nextLong());
-
-    emulator.testSessionListener = new TestSessionListener(definedSessionId.toString(), "test") {
-      @Override
-      public SelendroidResponse executeSelendroidRequest(Properties params) {
-        return null;
-      }
-    };
-    store.addDeviceToStore(emulator);
-    driver.setDeviceStore(store);
-
-    // testing new session creation
-    SelendroidCapabilities capa = new SelendroidCapabilities();
-    capa.setAut(TEST_APP_ID);
-    capa.setAndroidTarget(DeviceTargetPlatform.ANDROID16.name());
-    try {
-      String sessionId = driver.createNewTestSession(new JSONObject(capa.asMap()), 0);
-      Assert.assertNotNull(UUID.fromString(sessionId));
-    } finally {
-      // this will also stop the http server
-      emulator.stop();
-    }
+    driver.initAndroidDevices();
   }
 }

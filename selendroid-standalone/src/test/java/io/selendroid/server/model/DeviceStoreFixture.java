@@ -16,6 +16,7 @@ package io.selendroid.server.model;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import io.selendroid.SelendroidCapabilities;
+import io.selendroid.android.DeviceManager;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.device.DeviceTargetPlatform;
@@ -50,5 +51,12 @@ public class DeviceStoreFixture {
     capabilities.setAndroidTarget(DeviceTargetPlatform.ANDROID16.name());
     capabilities.setScreenSize("320x480");
     return capabilities;
+  }
+  
+  protected static DeviceManager anDeviceManager() throws AndroidDeviceException {
+    DeviceManager finder = mock(DeviceManager.class);
+    when(finder.getVirtualDevice("emulator-5554")).thenReturn(null);
+
+    return finder;
   }
 }

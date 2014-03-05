@@ -22,7 +22,11 @@ public interface DeviceManager {
 
   public void unregisterListener(HardwareDeviceListener deviceListener);
 
+  public void registerListener(AndroidEmulatorPowerStateListener deviceListener);
+
+  public void unregisterListener(AndroidEmulatorPowerStateListener deviceListener);
+
   public void shutdown();
-  
-  public IDevice getVirtualDevice(String serial);
+
+  public IDevice getVirtualDevice(String avdName);
 }

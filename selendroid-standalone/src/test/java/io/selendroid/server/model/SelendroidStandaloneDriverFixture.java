@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.DeviceManager;
 import io.selendroid.android.impl.DefaultAndroidApp;
-import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.AndroidDriverAPKBuilder;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -36,7 +35,7 @@ public class SelendroidStandaloneDriverFixture {
       ShellCommandException, AndroidSdkException {
     SelendroidServerBuilder builder = mock(SelendroidServerBuilder.class);
     AndroidApp server = mock(AndroidApp.class);
-    AndroidApp resignedApp = mock(InstalledAndroidApp.class);
+    AndroidApp resignedApp = mock(AndroidApp.class);
     when(resignedApp.getAppId()).thenReturn(BrowserType.ANDROID);
 
     when(
