@@ -62,6 +62,7 @@ public abstract class AbstractNativeElementContext
       FindsByName,
       FindsById,
       FindsByText,
+      FindsByXPath,
       FindsByPartialText,
       FindsByClass {
   protected ServerInstrumentation instrumentation;

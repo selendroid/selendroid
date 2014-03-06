@@ -13,18 +13,9 @@
  */
 package io.selendroid.server.model.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import io.selendroid.server.model.AndroidWebElement;
-import io.selendroid.server.model.KnownElements;
-import io.selendroid.server.model.SearchContext;
-import io.selendroid.server.model.SelendroidWebDriver;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.AndroidElement;
+import io.selendroid.server.model.AndroidWebElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.By.ByClass;
 import io.selendroid.server.model.By.ById;
@@ -32,16 +23,27 @@ import io.selendroid.server.model.By.ByLinkText;
 import io.selendroid.server.model.By.ByPartialLinkText;
 import io.selendroid.server.model.By.ByTagName;
 import io.selendroid.server.model.By.ByXPath;
+import io.selendroid.server.model.KnownElements;
+import io.selendroid.server.model.SearchContext;
+import io.selendroid.server.model.SelendroidWebDriver;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.webkit.WebView;
 
 public abstract class AbstractWebElementContext
     implements
-        SearchContext,
+      SearchContext,
       FindsByTagName,
       FindsByName,
       FindsById,
       FindsByText,
+      FindsByXPath,
       FindsByPartialText,
       FindsByClass {
   protected static final String LOCATOR_ID = "id";
