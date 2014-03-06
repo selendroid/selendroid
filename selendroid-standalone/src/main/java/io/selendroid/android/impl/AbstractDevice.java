@@ -18,6 +18,7 @@ import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
+import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 
@@ -108,19 +109,24 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   @Override
-  public boolean isInstalled(AndroidApp app) throws AndroidSdkException {
+  public boolean isInstalled(String appBasePackage) throws AndroidSdkException {
     CommandLine command = adbCommand("shell", "pm", "list", "packages");
-    String apkPackage = app.getBasePackage();
-    command.addArgument(apkPackage, false);
+
+    command.addArgument(appBasePackage, false);
     String result = null;
     try {
       result = ShellCommand.exec(command, 20000);
     } catch (ShellCommandException e) {}
-    if (result != null && result.contains(apkPackage)) {
+    if (result != null && result.contains(appBasePackage)) {
       return true;
     }
 
     return false;
+  }
+
+  @Override
+  public boolean isInstalled(AndroidApp app) throws AndroidSdkException {
+    return isInstalled(app.getBasePackage());
   }
 
   @Override
@@ -205,7 +211,11 @@ public abstract class AbstractDevice implements AndroidDevice {
         adbCommand("shell", "am", "instrument", "-e", "main_activity", aut.getMainActivity(), "-e",
             "server_port", port + "", "io.selendroid." + aut.getBasePackage()
                 + "/io.selendroid.ServerInstrumentation");
-    executeCommand(command, 20000);
+    String result = executeCommand(command, 20000);
+    if (result.contains("FAILED")) {
+      throw new SelendroidException("Error occured while starting selendroid-server on the device",
+          new Throwable(result));
+    }
 
     forwardSelendroidPort(port);
     startLogging();
@@ -336,6 +346,9 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   public byte[] takeScreenshot() throws AndroidDeviceException {
+    if (device == null) {
+      throw new AndroidDeviceException("Device not accessible via ddmlib.");
+    }
     RawImage rawImage;
     try {
       rawImage = device.getScreenshot();
