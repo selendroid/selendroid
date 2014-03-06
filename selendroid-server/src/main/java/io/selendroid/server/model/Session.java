@@ -35,8 +35,13 @@ public class Session {
     this.commandConfiguration = new HashMap<String, JSONObject>();
     JSONObject configJsonObject = new JSONObject();
     try {
-      configJsonObject.put(NATIVE_EVENTS_PROPERTY, true);
-    } catch (JSONException e) {}
+      boolean nativeEvents = true;
+      if (capabilities.has(NATIVE_EVENTS_PROPERTY)) {
+        nativeEvents = capabilities.getBoolean(NATIVE_EVENTS_PROPERTY);
+      }
+      configJsonObject.put(NATIVE_EVENTS_PROPERTY, nativeEvents);
+    } catch (JSONException e) {
+    }
     this.commandConfiguration.put(SEND_KEYS_TO_ELEMENT, configJsonObject);
   }
 
