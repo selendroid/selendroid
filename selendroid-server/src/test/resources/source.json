@@ -1,0 +1,552 @@
+{
+	"id": "",
+	"ref": "efc05c5f-ddd2-95e6-a9b4-c50e1bd06726",
+	"l10n": {
+		"matches": 0
+	},
+	"name": "null",
+	"value": "",
+	"children": [{
+		"id": "",
+		"ref": "b2c3be2c-3bd0-97c7-6891-c924314cb1c0",
+		"l10n": {
+			"matches": 0
+		},
+		"name": "null",
+		"value": "",
+		"children": [{
+			"id": "action_mode_bar_stub",
+			"ref": "6196f2bd-b22d-4eb3-5c3f-1cb14a0c327e",
+			"l10n": {
+				"matches": 0
+			},
+			"name": "null",
+			"value": "",
+			"shown": false,
+			"type": "ViewStub",
+			"rect": {
+				"origin": {
+					"y": 0,
+					"x": 0
+				},
+				"size": {
+					"width": 0,
+					"height": 0
+				}
+			}
+		}, {
+			"id": "",
+			"ref": "38326245-817c-2da3-0316-f334e23f52ce",
+			"l10n": {
+				"matches": 0
+			},
+			"name": "null",
+			"value": "",
+			"children": [{
+				"id": "title",
+				"ref": "5ffe5afe-28d8-d749-b28d-2d334859350a",
+				"l10n": {
+					"matches": 0
+				},
+				"name": "null",
+				"value": "selendroid-test-app",
+				"shown": true,
+				"type": "TextView",
+				"rect": {
+					"origin": {
+						"y": 39,
+						"x": 6
+					},
+					"size": {
+						"width": 468,
+						"height": 35
+					}
+				}
+			}],
+			"shown": true,
+			"type": "FrameLayout",
+			"rect": {
+				"origin": {
+					"y": 38,
+					"x": 0
+				},
+				"size": {
+					"width": 480,
+					"height": 38
+				}
+			}
+		}, {
+			"id": "content",
+			"ref": "2be7a242-b502-848d-e34b-24a9453dcde7",
+			"l10n": {
+				"matches": 0
+			},
+			"name": "null",
+			"value": "",
+			"children": [{
+				"id": "",
+				"ref": "f28b1ed7-1c31-bd91-8cbb-2a6279f1cc41",
+				"l10n": {
+					"matches": 0
+				},
+				"name": "null",
+				"value": "",
+				"children": [{
+					"id": "",
+					"ref": "ecca536a-f3a3-b933-a96f-504f97ea2d4a",
+					"l10n": {
+						"matches": 0
+					},
+					"name": "null",
+					"value": "Hello Default Locale, Selendroid-test-app!",
+					"shown": true,
+					"type": "TextView",
+					"rect": {
+						"origin": {
+							"y": 76,
+							"x": 0
+						},
+						"size": {
+							"width": 480,
+							"height": 29
+						}
+					}
+				}, {
+					"id": "l10n",
+					"ref": "91b9ff00-343a-e642-1c59-d76d6918b778",
+					"l10n": {
+						"matches": 0
+					},
+					"name": "l10nCD",
+					"value": "",
+					"children": [{
+						"id": "",
+						"ref": "1002de1b-3274-7b8b-0fa3-55ff737499cf",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "null",
+						"value": "Localization (L10n) locator test",
+						"shown": true,
+						"type": "TextView",
+						"rect": {
+							"origin": {
+								"y": 123,
+								"x": 0
+							},
+							"size": {
+								"width": 293,
+								"height": 29
+							}
+						}
+					}, {
+						"id": "buttonTest",
+						"ref": "a2c221ae-a8f1-2830-2580-a62a3f2c77eb",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "buttonTestCD",
+						"value": "EN Button",
+						"shown": true,
+						"type": "Button",
+						"rect": {
+							"origin": {
+								"y": 105,
+								"x": 293
+							},
+							"size": {
+								"width": 128,
+								"height": 72
+							}
+						}
+					}],
+					"shown": true,
+					"type": "LinearLayout",
+					"rect": {
+						"origin": {
+							"y": 105,
+							"x": 0
+						},
+						"size": {
+							"width": 480,
+							"height": 72
+						}
+					}
+				}, {
+					"id": "imageView",
+					"ref": "a854f86a-7de3-0774-9240-d2d33318fb34",
+					"l10n": {
+						"matches": 0
+					},
+					"name": "imageViewCD",
+					"value": "",
+					"children": [{
+						"id": "buttonStartWebview",
+						"ref": "7cbccf1b-20ee-4260-7fd1-c54cb2ff6ae1",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "buttonStartWebviewCD",
+						"value": "",
+						"shown": true,
+						"type": "ImageButton",
+						"rect": {
+							"origin": {
+								"y": 177,
+								"x": 0
+							},
+							"size": {
+								"width": 240,
+								"height": 91
+							}
+						}
+					}, {
+						"id": "startUserRegistration",
+						"ref": "76d84591-0a9a-1fe4-eca3-27fbed8eda84",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "startUserRegistrationCD",
+						"value": "",
+						"shown": true,
+						"type": "ImageButton",
+						"rect": {
+							"origin": {
+								"y": 177,
+								"x": 240
+							},
+							"size": {
+								"width": 240,
+								"height": 91
+							}
+						}
+					}],
+					"shown": true,
+					"type": "LinearLayout",
+					"rect": {
+						"origin": {
+							"y": 177,
+							"x": 0
+						},
+						"size": {
+							"width": 480,
+							"height": 91
+						}
+					}
+				}, {
+					"id": "my_text_field",
+					"ref": "f4a24c7e-746c-7c1d-9e19-4af80d4eb9b1",
+					"l10n": {
+						"matches": 0
+					},
+					"name": "my_text_fieldCD",
+					"value": "",
+					"shown": true,
+					"type": "PullToRefreshListView$InternalListView",
+					"rect": {
+						"origin": {
+							"y": 268,
+							"x": 0
+						},
+						"size": {
+							"width": 480,
+							"height": 72
+						}
+					}
+				}, {
+					"id": "lastElementRow",
+					"ref": "6e16115c-a8ff-fef5-b5e0-19bd74801f9f",
+					"l10n": {
+						"matches": 0
+					},
+					"name": "imageViewCD",
+					"value": "",
+					"children": [{
+						"id": "waitingButtonTest",
+						"ref": "5b3086d7-57bb-69d3-6a3f-9f138e9888cd",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "waitingButtonTestCD",
+						"value": "Show Progress Bar for a while",
+						"shown": true,
+						"type": "android.widget.PullToRefreshListView$InternalListView",
+						"rect": {
+							"origin": {
+								"y": 340,
+								"x": 0
+							},
+							"size": {
+								"width": 314,
+								"height": 72
+							}
+						}
+					}, {
+						"id": "input_adds_check_box",
+						"ref": "d8d5f379-b1fb-e504-9be7-5e3a80dcf2f4",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "null",
+						"value": "I accept adds",
+						"shown": true,
+						"type": "CheckBox",
+						"rect": {
+							"origin": {
+								"y": 350,
+								"x": 314
+							},
+							"size": {
+								"width": 166,
+								"height": 72
+							}
+						}
+					}],
+					"shown": true,
+					"type": "LinearLayout",
+					"rect": {
+						"origin": {
+							"y": 340,
+							"x": 0
+						},
+						"size": {
+							"width": 480,
+							"height": 72
+						}
+					}
+				}, {
+					"id": "visibleTestArea",
+					"ref": "e7029983-6956-eee5-4e8b-a02964a71b6b",
+					"l10n": {
+						"matches": 0
+					},
+					"name": "visibleTestAreaCD",
+					"value": "",
+					"children": [{
+						"id": "visibleButtonTest",
+						"ref": "759d9c9e-3350-ee7b-8c7d-092a1a934fd5",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "visibleButtonTestCD",
+						"value": "Display text view",
+						"shown": true,
+						"type": "Button",
+						"rect": {
+							"origin": {
+								"y": 412,
+								"x": 0
+							},
+							"size": {
+								"width": 192,
+								"height": 72
+							}
+						}
+					}, {
+						"id": "visibleTextView",
+						"ref": "92696b2d-835c-1135-26f1-cc5d8571822c",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "null",
+						"value": "Text is sometimes displayed",
+						"shown": false,
+						"type": "TextView",
+						"rect": {
+							"origin": {
+								"y": 430,
+								"x": 192
+							},
+							"size": {
+								"width": 267,
+								"height": 29
+							}
+						}
+					}],
+					"shown": true,
+					"type": "LinearLayout",
+					"rect": {
+						"origin": {
+							"y": 412,
+							"x": 0
+						},
+						"size": {
+							"width": 480,
+							"height": 72
+						}
+					}
+				}, {
+					"id": "visibleTestArea",
+					"ref": "9cd15c26-21f4-02eb-6f34-a8d41c8881dd",
+					"l10n": {
+						"matches": 0
+					},
+					"name": "visibleTestAreaCD",
+					"value": "",
+					"children": [{
+						"id": "showToastButton",
+						"ref": "70c47be9-c525-1ea5-a025-08c87d48ce92",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "showToastButtonCD",
+						"value": "Displays a Toast",
+						"shown": true,
+						"type": "Button",
+						"rect": {
+							"origin": {
+								"y": 484,
+								"x": 0
+							},
+							"size": {
+								"width": 160,
+								"height": 128
+							}
+						}
+					}, {
+						"id": "showPopupWindowButton",
+						"ref": "941dfcd3-0786-67b7-7365-777d89c72982",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "showPopupWindowButtonCD",
+						"value": "Display Popup Window",
+						"shown": true,
+						"type": "Button",
+						"rect": {
+							"origin": {
+								"y": 484,
+								"x": 160
+							},
+							"size": {
+								"width": 160,
+								"height": 128
+							}
+						}
+					}, {
+						"id": "exceptionTestButton",
+						"ref": "a1fbb7f2-67b4-c5c5-4271-a2fc4e8247df",
+						"l10n": {
+							"matches": 0
+						},
+						"name": "exceptionTestButtonCD",
+						"value": "Press to throw unhandled exception",
+						"shown": true,
+						"type": "Button",
+						"rect": {
+							"origin": {
+								"y": 484,
+								"x": 320
+							},
+							"size": {
+								"width": 160,
+								"height": 128
+							}
+						}
+					}],
+					"shown": true,
+					"type": "LinearLayout",
+					"rect": {
+						"origin": {
+							"y": 484,
+							"x": 0
+						},
+						"size": {
+							"width": 480,
+							"height": 128
+						}
+					}
+				}, {
+					"id": "exceptionTestField",
+					"ref": "5bcf09d3-142e-6ff4-d65b-8f36ed6e1a7b",
+					"l10n": {
+						"matches": 0
+					},
+					"name": "null",
+					"value": "",
+					"shown": true,
+					"type": "EditText",
+					"rect": {
+						"origin": {
+							"y": 612,
+							"x": 0
+						},
+						"size": {
+							"width": 480,
+							"height": 72
+						}
+					}
+				}, {
+					"id": "encodingTextview",
+					"ref": "63f36832-c76f-393d-45ee-7096285ec12e",
+					"l10n": {
+						"matches": 0
+					},
+					"name": "null",
+					"value": "\u30d1\u30bd\u30b3\u30f3\u7248\u306b\u3059\u308b",
+					"shown": true,
+					"type": "TextView",
+					"rect": {
+						"origin": {
+							"y": 684,
+							"x": 0
+						},
+						"size": {
+							"width": 480,
+							"height": 29
+						}
+					}
+				}],
+				"shown": true,
+				"type": "LinearLayout",
+				"rect": {
+					"origin": {
+						"y": 76,
+						"x": 0
+					},
+					"size": {
+						"width": 480,
+						"height": 637
+					}
+				}
+			}],
+			"shown": true,
+			"type": "FrameLayout",
+			"rect": {
+				"origin": {
+					"y": 76,
+					"x": 0
+				},
+				"size": {
+					"width": 480,
+					"height": 724
+				}
+			}
+		}],
+		"shown": true,
+		"type": "LinearLayout",
+		"rect": {
+			"origin": {
+				"y": 0,
+				"x": 0
+			},
+			"size": {
+				"width": 480,
+				"height": 800
+			}
+		}
+	}],
+	"shown": true,
+	"type": "DecorView",
+	"rect": {
+		"origin": {
+			"y": 0,
+			"x": 0
+		},
+		"size": {
+			"width": 480,
+			"height": 800
+		}
+	},
+	"activity": "{io.selendroid.testapp\\/io.selendroid.testapp.HomeScreenActivity}"
+}

@@ -50,18 +50,25 @@ public class JsonXmlUtil {
       String[] elements = clazz.split("\\.");
       String simpleClassName = elements[elements.length - 1];
       if (simpleClassName.contains("$")) {
-        String[] subElememts = simpleClassName.split("\\$");
-        return subElememts[subElememts.length - 1];
+        return replaceDollarCharacter(clazz);
       }
       return simpleClassName;
+    } else if (clazz.contains("$")) {
+      return replaceDollarCharacter(clazz);
     }
     return clazz;
+  }
+
+  private static String replaceDollarCharacter(String simpleClassName) {
+    String[] subElememts = simpleClassName.split("\\$");
+    return subElememts[subElememts.length - 1];
   }
 
   private static void buildXmlNode(JSONObject from, Element parent, Document document) {
     if (from == null) {
       return;
     }
+
     Element node = document.createElement(extractTagName(from.optString("type")));
     parent.appendChild(node);
 
