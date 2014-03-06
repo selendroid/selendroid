@@ -64,6 +64,8 @@ public interface SelendroidDriver {
 
   public Object executeScript(String script, Object... args);
 
+  public Object executeAsyncScript(String script, JSONArray args);
+
   public String getWindowHandle();
 
   public Set<String> getWindowHandles();
@@ -91,4 +93,6 @@ public interface SelendroidDriver {
   public ScreenOrientation getOrientation();
 
   public void rotate(ScreenOrientation orientation);
+
+  public void setAsyncTimeout(long timeout);
 }

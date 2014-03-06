@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.server.handler;
+package io.selendroid.server.handler.timeouts;
 
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.server.RequestHandler;

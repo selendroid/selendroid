@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.UnsupportedCommandException;
+import org.openqa.selenium.WebDriverException;
 
 
 public class SelendroidUnknownCommandHandlingTest extends BaseAndroidTest {
@@ -81,13 +82,8 @@ public class SelendroidUnknownCommandHandlingTest extends BaseAndroidTest {
     driver().manage().window().setSize(targetSize);
   }
 
-  @Test(expected = UnsupportedCommandException.class)
+  @Test(expected = WebDriverException.class)
   public void testShouldNotSetPageLoadTimeout() {
     driver().manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
-  }
-
-  @Test(expected = UnsupportedCommandException.class)
-  public void testShouldNotSetScriptTimeout() {
-    driver().manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
   }
 }

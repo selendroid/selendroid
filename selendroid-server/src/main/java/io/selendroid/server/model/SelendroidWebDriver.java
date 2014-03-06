@@ -65,6 +65,8 @@ public class SelendroidWebDriver {
   private TouchScreen touch;
   private KeySender keySender;
   private MotionSender motionSender;
+  private long scriptTimeout = 60000L;
+  private long asyncScriptTimeout = 0L;
 
   public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle) {
     this.serverInstrumentation = serverInstrumentation;
@@ -218,12 +220,7 @@ public class SelendroidWebDriver {
         webview.loadUrl("javascript:" + script);
       }
     });
-    long timeout = System.currentTimeMillis() + 60000; /*
-                                                        * how long to wait to allow the script to
-                                                        * run? This could be arbitrarily high for
-                                                        * some users... setting extremely high for
-                                                        * now (1 min)
-                                                        */
+    long timeout = System.currentTimeMillis() + scriptTimeout;
     synchronized (syncObject) {
       while (result == null && (System.currentTimeMillis() < timeout)) {
         try {
@@ -387,7 +384,7 @@ public class SelendroidWebDriver {
     if (!currentWindowOrFrame.getKey().equals("")) {
       window = "document['$wdc_']['" + currentWindowOrFrame.getKey() + "'] ||";
     }
-    return (window += "window;");
+    return (window += "window");
   }
 
   Object injectJavascript(String toExecute, Object args, KnownElements ke) throws JSONException {
@@ -405,6 +402,19 @@ public class SelendroidWebDriver {
   Object injectAtomJavascript(String toExecute, Object args, KnownElements ke) throws JSONException {
     return executeJavascriptInWebView("alert('selendroid:'+ (" + toExecute + ")("
         + convertToJsArgs(args, ke) + "))");
+  }
+
+  public Object executeAsyncJavascript(String toExecute, JSONArray args, KnownElements ke) {
+    try {
+      String callbackFunction = "function(result){alert('selendroid:'+result);}";
+      String script = "try {(" + AndroidAtoms.EXECUTE_ASYNC_SCRIPT.getValue() + ")(" + escapeAndQuote(toExecute) + ", ["
+          + convertToJsArgs(args, ke) + "], " + asyncScriptTimeout + ", " + callbackFunction + ","
+          + "true, " + getWindowString() + ")}catch(e){alert('selendroid:{\"status\":13,\"value\":\"' + e + '\"}')}";
+      return executeJavascriptInWebView(script);
+    } catch (JSONException je) {
+      je.printStackTrace();
+      throw new RuntimeException(je);
+    }
   }
 
   Boolean isInFrame() {
@@ -660,5 +670,9 @@ public class SelendroidWebDriver {
 
   public void clearCurrentAlertMessage() {
     SelendroidLogger.log("clearing the current alert message: " + currentAlertMessage.remove());
+  }
+
+  public void setAsyncScriptTimeout(long timeout) {
+    asyncScriptTimeout = timeout;
   }
 }

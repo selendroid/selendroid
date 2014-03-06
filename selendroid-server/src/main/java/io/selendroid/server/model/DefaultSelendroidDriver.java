@@ -83,6 +83,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   private SelendroidNativeDriver selendroidNativeDriver = null;
   private SelendroidWebDriver selendroidWebDriver = null;
   private String activeWindowType = null;
+  private long scriptTimeout = 0L;
 
   private Map<String, NativeExecuteScript> nativeExecuteScriptMap =
       new HashMap<String, NativeExecuteScript>();
@@ -347,10 +348,11 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   private void initSelendroidWebDriver(String type) {
-    this.selendroidWebDriver = new SelendroidWebDriver(serverInstrumentation, type);
+    selendroidWebDriver = new SelendroidWebDriver(serverInstrumentation, type);
     webviewSearchScope =
         new WebviewSearchScope(session.getKnownElements(), selendroidWebDriver.getWebview(),
             selendroidWebDriver);
+    selendroidWebDriver.setAsyncScriptTimeout(scriptTimeout);
   }
 
   /*
@@ -570,6 +572,14 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     return executeScript(script, array);
   }
 
+  public Object executeAsyncScript(String script, JSONArray args) {
+    if (isNativeWindowMode()) {
+      throw new UnsupportedOperationException(
+          "Executing arbitrary script is only available in web views.");
+    }
+    return selendroidWebDriver.executeAsyncJavascript(script, args, session.getKnownElements());
+  }
+
   @Override
   public String getWindowHandle() {
     return activeWindowType;
@@ -724,5 +734,12 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       activeWindowType = previousActiveWindow;
     }
     return null;
+  }
+
+  public void setAsyncTimeout(long timeout) {
+    scriptTimeout = timeout;
+    if (selendroidWebDriver != null) {
+      selendroidWebDriver.setAsyncScriptTimeout(timeout);
+    }
   }
 }

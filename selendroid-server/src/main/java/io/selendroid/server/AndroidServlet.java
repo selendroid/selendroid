@@ -25,7 +25,8 @@ import io.selendroid.server.handler.DeleteSession;
 import io.selendroid.server.handler.DoubleTapOnElement;
 import io.selendroid.server.handler.Down;
 import io.selendroid.server.handler.ElementLocation;
-import io.selendroid.server.handler.ExecuteScript;
+import io.selendroid.server.handler.script.ExecuteAsyncScript;
+import io.selendroid.server.handler.script.ExecuteScript;
 import io.selendroid.server.handler.FindChildElement;
 import io.selendroid.server.handler.FindChildElements;
 import io.selendroid.server.handler.FindElement;
@@ -65,7 +66,8 @@ import io.selendroid.server.handler.Scroll;
 import io.selendroid.server.handler.SendKeyToActiveElement;
 import io.selendroid.server.handler.SendKeys;
 import io.selendroid.server.handler.SetCommandConfiguration;
-import io.selendroid.server.handler.SetImplicitWaitTimeout;
+import io.selendroid.server.handler.timeouts.AsyncTimeoutHandler;
+import io.selendroid.server.handler.timeouts.SetImplicitWaitTimeout;
 import io.selendroid.server.handler.SetScreenState;
 import io.selendroid.server.handler.SingleTapOnElement;
 import io.selendroid.server.handler.SubmitForm;
@@ -76,6 +78,7 @@ import io.selendroid.server.handler.alert.Alert;
 import io.selendroid.server.handler.alert.AlertAccept;
 import io.selendroid.server.handler.alert.AlertDismiss;
 import io.selendroid.server.handler.alert.AlertSendKeys;
+import io.selendroid.server.handler.timeouts.TimeoutsHandler;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
@@ -124,12 +127,16 @@ public class AndroidServlet extends BaseServlet {
     register(postHandler, new SendKeys("/wd/hub/session/:sessionId/element/:id/value"));
     register(getHandler, new GetElementSize("/wd/hub/session/:sessionId/element/:id/size"));
     register(postHandler, new ExecuteScript("/wd/hub/session/:sessionId/execute"));
+    register(postHandler, new ExecuteAsyncScript("/wd/hub/session/:sessionId/execute_async"));
     register(postHandler, new GoForward("/wd/hub/session/:sessionId/forward"));
     register(postHandler, new FrameSwitchHandler("/wd/hub/session/:sessionId/frame"));
     register(postHandler, new SendKeyToActiveElement("/wd/hub/session/:sessionId/keys"));
     register(postHandler, new Refresh("/wd/hub/session/:sessionId/refresh"));
     register(getHandler, new CaptureScreenshot("/wd/hub/session/:sessionId/screenshot"));
     register(getHandler, new LogElementTree("/wd/hub/session/:sessionId/source"));
+    register(postHandler, new TimeoutsHandler("/wd/hub/session/:sessionId/timeouts"));
+    register(postHandler, new AsyncTimeoutHandler(
+        "/wd/hub/session/:sessionId/timeouts/async_script"));
     register(postHandler, new SetImplicitWaitTimeout(
         "/wd/hub/session/:sessionId/timeouts/implicit_wait"));
     register(getHandler, new GetPageTitle("/wd/hub/session/:sessionId/title"));
@@ -162,10 +169,6 @@ public class AndroidServlet extends BaseServlet {
         "/wd/hub/-selendroid/:sessionId/configure/command/:command"));
 
     // currently not yet supported
-    register(postHandler, new UnknownCommandHandler("/wd/hub/session/:sessionId/timeouts"));
-    register(postHandler, new UnknownCommandHandler(
-        "/wd/hub/session/:sessionId/timeouts/async_script"));
-    register(postHandler, new UnknownCommandHandler("/wd/hub/session/:sessionId/execute_async"));
     register(getHandler, new UnknownCommandHandler(
         "/wd/hub/session/:sessionId/ime/available_engines"));
     register(getHandler, new UnknownCommandHandler("/wd/hub/session/:sessionId/ime/active_engine"));
@@ -220,6 +223,8 @@ public class AndroidServlet extends BaseServlet {
         "/wd/hub/session/:sessionId/session_storage/key/:key"));
     register(getHandler, new UnknownCommandHandler(
         "/wd/hub/session/:sessionId/session_storage/size"));
+
+    // handled in the standalone-server
     register(postHandler, new UnknownCommandHandler("/wd/hub/session/:sessionId/log"));
     register(getHandler, new UnknownCommandHandler("/wd/hub/session/:sessionId/log/types"));
   }
