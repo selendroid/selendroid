@@ -149,7 +149,9 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
       } catch (AndroidDeviceException e) {
         // ignore
       } finally {
-        client.close();
+        if (client != null) {
+          client.close();
+        }
       }
       virtualDevices.put(avdName, device);
       for (AndroidEmulatorPowerStateListener listener : emulatorPowerStateListener) {
