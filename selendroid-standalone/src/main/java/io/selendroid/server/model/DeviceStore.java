@@ -106,12 +106,8 @@ public class DeviceStore {
 
   /* package */void initAndroidDevices(HardwareDeviceListener hardwareDeviceListener,
       boolean shouldKeepAdbAlive) throws AndroidDeviceException {
-    deviceManager =
-        new DefaultDeviceManager(AndroidSdk.adb().getAbsolutePath(), shouldKeepAdbAlive);
-    deviceManager.initialize(hardwareDeviceListener);
-
     emulatorPowerStateListener = new DefaultEmulatorPowerStateListener();
-    deviceManager.registerListener(emulatorPowerStateListener);
+    deviceManager.initialize(hardwareDeviceListener, emulatorPowerStateListener);
 
     List<AndroidEmulator> emulators = DefaultAndroidEmulator.listAvailableAvds();
     addEmulators(emulators);

@@ -16,7 +16,8 @@ package io.selendroid.android;
 import com.android.ddmlib.IDevice;
 
 public interface DeviceManager {
-  public void initialize(HardwareDeviceListener defaultListener);
+  public void initialize(HardwareDeviceListener defaultHardwareListener,
+      AndroidEmulatorPowerStateListener emulatorListener);
 
   public void registerListener(HardwareDeviceListener deviceListener);
 

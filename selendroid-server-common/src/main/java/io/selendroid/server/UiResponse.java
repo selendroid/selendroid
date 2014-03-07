@@ -16,7 +16,7 @@ package io.selendroid.server;
 public class UiResponse implements Response {
   private String sessionId;
   private Object object;
-  
+
   public UiResponse(String sessionId, Object object) {
     this.sessionId = sessionId;
     this.object = object;
@@ -34,7 +34,9 @@ public class UiResponse implements Response {
 
   @Override
   public String render() {
-    if (object instanceof String) {
+    if (object == null) {
+      return "";
+    } else if (object instanceof String) {
       return (String) object;
     }
     return object.toString();

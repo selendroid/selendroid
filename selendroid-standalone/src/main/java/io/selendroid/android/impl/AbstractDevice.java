@@ -294,8 +294,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     DefaultExecutor exec = new DefaultExecutor();
     exec.setStreamHandler(new PumpStreamHandler(logoutput));
     CommandLine command = adbCommand("logcat", "-v", "time");
-    System.out.println("starting logcat:");
-    System.out.println(command.toString());
+    log.info("starting logcat:");
+    log.fine(command.toString());
     try {
       exec.execute(command, new DefaultExecuteResultHandler());
       logcatWatchdog = new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);

@@ -206,8 +206,10 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
   }
 
   @Override
-  public void initialize(HardwareDeviceListener defaultListener) {
-    registerListener(defaultListener);
+  public void initialize(HardwareDeviceListener defaultHardwareListener,
+      AndroidEmulatorPowerStateListener emulatorListener) {
+    registerListener(defaultHardwareListener);
+    registerListener(emulatorListener);
     initializeAdbConnection();
   }
 
