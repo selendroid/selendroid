@@ -164,7 +164,9 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         } catch (AndroidDeviceException e) {
           // ignore
         } finally {
-          client.close();
+          if (client != null) {
+            client.close();
+          }
         }
         Socket socket = null;
         PrintWriter out = null;
