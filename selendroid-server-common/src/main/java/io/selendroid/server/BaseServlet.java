@@ -13,13 +13,13 @@
  */
 package io.selendroid.server;
 
-import org.webbitserver.HttpControl;
-import org.webbitserver.HttpHandler;
-import org.webbitserver.HttpRequest;
-
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.webbitserver.HttpControl;
+import org.webbitserver.HttpHandler;
+import org.webbitserver.HttpRequest;
 
 public abstract class BaseServlet implements HttpHandler {
   public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
@@ -29,17 +29,15 @@ public abstract class BaseServlet implements HttpHandler {
   public static final String DRIVER_KEY = "DRIVER_KEY";
   public static final int INTERNAL_SERVER_ERROR = 500;
 
-  protected Map<String, BaseRequestHandler> getHandler =
-      new HashMap<String, BaseRequestHandler>();
-  protected Map<String, BaseRequestHandler> postHandler =
-      new HashMap<String, BaseRequestHandler>();
+  protected Map<String, BaseRequestHandler> getHandler = new HashMap<String, BaseRequestHandler>();
+  protected Map<String, BaseRequestHandler> postHandler = new HashMap<String, BaseRequestHandler>();
   protected Map<String, BaseRequestHandler> deleteHandler =
       new HashMap<String, BaseRequestHandler>();
 
-  private Map<String, String[]> mapperUrlSectionsCache =
-      new HashMap<String, String[]>();
+  private Map<String, String[]> mapperUrlSectionsCache = new HashMap<String, String[]>();
 
-  protected BaseRequestHandler findMatcher(HttpRequest request, Map<String, BaseRequestHandler> handler) {
+  protected BaseRequestHandler findMatcher(HttpRequest request,
+      Map<String, BaseRequestHandler> handler) {
     String[] urlToMatchSections = getRequestUrlSections(request.uri());
     for (Map.Entry<String, ? extends BaseRequestHandler> entry : handler.entrySet()) {
       String[] mapperUrlSections = getMapperUrlSectionsCached(entry.getKey());
@@ -68,6 +66,7 @@ public abstract class BaseServlet implements HttpHandler {
     } else if ("DELETE".equals(request.method())) {
       handler = findMatcher(request, deleteHandler);
     }
+    webbitResponse.header("Content-Encoding", "none");
     handleRequest(request, response, handler);
   }
 
@@ -113,8 +112,8 @@ public abstract class BaseServlet implements HttpHandler {
       return false;
     }
     for (int i = 0; i < mapperUrlSections.length; i++) {
-      if (!(mapperUrlSections[i].startsWith(":")
-          || mapperUrlSections[i].equals(urlToMatchSections[i]))) {
+      if (!(mapperUrlSections[i].startsWith(":") || mapperUrlSections[i]
+          .equals(urlToMatchSections[i]))) {
         return false;
       }
     }

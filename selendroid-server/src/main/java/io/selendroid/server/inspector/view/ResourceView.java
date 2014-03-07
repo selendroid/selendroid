@@ -38,14 +38,14 @@ public class ResourceView extends SelendroidInspectorView {
   public void render(HttpRequest request, HttpResponse httpResponse) {
     httpResponse.charset(Charset.forName("UTF-8"));
     httpResponse.status(200);
-    if (request.uri().startsWith(InspectorServlet.INSPECTOR_RESSOURCE+"/"+SCREENSHOT)) {
-      httpResponse.header("Content-Type", "text/html");
+    if (request.uri().startsWith(InspectorServlet.INSPECTOR_RESSOURCE + "/" + SCREENSHOT)) {
+      httpResponse.header("Content-Type", "image/png");
       byte[] screenshot = driver.takeScreenshot();
       if (screenshot == null) {
         SelendroidLogger.log("screenshot is null");
+      } else {
+        httpResponse.header("Content-Length", screenshot.length).content(screenshot);
       }
-      SelendroidLogger.log("size of screenshot: " + screenshot.length);
-      httpResponse.header("Content-Length", screenshot.length).content(screenshot);
     } else {
       try {
         String filename =

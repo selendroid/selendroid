@@ -151,20 +151,20 @@ public class SelendroidServlet extends BaseServlet {
       response.end();
     } else {
       UiResponse uiResponse = (UiResponse) result;
-      response.setContentType("text/html");
+
       response.setEncoding(Charset.forName("UTF-8"));
 
       response.setStatus(200);
 
       if (uiResponse != null) {
         if (uiResponse.getObject() instanceof byte[]) {
+          response.setContentType("image/png");
           byte[] data = (byte[]) uiResponse.getObject();
-
           response.setContent(data);
         } else {
+          response.setContentType("text/html");
           String resultString = uiResponse.render();
           response.setContent(resultString);
-
         }
       }
       response.end();
