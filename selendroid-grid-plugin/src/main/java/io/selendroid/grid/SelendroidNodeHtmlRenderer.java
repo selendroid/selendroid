@@ -57,7 +57,7 @@ public class SelendroidNodeHtmlRenderer implements HtmlRenderer {
       String icon = null;
 
       if (BROWSER_NAME.equals(slot.getCapabilities().get(RegistrationRequest.BROWSER))) {
-        icon = "android";
+        icon = "selendroid";
       } else {
         icon =
             BrowserNameUtils.consoleIconName(new DesiredCapabilities(slot.getCapabilities()),
