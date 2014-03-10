@@ -51,6 +51,14 @@ public class AdbConnectionTest {
   }
 
   @Test
+  public void shouldExecuteShellCommand() {
+    Point buttonLocation = driver.findElement(By.id("startUserRegistration")).getLocation();
+    String command = String.format("input tap %s %s", buttonLocation.x, buttonLocation.y);
+    driver.getAdbConnection().executeShellCommand(command);
+    Assert.assertEquals(driver.getCurrentUrl(), "and-activity://RegisterUserActivity");
+  }
+
+  @Test
   public void shouldSendTextViaAdb() {
     WebElement input = driver.findElement(By.id("my_text_field"));
     input.click();

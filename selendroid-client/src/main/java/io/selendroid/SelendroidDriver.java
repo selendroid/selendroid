@@ -157,5 +157,10 @@ public class SelendroidDriver extends RemoteWebDriver
     public void sendKeyEvent(int keyCode) {
       executeMethod.execute("selendroid-adb-sendKeyEvent", ImmutableMap.of("keyCode", keyCode));
     }
+
+    @Override
+    public void executeShellCommand(String command) {
+      execute("selendroid-adb-executeShellCommand", ImmutableMap.of("command", command));
+    }
   }
 }

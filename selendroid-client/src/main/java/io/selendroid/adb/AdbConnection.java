@@ -31,4 +31,11 @@ public interface AdbConnection {
    * @param y Y coordinate to tap on.
    */
   public void tap(int x, int y);
+
+  /**
+   * Sends the @command to the emulator.
+   * 
+   * @param command The command to execute on the device under test.
+   */
+  public void executeShellCommand(String command);
 }

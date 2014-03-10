@@ -41,6 +41,9 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
               HttpVerb.POST));
           put("selendroid-adb-tap",
               new CommandInfo("-selendroid/:sessionId/adb/tap", HttpVerb.POST));
+          put("selendroid-adb-executeShellCommand",
+            new CommandInfo("-selendroid/:sessionId/adb/executeShellCommand", HttpVerb.POST));
+          
         }
       };
 

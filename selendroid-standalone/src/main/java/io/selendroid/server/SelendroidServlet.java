@@ -14,6 +14,7 @@
 package io.selendroid.server;
 
 import io.selendroid.SelendroidConfiguration;
+import io.selendroid.server.handler.AdbExecuteShellCommand;
 import io.selendroid.server.handler.AdbSendKeyEvent;
 import io.selendroid.server.handler.AdbSendText;
 import io.selendroid.server.handler.AdbTap;
@@ -72,6 +73,8 @@ public class SelendroidServlet extends BaseServlet {
     register(postHandler, new AdbSendKeyEvent("/wd/hub/-selendroid/:sessionId/adb/sendKeyEvent"));
     register(postHandler, new AdbSendText("/wd/hub/-selendroid/:sessionId/adb/sendText"));
     register(postHandler, new AdbTap("/wd/hub/-selendroid/:sessionId/adb/tap"));
+    register(postHandler, new AdbExecuteShellCommand(
+        "/wd/hub/-selendroid/:sessionId/adb/executeShellCommand"));
   }
 
   @Override
