@@ -27,8 +27,8 @@ function Recorder(inspector) {
 
 Recorder.prototype.recordClick = function (locator) {
     this.index++;
-    var el = "WebElement element" + this.index + " = driver.findElement(By.xpath('" + locator
-        + "');"
+    var el = "WebElement element" + this.index + " = driver.findElement(By.xpath(\"" + locator
+        + "\"));"
 
     var content = $("#java").html() + "\n" + el;
     content += "\nelement" + this.index + ".click();";
