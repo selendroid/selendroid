@@ -4,7 +4,7 @@ body {
     font-family: sans-serif;
     margin: 0%;
     padding: 0%;
-    font-size: 0.9em;
+    font-size: 0.8em;
 }
 
 h3 {
@@ -117,17 +117,6 @@ to have the rotate of the top left corner. */
 
 #topmenu ul {
     display: inline-block;
-}
-
-#topmenu a:visited, a:link {
-    text-decoration: none;
-    color: #FFFFFF;
-}
-
-#topmenu a:hover {
-    text-decoration: none;
-    border-bottom: 3px solid #FF9900;
-    color: #FFFFFF;
 }
 
 #details p {

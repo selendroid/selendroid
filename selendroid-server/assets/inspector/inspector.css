@@ -1,6 +1,6 @@
 #header {
     position: fixed;
-    background: #455372;
+    background: #EEEEEE;
     top: 0;
     left: 0;
     height: 70px;
@@ -11,7 +11,17 @@
     margin-right: 2em;
     padding-right: 2em;
     display: inline;
-    color: #FFFFFF;
+    color: #333333;
+}
+
+#logo{
+	padding-top:10px;
+	padding-left:10px;
+}
+
+a, a:visited, a:link {
+    color: #0088CC;
+    text-decoration: none;
 }
 
 #content {
@@ -52,14 +62,10 @@
 
 #footer {
     position: fixed;
-    background: #455372;
+    background: #EEEEEE;
     bottom: 0;
     left: 0;
     width: 100%;
-}
-
-#footer span {
-    color: #FFFFFF;
 }
 
 .ui-tabs-panel {
@@ -68,6 +74,11 @@
 
 .no-close .ui-dialog-titlebar-close {
     display: none;
+}
+
+.ui-tabs .ui-tabs-nav li {
+    height: 25px;
+    font-size: 0.8em;
 }
 
 .ui-layout-south .ui-tabs-nav {

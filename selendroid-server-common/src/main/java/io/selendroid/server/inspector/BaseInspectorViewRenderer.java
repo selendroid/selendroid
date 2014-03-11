@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -58,6 +58,7 @@ public abstract class BaseInspectorViewRenderer {
         + "'></script>");
     appendLine(b, "<script>");
     appendLine(b, "jQuery(window).load(function () {");
+    appendLine(b, "  console.log('before calling resize()');");
     appendLine(b, "  resize();");
     appendLine(b, "});");
     appendLine(b, "</script>");
@@ -65,9 +66,12 @@ public abstract class BaseInspectorViewRenderer {
     appendLine(b, "</head>");
     appendLine(b, "<body>");
     appendLine(b, "<div id='header'>");
-    appendLine(b,
-        "<div><a href='http://selendroid.io/inspector.html'>Selendroid Inspector Documentation</a></div>");
-    appendLine(b, "<div><input type='checkbox' id='record'/>");
+    appendLine(
+        b,
+        "<div><a target=\"_blank\" href='http://selendroid.io'><img id='logo' src=\""
+            + getResource("images/selendroid-logo.png")
+            + "\"></a><div id='logo'> Inspector shortcuts: <em>CTRL</em> locks tree element selection, <em>ESC</em> opens XPath helper</div></div>");
+    appendLine(b, "<div style=\"display: none\"><input type='checkbox' id='record'/>");
     appendLine(b, "<label for='record' id='record_text'>Record</label></div>");
 
     appendLine(b, "</div>");
@@ -90,29 +94,24 @@ public abstract class BaseInspectorViewRenderer {
     appendLine(b, "</div>");
     appendLine(b, "</div>");
     appendLine(b, "<div class='ui-layout-center'>");
-    appendLine(b, "<div id='tree'></div>");
+    appendLine(b, "    <div id='tree'></div>");
     appendLine(b, "</div>");
     appendLine(b, "<div class='ui-layout-east'>");
-    appendLine(b, "<div id='details'></div>");
+    appendLine(b, "    <div id='details'></div>");
     appendLine(b, "</div>");
 
     appendLine(b, "</div>");
     appendLine(b, "<div class='ui-layout-south'>");
-
-
-    appendLine(b, "<!--<div id='tabs'>-->");
     appendLine(b, "<ul>");
     appendLine(b, "<li><a href='#java'>Java</a></li>");
     appendLine(b, "<li><a href='#htmlSource'>Html Source</a></li>");
-
     appendLine(b, "</ul>");
 
-    appendLine(b, "<DIV class='ui-layout-content ui-widget-content'>");
+    appendLine(b, "<div class='ui-layout-content ui-widget-content'>");
     appendLine(b, "<pre id='java' class='prettyprint' width='100%'></pre>");
     appendLine(b, "<pre id='htmlSource' class='prettyprint' width='100%'></pre>");
     appendLine(b, "</div>");
     appendLine(b, "</div>");
-    appendLine(b, "<!--</div>-->");
 
     appendLine(b, "</div>");
     appendLine(b, "</div>");
@@ -123,7 +122,16 @@ public abstract class BaseInspectorViewRenderer {
     appendLine(b, "</div>");
 
     appendLine(b, "<div id='footer'>");
-    appendLine(b, "<span>shortcuts : ctrl= lock selection , ESC= xpath helper.</span>");
+    appendLine(b,
+        "<div>&copy; 2012 - 2014 <a href=\"http://ebayopensource.github.io/\" target=\"_blank\"><img src=\""
+            + getResource("images/ebay-logo.png") + "\"> software foundation</a> | ");
+    appendLine(
+        b,
+        "Maintained by <a href=\"https://github.com/selendroid/selendroid/blob/master/AUTHORS\" target=\"_blank\">Selendroid Authors</a> | ");
+    appendLine(b, "<a href=\"http://groups.google.com/group/selendroid\" target=\"_blank\">Mailing List</a> | ");
+    appendLine(
+        b,
+        "<a href=\"https://github.com/selendroid/selendroid/issues?direction=desc&amp;sort=updated&amp;state=open\" target=\"_blank\">Issue Tracker</a></div>");
     appendLine(b, "</div>");
     appendLine(b, "<script >configure('iphone','Regular','PORTRAIT');</script>");
     appendLine(b, "</body>");
