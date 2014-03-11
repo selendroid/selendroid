@@ -21,7 +21,7 @@ import org.openqa.grid.internal.utils.CapabilityMatcher;
 
 public class SelendroidCapabilityMatcher implements CapabilityMatcher {
   public static final String AUT = "aut";
-  public static final String ANDROID_TARGET = "androidTarget";
+  public static final String PLATFORM_NAME = "platformName";
   public static final String SCREEN_SIZE = "screenSize";
   public static final String BROWSER_NAME = "browserName";
   private final List<String> toConsider = new ArrayList<String>();
@@ -29,7 +29,7 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
   public SelendroidCapabilityMatcher() {
     toConsider.add(BROWSER_NAME);
     toConsider.add(AUT);
-    toConsider.add(ANDROID_TARGET);
+    toConsider.add(PLATFORM_NAME);
     toConsider.add(SCREEN_SIZE);
   }
 

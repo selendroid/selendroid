@@ -18,11 +18,9 @@ import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidEmulatorPowerStateListener;
-import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.DeviceManager;
 import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
-import io.selendroid.android.impl.DefaultDeviceManager;
 import io.selendroid.android.impl.DefaultHardwareDevice;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -187,15 +185,19 @@ public class DeviceStore {
       throw new DeviceStoreException(
           "Fatal Error: Device Store does not contain any Android Device.");
     }
-    String androidTarget = caps.getAndroidTarget();
+    String platformVersion = caps.getPlatformVersion();
+    //be backward compatible until we remove the deprecated flags in the capabilities
+    if (platformVersion == null || platformVersion.isEmpty()) {
+      platformVersion = caps.getAndroidTarget();
+    }
     List<AndroidDevice> devices = null;
-    if (androidTarget == null || androidTarget.isEmpty()) {
+    if (platformVersion == null || platformVersion.isEmpty()) {
       devices = new ArrayList<AndroidDevice>();
       for (List<AndroidDevice> list : androidDevices.values()) {
         devices.addAll(list);
       }
     } else {
-      DeviceTargetPlatform platform = DeviceTargetPlatform.valueOf(androidTarget);
+      DeviceTargetPlatform platform = DeviceTargetPlatform.fromPlatformVersion(platformVersion);
       devices = androidDevices.get(platform);
     }
     if (devices == null) {

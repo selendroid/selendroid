@@ -13,39 +13,38 @@
  */
 package io.selendroid;
 
-import io.selendroid.SelendroidCapabilities;
+import io.selendroid.device.DeviceTargetPlatform;
+
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SelendroidCapabilitiesTests {
+public class SelendroidCapabilitiesTest {
 
   @Test
   public void testInstanstiateFromJSON() throws Exception {
     JSONObject jsonSource = new JSONObject();
-    jsonSource.put("language", "de");
     jsonSource.put("browserName", "selendroid");
-    jsonSource.put("androidTarget", "16");
+    jsonSource.put("platformVersion", DeviceTargetPlatform.ANDROID16.getApi());
     jsonSource.put("locale", "de_DE");
-    jsonSource.put("aut", "io.selendroid.testapp:0.4");
+    jsonSource.put("aut", "io.selendroid.testapp:0.9.0");
     jsonSource.put("screenSize", "320x480");
 
     SelendroidCapabilities capa = new SelendroidCapabilities(jsonSource);
-    //it is not set by default
+    // it is not set by default
     Assert.assertEquals(null, capa.getEmulator());
-    Assert.assertEquals("de", capa.getLanguage());
     Assert.assertEquals("selendroid", capa.getBrowserName());
-    Assert.assertEquals("16", capa.getAndroidTarget());
+    Assert.assertEquals("16", capa.getPlatformVersion());
     Assert.assertEquals("de_DE", capa.getLocale());
-    Assert.assertEquals("io.selendroid.testapp:0.4", capa.getAut());
+    Assert.assertEquals("io.selendroid.testapp:0.9.0", capa.getAut());
     Assert.assertEquals("320x480", capa.getScreenSize());
-    Assert.assertEquals(6, capa.asMap().size());
+    Assert.assertEquals(5, capa.asMap().size());
   }
-  
+
   @Test
-  public void testDefaultInitialize(){
-    SelendroidCapabilities capa=new SelendroidCapabilities();
-    Assert.assertEquals(true, capa.getEmulator());
-    Assert.assertEquals(1, capa.asMap().size());
+  public void testDefaultInitialize() {
+    SelendroidCapabilities capa = new SelendroidCapabilities();
+    Assert.assertEquals(null, capa.getEmulator());
+    Assert.assertEquals(2, capa.asMap().size());
   }
 }

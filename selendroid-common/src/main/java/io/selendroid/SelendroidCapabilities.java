@@ -32,16 +32,20 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class SelendroidCapabilities extends DesiredCapabilities {
+  private static final long serialVersionUID = -7061568919298342362L;
+  @Deprecated
   public static final String ANDROID_TARGET = "androidTarget";
   public static final String AUT = "aut";
   public static final String EMULATOR = "emulator";
   public static final String DISPLAY = "display";
-  public static final String LANGUAGE = "language";
   public static final String LOCALE = "locale";
   public static final String SCREEN_SIZE = "screenSize";
-  private static final long serialVersionUID = -7061568919298342362L;
   public static final String PRE_SESSION_ADB_COMMANDS = "preSessionAdbCommands";
   public static final String SERIAL = "serial";
+
+  public static final String PLATFORM_VERSION = "platformVersion";
+  public static final String PLATFORM_NAME = "platformName";
+  public static final String AUTOMATION_NAME = "automationName";
 
   public SelendroidCapabilities(Map<String, ?> from) {
     for (String key : from.keySet()) {
@@ -55,6 +59,15 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return (String) getRawCapabilities().get(SERIAL);
   }
 
+
+  public String getPlatformVersion() {
+    return (String) getRawCapabilities().get(PLATFORM_VERSION);
+  }
+
+  /**
+   * @deprecated use {@link #getPlatformVersion()} instead
+   */
+  @Deprecated
   public String getAndroidTarget() {
     return (String) getRawCapabilities().get(ANDROID_TARGET);
   }
@@ -67,10 +80,6 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     if (getRawCapabilities().get(EMULATOR) == null
         || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL)) return null;
     return (Boolean) getRawCapabilities().get(EMULATOR);
-  }
-
-  public String getLanguage() {
-    return (String) getRawCapabilities().get(LANGUAGE);
   }
 
   public String getLocale() {
@@ -89,6 +98,14 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     setCapability(SERIAL, serial);
   }
 
+  public void setPlatformVersion(DeviceTargetPlatform androidTarget) {
+    setCapability(PLATFORM_VERSION, androidTarget.getApi());
+  }
+
+  /**
+   * @deprecated use {@link #setPlatformVersion(DeviceTargetPlatform)} instead
+   */
+  @Deprecated
   public void setAndroidTarget(String androidTarget) {
     setCapability(ANDROID_TARGET, androidTarget);
   }
@@ -99,10 +116,6 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public void setEmulator(Boolean emulator) {
     setCapability(EMULATOR, emulator);
-  }
-
-  public void setLanguage(String language) {
-    setCapability(LANGUAGE, language);
   }
 
   public void setLocale(String locale) {
@@ -135,7 +148,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public SelendroidCapabilities(String aut) {
     setAut(aut);
   }
-  
+
   public SelendroidCapabilities(String serial, String aut) {
     setAut(aut);
     setSerial(serial);
@@ -170,7 +183,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
    */
   public static SelendroidCapabilities emulator(DeviceTargetPlatform platform, String aut) {
     SelendroidCapabilities caps = new SelendroidCapabilities();
-    caps.setAndroidTarget(platform.name());
+    caps.setPlatformVersion(platform);
     caps.setLocale("en_US");
     caps.setAut(aut);
     caps.setEmulator(true);
@@ -182,7 +195,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     capabilities.setCapability(BROWSER_NAME, BrowserType.ANDROID);
     capabilities.setCapability(VERSION, "");
     capabilities.setCapability(PLATFORM, platform);
-    capabilities.setCapability(ANDROID_TARGET, platform);
+    capabilities.setCapability(PLATFORM_VERSION, platform.getApi());
     return capabilities;
   }
 
