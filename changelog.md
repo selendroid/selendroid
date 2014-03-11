@@ -8,7 +8,7 @@
 - Selendroid standalone supports by default already started emulators. Even if they are started manually after selendroid-standalone has been started, they are identified and can be used for test sessions.
 - Support execute async script ([#254](../../issues/254))
 - Added support for using 'platformVersion' in capabilities in order to support Selenium 3.0
-
+- Added support for using switch context endpoints to support Selenium 3.0. Swith to window mechanism is still available.
 
 0.8.0
 ---

@@ -581,7 +581,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   @Override
-  public String getWindowHandle() {
+  public String getContext() {
     return activeWindowType;
   }
 
@@ -596,7 +596,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   @Override
-  public Set<String> getWindowHandles() {
+  public Set<String> getContexts() {
     Set<String> windowHandles = new HashSet<String>();
     windowHandles.add(WindowType.NATIVE_APP.name());
     List<WebView> webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebViews();

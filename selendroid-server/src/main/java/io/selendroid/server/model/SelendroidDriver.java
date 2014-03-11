@@ -66,9 +66,9 @@ public interface SelendroidDriver {
 
   public Object executeAsyncScript(String script, JSONArray args);
 
-  public String getWindowHandle();
+  public String getContext();
 
-  public Set<String> getWindowHandles();
+  public Set<String> getContexts();
 
   public Dimension getWindowSize();
 

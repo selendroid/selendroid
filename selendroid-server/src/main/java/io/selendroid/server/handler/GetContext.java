@@ -20,17 +20,17 @@ import org.json.JSONException;
 import io.selendroid.server.SelendroidResponse;
 import org.webbitserver.HttpRequest;
 
-public class GetWindowHandle extends RequestHandler {
+public class GetContext extends RequestHandler {
 
-  public GetWindowHandle(String mappedUri) {
+  public GetContext(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("get window handle command");
+    SelendroidLogger.log("get context/windowHandle command");
 
-    String windowHandle = getSelendroidDriver(request).getWindowHandle();
+    String windowHandle = getSelendroidDriver(request).getContext();
 
     return new SelendroidResponse(getSessionId(request), windowHandle);
   }

@@ -47,8 +47,8 @@ import io.selendroid.server.handler.GetPageTitle;
 import io.selendroid.server.handler.GetScreenOrientation;
 import io.selendroid.server.handler.GetScreenState;
 import io.selendroid.server.handler.GetText;
-import io.selendroid.server.handler.GetWindowHandle;
-import io.selendroid.server.handler.GetWindowHandles;
+import io.selendroid.server.handler.GetContext;
+import io.selendroid.server.handler.GetContexts;
 import io.selendroid.server.handler.GetWindowSize;
 import io.selendroid.server.handler.GoBack;
 import io.selendroid.server.handler.GoForward;
@@ -71,7 +71,7 @@ import io.selendroid.server.handler.timeouts.SetImplicitWaitTimeout;
 import io.selendroid.server.handler.SetScreenState;
 import io.selendroid.server.handler.SingleTapOnElement;
 import io.selendroid.server.handler.SubmitForm;
-import io.selendroid.server.handler.SwitchWindow;
+import io.selendroid.server.handler.SwitchContext;
 import io.selendroid.server.handler.UnknownCommandHandler;
 import io.selendroid.server.handler.Up;
 import io.selendroid.server.handler.alert.Alert;
@@ -142,10 +142,10 @@ public class AndroidServlet extends BaseServlet {
     register(getHandler, new GetPageTitle("/wd/hub/session/:sessionId/title"));
     register(getHandler, new GetCurrentUrl("/wd/hub/session/:sessionId/url"));
     register(postHandler, new OpenUrl("/wd/hub/session/:sessionId/url"));
-    register(postHandler, new SwitchWindow("/wd/hub/session/:sessionId/window"));
+    register(postHandler, new SwitchContext("/wd/hub/session/:sessionId/window"));
     register(getHandler, new GetWindowSize("/wd/hub/session/:sessionId/window/:windowHandle/size"));
-    register(getHandler, new GetWindowHandle("/wd/hub/session/:sessionId/window_handle"));
-    register(getHandler, new GetWindowHandles("/wd/hub/session/:sessionId/window_handles"));
+    register(getHandler, new GetContext("/wd/hub/session/:sessionId/window_handle"));
+    register(getHandler, new GetContexts("/wd/hub/session/:sessionId/window_handles"));
     register(getHandler, new GetScreenOrientation("/wd/hub/session/:sessionId/orientation"));
     register(postHandler, new RotateScreen("/wd/hub/session/:sessionId/orientation"));
 
@@ -158,6 +158,11 @@ public class AndroidServlet extends BaseServlet {
     register(postHandler, new DoubleTapOnElement("/wd/hub/session/:sessionId/touch/doubleclick"));
     register(postHandler, new LongPressOnElement("/wd/hub/session/:sessionId/touch/longclick"));
     register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
+    
+    // The new endpoints for context switching coming with Selenium 3.0 
+    register(getHandler, new GetContext("/wd/hub/session/:sessionId/context"));
+    register(getHandler, new GetContexts("/wd/hub/session/:sessionId/contexts"));
+    register(postHandler, new SwitchContext("/wd/hub/session/:sessionId/context"));
 
     // Custom extensions to wire protocol
     register(getHandler, new GetScreenState("/wd/hub/-selendroid/:sessionId/screen/brightness"));

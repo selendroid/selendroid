@@ -24,15 +24,15 @@ import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import org.webbitserver.HttpRequest;
 
-public class SwitchWindow extends RequestHandler {
+public class SwitchContext extends RequestHandler {
 
-  public SwitchWindow(String mappedUri) {
+  public SwitchContext(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Switch Window command");
+    SelendroidLogger.log("Switch Context/Window command");
     String windowName = getPayload(request).getString("name");
     if (windowName == null || windowName.isEmpty()) {
       return new SelendroidResponse(getSessionId(request), 13, new SelendroidException(

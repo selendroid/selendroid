@@ -23,17 +23,17 @@ import org.webbitserver.HttpRequest;
 
 import java.util.Set;
 
-public class GetWindowHandles extends RequestHandler {
+public class GetContexts extends RequestHandler {
 
-  public GetWindowHandles(String mappedUri) {
+  public GetContexts(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("get window handles command");
+    SelendroidLogger.log("get contexts/windowHandles command");
 
-    Set<String> windowHandles = getSelendroidDriver(request).getWindowHandles();
+    Set<String> windowHandles = getSelendroidDriver(request).getContexts();
 
     return new SelendroidResponse(getSessionId(request), new JSONArray(windowHandles));
   }

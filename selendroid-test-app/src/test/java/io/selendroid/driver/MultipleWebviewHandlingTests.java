@@ -14,11 +14,16 @@
 package io.selendroid.driver;
 
 import static io.selendroid.waiter.TestWaiter.waitFor;
+import io.selendroid.SelendroidDriver;
+import io.selendroid.server.util.HttpClientUtil;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.waiter.WaitingConditions;
 
 import java.util.Set;
 
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -52,5 +57,47 @@ public class MultipleWebviewHandlingTests extends BaseAndroidTest {
     driver().switchTo().window(NATIVE_APP);
     driver().get("and-activity://" + activityClass);
     waitFor(WaitingConditions.driverUrlToBe(driver(), "and-activity://MultipleWebViewsActivity"));
+  }
+
+  @Test
+  public void shouldGetContexts() throws Exception {
+    openMultipleWebViewActivity();
+    SelendroidDriver driver = driver();
+    String uri = "http://localhost:8080/wd/hub/session/" + driver.getSessionId() + "/contexts";
+
+    JSONObject response =
+        HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequest(uri, HttpMethod.GET));
+    JSONArray contexts = response.getJSONArray("value");
+    Assert.assertEquals(NATIVE_APP, contexts.get(0));
+    Assert.assertEquals("WEBVIEW_1", contexts.get(1));
+    Assert.assertEquals("WEBVIEW_0", contexts.get(2));
+  }
+
+  @Test
+  public void shouldGetContext() throws Exception {
+    openMultipleWebViewActivity();
+    SelendroidDriver driver = driver();
+    String uri = "http://localhost:8080/wd/hub/session/" + driver.getSessionId() + "/context";
+
+    JSONObject response =
+        HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequest(uri, HttpMethod.GET));
+    Assert.assertEquals(NATIVE_APP, response.getString("value"));
+  }
+
+  @Test
+  public void shouldSwitchContext() throws Exception {
+    openMultipleWebViewActivity();
+    SelendroidDriver driver = driver();
+    String uri = "/wd/hub/session/" + driver.getSessionId() + "/context";
+
+    HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequestWithPayload(uri, 8080,
+        HttpMethod.POST, "{'name':'WEBVIEW_0'}"));
+    String getContextUri =
+        "http://localhost:8080/wd/hub/session/" + driver.getSessionId() + "/context";
+
+    JSONObject response =
+        HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequest(getContextUri,
+            HttpMethod.GET));
+    Assert.assertEquals("WEBVIEW_0", response.getString("value"));
   }
 }
