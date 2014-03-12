@@ -28,7 +28,7 @@ public class JsonXmlUtilTest {
         new FileUtils().readFileToString(new File("src/test/resources/source.json"), "UTF-8");
     JSONObject source = new JSONObject(new JSONTokener(json));
     JsonXmlUtil util = new JsonXmlUtil();
-    document = util.toXml(source);
+    document = util.buildXmlDocument(source);
   }
 
   @Test

@@ -290,7 +290,7 @@ public class SelendroidWebDriver {
     waitForPageToLoad();
   }
 
-  public Object getWindowSource() throws JSONException {
+  public String getWindowSource() throws JSONException {
     JSONObject source =
         new JSONObject(
             (String) executeScript("return (new XMLSerializer()).serializeToString(document.documentElement);"));

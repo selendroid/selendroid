@@ -9,6 +9,7 @@
 - Support execute async script ([#254](../../issues/254))
 - Added support for using 'platformVersion' in capabilities in order to support Selenium 3.0
 - Added support for using switch context endpoints to support Selenium 3.0. Swith to window mechanism is still available.
+- In order to support Selenium 3, Page source is now returned as an XML (or HTML in the case of HTML-based platforms) document representing the UI hierarchy.
 
 0.8.0
 ---

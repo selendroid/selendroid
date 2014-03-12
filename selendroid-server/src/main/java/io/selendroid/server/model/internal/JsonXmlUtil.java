@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -23,11 +23,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class JsonXmlUtil {
-  public static Document toXml(JSONObject tree) {
-    return buildXmlDoc(tree);
-  }
-
-  private static Document buildXmlDoc(JSONObject tree) {
+  public static Document buildXmlDocument(JSONObject tree) {
     DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = null;
     try {
@@ -43,7 +39,6 @@ public class JsonXmlUtil {
     buildXmlNode(tree, root, document);
     return document;
   }
-
 
   private static String extractTagName(String clazz) {
     if (clazz.contains(".")) {

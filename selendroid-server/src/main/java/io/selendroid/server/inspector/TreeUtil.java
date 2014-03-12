@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,9 +13,23 @@
  */
 package io.selendroid.server.inspector;
 
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.model.internal.JsonXmlUtil;
+
+import java.io.StringWriter;
+import java.io.Writer;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
 
 public class TreeUtil {
   public static JSONObject createFromNativeWindowsSource(JSONObject from) throws JSONException {
@@ -79,5 +93,31 @@ public class TreeUtil {
       b.append("-" + name);
     }
     return b.toString();
+  }
+
+  public static String getXMLSource(JSONObject source) {
+    Document document = JsonXmlUtil.buildXmlDocument(source);
+
+    TransformerFactory tFactory = TransformerFactory.newInstance();
+    Transformer transformer = null;
+    try {
+      transformer = tFactory.newTransformer();
+    } catch (TransformerConfigurationException e) {
+      throw new SelendroidException(e);
+    }
+
+    transformer.setParameter("encoding", "UTF-8");
+
+    DOMSource domSource = new DOMSource(document);
+    Writer outWriter = new StringWriter();
+
+    StreamResult result = new StreamResult(outWriter);
+    try {
+      transformer.transform(domSource, result);
+    } catch (TransformerException e) {
+      throw new SelendroidException(e);
+    }
+
+    return outWriter.toString();
   }
 }

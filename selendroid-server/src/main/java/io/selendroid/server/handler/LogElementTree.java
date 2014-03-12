@@ -15,10 +15,9 @@ package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
-
-import org.json.JSONObject;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
+
 import org.webbitserver.HttpRequest;
 
 public class LogElementTree extends RequestHandler {
@@ -31,12 +30,8 @@ public class LogElementTree extends RequestHandler {
   public Response handle(HttpRequest request) {
     SelendroidLogger.log("LogElementTree for session: "
         + getSelendroidDriver(request).getSession().getSessionId());
-    Object source = getSelendroidDriver(request).getWindowSource();
-    if (source instanceof String) {
-      return new SelendroidResponse(getSessionId(request), source);
-    }
-    JSONObject json = ((JSONObject) source);
+    String source = getSelendroidDriver(request).getWindowSource();
 
-    return new SelendroidResponse(getSessionId(request), json.toString());
+    return new SelendroidResponse(getSessionId(request), source);
   }
 }

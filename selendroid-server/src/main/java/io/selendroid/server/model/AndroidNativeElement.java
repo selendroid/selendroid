@@ -261,9 +261,13 @@ public class AndroidNativeElement implements AndroidElement {
     JSONObject l10n = new JSONObject();
     l10n.put("matches", 0);
     object.put("l10n", l10n);
-
-    String label = String.valueOf(getView().getContentDescription());
-    object.put("name", label == null ? "" : label);
+    CharSequence cd = getView().getContentDescription();
+    if (cd != null && cd.length() > 0) {
+      String label = String.valueOf(cd);
+      object.put("name", label);
+    } else {
+      object.put("name", "");
+    }
     String id = getNativeId();
     object.put("id", id.startsWith("id/") ? id.replace("id/", "") : id);
     JSONObject rect = new JSONObject();

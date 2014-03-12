@@ -34,7 +34,9 @@ public interface SelendroidDriver {
 
   public JSONObject getSessionCapabilities(String sessionId);
 
-  public Object getWindowSource();
+  public JSONObject getFullWindowTree();
+  
+  public String getWindowSource();
 
   public String initializeSession(JSONObject desiredCapabilities);
 

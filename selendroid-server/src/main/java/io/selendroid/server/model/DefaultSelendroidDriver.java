@@ -22,6 +22,7 @@ import io.selendroid.android.WindowType;
 import io.selendroid.android.internal.Dimension;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.inspector.TreeUtil;
 import io.selendroid.server.model.internal.AbstractNativeElementContext;
 import io.selendroid.server.model.internal.AbstractWebElementContext;
 import io.selendroid.server.model.internal.execute_native.FindElementByAndroidTag;
@@ -482,9 +483,25 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     }
   }
 
+
+
   @Override
-  public Object getWindowSource() {
-    Object source = null;
+  public String getWindowSource() {
+    try {
+      if (isNativeWindowMode()) {
+        JSONObject uiTree = selendroidNativeDriver.getWindowSource();
+        return TreeUtil.getXMLSource(uiTree);
+      } else {
+        return selendroidWebDriver.getWindowSource();
+      }
+    } catch (JSONException e) {
+      throw new SelendroidException("Exception while generating source tree.", e);
+    }
+  }
+
+  @Override
+  public JSONObject getFullWindowTree() {
+    JSONObject source = null;
     try {
       source = selendroidNativeDriver.getWindowSource();
     } catch (JSONException e) {

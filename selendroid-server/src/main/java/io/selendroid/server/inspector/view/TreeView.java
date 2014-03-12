@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -18,23 +18,12 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.inspector.SelendroidInspectorView;
 import io.selendroid.server.inspector.TreeUtil;
 import io.selendroid.server.model.SelendroidDriver;
-import io.selendroid.server.model.internal.JsonXmlUtil;
 import io.selendroid.util.SelendroidLogger;
 
-import java.io.StringWriter;
-import java.io.Writer;
 import java.nio.charset.Charset;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
 import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
@@ -46,7 +35,7 @@ public class TreeView extends SelendroidInspectorView {
   public void render(HttpRequest request, HttpResponse response) throws JSONException {
     JSONObject source = null;
     try {
-      source = (JSONObject) driver.getWindowSource();
+      source = driver.getFullWindowTree();
     } catch (SelendroidException e) {
       SelendroidLogger.log("error getting WindowSource in TreeView", e);
       response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
@@ -55,34 +44,8 @@ public class TreeView extends SelendroidInspectorView {
     }
 
     JSONObject convertedTree = TreeUtil.createFromNativeWindowsSource(source);
-    convertedTree.getJSONObject("metadata").put("xml", getXMLSource(source));
+    convertedTree.getJSONObject("metadata").put("xml", TreeUtil.getXMLSource(source));
     response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
         .content(convertedTree.toString()).end();
-  }
-
-  private String getXMLSource(JSONObject source) {
-    Document document = JsonXmlUtil.toXml(source);
-
-    TransformerFactory tFactory = TransformerFactory.newInstance();
-    Transformer transformer = null;
-    try {
-      transformer = tFactory.newTransformer();
-    } catch (TransformerConfigurationException e) {
-      throw new SelendroidException(e);
-    }
-
-    transformer.setParameter("encoding", "UTF-8");
-
-    DOMSource domSource = new DOMSource(document);
-    Writer outWriter = new StringWriter();
-
-    StreamResult result = new StreamResult(outWriter);
-    try {
-      transformer.transform(domSource, result);
-    } catch (TransformerException e) {
-      throw new SelendroidException(e);
-    }
-
-    return outWriter.toString();
   }
 }
