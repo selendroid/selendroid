@@ -7,6 +7,7 @@
 - removed -installedApp command line parameter of the selendroid-standalone jar
 - Selendroid standalone supports by default already started emulators. Even if they are started manually after selendroid-standalone has been started, they are identified and can be used for test sessions.
 - Support execute async script ([#254](../../issues/254))
+- Add native execute script action TwoPointerGesture. this is temporary solution until the mobile WebDriver multi touch  spec is implemented [#292](../../issues/292)
 - Added support for using 'platformVersion' in capabilities in order to support Selenium 3.0
 - Added support for using switch context endpoints to support Selenium 3.0. Swith to window mechanism is still available.
 - In order to support Selenium 3, Page source is now returned as an XML (or HTML in the case of HTML-based platforms) document representing the UI hierarchy.
