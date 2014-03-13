@@ -26,6 +26,8 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.touch.TouchActions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 public class NativeElementInteractionTest extends BaseAndroidTest {
@@ -188,6 +190,23 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
     WebElement inputField = driver().findElement(By.id("encodingTextview"));
 
     Assert.assertEquals("パソコン版にする", inputField.getText());
+  }
+
+  @Test
+  public void shouldScrollAndEnterText() {
+    openStartActivity();
+
+    driver().findElement(By.id("startUserRegistration")).click();
+    new WebDriverWait(driver(), 5).until(ExpectedConditions.presenceOfElementLocated(By
+        .id("inputUsername")));
+    WebElement acceptAddsCheckbox = driver().findElement(By.id("input_adds"));
+    if (acceptAddsCheckbox.isSelected()) {
+      acceptAddsCheckbox.click();
+      Assert.assertEquals(true, acceptAddsCheckbox.isSelected());
+    } else {
+      acceptAddsCheckbox.click();
+      Assert.assertEquals(false, acceptAddsCheckbox.isSelected());
+    }
   }
 
 }

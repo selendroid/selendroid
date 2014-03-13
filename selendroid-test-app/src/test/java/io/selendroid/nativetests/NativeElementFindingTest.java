@@ -319,32 +319,14 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     }
   }
 
-  @Test
-  public void shouldScrollAndEnterText() {
-    openStartActivity();
-
-    driver().findElement(By.id("startUserRegistration")).click();
-    new WebDriverWait(driver(), 5).until(ExpectedConditions.presenceOfElementLocated(By
-        .id("inputUsername")));
-    WebElement acceptAddsCheckbox = driver().findElement(By.id("input_adds"));
-    if (acceptAddsCheckbox.isSelected()) {
-      acceptAddsCheckbox.click();
-      Assert.assertEquals(acceptAddsCheckbox.isSelected(), false);
-    } else {
-      acceptAddsCheckbox.click();
-      Assert.assertEquals(acceptAddsCheckbox.isSelected(), true);
-    }
-  }
-
   @Test()
-  public void shouldBFindInvisibleElemenById() throws Exception {
+  public void shouldFindInvisibleElemenById() throws Exception {
     openStartActivity();
     WebElement textview = driver().findElement(By.id("visibleTextView"));
-    Assert.assertEquals(textview.isDisplayed(), false);
+    boolean isTextViewDisplayed = textview.isDisplayed();
     driver().findElement(By.id("visibleButtonTest")).click();
-    Thread.sleep(1000);
-    Assert.assertEquals(textview.getAttribute("shown"), "true");
-    Assert.assertEquals(textview.isDisplayed(), true);
+    Assert.assertEquals(textview.isDisplayed(), !isTextViewDisplayed);
+    Assert.assertEquals(textview.getAttribute("shown"), String.valueOf(!isTextViewDisplayed));
   }
 
   @Test()
