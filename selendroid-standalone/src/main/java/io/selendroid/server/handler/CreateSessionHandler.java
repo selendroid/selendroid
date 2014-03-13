@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,11 +16,12 @@ package io.selendroid.server.handler;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+
+import java.util.logging.Logger;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
-
-import java.util.logging.Logger;
 
 public class CreateSessionHandler extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(CreateSessionHandler.class.getName());

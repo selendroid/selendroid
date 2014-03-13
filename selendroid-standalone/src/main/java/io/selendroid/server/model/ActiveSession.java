@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -17,6 +17,8 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 
+import java.util.Timer;
+
 public class ActiveSession {
   private final String sessionKey;
   private AndroidApp aut;
@@ -24,14 +26,17 @@ public class ActiveSession {
   private SelendroidCapabilities desiredCapabilities;
   private final int selendroidServerPort;
   private boolean invalid = false;
+  private final Timer stopSessionTimer = new Timer(true);
 
   ActiveSession(String sessionKey, SelendroidCapabilities desiredCapabilities, AndroidApp aut,
-      AndroidDevice device, int selendroidPort) {
+      AndroidDevice device, int selendroidPort, SelendroidStandaloneDriver driver) {
     this.selendroidServerPort = selendroidPort;
     this.sessionKey = sessionKey;
     this.aut = aut;
     this.device = device;
     this.desiredCapabilities = desiredCapabilities;
+    stopSessionTimer.schedule(new SessionTimeoutTask(driver, sessionKey), driver
+        .getSelendroidConfiguration().getSessionTimeoutMillis());
   }
 
   @Override
@@ -83,7 +88,10 @@ public class ActiveSession {
    */
   public void invalidate() {
     this.invalid = true;
+  }
 
+  public void stopSessionTimer() {
+    stopSessionTimer.cancel();
   }
 
   @Override

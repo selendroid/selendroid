@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -70,6 +70,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private AndroidDriverAPKBuilder androidDriverAPKBuilder = null;
   private SelendroidConfiguration serverConfiguration = null;
   private DeviceManager deviceManager;
+
 
   public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration)
       throws AndroidSdkException, AndroidDeviceException {
@@ -186,6 +187,10 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   public String getOsName() {
     String os = System.getProperty("os.name");
     return os;
+  }
+
+  protected SelendroidConfiguration getSelendroidConfiguration() {
+    return serverConfiguration;
   }
 
   public String createNewTestSession(JSONObject caps, Integer retries) throws AndroidSdkException,
@@ -356,7 +361,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     String sessionId = driver.getSessionId().toString();
     SelendroidCapabilities requiredCapabilities =
         new SelendroidCapabilities(driver.getCapabilities().asMap());
-    ActiveSession session = new ActiveSession(sessionId, requiredCapabilities, app, device, port);
+    ActiveSession session =
+        new ActiveSession(sessionId, requiredCapabilities, app, device, port, this);
 
     this.sessions.put(sessionId, session);
 
@@ -447,6 +453,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   public void stopSession(String sessionId) throws AndroidDeviceException {
     if (isValidSession(sessionId)) {
       ActiveSession session = sessions.get(sessionId);
+      session.stopSessionTimer();
       try {
         HttpClientUtil.executeRequest("http://localhost:" + session.getSelendroidServerPort()
             + "/wd/hub/session/" + sessionId, HttpMethod.DELETE);
