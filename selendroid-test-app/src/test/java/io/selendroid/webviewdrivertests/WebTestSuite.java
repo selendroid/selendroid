@@ -18,6 +18,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+  AlertHandlingTest.class,
+  FrameSwitchingTest.class,
   CookieHandlerTest.class,
   WebChildElementFindingTest.class,
   WebElementFindingTest.class,

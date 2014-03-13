@@ -19,7 +19,10 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
   MultipleWebviewHandlingTests.class,
+  ExecuteAsyncScriptTest.class,
+  OrientationTest.class,
   NavigationTests.class,
+  PageSourceTest.class,
   SelendroidUnknownCommandHandlingTest.class,
   WindowHandlingTests.class,
 })

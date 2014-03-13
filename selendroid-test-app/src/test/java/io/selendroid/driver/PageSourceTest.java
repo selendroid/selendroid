@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.nativetests;
+package io.selendroid.driver;
 
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.webviewdrivertests.HtmlTestData;
@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.xml.sax.InputSource;
 
 
-public class GetWindowSourceTest extends BaseAndroidTest {
+public class PageSourceTest extends BaseAndroidTest {
 
   @Test()
   public void shouldGetNativePageSourceAsXML() throws Exception {

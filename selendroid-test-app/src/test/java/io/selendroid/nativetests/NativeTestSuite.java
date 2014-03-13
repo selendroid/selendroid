@@ -21,6 +21,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
   BrightnessTest.class,
+  CommandConfigurationTest.class,
   NativeChildElementFindingTest.class,
   NativeElementFindingTest.class,
   NativeElementInteractionTest.class,
