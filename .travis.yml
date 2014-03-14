@@ -1,0 +1,27 @@
+language: java
+
+notifications:
+  email: false
+  
+branches:
+  only:
+    - master
+
+before_install: 
+  - sudo apt-get update -qq
+  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch > /dev/null; fi
+  - wget http://dl.google.com/android/android-sdk_r21-linux.tgz
+  - tar -zxf android-sdk_r21-linux.tgz
+  - export ANDROID_HOME=`pwd`/android-sdk-linux
+  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
+  - android update sdk --filter platform-tools,android-16 --no-ui --force
+  - "git clone -b travis `git config --get remote.origin.url` target/travis"
+
+script: 
+  - "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && mvn clean deploy --settings target/travis/settings.xml || mvn clean verify --settings target/travis/settings.xml"
+
+
+env:
+  global:
+    secure: "qOCTIN+N9lYVx/rp7Qu5xcyaFPLsf64UYSOY5dq+4jOx5vokQfb0vwFxKyDJcUD7ow3GMhw11280HE2OZ3Xk+1xRGWND5Axhey8BPOjqT9D+vjKY2o2Q2ZmUbBTapL/lDixjnV9Gk/bJLytPLNaaA7S/HNfp0g03bWhLanz5fgg="
+    secure: "BzwsXUidLx7X733KzZDwvuXsIiFD0WazDABk8FM3BuvkJnGd8xp84A0ZwZ76PYvrxWp/MncyaOytkrnNA86rnBmpWvcnWzEuBVoDY/cEc4q1SnLjgsRByanNBPoYopFHAVRI2zvkU8hSBVFZC2+ABi3vpNhgYr0LtBhZouBTX5E="
