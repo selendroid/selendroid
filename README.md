@@ -1,7 +1,7 @@
 Selendroid
 ==========
 
-[![Build Status](http://ci.selendroid.io/job/selendroid/badge/icon)](http://ci.selendroid.io/job/selendroid/)
+[![Build Status](https://travis-ci.org/selendroid/selendroid.png?branch=master)](https://travis-ci.org/selendroid/selendroid)
 
 Selendroid is a test automation framework which drives of the UI of Android native and hybrid applications (apps) and the mobile web with Selendroid. Tests are written using the Selenium 2 client API and for testing the application under test must not be modified. 
 
@@ -12,6 +12,12 @@ You want more details?
 ----------------------
 
 Check out our [documentation](http://selendroid.io).
+
+
+Maven Artifacts
+---------------
+
+You can find the current version in Maven central and the latest snapshot version here: [https://oss.sonatype.org/content/repositories/snapshots/](https://oss.sonatype.org/content/repositories/snapshots/)
 
 
 License
