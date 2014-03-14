@@ -9,12 +9,12 @@ branches:
 
 before_install: 
   - sudo apt-get update -qq
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch > /dev/null; fi
-  - wget http://dl.google.com/android/android-sdk_r21-linux.tgz
-  - tar -zxf android-sdk_r21-linux.tgz
+  - sudo apt-get install -qq libstdc++6:i386 lib32z1 python-lxml
+  - wget http://dl.google.com/android/android-sdk_r22.6-linux.tgz
+  - tar -zxf android-sdk_r22.6-linux.tgz
   - export ANDROID_HOME=`pwd`/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
-  - android update sdk --filter platform-tools,android-16 --no-ui --force
+  - echo "y" | android update sdk --filter tools,platform-tools,build-tools-19.0.3,android-16 --no-ui --force
   - "git clone -b travis `git config --get remote.origin.url` target/travis"
 
 script: 
