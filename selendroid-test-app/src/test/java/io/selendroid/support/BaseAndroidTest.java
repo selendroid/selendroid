@@ -94,7 +94,7 @@ public class BaseAndroidTest {
 
     driver().switchTo().window(WEBVIEW);
     driver().get(page);
-    waitFor(WaitingConditions.driverUrlToBe(driver(), page));
+    //waitFor(WaitingConditions.driverUrlToBe(driver(), page),15,TimeUnit.SECONDS);
   }
 
   protected void openStartActivity() {
