@@ -189,6 +189,9 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       }
       copy.put(TAKES_SCREENSHOT, true);
       copy.put(BROWSER_NAME, "selendroid");
+      copy.put("automationName", "selendroid");
+      copy.put("platformName", "android");
+      copy.put("platformVersion", serverInstrumentation.getOsVersion());
       copy.put(ROTATABLE, true);
       copy.put(PLATFORM, "android");
       copy.put(SUPPORTS_ALERTS, true);
