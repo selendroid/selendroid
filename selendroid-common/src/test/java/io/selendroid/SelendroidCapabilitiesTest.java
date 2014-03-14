@@ -45,6 +45,10 @@ public class SelendroidCapabilitiesTest {
   public void testDefaultInitialize() {
     SelendroidCapabilities capa = new SelendroidCapabilities();
     Assert.assertEquals(null, capa.getEmulator());
-    Assert.assertEquals(2, capa.asMap().size());
+    Assert.assertEquals(4, capa.asMap().size());
+    Assert.assertEquals("selendroid", capa.getAutomationName());
+    Assert.assertEquals("selendroid", capa.getBrowserName());
+    Assert.assertEquals("en_US", capa.getLocale());
+    Assert.assertEquals("android", capa.getPlatformName());
   }
 }

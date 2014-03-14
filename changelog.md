@@ -9,9 +9,10 @@
 - Support execute async script ([#254](../../issues/254))
 - Add native execute script action TwoPointerGesture. this is temporary solution until the mobile WebDriver multi touch  spec is implemented [#292](../../issues/292)
 - Introducing a sessionTimeout (in seconds) that will automatically stop a session. Default value is 30 minutes.
-- Added support for using 'platformVersion' in capabilities in order to support Selenium 3.0
+- Added support for using 'platformVersion', 'platformName' and 'automationName' in capabilities in order to support Selenium 3.0
 - Added support for using switch context endpoints to support Selenium 3.0. Swith to window mechanism is still available.
 - In order to support Selenium 3, Page source is now returned as an XML (or HTML in the case of HTML-based platforms) document representing the UI hierarchy.
+- Until multi touch support based on the new w3c spec is implemented, there is a native script that can be used for multi touch gestures.
 
 0.8.0
 ---

@@ -33,6 +33,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class SelendroidCapabilities extends DesiredCapabilities {
   private static final long serialVersionUID = -7061568919298342362L;
+  private static final String SELENDROID = "selendroid";
   @Deprecated
   public static final String ANDROID_TARGET = "androidTarget";
   public static final String AUT = "aut";
@@ -81,7 +82,15 @@ public class SelendroidCapabilities extends DesiredCapabilities {
         || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL)) return null;
     return (Boolean) getRawCapabilities().get(EMULATOR);
   }
-
+  
+  public String getPlatformName() {
+    return (String) getRawCapabilities().get(PLATFORM_NAME);
+  }
+  
+  public String getAutomationName() {
+    return (String) getRawCapabilities().get(AUTOMATION_NAME);
+  }
+  
   public String getLocale() {
     return (String) getRawCapabilities().get(LOCALE);
   }
@@ -125,6 +134,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public void setScreenSize(String screenSize) {
     setCapability(SCREEN_SIZE, screenSize);
   }
+ 
 
   public SelendroidCapabilities(JSONObject source) throws JSONException {
     Iterator<String> iter = source.keys();
@@ -141,7 +151,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public SelendroidCapabilities() {
     super();
-    setBrowserName("selendroid");
+    setCapability(AUTOMATION_NAME, SELENDROID);
+    setBrowserName(SELENDROID);
+    setCapability(PLATFORM_NAME, "android");
+
     setLocale("en_US");
   }
 
@@ -184,7 +197,6 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static SelendroidCapabilities emulator(DeviceTargetPlatform platform, String aut) {
     SelendroidCapabilities caps = new SelendroidCapabilities();
     caps.setPlatformVersion(platform);
-    caps.setLocale("en_US");
     caps.setAut(aut);
     caps.setEmulator(true);
     return caps;
@@ -194,7 +206,8 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     SelendroidCapabilities capabilities = new SelendroidCapabilities();
     capabilities.setCapability(BROWSER_NAME, BrowserType.ANDROID);
     capabilities.setCapability(VERSION, "");
-    capabilities.setCapability(PLATFORM, platform);
+    capabilities.setCapability(PLATFORM, "android");
+    capabilities.setCapability(PLATFORM_NAME, "android");
     capabilities.setCapability(PLATFORM_VERSION, platform.getApi());
     return capabilities;
   }
