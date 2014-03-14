@@ -25,8 +25,6 @@ import io.selendroid.server.handler.DeleteSession;
 import io.selendroid.server.handler.DoubleTapOnElement;
 import io.selendroid.server.handler.Down;
 import io.selendroid.server.handler.ElementLocation;
-import io.selendroid.server.handler.script.ExecuteAsyncScript;
-import io.selendroid.server.handler.script.ExecuteScript;
 import io.selendroid.server.handler.FindChildElement;
 import io.selendroid.server.handler.FindChildElements;
 import io.selendroid.server.handler.FindElement;
@@ -35,11 +33,14 @@ import io.selendroid.server.handler.Flick;
 import io.selendroid.server.handler.FrameSwitchHandler;
 import io.selendroid.server.handler.GetCapabilities;
 import io.selendroid.server.handler.GetCommandConfiguration;
+import io.selendroid.server.handler.GetContext;
+import io.selendroid.server.handler.GetContexts;
 import io.selendroid.server.handler.GetCookies;
 import io.selendroid.server.handler.GetCurrentUrl;
 import io.selendroid.server.handler.GetElementAttribute;
 import io.selendroid.server.handler.GetElementDisplayed;
 import io.selendroid.server.handler.GetElementEnabled;
+import io.selendroid.server.handler.GetElementLocationInView;
 import io.selendroid.server.handler.GetElementSelected;
 import io.selendroid.server.handler.GetElementSize;
 import io.selendroid.server.handler.GetElementTagName;
@@ -47,8 +48,6 @@ import io.selendroid.server.handler.GetPageTitle;
 import io.selendroid.server.handler.GetScreenOrientation;
 import io.selendroid.server.handler.GetScreenState;
 import io.selendroid.server.handler.GetText;
-import io.selendroid.server.handler.GetContext;
-import io.selendroid.server.handler.GetContexts;
 import io.selendroid.server.handler.GetWindowSize;
 import io.selendroid.server.handler.GoBack;
 import io.selendroid.server.handler.GoForward;
@@ -66,8 +65,6 @@ import io.selendroid.server.handler.Scroll;
 import io.selendroid.server.handler.SendKeyToActiveElement;
 import io.selendroid.server.handler.SendKeys;
 import io.selendroid.server.handler.SetCommandConfiguration;
-import io.selendroid.server.handler.timeouts.AsyncTimeoutHandler;
-import io.selendroid.server.handler.timeouts.SetImplicitWaitTimeout;
 import io.selendroid.server.handler.SetScreenState;
 import io.selendroid.server.handler.SingleTapOnElement;
 import io.selendroid.server.handler.SubmitForm;
@@ -78,6 +75,10 @@ import io.selendroid.server.handler.alert.Alert;
 import io.selendroid.server.handler.alert.AlertAccept;
 import io.selendroid.server.handler.alert.AlertDismiss;
 import io.selendroid.server.handler.alert.AlertSendKeys;
+import io.selendroid.server.handler.script.ExecuteAsyncScript;
+import io.selendroid.server.handler.script.ExecuteScript;
+import io.selendroid.server.handler.timeouts.AsyncTimeoutHandler;
+import io.selendroid.server.handler.timeouts.SetImplicitWaitTimeout;
 import io.selendroid.server.handler.timeouts.TimeoutsHandler;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
@@ -119,6 +120,7 @@ public class AndroidServlet extends BaseServlet {
     register(postHandler, new FindChildElements("/wd/hub/session/:sessionId/element/:id/elements"));
     register(getHandler, new GetElementEnabled("/wd/hub/session/:sessionId/element/:id/enabled"));
     register(getHandler, new ElementLocation("/wd/hub/session/:sessionId/element/:id/location"));
+    register(getHandler, new GetElementLocationInView("/wd/hub/session/:sessionId/element/:id/location_in_view"));
     register(getHandler, new GetElementTagName("/wd/hub/session/:sessionId/element/:id/name"));
     register(getHandler, new GetElementSelected("/wd/hub/session/:sessionId/element/:id/selected"));
     register(getHandler, new LogElement("/wd/hub/session/:sessionId/element/:id/source"));
@@ -239,7 +241,7 @@ public class AndroidServlet extends BaseServlet {
     if (sessionId != null) {
       request.data().put(SESSION_ID_KEY, sessionId);
     }
-    
+
     String command = getParameter(mappedUri, request.uri(), ":command");
     if (command != null) {
       request.data().put(COMMAND_NAME_KEY, command);
