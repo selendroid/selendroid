@@ -29,5 +29,5 @@ script:
 
 env:
   global:
-    secure: "qOCTIN+N9lYVx/rp7Qu5xcyaFPLsf64UYSOY5dq+4jOx5vokQfb0vwFxKyDJcUD7ow3GMhw11280HE2OZ3Xk+1xRGWND5Axhey8BPOjqT9D+vjKY2o2Q2ZmUbBTapL/lDixjnV9Gk/bJLytPLNaaA7S/HNfp0g03bWhLanz5fgg="
-    secure: "BzwsXUidLx7X733KzZDwvuXsIiFD0WazDABk8FM3BuvkJnGd8xp84A0ZwZ76PYvrxWp/MncyaOytkrnNA86rnBmpWvcnWzEuBVoDY/cEc4q1SnLjgsRByanNBPoYopFHAVRI2zvkU8hSBVFZC2+ABi3vpNhgYr0LtBhZouBTX5E="
+    - secure: "qOCTIN+N9lYVx/rp7Qu5xcyaFPLsf64UYSOY5dq+4jOx5vokQfb0vwFxKyDJcUD7ow3GMhw11280HE2OZ3Xk+1xRGWND5Axhey8BPOjqT9D+vjKY2o2Q2ZmUbBTapL/lDixjnV9Gk/bJLytPLNaaA7S/HNfp0g03bWhLanz5fgg="
+    - secure: "BzwsXUidLx7X733KzZDwvuXsIiFD0WazDABk8FM3BuvkJnGd8xp84A0ZwZ76PYvrxWp/MncyaOytkrnNA86rnBmpWvcnWzEuBVoDY/cEc4q1SnLjgsRByanNBPoYopFHAVRI2zvkU8hSBVFZC2+ABi3vpNhgYr0LtBhZouBTX5E="
