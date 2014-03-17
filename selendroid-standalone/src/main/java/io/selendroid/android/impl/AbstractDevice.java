@@ -207,14 +207,25 @@ public abstract class AbstractDevice implements AndroidDevice {
   public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
     this.port = port;
 
-    CommandLine command =
-        adbCommand("shell", "am", "instrument", "-e", "main_activity", aut.getMainActivity(), "-e",
-            "server_port", port + "", "io.selendroid." + aut.getBasePackage()
-                + "/io.selendroid.ServerInstrumentation");
+    String[] args =  {
+        "-e", "main_activity", aut.getMainActivity(),
+        "-e", "server_port", Integer.toString(port),
+        "io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation"};
+    CommandLine command = adbCommand(
+        ObjectArrays.concat(new String[]{"shell", "am", "instrument"}, args, String.class));
     String result = executeCommand(command, 20000);
     if (result.contains("FAILED")) {
-      throw new SelendroidException("Error occured while starting selendroid-server on the device",
-          new Throwable(result));
+      String detailedResult;
+      try {
+        // Try again, waiting for instrumentation to finish. This way we'll get more error output.
+        CommandLine getErrorDetailCommand = adbCommand(
+            ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class));
+        detailedResult = executeCommand(getErrorDetailCommand, 20000);
+      } catch (Exception e) {
+        detailedResult = "";
+      }
+      throw new SelendroidException("Error occurred while starting selendroid-server on the device",
+          new Throwable(result + "\nDetails:\n" + detailedResult));
     }
 
     forwardSelendroidPort(port);
