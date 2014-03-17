@@ -52,6 +52,7 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.TimeoutException;
 import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.ObjectArrays;
 
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
