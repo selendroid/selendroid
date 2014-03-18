@@ -13,6 +13,7 @@
 - Added support for using switch context endpoints to support Selenium 3.0. Swith to window mechanism is still available.
 - In order to support Selenium 3, Page source is now returned as an XML (or HTML in the case of HTML-based platforms) document representing the UI hierarchy.
 - Until multi touch support based on the new w3c spec is implemented, there is a native script that can be used for multi touch gestures.
+- Added a more detailed error message when instrumentation fails #328
 
 0.8.0
 ---
@@ -131,6 +132,7 @@
 - Gem source has been added to the main project
 - Added FindByPartialLinkText locator support for native and webview elements
 - Adding (experimental) mechanism to add 'executeScript' in Native
+
 
 0.2 
 ----
