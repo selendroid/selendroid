@@ -6,6 +6,7 @@
 - Added support for sending key events, send text, tap and execute shell command via adb connection
 - removed -installedApp command line parameter of the selendroid-standalone jar
 - Selendroid standalone supports by default already started emulators. Even if they are started manually after selendroid-standalone has been started, they are identified and can be used for test sessions.
+- Minimized create session time by skipping installation of the app under test or the selendroid-server if they are already installed. 
 - Support execute async script ([#254](../../issues/254))
 - Add native execute script action TwoPointerGesture. this is temporary solution until the mobile WebDriver multi touch  spec is implemented [#292](../../issues/292)
 - Introducing a sessionTimeout (in seconds) that will automatically stop a session. Default value is 30 minutes.

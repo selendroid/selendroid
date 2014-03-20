@@ -118,7 +118,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     try {
       result = ShellCommand.exec(command, 20000);
     } catch (ShellCommandException e) {}
-    if (result != null && result.contains(appBasePackage)) {
+    if (result != null && result.contains("package:"+appBasePackage)) {
       return true;
     }
 
