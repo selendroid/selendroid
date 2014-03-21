@@ -1,4 +1,8 @@
-0.9.0-SNAPSHOT (under developement)
+0.10.-SNAPSHOT (under development)
+---
+
+
+0.9.0-SNAPSHOT
 ---
 - Rotation Support
 - Fixes: [#268](../../issues/268), [#284](../../issues/284), [#309](../../issues/309), [#275](../../issues/275) 
