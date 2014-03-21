@@ -13,6 +13,7 @@
  */
 package io.selendroid.builder;
 
+import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.JavaSdk;
@@ -22,7 +23,6 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
-import io.selendroid.SelendroidConfiguration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,7 +58,7 @@ public class SelendroidServerBuilder {
   private String selendroidApplicationXmlTemplate = null;
   private AndroidApp selendroidServer = null;
   private AndroidApp applicationUnderTest = null;
-  private SelendroidConfiguration serverConfiguration = null; 
+  private SelendroidConfiguration serverConfiguration = null;
 
   /**
    * FOR TESTING ONLY
@@ -72,14 +72,14 @@ public class SelendroidServerBuilder {
   public SelendroidServerBuilder() {
     this(null);
   }
-  
+
   public SelendroidServerBuilder(SelendroidConfiguration serverConfiguration) {
     this.selendroidPrebuildServerPath =
         PREBUILD_SELENDROID_SERVER_PATH_PREFIX + getJarVersionNumber() + ".apk";
     this.selendroidApplicationXmlTemplate = ANDROID_APPLICATION_XML_TEMPLATE;
     this.serverConfiguration = serverConfiguration;
   }
-	  
+
   /* package */void init(AndroidApp aut) throws IOException, ShellCommandException {
     applicationUnderTest = aut;
     File customizedServer = File.createTempFile("selendroid-server", ".apk");
@@ -99,9 +99,8 @@ public class SelendroidServerBuilder {
     cleanUpPrebuildServer();
     File selendroidServer = createAndAddCustomizedAndroidManifestToSelendroidServer();
     File outputFile =
-        new File(
-            FileUtils.getTempDirectory(),
-            String.format("selendroid-server-%s-%s.apk", applicationUnderTest.getBasePackage(), getJarVersionNumber()));
+        new File(FileUtils.getTempDirectory(), String.format("selendroid-server-%s-%s.apk",
+            applicationUnderTest.getBasePackage(), getJarVersionNumber()));
 
     return signTestServer(selendroidServer, outputFile);
   }
@@ -128,7 +127,8 @@ public class SelendroidServerBuilder {
     deleteFileFromAppSilently(app, "META-INF/CERT.SF");
     deleteFileFromAppSilently(app, "META-INF/ANDROIDD.SF");
     deleteFileFromAppSilently(app, "META-INF/ANDROIDD.RSA");
-
+    deleteFileFromAppSilently(app, "META-INF/NDKEYSTO.SF");
+    deleteFileFromAppSilently(app, "META-INF/NDKEYSTO.RSA");
 
     File outputFile = new File(appFile.getParentFile(), "resigned-" + appFile.getName());
     return signTestServer(appFile, outputFile);
@@ -155,17 +155,17 @@ public class SelendroidServerBuilder {
       throw new SelendroidException("AndroidApplication.xml template file was not found.");
     }
     String content = IOUtils.toString(inputStream, Charset.defaultCharset().displayName());
-    
+
     // find the first occurance of "package" and appending the targetpackagename to begining
     int i = content.toLowerCase().indexOf("package");
     int cnt = 0;
-    for( ; i < content.length() ; i++) {
-    	if(content.charAt(i) == '\"') {
-    		cnt++;
-    	}
-    	if(cnt == 2) {
-    		break;
-    	}
+    for (; i < content.length(); i++) {
+      if (content.charAt(i) == '\"') {
+        cnt++;
+      }
+      if (cnt == 2) {
+        break;
+      }
     }
     content = content.substring(0, i) + "." + targetPackageName + content.substring(i);
     log.info("Final Manifest File:\n" + content);
@@ -280,12 +280,12 @@ public class SelendroidServerBuilder {
   }
 
   private File androidDebugKeystore() {
-	  if (serverConfiguration == null || serverConfiguration.getKeystore() == null) {
-		return new File(FileUtils.getUserDirectory(), File.separatorChar + ".android"
-			+ File.separatorChar + "debug.keystore");
-	  } else {
-		  return new File(serverConfiguration.getKeystore());  
-	  }
+    if (serverConfiguration == null || serverConfiguration.getKeystore() == null) {
+      return new File(FileUtils.getUserDirectory(), File.separatorChar + ".android"
+          + File.separatorChar + "debug.keystore");
+    } else {
+      return new File(serverConfiguration.getKeystore());
+    }
   }
 
   /**
