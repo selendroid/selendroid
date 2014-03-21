@@ -2,7 +2,7 @@
 ---
 
 
-0.9.0-SNAPSHOT
+0.9.0
 ---
 - Rotation Support
 - Fixes: [#268](../../issues/268), [#284](../../issues/284), [#309](../../issues/309), [#275](../../issues/275) 
