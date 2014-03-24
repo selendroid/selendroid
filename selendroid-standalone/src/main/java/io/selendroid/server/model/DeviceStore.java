@@ -233,15 +233,6 @@ public class DeviceStore {
           devicesInUse.add(device);
           return device;
         }
-        // } else if (installedApp) {
-        // if (devicesInUse.contains(device)) {
-        // log.fine("device already in use");
-        // continue;
-        // }
-        // if (avdName == null || ((DefaultAndroidEmulator) device).getAvdName().equals(avdName)) {
-        // devicesInUse.add(device);
-        // return device;
-        // }
       } else {
         log.info("emulator switched off: " + isEmulatorSwitchedOff(device));
       }
