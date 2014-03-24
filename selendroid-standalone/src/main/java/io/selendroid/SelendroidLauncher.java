@@ -61,7 +61,7 @@ public class SelendroidLauncher {
     this.config = config;
   }
 
-  private void lauchServer() {
+  private void launchServer() {
     try {
       log.info("Starting selendroid-server port " + config.getPort());
       server = new SelendroidStandaloneServer(config);
@@ -86,8 +86,8 @@ public class SelendroidLauncher {
     });
   }
 
-  public void lauchSelendroid() {
-    lauchServer();
+  public void launchSelendroid() {
+    launchServer();
     HttpClientUtil.waitForServer(config.getPort());
   }
 
@@ -111,7 +111,7 @@ public class SelendroidLauncher {
       ShellCommand.setVerbose();
     }
     SelendroidLauncher laucher = new SelendroidLauncher(config);
-    laucher.lauchServer();
+    laucher.launchServer();
   }
 
   private static void configureLogging() throws Exception {
