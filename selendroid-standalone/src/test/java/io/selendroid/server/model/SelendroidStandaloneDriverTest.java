@@ -138,7 +138,7 @@ public class SelendroidStandaloneDriverTest {
     // testing new session creation
     SelendroidCapabilities capa = new SelendroidCapabilities();
     capa.setAut(TEST_APP_ID);
-    capa.setAndroidTarget(DeviceTargetPlatform.ANDROID16.name());
+    capa.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
     try {
       String sessionId = driver.createNewTestSession(new JSONObject(capa.asMap()), 0);
       Assert.assertNotNull(UUID.fromString(sessionId));

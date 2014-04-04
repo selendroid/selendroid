@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -34,8 +34,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 public class SelendroidCapabilities extends DesiredCapabilities {
   private static final long serialVersionUID = -7061568919298342362L;
   private static final String SELENDROID = "selendroid";
-  @Deprecated
-  public static final String ANDROID_TARGET = "androidTarget";
   public static final String AUT = "aut";
   public static final String EMULATOR = "emulator";
   public static final String DISPLAY = "display";
@@ -63,14 +61,6 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public String getPlatformVersion() {
     return (String) getRawCapabilities().get(PLATFORM_VERSION);
-  }
-
-  /**
-   * @deprecated use {@link #getPlatformVersion()} instead
-   */
-  @Deprecated
-  public String getAndroidTarget() {
-    return (String) getRawCapabilities().get(ANDROID_TARGET);
   }
 
   public String getAut() {
@@ -111,14 +101,6 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     setCapability(PLATFORM_VERSION, androidTarget.getApi());
   }
 
-  /**
-   * @deprecated use {@link #setPlatformVersion(DeviceTargetPlatform)} instead
-   */
-  @Deprecated
-  public void setAndroidTarget(String androidTarget) {
-    setCapability(ANDROID_TARGET, androidTarget);
-  }
-
   public void setAut(String aut) {
     setCapability(AUT, aut);
   }
@@ -154,8 +136,6 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     setCapability(AUTOMATION_NAME, SELENDROID);
     setBrowserName(SELENDROID);
     setCapability(PLATFORM_NAME, "android");
-
-    setLocale("en_US");
   }
 
   public SelendroidCapabilities(String aut) {

@@ -2,6 +2,8 @@
 ---
 - Bumping selenium dependency to version 2.41.0
 - Added support for switching contexts (NATIVE_APP/WEBVIEW)
+- Removed deprecated property 'androidTarget' in selendroid capabilities.
+- Removed default locale 'en_US' in selendroid capabilities
 
 0.9.0
 ---

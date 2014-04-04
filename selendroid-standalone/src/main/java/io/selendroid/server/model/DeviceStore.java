@@ -186,10 +186,7 @@ public class DeviceStore {
           "Fatal Error: Device Store does not contain any Android Device.");
     }
     String platformVersion = caps.getPlatformVersion();
-    //be backward compatible until we remove the deprecated flags in the capabilities
-    if (platformVersion == null || platformVersion.isEmpty()) {
-      platformVersion = caps.getAndroidTarget();
-    }
+    
     List<AndroidDevice> devices = null;
     if (platformVersion == null || platformVersion.isEmpty()) {
       devices = new ArrayList<AndroidDevice>();

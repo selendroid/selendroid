@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -77,8 +77,8 @@ public class SelfRegisteringRemote {
         JSONObject capa = new JSONObject();
         capa.put(SelendroidCapabilities.SCREEN_SIZE,
             device.getString(SelendroidCapabilities.SCREEN_SIZE));
-        String version = device.getString(SelendroidCapabilities.ANDROID_TARGET);
-        capa.put(SelendroidCapabilities.ANDROID_TARGET, version);
+        String version = device.getString(SelendroidCapabilities.PLATFORM_VERSION);
+        capa.put(SelendroidCapabilities.PLATFORM_VERSION, version);
         capa.put(SelendroidCapabilities.EMULATOR, device.getString(SelendroidCapabilities.EMULATOR));
         capa.put(CapabilityType.BROWSER_NAME, "selendroid");
         capa.put(CapabilityType.PLATFORM, "ANDROID");

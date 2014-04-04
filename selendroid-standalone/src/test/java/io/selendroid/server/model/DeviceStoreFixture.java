@@ -48,7 +48,7 @@ public class DeviceStoreFixture {
   
   protected static SelendroidCapabilities withDefaultCapabilities() {
     SelendroidCapabilities capabilities = new SelendroidCapabilities();
-    capabilities.setAndroidTarget(DeviceTargetPlatform.ANDROID16.name());
+    capabilities.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
     capabilities.setScreenSize("320x480");
     return capabilities;
   }
