@@ -1,6 +1,7 @@
 0.10.-SNAPSHOT (under development)
 ---
-
+- Bumping selenium dependency to version 2.41.0
+- Added support for switching contexts (NATIVE_APP/WEBVIEW)
 
 0.9.0
 ---

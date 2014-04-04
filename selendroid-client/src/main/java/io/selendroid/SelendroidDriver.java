@@ -17,14 +17,19 @@ import io.selendroid.adb.AdbConnection;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.ContextAware;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rotatable;
 import org.openqa.selenium.ScreenOrientation;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.interactions.HasTouchScreen;
 import org.openqa.selenium.interactions.TouchScreen;
@@ -47,14 +52,17 @@ public class SelendroidDriver extends RemoteWebDriver
       Rotatable,
       Configuration,
       JavascriptExecutor,
-      AdbSupport {
+      AdbSupport,
+      ContextAware {
 
   private RemoteTouchScreen touchScreen;
   private RemoteAdbConnection adbConnection;
 
   public SelendroidDriver(URL url, Capabilities caps) throws Exception {
     super(new SelendroidCommandExecutor(url), caps);
-    touchScreen = new RemoteTouchScreen(new RemoteExecuteMethod(this));
+    RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(this);
+    touchScreen = new RemoteTouchScreen(executeMethod);
+    adbConnection = new RemoteAdbConnection(executeMethod);
   }
 
   public SelendroidDriver(Capabilities caps) throws Exception {
@@ -162,5 +170,31 @@ public class SelendroidDriver extends RemoteWebDriver
     public void executeShellCommand(String command) {
       execute("selendroid-adb-executeShellCommand", ImmutableMap.of("command", command));
     }
+  }
+
+  @Override
+  public WebDriver context(String name) {
+    execute(org.openqa.selenium.remote.DriverCommand.SWITCH_TO_CONTEXT,
+        ImmutableMap.of("name", name));
+    return this;
+  }
+
+  @Override
+  public Set<String> getContextHandles() {
+    Response response = execute(org.openqa.selenium.remote.DriverCommand.GET_CONTEXT_HANDLES);
+    Object value = response.getValue();
+    try {
+      List<String> returnedValues = (List<String>) value;
+      return new LinkedHashSet<String>(returnedValues);
+    } catch (ClassCastException ex) {
+      throw new WebDriverException("Returned value cannot be converted to List<String>: " + value,
+          ex);
+    }
+  }
+
+  @Override
+  public String getContext() {
+    return String.valueOf(execute(
+        org.openqa.selenium.remote.DriverCommand.GET_CURRENT_CONTEXT_HANDLE).getValue());
   }
 }

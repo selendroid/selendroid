@@ -92,13 +92,13 @@ public class BaseAndroidTest {
     driver().get("and-activity://" + "io.selendroid.testapp." + "WebViewActivity");
     waitFor(WaitingConditions.driverUrlToBe(driver(), "and-activity://WebViewActivity"));
 
-    driver().switchTo().window(WEBVIEW);
+    driver().context(WEBVIEW);
     driver().get(page);
     //waitFor(WaitingConditions.driverUrlToBe(driver(), page),15,TimeUnit.SECONDS);
   }
 
   protected void openStartActivity() {
-    driver().switchTo().window(NATIVE_APP);
+    driver().context(NATIVE_APP);
     driver().get("and-activity://io.selendroid.testapp.HomeScreenActivity");
   }
 
