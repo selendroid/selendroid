@@ -14,7 +14,6 @@
 package io.selendroid.server.e2e;
 
 import io.selendroid.SelendroidCapabilities;
-import io.selendroid.SelendroidDriver;
 import io.selendroid.device.DeviceTargetPlatform;
 
 import java.net.URL;
@@ -27,6 +26,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 /*
  * Test is currently only executed in manual mode
@@ -56,7 +56,7 @@ public class SessionCreationE2ETests {
   }
 
   private void testMethod(SelendroidCapabilities capa) throws Exception {
-    WebDriver driver = new SelendroidDriver(new URL("http://localhost:5555/wd/hub"), capa);
+    WebDriver driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capa);
     String activityClass = "io.selendroid.testapp." + "HomeScreenActivity";
     driver.get("and-activity://" + activityClass);
     driver.getCurrentUrl();
