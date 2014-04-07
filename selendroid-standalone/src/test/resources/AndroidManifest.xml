@@ -4,6 +4,8 @@
     android:versionCode="1"
     android:versionName="0.4-SNAPSHOT" >
 
+    <!-- This Manifest file is used only during testing of the "selendroid-standalone" package -->
+
     <uses-sdk android:minSdkVersion="10" />
 
     <instrumentation

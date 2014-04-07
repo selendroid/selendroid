@@ -32,7 +32,7 @@ public class SelendroidServerBuilderTest {
   public static final String SELENDROID_PREBUILD_SERVER =
       "src/test/resources/selendroid-server.apk";
   public static final String ANDROID_APPLICATION_XML_TEMPLATE =
-      "src/main/resources/AndroidManifest.xml";
+      "src/test/resources/AndroidManifest.xml";
 
   @Test
   public void testShouldBeAbleToCreateCustomizedSelendroidServerAndCleantTUp() throws Exception {
