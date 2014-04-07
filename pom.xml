@@ -86,6 +86,11 @@
 			<name>Simon Stewart</name>
 			<url>https://github.com/shs96c</url>
 		</developer>
+		<developer>
+			<id>detronizator</id>
+			<name>Ivan De Marino</name>
+			<url>https://github.com/detro</url>
+		</developer>
 	</developers>
 	<build>
 		<pluginManagement>
