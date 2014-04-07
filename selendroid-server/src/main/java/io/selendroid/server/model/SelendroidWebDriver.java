@@ -23,6 +23,7 @@ import io.selendroid.android.WebViewMotionSender;
 import io.selendroid.android.internal.DomWindow;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.StaleElementReferenceException;
+import io.selendroid.server.model.internal.WebViewHandleMapper;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.SelendroidLogger;
 
@@ -67,8 +68,10 @@ public class SelendroidWebDriver {
   private MotionSender motionSender;
   private long scriptTimeout = 60000L;
   private long asyncScriptTimeout = 0L;
+  private final String contextHandle;
 
   public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle) {
+    this.contextHandle = WebViewHandleMapper.normalizeHandle(handle);
     this.serverInstrumentation = serverInstrumentation;
     init(handle);
     keySender = new WebViewKeySender(serverInstrumentation, webview);
@@ -160,7 +163,11 @@ public class SelendroidWebDriver {
     return toReturn.toString();
   }
 
-  public Object executeAtom(AndroidAtoms atom, KnownElements ke, Object... args) {
+    public String getContextHandle() {
+        return contextHandle;
+    }
+
+    public Object executeAtom(AndroidAtoms atom, KnownElements ke, Object... args) {
     JSONArray array = new JSONArray();
     for (int i = 0; i < args.length; i++) {
       array.put(args[i]);
@@ -299,22 +306,8 @@ public class SelendroidWebDriver {
 
   protected void init(String handle) {
     SelendroidLogger.log("Selendroid webdriver init");
-    long start = System.currentTimeMillis();
-    List<WebView> webviews = ViewHierarchyAnalyzer.getDefaultInstance().findWebViews();
 
-    while (webviews == null
-        && (System.currentTimeMillis() - start <= ServerInstrumentation.getInstance()
-            .getAndroidWait().getTimeoutInMillis())) {
-      DefaultSelendroidDriver.sleepQuietly(500);
-      webviews = ViewHierarchyAnalyzer.getDefaultInstance().findWebViews();
-    }
-
-    if (handle.contains("_")) {
-      int index = Integer.valueOf(handle.split("_")[1]);
-      webview = webviews.get(index);
-    } else {
-      webview = webviews.get(0);
-    }
+    webview = WebViewHandleMapper.getWebViewByHandle(handle);
 
     if (webview == null) {
       throw new SelendroidException("No webview found on current activity.");

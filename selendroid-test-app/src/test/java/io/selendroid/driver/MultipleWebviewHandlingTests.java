@@ -15,6 +15,7 @@ package io.selendroid.driver;
 
 import static io.selendroid.waiter.TestWaiter.waitFor;
 import io.selendroid.SelendroidDriver;
+import io.selendroid.exceptions.NoSuchContextException;
 import io.selendroid.server.util.HttpClientUtil;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.waiter.WaitingConditions;
@@ -26,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.NoSuchWindowException;
 
 
 public class MultipleWebviewHandlingTests extends BaseAndroidTest {
@@ -76,12 +78,7 @@ public class MultipleWebviewHandlingTests extends BaseAndroidTest {
   @Test
   public void shouldGetContext() throws Exception {
     openMultipleWebViewActivity();
-    SelendroidDriver driver = driver();
-    String uri = "http://localhost:8080/wd/hub/session/" + driver.getSessionId() + "/context";
-
-    JSONObject response =
-        HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequest(uri, HttpMethod.GET));
-    Assert.assertEquals(NATIVE_APP, response.getString("value"));
+    Assert.assertEquals(NATIVE_APP, driver().getContext());
   }
 
   @Test
@@ -99,5 +96,20 @@ public class MultipleWebviewHandlingTests extends BaseAndroidTest {
         HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequest(getContextUri,
             HttpMethod.GET));
     Assert.assertEquals("WEBVIEW_0", response.getString("value"));
+  }
+
+  @Test
+  public void shouldSwitchToFirstWebViewIfNoWebViewIndexIsProvided() {
+    openMultipleWebViewActivity();
+    SelendroidDriver driver = driver();
+    driver.context("WEBVIEW");
+    Assert.assertEquals("WEBVIEW_0", driver().getContext());
+  }
+
+  @Test(expected = NoSuchWindowException.class)
+  public void shouldThrowExceptionIfContextNotFound() {
+    openMultipleWebViewActivity();
+    SelendroidDriver driver = driver();
+    driver.context("BANANA");
   }
 }

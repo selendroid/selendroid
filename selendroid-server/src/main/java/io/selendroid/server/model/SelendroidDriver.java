@@ -42,7 +42,7 @@ public interface SelendroidDriver {
 
   public void stopSession();
 
-  public void switchDriverMode(String type);
+  public void switchContext(String type);
 
   public byte[] takeScreenshot();
 

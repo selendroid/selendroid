@@ -14,6 +14,7 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.android.WindowType;
+import io.selendroid.exceptions.NoSuchContextException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
@@ -39,12 +40,12 @@ public class SwitchContext extends RequestHandler {
           "Window name is missing."));
     }
     SelendroidDriver driver = getSelendroidDriver(request);
-    if (windowName.startsWith(WindowType.NATIVE_APP.name())
-        || windowName.startsWith(WindowType.WEBVIEW.name())) {
-      driver.switchDriverMode(windowName);
-    } else {
+    try {
+      driver.switchContext(windowName);
+    } catch(NoSuchContextException nsce) {
+      //TODO update error code when w3c spec gets updated
       return new SelendroidResponse(getSessionId(request), 23, new SelendroidException(
-          "Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
+              "Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
     }
     return new SelendroidResponse(getSessionId(request), "");
   }

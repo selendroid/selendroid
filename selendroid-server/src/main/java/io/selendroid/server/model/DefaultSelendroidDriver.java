@@ -26,6 +26,7 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.inspector.TreeUtil;
 import io.selendroid.server.model.internal.AbstractNativeElementContext;
 import io.selendroid.server.model.internal.AbstractWebElementContext;
+import io.selendroid.server.model.internal.WebViewHandleMapper;
 import io.selendroid.server.model.internal.execute_native.FindElementByAndroidTag;
 import io.selendroid.server.model.internal.execute_native.FindRId;
 import io.selendroid.server.model.internal.execute_native.GetL10nKeyTranslation;
@@ -337,7 +338,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     }
   }
 
-  public void switchDriverMode(String type) {
+  public void switchContext(String type) {
     Preconditions.checkNotNull(type);
     if (type.equals(activeWindowType)) {
       return;
@@ -605,7 +606,11 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
   @Override
   public String getContext() {
-    return activeWindowType;
+    if (activeWindowType.equals(WindowType.NATIVE_APP.name())) {
+      return activeWindowType;
+    }
+
+    return selendroidWebDriver.getContextHandle();
   }
 
   @Override
@@ -621,13 +626,10 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   @Override
   public Set<String> getContexts() {
     Set<String> windowHandles = new HashSet<String>();
+
     windowHandles.add(WindowType.NATIVE_APP.name());
-    List<WebView> webview = ViewHierarchyAnalyzer.getDefaultInstance().findWebViews();
-    if (webview != null) {
-      for (int i = 0; i < webview.size(); i++) {
-        windowHandles.add(WindowType.WEBVIEW.name() + "_" + i);
-      }
-    }
+    windowHandles.addAll(WebViewHandleMapper.webViewHandles());
+
     return windowHandles;
   }
 
