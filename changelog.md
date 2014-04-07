@@ -4,6 +4,7 @@
 - Added support for switching contexts (NATIVE_APP/WEBVIEW)
 - Removed deprecated property 'androidTarget' in selendroid capabilities.
 - Removed default locale 'en_US' in selendroid capabilities
+- Fixes: [#362](../../issues/362)
 
 0.9.0
 ---
