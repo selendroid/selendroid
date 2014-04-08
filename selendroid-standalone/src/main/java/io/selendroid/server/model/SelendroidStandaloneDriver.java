@@ -251,8 +251,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       }
       emulator.setIDevice(deviceManager.getVirtualDevice(emulator.getAvdName()));
     }
-    boolean appInstalledOneDevice = device.isInstalled(app);
-    if (!appInstalledOneDevice) {
+    boolean appInstalledOnDevice = device.isInstalled(app);
+    if (!appInstalledOnDevice || serverConfiguration.isForceReinstall()) {
       device.install(app);
     } else {
       log.info("the app under test is already installed.");
@@ -261,7 +261,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     int port = getNextSelendroidServerPort();
     Boolean selendroidInstalledSuccessfully =
         device.isInstalled("io.selendroid." + app.getBasePackage());
-    if (selendroidInstalledSuccessfully == false) {
+    if (!selendroidInstalledSuccessfully || serverConfiguration.isForceReinstall()) {
       AndroidApp selendroidServer = createSelendroidServerApk(app);
 
       selendroidInstalledSuccessfully = device.install(selendroidServer);

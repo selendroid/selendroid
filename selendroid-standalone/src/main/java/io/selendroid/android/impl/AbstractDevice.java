@@ -118,7 +118,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     try {
       result = ShellCommand.exec(command, 20000);
     } catch (ShellCommandException e) {}
-    if (result != null && result.contains("package:"+appBasePackage)) {
+    if (result != null && result.contains("package:" + appBasePackage)) {
       return true;
     }
 
@@ -132,7 +132,8 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public Boolean install(AndroidApp app) {
-    CommandLine command = adbCommand("install", app.getAbsolutePath());
+    // Reinstall if already installed, Install otherwise
+    CommandLine command = adbCommand("install", "-r", app.getAbsolutePath());
 
     String out = executeCommand(command, 120000);
     try {

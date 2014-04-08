@@ -35,28 +35,6 @@ public class SelendroidLauncher {
   private SelendroidStandaloneServer server = null;
   private SelendroidConfiguration config = null;
   
-  public static SelendroidLauncher getInstance(String[] args) {
-	try {
-      configureLogging();
-    } catch (Exception e1) {
-      log.severe("Error occurred while registering logging file handler.");
-    }
-    log.info("################# Selendroid #################");
-    SelendroidConfiguration config = new SelendroidConfiguration();
-    try {
-      new JCommander(config, args);
-    } catch (ParameterException e) {
-      log.severe("An error occurred while starting selendroid: " + e.getMessage());
-      System.exit(0);
-    }
-    if (config.isVerbose()) {
-      log.setLevel(Level.FINE);
-      ShellCommand.setVerbose();
-    }
-    SelendroidLauncher launcher = new SelendroidLauncher(config);  
-    return launcher;
-  }
-  
   public SelendroidLauncher(SelendroidConfiguration config) {
     this.config = config;
   }
@@ -106,6 +84,11 @@ public class SelendroidLauncher {
       log.severe("An error occurred while starting selendroid: " + e.getMessage());
       System.exit(0);
     }
+
+    // Log the loaded configuration
+    log.info("################# Configuration in use #################");
+    log.info(config.toString());
+
     if (config.isVerbose()) {
       log.setLevel(Level.FINE);
       ShellCommand.setVerbose();

@@ -5,6 +5,8 @@
 - Removed deprecated property 'androidTarget' in selendroid capabilities.
 - Removed default locale 'en_US' in selendroid capabilities
 - Fixes: [#362](../../issues/362)
+- Added command line option `-forceReinstall` to force installation of Selendroid Server & app under test
+- Logging Selendroid Standalone configured options
 
 0.9.0
 ---

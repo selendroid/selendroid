@@ -18,6 +18,9 @@ import java.util.List;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.google.common.reflect.Reflection;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class SelendroidConfiguration {
 
@@ -69,6 +72,9 @@ public class SelendroidConfiguration {
 
   @Parameter(description = "maximum session duration in seconds. Session will be forcefully terminated if it takes longer.", names = "-sessionTimeout")
   private int sessionTimeoutSeconds = 30 * 60; // 30 minutes
+
+  @Parameter(names = "-forceReinstall", description = "Forces Selendroid Server and the app under test to be reinstalled (for Selendroid developers)")
+  private boolean forceReinstall = false;
 
   public void setKeystore(String keystore) {
     this.keystore = keystore;
@@ -202,5 +208,18 @@ public class SelendroidConfiguration {
   
   public void setSessionTimeoutSeconds(int sessionTimeoutSeconds) {
     this.sessionTimeoutSeconds = sessionTimeoutSeconds;
+  }
+
+  public boolean isForceReinstall() {
+    return forceReinstall;
+  }
+
+  public void setForceReinstall(boolean forceReinstall) {
+    this.forceReinstall = forceReinstall;
+  }
+
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
   }
 }
