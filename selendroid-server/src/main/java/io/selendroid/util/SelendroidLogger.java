@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,17 +13,56 @@
  */
 package io.selendroid.util;
 
+import android.util.Log;
 
-// TODO ddary rethink logging concept that works also on jvm
+import java.lang.UnsatisfiedLinkError;
+
 public class SelendroidLogger {
-  public static void log(String message) {
-    System.out.println(message);
+  public static void error(String message, Exception e) {
+    error(message + ": " + e.getMessage());
   }
 
-  public static void log(String message, Exception e) {
-    System.out.println(message);
-    if (e != null) {
-      e.printStackTrace();
+  private static String formatMessage(String message) {
+    StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[4];
+    return String.format("%s#%s:%d - %s", stackTraceElement.getClassName(),
+        stackTraceElement.getMethodName(), stackTraceElement.getLineNumber(), message);
+  }
+
+  private static boolean isLoggable(int logLevel) {
+    try {
+      return Log.isLoggable("SELENDROID", logLevel);
+    } catch (UnsatisfiedLinkError e) { // this lets the tests run on the jvm as well.
+      return false;
+    }
+  }
+
+  public static void debug(String message) {
+    if (isLoggable(Log.DEBUG)) {
+      Log.d("SELENDROID", formatMessage(message));
+    }
+  }
+
+  public static void error(String message) {
+    if (isLoggable(Log.ERROR)) {
+      Log.e("SELENDROID", formatMessage(message));
+    }
+  }
+
+  public static void info(String message) {
+    if (isLoggable(Log.INFO)) {
+      Log.i("SELENDROID", formatMessage(message));
+    }
+  }
+
+  public static void warning(String message) {
+    if (isLoggable(Log.WARN)) {
+      Log.w("SELENDROID", formatMessage(message));
+    }
+  }
+
+  public static void verbose(String message) {
+    if (isLoggable(Log.VERBOSE)) {
+      Log.v("SELENDROID", formatMessage(message));
     }
   }
 }

@@ -33,7 +33,7 @@ public class SendKeys extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("send keys command");
+    SelendroidLogger.info("send keys command");
     String id = getElementId(request);
 
     AndroidElement element = getElementFromCache(request, id);

@@ -35,6 +35,7 @@ import io.selendroid.android.internal.Point;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.TouchScreen;
 import io.selendroid.server.model.interactions.Coordinates;
+import io.selendroid.util.SelendroidLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,11 +140,11 @@ public class AndroidTouchScreen implements TouchScreen {
           event =
               MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, point.x, point.y, 0);
         }
-        System.out.println("trying to send pointer");
+        SelendroidLogger.debug("trying to send pointer");
         inst.sendPointerSync(event);
         successfull = true;
       } catch (SecurityException e) {
-        System.out.println("failed: " + retry);
+        SelendroidLogger.error("failed: " + retry);
         // activityUtils.hideSoftKeyboard(null, false, true);
         retry++;
       }

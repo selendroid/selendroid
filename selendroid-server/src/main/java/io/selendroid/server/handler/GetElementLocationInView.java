@@ -34,7 +34,7 @@ public class GetElementLocationInView extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("get element location in view");
+    SelendroidLogger.info("get element location in view");
     String id = getElementId(request);
 
     AndroidElement element = getElementFromCache(request, id);

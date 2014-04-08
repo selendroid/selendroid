@@ -34,7 +34,7 @@ public class DoubleTapOnElement extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("double tap on element gesture");
+    SelendroidLogger.info("double tap on element gesture");
     JSONObject payload = getPayload(request);
     String elementId = payload.getString("element");
     TouchScreen touchScreen = getSelendroidDriver(request).getTouch();

@@ -33,7 +33,7 @@ public class LongPressOnElement extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Long press on element gesture");
+    SelendroidLogger.info("Long press on element gesture");
     JSONObject payload = getPayload(request);
     String elementId = payload.getString("element");
 

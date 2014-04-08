@@ -33,7 +33,7 @@ public class InspectorTap extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Inspector click on position command");
+    SelendroidLogger.info("Inspector click on position command");
 
     JSONObject payload = getPayload(request);
     int x = payload.getInt("x");

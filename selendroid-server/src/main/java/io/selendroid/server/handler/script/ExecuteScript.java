@@ -33,7 +33,7 @@ public class ExecuteScript extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("execute script command");
+    SelendroidLogger.info("execute script command");
     JSONObject payload = getPayload(request);
     String script = payload.getString("script");
     JSONArray args = payload.optJSONArray("args");

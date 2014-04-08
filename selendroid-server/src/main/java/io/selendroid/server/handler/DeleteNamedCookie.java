@@ -28,7 +28,7 @@ public class DeleteNamedCookie extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("delete session cookie by name command");
+    SelendroidLogger.info("delete session cookie by name command");
     String url = getSelendroidDriver(request).getCurrentUrl();
     String name = url.substring(url.lastIndexOf("/") + 1);
     getSelendroidDriver(request).deleteNamedCookie(url, name);

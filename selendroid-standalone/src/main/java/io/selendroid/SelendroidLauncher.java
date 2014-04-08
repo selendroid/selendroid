@@ -15,9 +15,12 @@ package io.selendroid;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+
 import com.google.common.base.Throwables;
+
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.io.ShellCommand;
+import io.selendroid.log.LogLevelEnum;
 import io.selendroid.server.SelendroidStandaloneServer;
 import io.selendroid.server.util.HttpClientUtil;
 
@@ -30,11 +33,12 @@ import java.util.logging.SimpleFormatter;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class SelendroidLauncher {
+
   public static final String LOGGER_NAME = "io.selendroid";
   private static final Logger log = Logger.getLogger(SelendroidLauncher.class.getName());
   private SelendroidStandaloneServer server = null;
   private SelendroidConfiguration config = null;
-  
+
   public SelendroidLauncher(SelendroidConfiguration config) {
     this.config = config;
   }
@@ -46,7 +50,8 @@ public class SelendroidLauncher {
       server.start();
     } catch (AndroidSdkException e) {
       log.severe("Selendroid was not able to interact with the Android SDK: " + e.getMessage());
-      log.severe("Please make sure you have the latest version with the latest updates installed: ");
+      log.severe(
+          "Please make sure you have the latest version with the latest updates installed: ");
       log.severe("http://developer.android.com/sdk/index.html");
       throw Throwables.propagate(e);
     } catch (Exception e) {
@@ -76,7 +81,7 @@ public class SelendroidLauncher {
       log.severe("Error occurred while registering logging file handler.");
     }
 
-    log.info("################# Selendroid #################");
+    System.out.println("################# Selendroid #################");
     SelendroidConfiguration config = new SelendroidConfiguration();
     try {
       new JCommander(config, args);
@@ -86,13 +91,16 @@ public class SelendroidLauncher {
     }
 
     // Log the loaded configuration
-    log.info("################# Configuration in use #################");
-    log.info(config.toString());
+    System.out.println("################# Configuration in use #################");
+    System.out.println(config.toString());
 
-    if (config.isVerbose()) {
-      log.setLevel(Level.FINE);
-      ShellCommand.setVerbose();
+    //to be backward compatible
+    if (config.isVerbose() && LogLevelEnum.ERROR.equals(config.getLogLevel())) {
+      Logger.getLogger(LOGGER_NAME).setLevel(LogLevelEnum.VERBOSE.level);
+    } else {
+      Logger.getLogger(LOGGER_NAME).setLevel(config.getLogLevel().level);
     }
+
     SelendroidLauncher laucher = new SelendroidLauncher(config);
     laucher.launchServer();
   }

@@ -30,7 +30,7 @@ public class OpenUrl extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Open URL command");
+    SelendroidLogger.info("Open URL command");
     String url = getPayload(request).getString("url");
     if (url == null || url.isEmpty()) {
       return new SelendroidResponse(getSessionId(request), 13, new SelendroidException(

@@ -28,12 +28,8 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.exec.environment.EnvironmentUtils;
 
 public class ShellCommand {
-  private static final Logger log = Logger.getLogger(ShellCommand.class.getName());
-  private static boolean verbose = false;
 
-  public static void setVerbose() {
-    verbose = true;
-  }
+  private static final Logger log = Logger.getLogger(ShellCommand.class.getName());
 
   public static String exec(CommandLine commandLine) throws ShellCommandException {
     return exec(commandLine, 20000);
@@ -51,7 +47,9 @@ public class ShellCommand {
       exec.execute(commandline);
     } catch (Exception e) {
       throw new ShellCommandException("An error occured while executing shell command: "
-          + commandline, new ShellCommandException(outputStream.getOutput()));
+                                      + commandline,
+                                      new ShellCommandException(outputStream.getOutput())
+      );
     }
     return (outputStream.getOutput());
   }
@@ -79,18 +77,18 @@ public class ShellCommand {
       }
     } catch (Exception e) {
       throw new ShellCommandException("An error occured while executing shell command: "
-          + commandline, e);
+                                      + commandline, e);
     }
   }
 
   private static class PritingLogOutputStream extends LogOutputStream {
+
     private StringBuilder output = new StringBuilder();
 
     @Override
     protected void processLine(String line, int level) {
-      if (verbose) {
-        System.out.println("OUTPUT FROM PROCESS: " + line);
-      }
+      log.fine("OUTPUT FROM PROCESS: " + line);
+
       output.append(line).append("\n");
     }
 

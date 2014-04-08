@@ -39,7 +39,7 @@ public class IsElementDisplayedInViewport implements NativeExecuteScript {
 
   @Override
   public Object executeScript(JSONArray args) {
-    SelendroidLogger.log("executing script isElementDisplayedInViewport");
+    SelendroidLogger.info("executing script isElementDisplayedInViewport");
 
     try {
       String elementId = args.getJSONObject(0).getString("ELEMENT");

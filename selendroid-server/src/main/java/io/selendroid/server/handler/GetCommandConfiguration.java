@@ -33,7 +33,7 @@ public class GetCommandConfiguration extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Get command configuration");
+    SelendroidLogger.info("Get command configuration");
     Session session = getSelendroidDriver(request).getSession();
     String command = getCommandName(request);
     return new SelendroidResponse(getSessionId(request), session.getCommandConfiguration(command));

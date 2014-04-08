@@ -32,7 +32,7 @@ public class ClickElement extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Click element command");
+    SelendroidLogger.info("Click element command");
     String id = getElementId(request);
     AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
@@ -48,7 +48,7 @@ public class ClickElement extends RequestHandler {
     } catch (IllegalStateException ise) {
       return new SelendroidResponse(getSessionId(request), 10, ise);
     } catch (Exception e) {
-      SelendroidLogger.log("error while clicking the element: ", e);
+      SelendroidLogger.error("error while clicking the element: ", e);
       return new SelendroidResponse(getSessionId(request), 13, e);
     }
     return new SelendroidResponse(getSessionId(request), "");

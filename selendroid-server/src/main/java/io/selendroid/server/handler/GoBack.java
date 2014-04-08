@@ -29,7 +29,7 @@ public class GoBack extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Go Back");
+    SelendroidLogger.info("Go Back");
 
     getSelendroidDriver(request).back();
     return new SelendroidResponse(getSessionId(request), "");

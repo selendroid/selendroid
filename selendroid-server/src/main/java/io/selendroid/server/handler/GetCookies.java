@@ -34,7 +34,7 @@ public class GetCookies extends RequestHandler {
   @Override
   public Response handle(HttpRequest request) throws JSONException {
 
-    SelendroidLogger.log("get cookies of a session command");
+    SelendroidLogger.info("get cookies of a session command");
     String url = getSelendroidDriver(request).getCurrentUrl();
     Set<Cookie> cookies = getSelendroidDriver(request).getCookies(url);
     JSONArray jsonArray = new JSONArray();

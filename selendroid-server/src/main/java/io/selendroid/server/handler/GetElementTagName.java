@@ -31,7 +31,7 @@ public class GetElementTagName extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("get tag name of element command");
+    SelendroidLogger.info("get tag name of element command");
     String id = getElementId(request);
     AndroidElement element = getElementFromCache(request, id);
     if (element == null) {

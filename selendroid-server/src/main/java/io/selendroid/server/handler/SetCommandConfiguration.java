@@ -34,7 +34,7 @@ public class SetCommandConfiguration extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("set command configuration command");
+    SelendroidLogger.info("set command configuration command");
     JSONObject payload = getPayload(request);
     Session session = getSelendroidDriver(request).getSession();
     String command = payload.getString("command");

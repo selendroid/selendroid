@@ -34,7 +34,7 @@
 			<groupId>com.google.android</groupId>
 			<artifactId>android-test</artifactId>
 			<version>${com.google.android.android-version}</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>

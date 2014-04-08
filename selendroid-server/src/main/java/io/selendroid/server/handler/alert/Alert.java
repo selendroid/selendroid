@@ -16,6 +16,8 @@ package io.selendroid.server.handler.alert;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.util.SelendroidLogger;
+
 import org.json.JSONException;
 import org.webbitserver.HttpRequest;
 
@@ -27,12 +29,12 @@ public class Alert extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    System.out.println("getting alert text");
+    SelendroidLogger.info("getting alert text");
     if (!getSelendroidDriver(request).isAlertPresent()) {
-      System.out.println("alert NOT present");
+      SelendroidLogger.info("alert NOT present");
       return new SelendroidResponse(getSessionId(request), 27, "no alert open");
     }
-    System.out.println("getting the text");
+    SelendroidLogger.info("getting the text");
     return new SelendroidResponse(getSessionId(request), getSelendroidDriver(request).getAlertText());
   }
 

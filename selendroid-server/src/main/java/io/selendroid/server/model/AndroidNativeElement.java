@@ -215,7 +215,7 @@ public class AndroidNativeElement implements AndroidElement {
         Thread.sleep(300);
       } catch (InterruptedException ignored) {}
     } catch (SecurityException e) {
-      SelendroidLogger.log("error while clicking element", e);
+      SelendroidLogger.error("error while clicking element", e);
     }
   }
 

@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import io.selendroid.android.internal.Point;
+import io.selendroid.util.SelendroidLogger;
 
 public class TwoPointerGestureAction implements NativeExecuteScript {
 
@@ -33,7 +34,7 @@ public class TwoPointerGestureAction implements NativeExecuteScript {
     	return "Wrong number of arguments";
     }
     try {
-      System.out.println("TwoPointerGestureAction args = " + args.toString());
+      SelendroidLogger.info("TwoPointerGestureAction args = " + args.toString());
       JSONObject arg = args.getJSONObject(0);
       int startPoint1X = Integer.parseInt(arg.getString("startPoint1X"));
       int startPoint1Y = Integer.parseInt(arg.getString("startPoint1Y"));

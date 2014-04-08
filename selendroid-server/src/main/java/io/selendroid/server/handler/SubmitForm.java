@@ -31,7 +31,7 @@ public class SubmitForm extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Submit element command");
+    SelendroidLogger.info("Submit element command");
     String id = getElementId(request);
     AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
@@ -44,7 +44,7 @@ public class SubmitForm extends RequestHandler {
     } catch (StaleElementReferenceException se) {
       return new SelendroidResponse(getSessionId(request), 10, se);
     } catch (Exception e) {
-      SelendroidLogger.log("error while submitting the element: ", e);
+      SelendroidLogger.error("error while submitting the element: ", e);
       return new SelendroidResponse(sessionId, 13, e);
     }
     return new SelendroidResponse(sessionId, "");

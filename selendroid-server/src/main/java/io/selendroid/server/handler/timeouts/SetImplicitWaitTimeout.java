@@ -29,7 +29,7 @@ public class SetImplicitWaitTimeout extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("set implicit wait timeout called");
+    SelendroidLogger.info("set implicit wait timeout called");
 
     Long timeout = getPayload(request).getLong("ms");
     

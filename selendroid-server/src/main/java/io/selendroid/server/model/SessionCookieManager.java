@@ -188,7 +188,7 @@ class SessionCookieManager {
             throw new SelendroidException("Error while adding cookie. ", e);
         }
         String domain = "http://" + urlObj.getHost() + cookie.getPath();
-        SelendroidLogger.log(domain);
+        SelendroidLogger.info(domain);
         if (!domain.endsWith("/")) {
             domain = domain + "/";
         }

@@ -31,7 +31,7 @@ public class GetElementDisplayed extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("is element displayed command");
+    SelendroidLogger.info("is element displayed command");
     String id = getElementId(request);
 
     AndroidElement element = getElementFromCache(request, id);

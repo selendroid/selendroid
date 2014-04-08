@@ -32,7 +32,7 @@ public class GetText extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("get text command");
+    SelendroidLogger.info("get text command");
     String id = getElementId(request);
 
     AndroidElement element = getElementFromCache(request, id);

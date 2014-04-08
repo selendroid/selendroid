@@ -37,7 +37,7 @@ public class TreeView extends SelendroidInspectorView {
     try {
       source = driver.getFullWindowTree();
     } catch (SelendroidException e) {
-      SelendroidLogger.log("error getting WindowSource in TreeView", e);
+      SelendroidLogger.error("error getting WindowSource in TreeView", e);
       response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
           .content("{}").end();
       return;

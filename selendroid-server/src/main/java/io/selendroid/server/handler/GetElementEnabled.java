@@ -32,7 +32,7 @@ public class GetElementEnabled extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("is element enabled command");
+    SelendroidLogger.info("is element enabled command");
     String id = getElementId(request);
 
     AndroidElement element = getElementFromCache(request, id);

@@ -29,7 +29,7 @@ public class DeleteCookies extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("delete session cookies command");
+    SelendroidLogger.info("delete session cookies command");
     String url = getSelendroidDriver(request).getCurrentUrl();
     getSelendroidDriver(request).deleteCookie(url);
     return new SelendroidResponse(getSessionId(request), "");

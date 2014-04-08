@@ -17,6 +17,8 @@ import io.selendroid.ServerInstrumentation;
 import io.selendroid.server.inspector.InspectorServlet;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
+import io.selendroid.util.SelendroidLogger;
+
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
 import org.webbitserver.helpers.NamingThreadFactory;
@@ -71,7 +73,7 @@ public class AndroidServer {
    * @param millies
    */
   public void setConnectionTimeout(long millies) {
-    System.out.println("using staleConnectionTimeout: " + millies);
+    SelendroidLogger.info("using staleConnectionTimeout: " + millies);
     webServer.staleConnectionTimeout(millies);
   }
 

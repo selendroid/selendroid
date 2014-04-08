@@ -33,7 +33,7 @@ public class GetCapabilities extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("get capabilities command");
+    SelendroidLogger.info("get capabilities command");
     Session session = getSelendroidDriver(request).getSession();
 
     JSONObject caps = getSelendroidDriver(request).getSessionCapabilities(session.getSessionId());

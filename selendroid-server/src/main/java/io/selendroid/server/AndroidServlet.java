@@ -268,7 +268,7 @@ public class AndroidServlet extends BaseServlet {
       response.end();
       return;
     } else if (handler == null) {
-      SelendroidLogger.log("handler is null. not support uri is: " + request.uri());
+      SelendroidLogger.info("handler is null. not support uri is: " + request.uri());
       replyWithServerError(response);
       return;
     }
@@ -291,7 +291,7 @@ public class AndroidServlet extends BaseServlet {
         String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
         result = new SelendroidResponse(sessionId, 10, se);
       } catch (Exception e) {
-        SelendroidLogger.log("Error occurred while handling request and got StaleRef.", e);
+        SelendroidLogger.error("Error occurred while handling request and got StaleRef.", e);
         replyWithServerError(response);
         return;
       }
@@ -300,13 +300,13 @@ public class AndroidServlet extends BaseServlet {
         String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
         result = new SelendroidResponse(sessionId, 13, ae);
       } catch (Exception e) {
-        SelendroidLogger.log("Error occurred while handling request and got AppCrashedException.",
+        SelendroidLogger.error("Error occurred while handling request and got AppCrashedException.",
             e);
         replyWithServerError(response);
         return;
       }
     } catch (Exception e) {
-      SelendroidLogger.log("Error occurred while handling request.", e);
+      SelendroidLogger.error("Error occurred while handling request.", e);
       replyWithServerError(response);
       return;
     }

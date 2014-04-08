@@ -32,7 +32,7 @@ public class NewSession extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("new session command");
+    SelendroidLogger.info("new session command");
     JSONObject payload = getPayload(request);
 
     JSONObject desiredCapabilities = payload.getJSONObject("desiredCapabilities");
@@ -41,7 +41,7 @@ public class NewSession extends RequestHandler {
     try {
       sessionID = getSelendroidDriver(request).initializeSession(desiredCapabilities);
     } catch (SelendroidException e) {
-      SelendroidLogger.log("Error while creating new session: ", e);
+      SelendroidLogger.error("Error while creating new session: ", e);
       return new SelendroidResponse("", 33, e);
     }
     return new SelendroidResponse(sessionID, 0, desiredCapabilities);

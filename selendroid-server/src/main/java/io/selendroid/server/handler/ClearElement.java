@@ -31,7 +31,7 @@ public class ClearElement extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request)throws JSONException {
-    SelendroidLogger.log("Clear element command");
+    SelendroidLogger.info("Clear element command");
     String id = getElementId(request);
     AndroidElement element = getElementFromCache(request, id);
     if (element == null) {
@@ -43,7 +43,7 @@ public class ClearElement extends RequestHandler {
     } catch (StaleElementReferenceException se) {
       return new SelendroidResponse(getSessionId(request), 10, se);
     } catch (Exception e) {
-      SelendroidLogger.log("error while clearing the element: ", e);
+      SelendroidLogger.error("error while clearing the element: ", e);
       return new SelendroidResponse(getSelendroidDriver(request).getSession().getSessionId(), 13, e);
     }
     return new SelendroidResponse(getSessionId(request), "");

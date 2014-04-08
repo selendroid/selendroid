@@ -30,7 +30,7 @@ public class WebViewKeySender extends InstrumentedKeySender {
     long timeout =
         System.currentTimeMillis()
             + ServerInstrumentation.getInstance().getAndroidWait().getTimeoutInMillis();
-    SelendroidLogger.log("Using timeout of " + timeout + " milli seconds.");
+    SelendroidLogger.info("Using timeout of " + timeout + " milli seconds.");
 
     done = false;
 

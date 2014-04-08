@@ -31,7 +31,7 @@ public class RotateScreen extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Rotate screen");
+    SelendroidLogger.info("Rotate screen");
     String orientation = getPayload(request).getString("orientation");
 
     getSelendroidDriver(request).rotate(ScreenOrientation.valueOf(orientation));

@@ -33,7 +33,7 @@ public class GetElementAttribute extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("get attribute of element command");
+    SelendroidLogger.info("get attribute of element command");
     String id = getElementId(request);
     String attributeName = getNameAttribute(request);
     AndroidElement element = getElementFromCache(request, id);

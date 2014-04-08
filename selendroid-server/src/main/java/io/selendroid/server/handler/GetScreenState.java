@@ -19,7 +19,7 @@ public class GetScreenState extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Get screen state");
+    SelendroidLogger.info("Get screen state");
 
     TouchScreen screen = getSelendroidDriver(request).getTouch();
     float brightness = screen.getBrightness();

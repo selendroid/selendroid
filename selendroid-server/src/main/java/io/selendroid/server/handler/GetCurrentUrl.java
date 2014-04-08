@@ -29,7 +29,7 @@ public class GetCurrentUrl extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException{
-    SelendroidLogger.log("get current URL command");
+    SelendroidLogger.info("get current URL command");
 
     return new SelendroidResponse(getSessionId(request), getSelendroidDriver(request).getCurrentUrl());
   }

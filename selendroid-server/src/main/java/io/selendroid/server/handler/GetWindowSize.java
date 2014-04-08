@@ -30,7 +30,7 @@ public class GetWindowSize  extends RequestHandler {
 
     @Override
     public Response handle(HttpRequest request) throws JSONException {
-        SelendroidLogger.log("get window size command");
+        SelendroidLogger.info("get window size command");
 
         Dimension size = getSelendroidDriver(request).getWindowSize();
         JSONObject dim = new JSONObject();

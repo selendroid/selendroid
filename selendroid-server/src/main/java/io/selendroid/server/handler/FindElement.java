@@ -37,7 +37,7 @@ public class FindElement extends RequestHandler {
     JSONObject payload = getPayload(request);
     String method = payload.getString("using");
     String selector = payload.getString("value");
-    SelendroidLogger.log(String.format("find element command using '%s' with selector '%s'.",
+    SelendroidLogger.info(String.format("find element command using '%s' with selector '%s'.",
             method, selector));
 
     By by = new NativeAndroidBySelector().pickFrom(method, selector);

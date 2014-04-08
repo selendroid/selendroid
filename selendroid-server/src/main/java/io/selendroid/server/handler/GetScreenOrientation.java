@@ -29,7 +29,7 @@ public class GetScreenOrientation extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Go screen orientation");
+    SelendroidLogger.info("Go screen orientation");
 
     return new SelendroidResponse(getSessionId(request), getSelendroidDriver(request)
         .getOrientation());

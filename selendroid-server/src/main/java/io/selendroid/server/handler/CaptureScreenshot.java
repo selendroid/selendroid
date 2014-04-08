@@ -29,7 +29,7 @@ public class CaptureScreenshot extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException{
-    SelendroidLogger.log("take screenshot command");
+    SelendroidLogger.info("take screenshot command");
     byte[] rawPng = getSelendroidDriver(request).takeScreenshot();
     String base64Png = new Base64Encoder().encode(rawPng);
     

@@ -59,7 +59,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public void startActivity(Class activity) {
     if (activity == null) {
-      SelendroidLogger.log("activity class is empty", new NullPointerException(
+      SelendroidLogger.error("activity class is empty", new NullPointerException(
           "Activity class to start is null."));
       return;
     }
@@ -102,7 +102,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
         parsedServerPort = Integer.parseInt(port);
       }
     } catch (NumberFormatException ex) {
-      SelendroidLogger.log("Unable to parse the value of server_port key.");
+      SelendroidLogger.info("Unable to parse the value of server_port key.");
       parsedServerPort = this.serverPort;
     }
 
@@ -114,13 +114,13 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     try {
       clazz = (Class<? extends Activity>) Class.forName(activityClazzName);
     } catch (ClassNotFoundException exception) {
-      SelendroidLogger.log("The class with name '" + activityClazzName + "' does not exist.",
+      SelendroidLogger.error("The class with name '" + activityClazzName + "' does not exist.",
           exception);
     }
     mainActivity = clazz;
-    SelendroidLogger.log("Instrumentation initialized with main activity: " + activityClazzName);
+    SelendroidLogger.info("Instrumentation initialized with main activity: " + activityClazzName);
     if (clazz == null) {
-      SelendroidLogger.log("Clazz is null - but should be an instance of: " + activityClazzName);
+      SelendroidLogger.info("Clazz is null - but should be an instance of: " + activityClazzName);
     }
     instance = this;
 
@@ -136,12 +136,14 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   @Override
   public void onStart() {
+    SelendroidLogger.error("Error");
+    SelendroidLogger.debug("debug");
     synchronized (ServerInstrumentation.class) {
       try {
         startMainActivity();
         startServer();
       } catch (Exception e) {
-        SelendroidLogger.log("Exception when starting selendroid.", e);
+        SelendroidLogger.error("Exception when starting selendroid.", e);
       }
     }
     // make sure this is always displayed
@@ -193,7 +195,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       }
       return decorView;
     } catch (Exception e) {
-      SelendroidLogger.log("Error occured while searching for root view: ", e);
+      SelendroidLogger.error("Error occured while searching for root view: ", e);
     }
 
     throw new SelendroidException("Could not find any views");
@@ -208,7 +210,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       }
       stopServer();
     } catch (Exception e) {
-      SelendroidLogger.log("Error occured while shutting down: ", e);
+      SelendroidLogger.error("Error occured while shutting down: ", e);
     }
     instance = null;
   }
@@ -220,7 +222,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     }
 
     if (serverThread != null) {
-      SelendroidLogger.log("Stopping selendroid http server");
+      SelendroidLogger.info("Stopping selendroid http server");
       stopServer();
     }
 
@@ -237,7 +239,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       return;
     }
 
-    SelendroidLogger.log("Stopping selendroid http server");
+    SelendroidLogger.info("Stopping selendroid http server");
     serverThread.stopLooping();
     serverThread.interrupt();
     try {
@@ -314,9 +316,9 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
         server.start();
 
-        SelendroidLogger.log("Started selendroid http server on port " + server.getPort());
+        SelendroidLogger.info("Started selendroid http server on port " + server.getPort());
       } catch (Exception e) {
-        SelendroidLogger.log("Error starting httpd.", e);
+        SelendroidLogger.error("Error starting httpd.", e);
 
         throw new SelendroidException("Httpd failed to start!");
       }
@@ -350,55 +352,45 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   }
 
   /*
-   * No need to override the following methods:
-   * - sendStringSync()
-   * - sendCharacterSync()
-   * - sendKeyDownUpSync()
-   * All of them just aggregate several calls of sendKeySync().
+   * No need to override the following methods: - sendStringSync() - sendCharacterSync() -
+   * sendKeyDownUpSync() All of them just aggregate several calls of sendKeySync().
    */
   @Override
   public void sendKeySync(final KeyEvent event) {
-    sendInputEventSync(
-        new InputEventSender() {
-          @Override
-          public void sendEvent(Object event) {
-            ServerInstrumentation.super.sendKeySync((KeyEvent) event);
-          }
-        },
-        event);
+    sendInputEventSync(new InputEventSender() {
+      @Override
+      public void sendEvent(Object event) {
+        ServerInstrumentation.super.sendKeySync((KeyEvent) event);
+      }
+    }, event);
   }
 
   @Override
   public void sendPointerSync(final MotionEvent event) {
-    sendInputEventSync(
-        new InputEventSender() {
-          @Override
-          public void sendEvent(Object event) {
-            ServerInstrumentation.super.sendPointerSync((MotionEvent) event);
-          }
-        },
-        event);
+    sendInputEventSync(new InputEventSender() {
+      @Override
+      public void sendEvent(Object event) {
+        ServerInstrumentation.super.sendPointerSync((MotionEvent) event);
+      }
+    }, event);
   }
 
   @Override
   public void sendTrackballEventSync(MotionEvent event) {
-    sendInputEventSync(
-        new InputEventSender() {
-          @Override
-          public void sendEvent(Object event) {
-            ServerInstrumentation.super.sendTrackballEventSync((MotionEvent) event);
-          }
-        },
-        event);
+    sendInputEventSync(new InputEventSender() {
+      @Override
+      public void sendEvent(Object event) {
+        ServerInstrumentation.super.sendTrackballEventSync((MotionEvent) event);
+      }
+    }, event);
   }
 
   private void sendInputEventSync(final InputEventSender eventSender, final Object event) {
-    runSynchronouslyOnUiThread(
-        new Runnable() {
-          public void run() {
-            uiController.injectInputEventWaitingForCompletion(eventSender, event);
-          }
-        });
+    runSynchronouslyOnUiThread(new Runnable() {
+      public void run() {
+        uiController.injectInputEventWaitingForCompletion(eventSender, event);
+      }
+    });
   }
 
   private void runSynchronouslyOnUiThread(Runnable action) {

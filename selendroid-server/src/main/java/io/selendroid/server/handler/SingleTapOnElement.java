@@ -34,7 +34,7 @@ public class SingleTapOnElement extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("single tap on element gesture");
+    SelendroidLogger.info("single tap on element gesture");
     JSONObject payload = getPayload(request);
     String elementId = payload.getString("element");
 

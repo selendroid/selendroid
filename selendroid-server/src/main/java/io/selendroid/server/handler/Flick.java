@@ -33,7 +33,7 @@ public class Flick extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("flick gesture");
+    SelendroidLogger.info("flick gesture");
 
     JSONObject payload = getPayload(request);
     TouchScreen touchScreen = getSelendroidDriver(request).getTouch();

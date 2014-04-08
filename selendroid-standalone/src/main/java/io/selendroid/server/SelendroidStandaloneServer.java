@@ -102,7 +102,7 @@ public class SelendroidStandaloneServer {
         e.printStackTrace();
       }
     }
-    log.info("selendroid-standalone server has been started on port: " + configuration.getPort());
+    System.out.println("selendroid-standalone server has been started on port: " + configuration.getPort());
   }
 
   public void stop() {

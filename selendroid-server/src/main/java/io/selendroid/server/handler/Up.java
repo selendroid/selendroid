@@ -30,7 +30,7 @@ public class Up extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("up gesture");
+    SelendroidLogger.info("up gesture");
     JSONObject payload = getPayload(request);
     int x = payload.getInt("x");
     int y = payload.getInt("y");

@@ -30,7 +30,7 @@ public class GoForward extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Go Forward");
+    SelendroidLogger.info("Go Forward");
     try {
       getSelendroidDriver(request).forward();
       return new SelendroidResponse(getSessionId(request), "");

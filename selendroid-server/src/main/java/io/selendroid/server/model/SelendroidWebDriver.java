@@ -102,7 +102,7 @@ public class SelendroidWebDriver {
       toReturn.append((i > 0) ? "," : "");
       toReturn.append(convertToJsArgs(args.get(i), ke));
     }
-    SelendroidLogger.log("convertToJsArgs: " + toReturn.toString());
+    SelendroidLogger.info("convertToJsArgs: " + toReturn.toString());
     return toReturn.toString();
   }
 
@@ -150,16 +150,16 @@ public class SelendroidWebDriver {
           AndroidElement ae = ke.get(((JSONObject) obj).getString(ELEMENT_KEY));
           toReturn.append(ae.toString());
         } catch (JSONException e) {
-          SelendroidLogger.log("exception getting the element id: " + e.toString());
+          SelendroidLogger.info("exception getting the element id: " + e.toString());
         }
       } else {
         // send across the object since it's not a webelement
         toReturn.append(obj.toString());
       }
     } else {
-      SelendroidLogger.log("failed to figure out what this is to convert to execute script:" + obj);
+      SelendroidLogger.info("failed to figure out what this is to convert to execute script:" + obj);
     }
-    SelendroidLogger.log("convertToJsArgs: " + toReturn.toString());
+    SelendroidLogger.info("convertToJsArgs: " + toReturn.toString());
     return toReturn.toString();
   }
 
@@ -189,7 +189,7 @@ public class SelendroidWebDriver {
     String jsResult = executeJavascriptInWebView("alert('selendroid:'+" + scriptInWindow + ")");
 
 
-    SelendroidLogger.log("jsResult: " + jsResult);
+    SelendroidLogger.info("jsResult: " + jsResult);
     if (jsResult == null || "undefined".equals(jsResult)) {
       return null;
     }
@@ -305,7 +305,7 @@ public class SelendroidWebDriver {
   }
 
   protected void init(String handle) {
-    SelendroidLogger.log("Selendroid webdriver init");
+    SelendroidLogger.info("Selendroid webdriver init");
 
     webview = WebViewHandleMapper.getWebViewByHandle(handle);
 
@@ -366,7 +366,7 @@ public class SelendroidWebDriver {
           settings.setGeolocationEnabled(true);
           settings.setGeolocationDatabasePath("/data/data/selendroid");
         } catch (Exception e) {
-          SelendroidLogger.log("An error occured while configuring the web view", e);
+          SelendroidLogger.error("An error occured while configuring the web view", e);
         }
       }
     });
@@ -493,7 +493,7 @@ public class SelendroidWebDriver {
         return true;
       } else {
         currentAlertMessage.add(message == null ? "null" : message);
-        SelendroidLogger.log("new alert message: " + message);
+        SelendroidLogger.info("new alert message: " + message);
         return super.onJsAlert(view, url, message, jsResult);
       }
     }
@@ -501,7 +501,7 @@ public class SelendroidWebDriver {
     @Override
     public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
       currentAlertMessage.add(message == null ? "null" : message);
-      SelendroidLogger.log("new confirm message: " + message);
+      SelendroidLogger.info("new confirm message: " + message);
       return super.onJsConfirm(view, url, message, result);
     }
 
@@ -509,7 +509,7 @@ public class SelendroidWebDriver {
     public boolean onJsPrompt(WebView view, String url, String message, String defaultValue,
         JsPromptResult result) {
       currentAlertMessage.add(message == null ? "null" : message);
-      SelendroidLogger.log("new prompt message: " + message);
+      SelendroidLogger.info("new prompt message: " + message);
       return super.onJsPrompt(view, url, message, defaultValue, result);
     }
 
@@ -652,17 +652,17 @@ public class SelendroidWebDriver {
   }
 
   public boolean isAlertPresent() {
-    SelendroidLogger.log("checking currentAlertMessage: " + currentAlertMessage.size());
+    SelendroidLogger.info("checking currentAlertMessage: " + currentAlertMessage.size());
     return !currentAlertMessage.isEmpty();
   }
 
   public String getCurrentAlertMessage() {
-    SelendroidLogger.log("getting currentAlertMessage: " + currentAlertMessage.peek());
+    SelendroidLogger.info("getting currentAlertMessage: " + currentAlertMessage.peek());
     return currentAlertMessage.peek();
   }
 
   public void clearCurrentAlertMessage() {
-    SelendroidLogger.log("clearing the current alert message: " + currentAlertMessage.remove());
+    SelendroidLogger.info("clearing the current alert message: " + currentAlertMessage.remove());
   }
 
   public void setAsyncScriptTimeout(long timeout) {

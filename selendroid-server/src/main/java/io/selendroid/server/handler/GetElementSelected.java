@@ -32,7 +32,7 @@ public class GetElementSelected extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("is element selected command");
+    SelendroidLogger.info("is element selected command");
     String id = getElementId(request);
 
     AndroidElement element = getElementFromCache(request, id);

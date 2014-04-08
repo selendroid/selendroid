@@ -30,7 +30,7 @@ public class Refresh extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Do Refresh");
+    SelendroidLogger.info("Do Refresh");
 
     try {
       getSelendroidDriver(request).refresh();

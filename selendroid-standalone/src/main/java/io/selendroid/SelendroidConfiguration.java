@@ -18,63 +18,91 @@ import java.util.List;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+
 import com.google.common.reflect.Reflection;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import io.selendroid.log.LogLevelConverter;
+import io.selendroid.log.LogLevelEnum;
 
 public class SelendroidConfiguration {
 
   @Parameter(description = "port the server will listen on.", names = "-port")
   private int port = 4444;
 
-  @Parameter(description = "timeout that will be used to start Android emulators", names = "-timeoutEmulatorStart")
+  @Parameter(description = "timeout that will be used to start Android emulators",
+             names = "-timeoutEmulatorStart")
   private long timeoutEmulatorStart = 300000;
 
-  @Parameter(description = "location of the application under test. Absolute path to the apk", names = {
-      "-app", "-aut"})
+  @Parameter(description = "location of the application under test. Absolute path to the apk",
+             names = {
+                 "-app", "-aut"})
   private List<String> supportedApps = new ArrayList<String>();
 
+  @Deprecated
   @Parameter(names = "-verbose", description = "Debug mode")
   private boolean verbose = false;
 
   @Parameter(names = "-emulatorPort", description = "port number to start running emulators on")
   private int emulatorPort = 5560;
 
-  @Parameter(names = "-deviceScreenshot", description = "if true, screenshots will be taken on the device instead of using the ddmlib libary.")
+  @Parameter(names = "-deviceScreenshot",
+             description = "if true, screenshots will be taken on the device instead of using the ddmlib libary.")
   private boolean deviceScreenshot = false;
 
-  @Parameter(description = "the port the selendroid-standalone is using to communicate with instrumentation server", names = {"-selendroidServerPort"})
+  @Parameter(
+      description = "the port the selendroid-standalone is using to communicate with instrumentation server",
+      names = {"-selendroidServerPort"})
   private int selendroidServerPort = 8080;
 
   @Parameter(description = "The file of the keystore to be used", names = {"-keystore"})
   private String keystore = null;
 
-  @Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio", names = {"-emulatorOptions"})
+  @Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio",
+             names = {"-emulatorOptions"})
   private String emulatorOptions = null;
 
-  @Parameter(description = "if specified, will send a registration request to the given url. Example : http://localhost:4444/grid/register", names = "-hub")
+  @Parameter(
+      description = "if specified, will send a registration request to the given url. Example : http://localhost:4444/grid/register",
+      names = "-hub")
   private String registrationUrl = null;
 
-  @Parameter(description = "if specified, will specify the remote proxy to use on the grid. Example : io.selendroid.grid.SelendroidSessionProxy", names = "-proxy")
+  @Parameter(
+      description = "if specified, will specify the remote proxy to use on the grid. Example : io.selendroid.grid.SelendroidSessionProxy",
+      names = "-proxy")
   private String proxy = null;
 
-  @Parameter(description = "host of the node. Ip address needs to be specified for registering to a grid hub (guessing can be wrong complex).", names = "-host")
+  @Parameter(
+      description = "host of the node. Ip address needs to be specified for registering to a grid hub (guessing can be wrong complex).",
+      names = "-host")
   private String serverHost;
 
-  @Parameter(names = "-keepAdbAlive", description = "If true, adb will not be terminated on server shutdown.")
+  @Parameter(names = "-keepAdbAlive",
+             description = "If true, adb will not be terminated on server shutdown.")
   private boolean keepAdbAlive = false;
 
-  @Parameter(names = "-noWebviewApp", description = "If you don't want selendroid to auto-extract and have 'AndroidDriver' (webview only app) available.")
+  @Parameter(names = "-noWebviewApp",
+             description = "If you don't want selendroid to auto-extract and have 'AndroidDriver' (webview only app) available.")
   private boolean noWebViewApp = false;
 
-  @Parameter(names = "-noClearData", description = "When you quit the app, shell pm clear will not be called with this option specified.")
+  @Parameter(names = "-noClearData",
+             description = "When you quit the app, shell pm clear will not be called with this option specified.")
   private boolean noClearData = false;
 
-  @Parameter(description = "maximum session duration in seconds. Session will be forcefully terminated if it takes longer.", names = "-sessionTimeout")
+  @Parameter(
+      description = "maximum session duration in seconds. Session will be forcefully terminated if it takes longer.",
+      names = "-sessionTimeout")
   private int sessionTimeoutSeconds = 30 * 60; // 30 minutes
 
-  @Parameter(names = "-forceReinstall", description = "Forces Selendroid Server and the app under test to be reinstalled (for Selendroid developers)")
+  @Parameter(names = "-forceReinstall",
+             description = "Forces Selendroid Server and the app under test to be reinstalled (for Selendroid developers)")
   private boolean forceReinstall = false;
+
+  @Parameter(names = "-logLevel", converter = LogLevelConverter.class,
+             description = "Specifies the log level of selendroid. Available values are: ERROR, WARNING, INFO, DEBUG and VERBOSE.")
+  private LogLevelEnum logLevel = LogLevelEnum.ERROR;
 
   public void setKeystore(String keystore) {
     this.keystore = keystore;
@@ -130,10 +158,12 @@ public class SelendroidConfiguration {
     this.timeoutEmulatorStart = timeoutEmulatorStart;
   }
 
+  @Deprecated
   public boolean isVerbose() {
     return verbose;
   }
 
+  @Deprecated
   public void setVerbose(boolean verbose) {
     this.verbose = verbose;
   }
@@ -205,7 +235,7 @@ public class SelendroidConfiguration {
   public int getSessionTimeoutMillis() {
     return sessionTimeoutSeconds * 1000;
   }
-  
+
   public void setSessionTimeoutSeconds(int sessionTimeoutSeconds) {
     this.sessionTimeoutSeconds = sessionTimeoutSeconds;
   }
@@ -216,6 +246,14 @@ public class SelendroidConfiguration {
 
   public void setForceReinstall(boolean forceReinstall) {
     this.forceReinstall = forceReinstall;
+  }
+
+  public LogLevelEnum getLogLevel() {
+    return logLevel;
+  }
+
+  public void setLogLevel(LogLevelEnum logLevel) {
+    this.logLevel = logLevel;
   }
 
   @Override

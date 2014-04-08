@@ -33,7 +33,7 @@ public class GetElementSize extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("get element size command");
+    SelendroidLogger.info("get element size command");
     String id = getElementId(request);
 
     AndroidElement element = getElementFromCache(request, id);

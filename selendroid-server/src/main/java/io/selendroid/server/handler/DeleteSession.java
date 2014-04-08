@@ -30,11 +30,11 @@ public class DeleteSession extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException{
-    SelendroidLogger.log("delete session command");
+    SelendroidLogger.info("delete session command");
     SelendroidDriver driver = getSelendroidDriver(request);
 
     driver.stopSession();
-    SelendroidLogger.log("\n\n\n---------Session STOP ---------------\n\n\n");
+    SelendroidLogger.info("\n\n\n---------Session STOP ---------------\n\n\n");
     return new SelendroidResponse(getSessionId(request), "");
   }
 

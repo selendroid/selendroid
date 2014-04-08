@@ -34,7 +34,7 @@ public class ElementLocation extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Get element location command");
+    SelendroidLogger.info("Get element location command");
     String id = getElementId(request);
     AndroidElement element = getElementFromCache(request, id);
     if (element == null) {

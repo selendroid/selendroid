@@ -30,7 +30,7 @@ public class Move extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("move gesture");
+    SelendroidLogger.info("move gesture");
     JSONObject payload = getPayload(request);
     int x = payload.getInt("x");
     int y = payload.getInt("y");

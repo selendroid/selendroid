@@ -49,7 +49,7 @@ public class NativeAndroidBySelector {
     }
 
     else {
-      SelendroidLogger.log("By type for methof not found: " + method);
+      SelendroidLogger.info("By type for methof not found: " + method);
       throw new SelendroidException("method (by) not found: " + method);
     }
   }

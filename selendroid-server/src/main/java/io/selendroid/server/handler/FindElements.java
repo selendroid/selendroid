@@ -40,7 +40,7 @@ public class FindElements extends RequestHandler {
     JSONObject payload = getPayload(request);
     String method = payload.getString("using");
     String selector = payload.getString("value");
-    SelendroidLogger.log(String.format("find elements command using %s with selector %s.", method,
+    SelendroidLogger.info(String.format("find elements command using %s with selector %s.", method,
         selector));
 
     By by = new NativeAndroidBySelector().pickFrom(method, selector);

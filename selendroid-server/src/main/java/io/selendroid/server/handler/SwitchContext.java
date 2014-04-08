@@ -33,7 +33,7 @@ public class SwitchContext extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("Switch Context/Window command");
+    SelendroidLogger.info("Switch Context/Window command");
     String windowName = getPayload(request).getString("name");
     if (windowName == null || windowName.isEmpty()) {
       return new SelendroidResponse(getSessionId(request), 13, new SelendroidException(

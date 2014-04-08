@@ -39,6 +39,8 @@ import io.selendroid.server.model.SearchContext;
 import io.selendroid.util.InstanceOfPredicate;
 import io.selendroid.util.ListUtil;
 import io.selendroid.util.Preconditions;
+import io.selendroid.util.SelendroidLogger;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -348,7 +350,7 @@ public abstract class AbstractNativeElementContext
 
     ViewPartialTextPredicate(String text) {
       this.text = text;
-      System.out.println("Finding by partial text: " + text);
+      SelendroidLogger.info("Finding by partial text: " + text);
     }
 
     public boolean apply(View view) {

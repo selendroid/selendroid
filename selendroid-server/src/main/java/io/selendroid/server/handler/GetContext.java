@@ -28,7 +28,7 @@ public class GetContext extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("get context/windowHandle command");
+    SelendroidLogger.info("get context/windowHandle command");
 
     String windowHandle = getSelendroidDriver(request).getContext();
 

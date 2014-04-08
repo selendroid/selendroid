@@ -42,7 +42,7 @@ public class FindChildElements extends RequestHandler {
     JSONObject payload = getPayload(request);
     String method = payload.getString("using");
     String selector = payload.getString("value");
-    SelendroidLogger.log(String.format("find child element command using %s with selector %s.",
+    SelendroidLogger.info(String.format("find child element command using %s with selector %s.",
             method, selector));
     String elementId = getElementId(request);
     AndroidElement root = getElementFromCache(request, elementId);

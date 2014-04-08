@@ -42,7 +42,7 @@ public class ResourceView extends SelendroidInspectorView {
       httpResponse.header("Content-Type", "image/png");
       byte[] screenshot = driver.takeScreenshot();
       if (screenshot == null) {
-        SelendroidLogger.log("screenshot is null");
+        SelendroidLogger.info("screenshot is null");
       } else {
         httpResponse.header("Content-Length", screenshot.length).content(screenshot);
       }

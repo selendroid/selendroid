@@ -29,7 +29,7 @@ public class SendKeyToActiveElement extends RequestHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.log("send key to active element command");
+    SelendroidLogger.info("send key to active element command");
 
     String[] keysToSend;
     try {

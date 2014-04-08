@@ -35,7 +35,7 @@ public class AddCookie extends RequestHandler {
   public Response handle(HttpRequest request) throws JSONException {
 
     Date expiry = null;
-    SelendroidLogger.log("set cookie to a session command");
+    SelendroidLogger.info("set cookie to a session command");
     String url = getSelendroidDriver(request).getCurrentUrl();
     JSONObject cookie = getPayload(request).getJSONObject("cookie");
     String name = cookie.get("name").toString();
