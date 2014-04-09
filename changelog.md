@@ -4,19 +4,21 @@
 - Added support for switching contexts (NATIVE_APP/WEBVIEW)
 - Removed deprecated property 'androidTarget' in selendroid capabilities.
 - Removed default locale 'en_US' in selendroid capabilities
-- Fixes: [#362](../../issues/362)
+- Fixes: [#362](../../issues/362), [#371](../../issues/371)
 - Added command line option `-forceReinstall` to force installation of Selendroid Server & app under test
 - Logging Selendroid Standalone configured options
+- Element.tagName() should return lower-case string
+- Fixed wrong mapping of StaleElementException (was WebDriverException)
 
 0.9.0
 ---
 - Rotation Support
-- Fixes: [#268](../../issues/268), [#284](../../issues/284), [#309](../../issues/309), [#275](../../issues/275) 
+- Fixes: [#268](../../issues/268), [#284](../../issues/284), [#309](../../issues/309), [#275](../../issues/275)
 - Adding support for disabling native events for sendKeys command to support e.g. German umlauts ([#7](../../issues/7),[#110](../../issues/110))
 - Added support for sending key events, send text, tap and execute shell command via adb connection
 - removed -installedApp command line parameter of the selendroid-standalone jar
 - Selendroid standalone supports by default already started emulators. Even if they are started manually after selendroid-standalone has been started, they are identified and can be used for test sessions.
-- Minimized create session time by skipping installation of the app under test or the selendroid-server if they are already installed. 
+- Minimized create session time by skipping installation of the app under test or the selendroid-server if they are already installed.
 - Support execute async script ([#254](../../issues/254))
 - Add native execute script action TwoPointerGesture. this is temporary solution until the mobile WebDriver multi touch  spec is implemented [#292](../../issues/292)
 - Introducing a sessionTimeout (in seconds) that will automatically stop a session. Default value is 30 minutes.
@@ -53,7 +55,7 @@
 - Emulators are started on display configured in capabilities
 - Device logcats are available as logging type "logcat"
 - The feature to restart adb has been removed
-- Selendroid-standalone can register himself as a node to a Selenium Grid hub by using command line parameters (-hub and -host) 
+- Selendroid-standalone can register himself as a node to a Selenium Grid hub by using command line parameters (-hub and -host)
 - Selenium Automation Atoms has been updated to fix [#127](../../issues/127)
 - Support for Android KitKat (Api Level 19)
 - Full support for Windows [#146](../../issues/146)
@@ -103,7 +105,7 @@
 - moved the documentation from wiki to web page: http://selendroid.io
 - selendroid gem has been refactored to support only starting selendroid-shell
 - Removed dependencies: Guava, commons-io, slf4j-android
-- Find By Tag Name refactored to find by the class now, not by text 
+- Find By Tag Name refactored to find by the class now, not by text
 - L10n Locators not longer available, the translation can be done executing the script: ((JavascriptExecutor) driver).executeScript("getL10nKeyTranslation", "l10nKey");
 - Several bug fixes
 
@@ -114,11 +116,11 @@
 
 0.3.1
 -----
-- Gem does require Ruby version >= 1.9.2 
+- Gem does require Ruby version >= 1.9.2
 
 
 
-0.3 
+0.3
 ----
 - Moved from google gson library to org.json
 - Added first support of Selenium Advanced User Interactions API
@@ -145,12 +147,12 @@
 - Adding (experimental) mechanism to add 'executeScript' in Native
 
 
-0.2 
+0.2
 ----
 - fixed to major bugs [#1](../../issues/1) and [#2](../../issues/2)
 - Created an inspector that allows to inspect the application under test and makes it easier to write test cases: http://localhost:8080/inspector
 - Added support for pressing keys like the Android menu button.
-- Fixed a bug in taking screenshots. Now pop up dialogs are included as well.  
+- Fixed a bug in taking screenshots. Now pop up dialogs are included as well.
 - Added /sessionId/keys support and a client library that contains already selenium as dependency and the interface SelendroidKeys.
 - The gem contains an interactive shell that starts automatically selendroid-server and a Ruby webdriver client that allows to interactively try commands out.
 - Added locator strategy by class for native and web view context
@@ -168,4 +170,4 @@
       - for Android native: by id, by l10n key, by text
   - Found elements features:
       - click, clear, enter text, getValue, is selected and submit
-      
+
