@@ -13,15 +13,12 @@
  */
 package io.selendroid.server.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-import java.util.WeakHashMap;
-
+import android.view.View;
 import io.selendroid.android.ViewHierarchyAnalyzer;
 
-import android.view.View;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class KnownElements {
   private final Map<String, AndroidElement> cache = new HashMap<String, AndroidElement>();

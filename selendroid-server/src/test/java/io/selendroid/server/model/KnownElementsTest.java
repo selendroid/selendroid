@@ -53,8 +53,9 @@ public class KnownElementsTest {
   @Test
   public void testAddWebElement() {
     KnownElements ke = new KnownElements();
-    String id = ke.add(createWebElement(":wdc:1234", ke));
-    Assert.assertTrue(UUID.fromString(id) instanceof UUID);
+    String webElementId = ":wdc:123456789";
+    String id = ke.add(createWebElement(webElementId, ke));
+    Assert.assertEquals(webElementId, id);
   }
 
   @Test
