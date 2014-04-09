@@ -32,15 +32,13 @@ public class KnownElements {
     if (cache.containsValue(element)) {
       return getCacheKey(element);
     }
-    Random random = new Random();
-    String id = new UUID(random.nextLong(), random.nextLong()).toString();
 
-    cache.put(id, element);
+    cache.put(element.id(), element);
     if (element instanceof AndroidNativeElement) {
       AndroidNativeElement nativeElement = (AndroidNativeElement) element;
       nativeElementsByView.put(nativeElement.getView(), nativeElement);
     }
-    return id;
+    return element.id();
   }
 
   /**

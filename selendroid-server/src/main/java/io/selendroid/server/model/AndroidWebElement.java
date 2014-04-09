@@ -340,4 +340,9 @@ public class AndroidWebElement implements AndroidElement {
 
     driver.executeScript("arguments[0].value = arguments[1]", parameter, ke);
   }
+
+  @Override
+  public String id() {
+    return id;
+  }
 }

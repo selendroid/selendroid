@@ -121,4 +121,9 @@ public class AndroidRElement implements AndroidElement {
   public void setText(CharSequence... keysToSend) {
     throw new RuntimeException(NOT_IMPLEMENTED_ERROR_MSG);
   }
+
+  @Override
+  public String id() {
+    return String.valueOf(id);
+  }
 }

@@ -59,4 +59,6 @@ public interface AndroidElement {
   public String getAttribute(String name);
 
   public String toString();
+
+  public String id();
 }

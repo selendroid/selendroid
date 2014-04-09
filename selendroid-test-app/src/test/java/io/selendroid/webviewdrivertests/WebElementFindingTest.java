@@ -330,4 +330,11 @@ public class WebElementFindingTest extends BaseAndroidTest {
     WebElement element = driver().findElement(By.id("checky"));
     Assert.assertEquals(element.isSelected(), false);
   }
+
+  @Test
+  public void shouldGetBodyDOMElementViaJavascript() {
+    openWebdriverTestPage(HtmlTestData.XHTML_TEST_PAGE);
+    WebElement bodyByJS = (WebElement) driver().executeScript("return document.body;");
+    Assert.assertEquals("body", bodyByJS.getTagName());
+  }
 }

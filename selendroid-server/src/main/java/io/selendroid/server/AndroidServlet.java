@@ -86,6 +86,8 @@ import io.selendroid.util.SelendroidLogger;
 
 import org.webbitserver.HttpRequest;
 
+import java.net.URLDecoder;
+
 public class AndroidServlet extends BaseServlet {
   private SelendroidDriver driver = null;
 
@@ -249,7 +251,7 @@ public class AndroidServlet extends BaseServlet {
 
     String id = getParameter(mappedUri, request.uri(), ":id");
     if (id != null) {
-      request.data().put(ELEMENT_ID_KEY, id);
+      request.data().put(ELEMENT_ID_KEY, URLDecoder.decode(id));
     }
     String name = getParameter(mappedUri, request.uri(), ":name");
     if (name != null) {

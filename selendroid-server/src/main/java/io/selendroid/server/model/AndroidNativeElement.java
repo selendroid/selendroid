@@ -35,10 +35,7 @@ import io.selendroid.util.SelendroidLogger;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,6 +68,7 @@ public class AndroidNativeElement implements AndroidElement {
   private KnownElements ke;
   private int hashCode;
   static final long UI_TIMEOUT = 3000L;
+  private final String id;
 
   public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KeySender keys,
       KnownElements ke) {
@@ -81,6 +79,9 @@ public class AndroidNativeElement implements AndroidElement {
     this.keys = keys;
     this.nativeElementSearchScope = new NativeElementSearchScope(instrumentation, keys, ke);
     this.ke = ke;
+
+    Random random = new Random();
+    this.id = new UUID(random.nextLong(), random.nextLong()).toString();
   }
 
   @Override
@@ -525,5 +526,10 @@ public class AndroidNativeElement implements AndroidElement {
         ((EditText) viewview).setText(text);
       }
     });
+  }
+
+  @Override
+  public String id() {
+    return this.id;
   }
 }
