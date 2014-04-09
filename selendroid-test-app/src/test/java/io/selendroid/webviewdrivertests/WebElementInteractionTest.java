@@ -57,7 +57,7 @@ public class WebElementInteractionTest extends BaseAndroidTest {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     WebElement button = driver().findElement(By.cssSelector("input[id='inputWithText']"));
 
-    Assert.assertEquals(button.getTagName(), "INPUT");
+    Assert.assertEquals(button.getTagName(), "input"); //< Specs "dictate" the tag names to be lower-case
   }
 
   @Test

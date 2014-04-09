@@ -164,7 +164,8 @@ public class AndroidWebElement implements AndroidElement {
       return null;
     }
     try {
-      return new JSONObject((String) result).getString("value");
+      // Specs "dictate" the tag names to be lower-case
+      return new JSONObject((String) result).getString("value").toLowerCase();
     } catch (JSONException e) {
       return null;
     }
