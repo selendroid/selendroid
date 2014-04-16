@@ -4,11 +4,12 @@
 - Added support for switching contexts (NATIVE_APP/WEBVIEW)
 - Removed deprecated property 'androidTarget' in selendroid capabilities.
 - Removed default locale 'en_US' in selendroid capabilities
-- Fixes: [#362](../../issues/362), [#371](../../issues/371)
+- Fixes: [#362](../../issues/362), [#371](../../issues/371), [#338](../../issues/338)
 - Added command line option `-forceReinstall` to force installation of Selendroid Server & app under test
 - Logging Selendroid Standalone configured options
 - Element.tagName() should return lower-case string
 - Fixed wrong mapping of StaleElementException (was WebDriverException)
+- Added a unified and configurable logging system for standalone and selendroid server 
 
 0.9.0
 ---
