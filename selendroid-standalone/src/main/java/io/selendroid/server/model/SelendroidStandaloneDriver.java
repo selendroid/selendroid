@@ -31,6 +31,7 @@ import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.SessionNotCreatedException;
 import io.selendroid.exceptions.ShellCommandException;
+import io.selendroid.log.LogLevelEnum;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.util.HttpClientUtil;
 
@@ -153,11 +154,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     deviceManager =
         new DefaultDeviceManager(AndroidSdk.adb().getAbsolutePath(),
                                  serverConfiguration.shouldKeepAdbAlive());
-    deviceStore =
-        new DeviceStore(serverConfiguration.isVerbose(), serverConfiguration.getEmulatorPort(),
-                        deviceManager);
+    deviceStore = new DeviceStore(serverConfiguration.getEmulatorPort(), deviceManager);
     deviceStore.initAndroidDevices(new DefaultHardwareDeviceListener(deviceStore, this),
-                                   serverConfiguration.shouldKeepAdbAlive());
+        serverConfiguration.shouldKeepAdbAlive());
   }
 
   @Override

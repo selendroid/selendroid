@@ -95,7 +95,7 @@ public class SelendroidLauncher {
     System.out.println(config.toString());
 
     //to be backward compatible
-    if (config.isVerbose() && LogLevelEnum.ERROR.equals(config.getLogLevel())) {
+    if (LogLevelEnum.ERROR.equals(config.getLogLevel())) {
       Logger.getLogger(LOGGER_NAME).setLevel(LogLevelEnum.VERBOSE.level);
     } else {
       Logger.getLogger(LOGGER_NAME).setLevel(config.getLogLevel().level);

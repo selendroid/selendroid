@@ -18,6 +18,7 @@ import io.selendroid.server.handler.AdbExecuteShellCommand;
 import io.selendroid.server.handler.AdbSendKeyEvent;
 import io.selendroid.server.handler.AdbSendText;
 import io.selendroid.server.handler.AdbTap;
+import io.selendroid.server.handler.NetworkConnectionHandler;
 import io.selendroid.server.handler.CaptureScreenshot;
 import io.selendroid.server.handler.CreateSessionHandler;
 import io.selendroid.server.handler.DeleteSessionHandler;
@@ -75,6 +76,7 @@ public class SelendroidServlet extends BaseServlet {
     register(postHandler, new AdbTap("/wd/hub/-selendroid/:sessionId/adb/tap"));
     register(postHandler, new AdbExecuteShellCommand(
         "/wd/hub/-selendroid/:sessionId/adb/executeShellCommand"));
+    register(postHandler, new NetworkConnectionHandler("/wd/hub/session/:sessionId/network_connection"));
   }
 
   @Override

@@ -158,16 +158,6 @@ public class SelendroidConfiguration {
     this.timeoutEmulatorStart = timeoutEmulatorStart;
   }
 
-  @Deprecated
-  public boolean isVerbose() {
-    return verbose;
-  }
-
-  @Deprecated
-  public void setVerbose(boolean verbose) {
-    this.verbose = verbose;
-  }
-
   public boolean isDeviceScreenshot() {
     return deviceScreenshot;
   }

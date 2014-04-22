@@ -48,6 +48,7 @@ public class SelendroidDriver extends RemoteWebDriver
     implements
       HasTouchScreen,
       ScreenBrightness,
+      HasAirplaneMode,
       TakesScreenshot,
       Rotatable,
       Configuration,
@@ -139,6 +140,16 @@ public class SelendroidDriver extends RemoteWebDriver
   @Override
   public AdbConnection getAdbConnection() {
     return adbConnection;
+  }
+
+  @Override
+  public boolean isAirplaneModeEnabled() {
+    return (Boolean) execute("selendroid-getAirplaneMode").getValue();
+  }
+
+  @Override
+  public void setAirplaneMode(boolean enabled) {
+     execute("selendroid-getAirplaneMode", ImmutableMap.of("airplane-mode", enabled));
   }
 
   public class RemoteAdbConnection implements AdbConnection {

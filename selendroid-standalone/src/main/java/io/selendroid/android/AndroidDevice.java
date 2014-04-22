@@ -64,4 +64,10 @@ public interface AndroidDevice {
   public void setVerbose();
 
   public String getSerial();
+
+  public void inputKeyevent(int value);
+
+  public void invokeActivity(String activity);
+
+  public void restartADB();
 }

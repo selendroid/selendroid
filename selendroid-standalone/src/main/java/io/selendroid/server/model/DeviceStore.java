@@ -46,19 +46,13 @@ public class DeviceStore {
   private AndroidEmulatorPowerStateListener emulatorPowerStateListener = null;
   private DeviceManager deviceManager = null;
 
-  public DeviceStore(Boolean debug, Integer emulatorPort, DeviceManager deviceManager) {
-    if (debug) {
-      log.setLevel(Level.FINE);
-    }
+  public DeviceStore(Integer emulatorPort, DeviceManager deviceManager) {
     this.deviceManager = deviceManager;
     androidEmulatorPortFinder = new DefaultPortFinder(emulatorPort, emulatorPort + 30);
   }
 
-  public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder, Boolean debug,
+  public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder,
       DeviceManager deviceManager) {
-    if (debug) {
-      log.setLevel(Level.FINE);
-    }
     this.deviceManager = deviceManager;
     this.androidEmulatorPortFinder = androidEmulatorPortFinder;
   }
@@ -204,37 +198,39 @@ public class DeviceStore {
     // keep a list of emulators that aren't started to be used as backup
     List<AndroidDevice> potentialMatches = new ArrayList<AndroidDevice>();
     for (AndroidDevice device : devices) {
-      log.fine("Evaluating if this device is a match for us: " + device.toString());
+      log.info("Evaluating if this device is a match for this session: " + device.toString());
+
+      // logic of precedence to select a device -
+      // screen size must match the capabilities, if no screen size capability sent this is ignored
+      // enforce isEmulator capability request
+      // enforce API level capability
+      //  1) running unused device or running unused emulator
+      //  2) non-running emulator
+
       if (device.screenSizeMatches(caps.getScreenSize())) {
         if (devicesInUse.contains(device)) {
-          log.fine("Device is in use.");
+          log.info("Device is in use.");
           continue;
         }
         if (caps.getEmulator() == null
             || (caps.getEmulator() == true && device instanceof DefaultAndroidEmulator)
             || (caps.getEmulator() == false && device instanceof DefaultHardwareDevice)) {
-          if (device instanceof AndroidEmulator) {
+          String serial = caps.getSerial();
+          if (serial != null && device.getSerial().equals(serial)) {
+            devicesInUse.add(device);
+            return device;
+          }
+          if (device instanceof DefaultAndroidEmulator && !((DefaultAndroidEmulator) device).isEmulatorStarted()) {
             potentialMatches.add(device);
             continue;
           }
-          String serial = caps.getSerial();
-          if (device instanceof AndroidDevice
-              && (serial == null || ((DefaultHardwareDevice) device).getSerial().equals(serial))) {
-            devicesInUse.add(device);
-            return device;
-          } else if (device instanceof AndroidDevice
-              && !((DefaultHardwareDevice) device).getSerial().equals(serial)) {
-            continue;
-          }
-          log.fine("device found.");
           devicesInUse.add(device);
           return device;
         }
-      } else {
-        log.info("emulator switched off: " + isEmulatorSwitchedOff(device));
       }
     }
     if (potentialMatches.size() > 0) {
+      log.info("Using potential match: " + potentialMatches.get(0));
       devicesInUse.add(potentialMatches.get(0));
       return potentialMatches.get(0);
     }

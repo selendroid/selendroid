@@ -97,4 +97,6 @@ public interface SelendroidDriver {
   public void rotate(ScreenOrientation orientation);
 
   public void setAsyncTimeout(long timeout);
+
+  public boolean isAirplaneMode();
 }

@@ -120,7 +120,7 @@ public class SelendroidStandaloneDriverTest {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);
-    DeviceStore store = new DeviceStore(false, EMULATOR_PORT, anDeviceManager());
+    DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
     Random random = new Random();

@@ -13,6 +13,17 @@
  */
 package io.selendroid.server.model;
 
+import android.app.Activity;
+import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.provider.Settings;
+import android.view.Display;
+import android.view.View;
+import android.webkit.WebView;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.AndroidTouchScreen;
 import io.selendroid.android.AndroidWait;
@@ -37,6 +48,9 @@ import io.selendroid.server.model.internal.execute_native.TwoPointerGestureActio
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.util.Preconditions;
 import io.selendroid.util.SelendroidLogger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -52,21 +66,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
-import android.content.res.Resources.Theme;
-import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.view.Display;
-import android.view.View;
-import android.webkit.WebView;
-
 
 public class DefaultSelendroidDriver implements SelendroidDriver {
   public static final String BROWSER_NAME = "browserName";
@@ -77,6 +76,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   public static final String SUPPORTS_ALERTS = "handlesAlerts";
   public static final String ROTATABLE = "rotatable";
   public static final String ACCEPT_SSL_CERTS = "acceptSslCerts";
+  public static final String SUPPORTS_NETWORK_CONNECTION = "networkConnectionEnabled";
   private boolean done = false;
   private SearchContext nativeSearchScope = null;
   private SearchContext webviewSearchScope = null;
@@ -197,6 +197,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       copy.put(PLATFORM, "android");
       copy.put(SUPPORTS_ALERTS, true);
       copy.put(SUPPORTS_JAVASCRIPT, true);
+      copy.put(SUPPORTS_NETWORK_CONNECTION, true);
       copy.put("version", serverInstrumentation.getServerVersion());
       copy.put(ACCEPT_SSL_CERTS, true);
       SelendroidLogger.info("capabilities: " + copy);
@@ -766,5 +767,11 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     if (selendroidWebDriver != null) {
       selendroidWebDriver.setAsyncScriptTimeout(timeout);
     }
+  }
+
+  public boolean isAirplaneMode() {
+    return Settings.System.getInt(
+        ServerInstrumentation.getInstance().getCurrentActivity().getContentResolver(),
+        Settings.System.AIRPLANE_MODE_ON, 0) == 1;
   }
 }

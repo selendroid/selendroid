@@ -27,6 +27,11 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
   private final static Map<String, CommandInfo> SELENDROID_COMMANDS =
       new HashMap<String, CommandInfo>() {
         {
+          // TODO remove airplaneMode once it is added and released in main Selenium library
+          put("selendroid-getAirplaneMode", new CommandInfo(
+              "/session/:sessionId/airplane_mode", HttpVerb.GET));
+          put("selendroid-setAirplaneMode", new CommandInfo(
+              "/session/:sessionId/airplane_mode", HttpVerb.POST));
           put("selendroid-getBrightness", new CommandInfo(
               "-selendroid/:sessionId/screen/brightness", HttpVerb.GET));
           put("selendroid-setBrightness", new CommandInfo(

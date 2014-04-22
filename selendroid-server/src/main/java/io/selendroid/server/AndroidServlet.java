@@ -75,6 +75,7 @@ import io.selendroid.server.handler.alert.Alert;
 import io.selendroid.server.handler.alert.AlertAccept;
 import io.selendroid.server.handler.alert.AlertDismiss;
 import io.selendroid.server.handler.alert.AlertSendKeys;
+import io.selendroid.server.handler.network.GetNetworkConnectionType;
 import io.selendroid.server.handler.script.ExecuteAsyncScript;
 import io.selendroid.server.handler.script.ExecuteScript;
 import io.selendroid.server.handler.timeouts.AsyncTimeoutHandler;
@@ -163,7 +164,8 @@ public class AndroidServlet extends BaseServlet {
     register(postHandler, new LongPressOnElement("/wd/hub/session/:sessionId/touch/longclick"));
     register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
     
-    // The new endpoints for context switching coming with Selenium 3.0 
+    // The new endpoints for context switching coming with Selenium 3.0 & mobile spec
+    register(getHandler, new GetNetworkConnectionType("/wd/hub/session/:sessionId/network_connection"));
     register(getHandler, new GetContext("/wd/hub/session/:sessionId/context"));
     register(getHandler, new GetContexts("/wd/hub/session/:sessionId/contexts"));
     register(postHandler, new SwitchContext("/wd/hub/session/:sessionId/context"));
