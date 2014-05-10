@@ -2,6 +2,12 @@ language: java
 
 notifications:
   email: false
+  irc:
+    channels:
+      - "irc.freenode.org#selendroid"
+    on_success: always
+    on_failure: always
+    use_notice: true
   
 branches:
   only:
