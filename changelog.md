@@ -1,4 +1,8 @@
-0.10.-SNAPSHOT (under development)
+0.11.-SNAPSHOT (under development)
+---
+- nothing yet! :)
+
+0.10.0
 ---
 - Bumping selenium dependency to version 2.41.0
 - Added support for switching contexts (NATIVE_APP/WEBVIEW)
@@ -10,6 +14,7 @@
 - Element.tagName() should return lower-case string
 - Fixed wrong mapping of StaleElementException (was WebDriverException)
 - Added a unified and configurable logging system for standalone and selendroid server 
+- adding support for new 'network_connection' endpoint which will be in the client API for selenium in 2.42
 
 0.9.0
 ---
