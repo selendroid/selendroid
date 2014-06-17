@@ -66,7 +66,7 @@ public abstract class BaseServlet implements HttpHandler {
     } else if ("DELETE".equals(request.method())) {
       handler = findMatcher(request, deleteHandler);
     }
-    webbitResponse.header("Content-Encoding", "none");
+    webbitResponse.header("Content-Encoding", "identity");
     handleRequest(request, response, handler);
   }
 
