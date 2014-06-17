@@ -1,6 +1,7 @@
 0.11.-SNAPSHOT (under development)
 ---
-- nothing yet! :)
+- Upgrading to latest Selenium 2.42.2
+- Fixed http response encoding header
 
 0.10.0
 ---
