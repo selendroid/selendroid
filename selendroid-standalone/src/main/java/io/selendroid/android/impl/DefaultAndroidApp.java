@@ -30,7 +30,7 @@ import org.apache.commons.exec.CommandLine;
 public class DefaultAndroidApp implements AndroidApp {
   private File apkFile;
   private String mainPackage = null;
-  private String mainActivity = null;
+  protected String mainActivity = null;
   private String versionName = null;
 
   public DefaultAndroidApp(File apkFile) {

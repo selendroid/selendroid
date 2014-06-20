@@ -45,6 +45,8 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String PLATFORM_VERSION = "platformVersion";
   public static final String PLATFORM_NAME = "platformName";
   public static final String AUTOMATION_NAME = "automationName";
+  
+  public static final String LAUNCH_ACTIVITY = "launchActivity";
 
   public SelendroidCapabilities(Map<String, ?> from) {
     for (String key : from.keySet()) {
@@ -65,6 +67,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public String getAut() {
     return (String) getRawCapabilities().get(AUT);
+  }
+  
+  public String getLaunchActivity() {
+	return (String) getRawCapabilities().get(LAUNCH_ACTIVITY);
   }
 
   public Boolean getEmulator() {
@@ -103,6 +109,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public void setAut(String aut) {
     setCapability(AUT, aut);
+  }
+  
+  public void setLaunchActivity(String launchActivity) {
+	setCapability(LAUNCH_ACTIVITY, launchActivity);
   }
 
   public void setEmulator(Boolean emulator) {
