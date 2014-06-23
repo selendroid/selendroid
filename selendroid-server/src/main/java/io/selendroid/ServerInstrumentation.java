@@ -412,4 +412,28 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       }
     };
   }
+
+  public void backgroundActivity() {
+    Activity currentActivity = activitiesReporter.getCurrentActivity();
+    activitiesReporter.setBackgroundActivity(currentActivity);
+    currentActivity.moveTaskToBack(true);
+  }
+
+  public void resumeActivity() {
+    Activity activity = activitiesReporter.getBackgroundActivity();
+    if (activity == null) {
+      SelendroidLogger
+        .error("activity class is empty", new NullPointerException(
+                          "Activity class to start is null."));
+        return;
+      }
+      // start now the new activity
+    Intent intent = new Intent(getTargetContext(), activity.getClass());
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+            | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    getTargetContext().startActivity(intent);
+    activitiesReporter.setBackgroundActivity(null);
+  }
 }

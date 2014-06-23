@@ -774,4 +774,12 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
         ServerInstrumentation.getInstance().getCurrentActivity().getContentResolver(),
         Settings.System.AIRPLANE_MODE_ON, 0) == 1;
   }
+
+  public void backgroundApp() {
+    serverInstrumentation.backgroundActivity();
+  }
+
+  public void resumeApp() {
+    serverInstrumentation.resumeActivity();
+  }
 }
