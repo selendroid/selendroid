@@ -2,6 +2,8 @@
 ---
 - Upgrading to latest Selenium 2.42.2
 - Fixed http response encoding header
+- Support for 'activity-alias' manifest tag by adding a new optional capability -launchActivity
+ 
 
 0.10.0
 ---

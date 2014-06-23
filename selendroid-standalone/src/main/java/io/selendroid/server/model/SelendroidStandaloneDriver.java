@@ -20,9 +20,11 @@ import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.DeviceManager;
+import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultDeviceManager;
 import io.selendroid.android.impl.DefaultHardwareDevice;
+import io.selendroid.android.impl.MultiActivityAndroidApp;
 import io.selendroid.builder.AndroidDriverAPKBuilder;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -203,6 +205,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       throw new SessionNotCreatedException(
           "The requested application under test is not configured in selendroid server.");
     }
+    // adjust app based on capabilities (some parameters are session specific)
+    app = augmentApp(app, desiredCapabilities);
 
     // Find a device to match the capabilities
     AndroidDevice device = null;
@@ -357,7 +361,25 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     return sessionId;
   }
 
-  private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkException {
+  /**
+   * Augment the application with parameters from {@code desiredCapabilities}
+   * @param app to be augmented
+   * @param desiredCapabilities configuration requested for this session
+   */
+  private AndroidApp augmentApp(AndroidApp app,
+		SelendroidCapabilities desiredCapabilities) {
+	  AndroidApp returnApp = app;
+	  // override mainActivity of the app
+	  if (desiredCapabilities.getLaunchActivity() != null) {
+		  MultiActivityAndroidApp augmentedApp = new MultiActivityAndroidApp((DefaultAndroidApp)returnApp);
+		  augmentedApp.setMainActivity(desiredCapabilities.getLaunchActivity());
+		  // set the app for return
+		  returnApp = augmentedApp;
+	  }
+	  return returnApp;
+}
+
+private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkException {
     if (!selendroidServers.containsKey(aut.getAppId())) {
       try {
         AndroidApp selendroidServer = selendroidApkBuilder.createSelendroidServer(aut);
