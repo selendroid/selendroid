@@ -16,6 +16,7 @@ package io.selendroid.server;
 import io.selendroid.exceptions.AppCrashedException;
 import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.server.handler.AddCookie;
+import io.selendroid.server.handler.BackgroundApp;
 import io.selendroid.server.handler.CaptureScreenshot;
 import io.selendroid.server.handler.ClearElement;
 import io.selendroid.server.handler.ClickElement;
@@ -60,6 +61,7 @@ import io.selendroid.server.handler.Move;
 import io.selendroid.server.handler.NewSession;
 import io.selendroid.server.handler.OpenUrl;
 import io.selendroid.server.handler.Refresh;
+import io.selendroid.server.handler.ResumeApp;
 import io.selendroid.server.handler.RotateScreen;
 import io.selendroid.server.handler.Scroll;
 import io.selendroid.server.handler.SendKeyToActiveElement;
@@ -178,6 +180,10 @@ public class AndroidServlet extends BaseServlet {
         "/wd/hub/-selendroid/:sessionId/configure/command/:command"));
     register(postHandler, new SetCommandConfiguration(
         "/wd/hub/-selendroid/:sessionId/configure/command/:command"));
+
+    // Endpoints to send app to background and resume it
+    register(postHandler, new BackgroundApp("/wd/hub/session/:sessionId/-selendroid/background"));
+    register(postHandler, new ResumeApp("/wd/hub/session/:sessionId/-selendroid/resume"));
 
     // currently not yet supported
     register(getHandler, new UnknownCommandHandler(

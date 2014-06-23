@@ -22,6 +22,8 @@ import android.app.Activity;
 
 public class ActivitiesReporter {
   private Activity currentActivity;
+  private Activity backgroundActivity;
+  private int backgroundTask;
   private final Map<Activity, Integer> liveActivities = new HashMap<Activity, Integer>();
   private int lastAssignedId;
 
@@ -63,11 +65,9 @@ public class ActivitiesReporter {
     liveActivities.put(activity, ++lastAssignedId);
   }
 
-
   public void wasResumed(Activity activity) {
     currentActivity = activity;
   }
-
 
   public void wasDestroyed(Activity activity) {
     liveActivities.remove(activity);
@@ -76,4 +76,13 @@ public class ActivitiesReporter {
       currentActivity = null;
     }
   }
+
+  public void setBackgroundActivity(Activity activity) {
+    backgroundActivity = activity;
+  }
+
+  public Activity getBackgroundActivity() {
+    return backgroundActivity;
+  }
+
 }
