@@ -206,4 +206,19 @@ public class SelendroidDriver extends RemoteWebDriver
     return String.valueOf(execute(
         org.openqa.selenium.remote.DriverCommand.GET_CURRENT_CONTEXT_HANDLE).getValue());
   }
+
+  /**
+   * Sends app under test to background.
+   */
+  public void backgroundApp() {
+    execute("backgroundApp");
+  }
+
+  /**
+   * Bring app under test back to foreground with its previous state.
+   */
+  public void resumeApp() {
+    execute("resumeApp");
+  }
+
 }
