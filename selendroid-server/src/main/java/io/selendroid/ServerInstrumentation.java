@@ -414,10 +414,12 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   }
 
   public void backgroundActivity() {
-    Activity currentActivity = activitiesReporter.getCurrentActivity();
-    activitiesReporter.setBackgroundActivity(currentActivity);
-    currentActivity.moveTaskToBack(true);
-  }
+	activitiesReporter.setBackgroundActivity(activitiesReporter.getCurrentActivity());
+	Intent homeIntent= new Intent(Intent.ACTION_MAIN);
+	homeIntent.addCategory(Intent.CATEGORY_HOME);
+	homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	getTargetContext().startActivity(homeIntent);
+}
 
   public void resumeActivity() {
     Activity activity = activitiesReporter.getBackgroundActivity();

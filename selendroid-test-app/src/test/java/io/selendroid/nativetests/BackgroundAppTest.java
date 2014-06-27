@@ -13,22 +13,42 @@
  */
 package io.selendroid.nativetests;
 
-import io.selendroid.SelendroidKeys;
 import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.waiter.WaitingConditions;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selenium.By;
-
-import static io.selendroid.waiter.TestWaiter.waitFor;
 
 
 public class BackgroundAppTest extends BaseAndroidTest {
+
+  /**
+   * Requires ANDROID_HOME to be set in enviroment.
+   * @throws Exception
+   */
   @Test
   public void testBackgroundAppFunctionality() throws Exception {
     openStartActivity();
     driver().backgroundApp();
+    String currentActivity = execCmd(System.getenv("ANDROID_HOME")+"/platform-tools/"+"adb shell dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'");
+    Assert.assertTrue(currentActivity.contains("com.android.launcher2.Launcher"));
     driver().resumeApp();
-    Assert.assertTrue(driver().getCurrentUrl().equals("and-activity://io.selendroid.testapp.HomeScreenActivity"));
-  }
+    currentActivity = execCmd(System.getenv("ANDROID_HOME")+"/platform-tools/"+"adb shell dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'");
+    Assert.assertTrue(currentActivity.contains("io.selendroid.testapp.HomeScreenActivity"));
+}
+
+public String execCmd(String cmd) throws java.io.IOException {
+    Process proc = Runtime.getRuntime().exec(cmd);
+    java.io.InputStream is = proc.getInputStream();
+    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+    String val = "";
+    if (s.hasNext()) {
+        val = s.next();
+    }
+    else {
+        val = "";
+    }
+    return val;
+}
+
+
 }
