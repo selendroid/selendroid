@@ -186,7 +186,7 @@ public class SelendroidWebDriver {
     String scriptInWindow =
         "(function(){ " + " var win; try{win=" + getWindowString() + "}catch(e){win=window;}"
             + "with(win){return (" + myScript + ")(" + convertToJsArgs(args, ke) + ")}})()";
-    String jsResult = executeJavascriptInWebView("alert('selendroid:'+" + scriptInWindow + ")");
+    String jsResult = executeJavascriptInWebView("alert('selendroid<' + document.charset + '>:'+" + scriptInWindow + ")");
 
 
     SelendroidLogger.info("jsResult: " + jsResult);
@@ -389,20 +389,21 @@ public class SelendroidWebDriver {
         "(function(){ var win; try{win=" + getWindowString() + "}catch(e){win=window}"
             + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", ["
             + convertToJsArgs(args, ke) + "], true)}})()";
-    return executeJavascriptInWebView("alert('selendroid:'+" + wrappedScript + ")");
+    return executeJavascriptInWebView("alert('selendroid<' + document.charset + '>:'+"
+        + wrappedScript + ")");
   }
 
   Object injectAtomJavascript(String toExecute, Object args, KnownElements ke) throws JSONException {
-    return executeJavascriptInWebView("alert('selendroid:'+ (" + toExecute + ")("
-        + convertToJsArgs(args, ke) + "))");
+    return executeJavascriptInWebView("alert('selendroid<' + document.charset +'>:'+ ("
+        + toExecute + ")(" + convertToJsArgs(args, ke) + "))");
   }
 
   public Object executeAsyncJavascript(String toExecute, JSONArray args, KnownElements ke) {
     try {
-      String callbackFunction = "function(result){alert('selendroid:'+result);}";
+      String callbackFunction = "function(result){alert('selendroid<' + document.charset + '>:'+result);}";
       String script = "try {(" + AndroidAtoms.EXECUTE_ASYNC_SCRIPT.getValue() + ")(" + escapeAndQuote(toExecute) + ", ["
           + convertToJsArgs(args, ke) + "], " + asyncScriptTimeout + ", " + callbackFunction + ","
-          + "true, " + getWindowString() + ")}catch(e){alert('selendroid:{\"status\":13,\"value\":\"' + e + '\"}')}";
+          + "true, " + getWindowString() + ")}catch(e){alert('selendroid<' + document.charset + '>:{\"status\":13,\"value\":\"' + e + '\"}')}";
       return executeJavascriptInWebView(script);
     } catch (JSONException je) {
       je.printStackTrace();
@@ -482,11 +483,29 @@ public class SelendroidWebDriver {
      */
     @Override
     public boolean onJsAlert(WebView view, String url, String message, JsResult jsResult) {
-      if (message != null && message.startsWith("selendroid:")) {
+      if (message != null && message.startsWith("selendroid<")) {
         jsResult.confirm();
 
         synchronized (syncObject) {
-          result = message.replaceFirst("selendroid:", "");
+          String res = message.replaceFirst("selendroid<", "");
+          int i = res.indexOf(">:");
+          String enc = res.substring(0, i);
+          res = res.substring(i + 2);
+          /*
+           * Workaround for Japanese character encodings:
+           * Replace U+00A5 with backslash so that we can properly parse JSON strings
+           * contains backslash escapes, since WebKit maps 0x5C (used for character escaping
+           * in all of the Japanses character encodings) to U+00A5 (YEN SIGN) and breaks
+           * escape characters.
+           */
+          if (("EUC-JP".equals(enc) || "Shift_JIS".equals(enc) || "ISO-2022-JP".equals(enc))
+              && res.contains("\u00a5")) {
+            SelendroidLogger.info("Perform workaround for japanese character encodings");
+            SelendroidLogger.debug("Original String: " + res);
+            res = res.replace("\u00a5", "\\");
+            SelendroidLogger.debug("Replaced result: " + res);
+          }
+          result = res;
           syncObject.notify();
         }
 
