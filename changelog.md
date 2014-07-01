@@ -3,6 +3,8 @@
 - Upgrading to latest Selenium 2.42.2
 - Fixed http response encoding header
 - Support for 'activity-alias' manifest tag by adding a new optional capability -launchActivity
+- Adding new background / resume custom api endpoints, available in the client: 
+  SelendroidDriver.backgroundApp() and SelendroidDriver.resumeApp()
  
 
 0.10.0
