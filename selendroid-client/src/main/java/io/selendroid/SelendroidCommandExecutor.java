@@ -21,6 +21,7 @@ import java.util.Map;
 import org.openqa.selenium.remote.CommandInfo;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.HttpVerb;
+import org.openqa.selenium.remote.http.HttpMethod;
 
 public class SelendroidCommandExecutor extends HttpCommandExecutor {
 
@@ -28,30 +29,30 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
       new HashMap<String, CommandInfo>() {
         {
           // TODO remove network connection once 2.42 is released for Selenium
-          put("getNetworkConnection", new CommandInfo(
-              "/session/:sessionId/network_connection", HttpVerb.GET));
-          put("setNetworkConnection", new CommandInfo(
-              "/session/:sessionId/network_connection", HttpVerb.POST));
+          put("getNetworkConnection", new CommandInfo("/session/:sessionId/network_connection",
+              HttpMethod.GET));
+          put("setNetworkConnection", new CommandInfo("/session/:sessionId/network_connection",
+              HttpMethod.POST));
           put("selendroid-getBrightness", new CommandInfo(
-              "-selendroid/:sessionId/screen/brightness", HttpVerb.GET));
+              "-selendroid/:sessionId/screen/brightness", HttpMethod.GET));
           put("selendroid-setBrightness", new CommandInfo(
-              "-selendroid/:sessionId/screen/brightness", HttpVerb.POST));
+              "-selendroid/:sessionId/screen/brightness", HttpMethod.POST));
           put("selendroid-getCommandConfiguration", new CommandInfo(
-              "-selendroid/:sessionId/configure/command/:command", HttpVerb.GET));
+              "-selendroid/:sessionId/configure/command/:command", HttpMethod.GET));
           put("selendroid-setCommandConfiguration", new CommandInfo(
-              "-selendroid/:sessionId/configure/command/:command", HttpVerb.POST));
+              "-selendroid/:sessionId/configure/command/:command", HttpMethod.POST));
           put("selendroid-adb-sendKeyEvent", new CommandInfo(
-              "-selendroid/:sessionId/adb/sendKeyEvent", HttpVerb.POST));
+              "-selendroid/:sessionId/adb/sendKeyEvent", HttpMethod.POST));
           put("selendroid-adb-sendText", new CommandInfo("-selendroid/:sessionId/adb/sendText",
-              HttpVerb.POST));
-          put("selendroid-adb-tap",
-              new CommandInfo("-selendroid/:sessionId/adb/tap", HttpVerb.POST));
-          put("selendroid-adb-executeShellCommand",
-            new CommandInfo("-selendroid/:sessionId/adb/executeShellCommand", HttpVerb.POST));
-          put("backgroundApp",
-            new CommandInfo("/session/:sessionId/-selendroid/background", HttpVerb.POST));
-          put("resumeApp",
-            new CommandInfo("/session/:sessionId/-selendroid/resume", HttpVerb.POST));
+              HttpMethod.POST));
+          put("selendroid-adb-tap", new CommandInfo("-selendroid/:sessionId/adb/tap",
+              HttpMethod.POST));
+          put("selendroid-adb-executeShellCommand", new CommandInfo(
+              "-selendroid/:sessionId/adb/executeShellCommand", HttpMethod.POST));
+          put("backgroundApp", new CommandInfo("/session/:sessionId/-selendroid/background",
+              HttpMethod.POST));
+          put("resumeApp", new CommandInfo("/session/:sessionId/-selendroid/resume",
+              HttpMethod.POST));
         }
       };
 
