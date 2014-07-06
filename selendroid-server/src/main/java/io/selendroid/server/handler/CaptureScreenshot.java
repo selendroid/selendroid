@@ -14,12 +14,13 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.android.internal.Base64Encoder;
-import org.json.JSONException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpRequest;
+
+import org.json.JSONException;
+import io.selendroid.server.http.HttpRequest;
 
 public class CaptureScreenshot extends RequestHandler {
 

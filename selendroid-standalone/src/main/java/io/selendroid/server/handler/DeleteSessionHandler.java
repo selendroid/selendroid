@@ -19,7 +19,7 @@ import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 import org.json.JSONException;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 import java.util.logging.Logger;
 

@@ -21,7 +21,7 @@ import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
 
 import org.json.JSONException;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class GetElementTagName extends RequestHandler {
 

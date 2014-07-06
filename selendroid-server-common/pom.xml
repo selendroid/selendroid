@@ -10,10 +10,15 @@
 	<name>selendroid-server-common</name>
 
 	<dependencies>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.webbitserver</groupId> -->
+<!-- 			<artifactId>webbit</artifactId> -->
+<!-- 			<version>0.4.14</version> -->
+<!-- 		</dependency> -->
 		<dependency>
-			<groupId>org.webbitserver</groupId>
-			<artifactId>webbit</artifactId>
-			<version>0.4.14</version>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.21.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>

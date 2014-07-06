@@ -20,7 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.SelendroidResponse;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class ListSessions extends RequestHandler {
 

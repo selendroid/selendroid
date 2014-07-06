@@ -20,7 +20,7 @@ import io.selendroid.server.model.ActiveSession;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 import java.util.List;
 import java.util.logging.Logger;

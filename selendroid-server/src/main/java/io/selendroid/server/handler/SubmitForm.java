@@ -21,7 +21,7 @@ import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class SubmitForm extends RequestHandler {
 

@@ -6,7 +6,7 @@ import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.TouchScreen;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 /**
  * Determine whether the screen of the device is on or off.

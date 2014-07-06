@@ -22,7 +22,7 @@ import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class GetText extends RequestHandler {
 

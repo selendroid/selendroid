@@ -13,11 +13,12 @@
  */
 package io.selendroid.server.inspector;
 
-import org.json.JSONException;
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.server.http.HttpRequest;
+import io.selendroid.server.http.HttpResponse;
 import io.selendroid.server.model.SelendroidDriver;
-import org.webbitserver.HttpRequest;
-import org.webbitserver.HttpResponse;
+
+import org.json.JSONException;
 
 
 public abstract class SelendroidInspectorView {

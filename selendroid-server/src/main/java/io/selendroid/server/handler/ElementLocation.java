@@ -14,17 +14,17 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.android.internal.Point;
-import io.selendroid.server.RequestHandler;
-import io.selendroid.server.Response;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.StaleElementReferenceException;
+import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import io.selendroid.server.http.HttpRequest;
 
 public class ElementLocation extends RequestHandler {
 

@@ -17,22 +17,16 @@ import io.selendroid.SelendroidConfiguration;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.grid.SelfRegisteringRemote;
+import io.selendroid.server.http.HttpServer;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
-import org.webbitserver.WebServer;
-import org.webbitserver.WebServers;
-import org.webbitserver.helpers.NamingThreadFactory;
 
 public class SelendroidStandaloneServer {
   private static final Logger log = Logger.getLogger(SelendroidStandaloneServer.class.getName());
-  private WebServer webServer;
+  private HttpServer webServer;
   private SelendroidConfiguration configuration;
   private SelendroidStandaloneDriver driver = null;
 
@@ -45,45 +39,25 @@ public class SelendroidStandaloneServer {
       SelendroidStandaloneDriver driver) throws AndroidSdkException {
     this.configuration = configuration;
     this.driver = driver;
-    NamingThreadFactory namingThreadFactory =
-        new NamingThreadFactory(Executors.defaultThreadFactory(), "selendroid-standalone-handler");
-    webServer =
-        WebServers.createWebServer(Executors.newCachedThreadPool(namingThreadFactory), new InetSocketAddress(
-            configuration.getPort()), URI.create("http://127.0.0.1"
-            + (configuration.getPort() == 80 ? "" : (":" + configuration.getPort())) + "/"));
+    webServer=new HttpServer(configuration.getPort());
     init();
   }
 
   public SelendroidStandaloneServer(SelendroidConfiguration configuration)
       throws AndroidSdkException, AndroidDeviceException {
     this.configuration = configuration;
-    NamingThreadFactory namingThreadFactory =
-        new NamingThreadFactory(Executors.defaultThreadFactory(), "selendroid-standalone-handler");
-    webServer =
-        WebServers.createWebServer(Executors.newCachedThreadPool(namingThreadFactory), new InetSocketAddress(
-            configuration.getPort()), remoteUri(configuration.getPort()));
+    webServer=new HttpServer(configuration.getPort());
     driver = initializeSelendroidServer();
     init();
-  }
-
-  private static URI remoteUri(int port) {
-    try {
-      InetAddress address = InetAddress.getByName("0.0.0.0");
-
-      return new URI("http://" + address.getHostAddress() + (port == 80 ? "" : (":" + port)) + "/");
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new RuntimeException("can not create URI from HostAddress", e);
-    }
   }
 
   protected void init() throws AndroidSdkException {
     // just make sure the connection will not be staled because
     // the long emulator starting time and therefore long time
     // it needs to create a session
-    webServer.staleConnectionTimeout(configuration.getTimeoutEmulatorStart());
-    webServer.add("/wd/hub/status", new StatusServlet(driver));
-    webServer.add(new SelendroidServlet(driver, configuration));
+    webServer.setStaleConnectionTimeout(configuration.getTimeoutEmulatorStart());
+    webServer.addHandler(new StatusServlet(driver));
+    webServer.addHandler(new SelendroidServlet(driver, configuration));
   }
 
   protected SelendroidStandaloneDriver initializeSelendroidServer() throws AndroidSdkException,

@@ -20,7 +20,7 @@ import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 
 import org.json.JSONException;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class Refresh extends RequestHandler {
 

@@ -13,11 +13,15 @@
  */
 package io.selendroid.server;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
 import io.selendroid.server.handlers.SessionAndPayloadExtractionTestHandler;
 import io.selendroid.server.internal.Capabilities;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -29,14 +33,10 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class BaseTest {
   public static final int port = 8055;
@@ -45,10 +45,10 @@ public class BaseTest {
   public static final String ANY_STRING = "ANY-STRING";
 
   @Before
-  public void setup() throws Exception{
+  public void setup() throws Exception {
     ServerInstrumentation instrumentation = mock(ServerInstrumentation.class);
     when(instrumentation.getServerVersion()).thenReturn("0.2");
-    server = new AndroidServer(port, instrumentation);
+    server = new AndroidServer(instrumentation, port);
     server.start();
   }
 
@@ -63,7 +63,7 @@ public class BaseTest {
   public HttpResponse executeRequestWithPayload(String url, HttpMethod method, String payload)
       throws Exception {
     BasicHttpEntityEnclosingRequest request =
-        new BasicHttpEntityEnclosingRequest(method.getName(), url);
+        new BasicHttpEntityEnclosingRequest(method.name(), url);
     request.setEntity(new StringEntity(payload, "UTF-8"));
 
     return getHttpClient().execute(new HttpHost("localhost", port), request);
@@ -102,8 +102,10 @@ public class BaseTest {
 
     @Override
     protected void init() {
-      register(getHandler, new SessionAndPayloadExtractionTestHandler("/wd/hub/session/:sessionId/element"));
-      register(postHandler, new SessionAndIdExtractionTestHandler("/wd/hub/session/:sessionId/element/:id/click"));
+      register(getHandler, new SessionAndPayloadExtractionTestHandler(
+          "/wd/hub/session/:sessionId/element"));
+      register(postHandler, new SessionAndIdExtractionTestHandler(
+          "/wd/hub/session/:sessionId/element/:id/click"));
     }
   }
 

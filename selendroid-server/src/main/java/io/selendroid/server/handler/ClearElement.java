@@ -13,15 +13,16 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
-import io.selendroid.server.Response;
-import io.selendroid.server.model.AndroidElement;
-import io.selendroid.util.SelendroidLogger;
-import org.json.JSONException;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.StaleElementReferenceException;
+import io.selendroid.server.RequestHandler;
+import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.model.AndroidElement;
+import io.selendroid.util.SelendroidLogger;
+
+import org.json.JSONException;
+import io.selendroid.server.http.HttpRequest;
 
 public class ClearElement extends RequestHandler {
 

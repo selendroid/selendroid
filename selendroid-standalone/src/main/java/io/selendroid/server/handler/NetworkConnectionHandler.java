@@ -13,7 +13,7 @@ import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class NetworkConnectionHandler extends BaseSelendroidServerHandler {
   public NetworkConnectionHandler(String mappedUri) {

@@ -13,15 +13,16 @@
  */
 package io.selendroid.server;
 
+import io.selendroid.server.http.HttpRequest;
+import io.selendroid.server.http.HttpResponse;
+import io.selendroid.server.http.HttpServlet;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.webbitserver.HttpControl;
-import org.webbitserver.HttpHandler;
-import org.webbitserver.HttpRequest;
-import org.webbitserver.HttpResponse;
 
 
-public class StatusServlet implements HttpHandler {
+public class StatusServlet implements HttpServlet {
   private ServerDetails seledendroidServer;
   private JSONArray apps = null;
 
@@ -30,14 +31,23 @@ public class StatusServlet implements HttpHandler {
   }
 
   @Override
-  public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse,
-      HttpControl httpControl) throws Exception {
-    if (!"GET".equals(httpRequest.method())) {
-      httpResponse.status(500);
-      httpResponse.end();
+  public void handleHttpRequest(HttpRequest httpRequest, HttpResponse httpResponse)
+      throws Exception {
+    if (!"/wd/hub/status".equals(httpRequest.uri())) {
+      return;
+    }
+    if (!"GET".equalsIgnoreCase(httpRequest.method())) {
+      httpResponse.setStatus(404).end();
       return;
     }
 
+    JSONObject result = createDetailedStatusResponse();
+
+    httpResponse.setContentType("application/json").setStatus(200).setContent(result.toString())
+        .end();
+  }
+
+  private JSONObject createDetailedStatusResponse() throws JSONException {
     JSONObject build = new JSONObject();
     build.put("version", seledendroidServer.getServerVersion());
     build.put("browserName", "selendroid");
@@ -68,13 +78,9 @@ public class StatusServlet implements HttpHandler {
       }
     }
     json.put("supportedApps", apps);
-
-    // httpResponse.header("Content-Type", "text/plain");
-    httpResponse.header("Content-Type", "application/json");
-    JSONObject result=new JSONObject();
-    result.put("status",0);
-    result.put("value",json);
-    httpResponse.content(result.toString());
-    httpResponse.end();
+    JSONObject result = new JSONObject();
+    result.put("status", 0);
+    result.put("value", json);
+    return result;
   }
 }
