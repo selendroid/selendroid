@@ -22,6 +22,7 @@
 		<platform.version>2.3.3</platform.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<selenium.version>2.42.2</selenium.version>
+		<apache-httpclient.version>4.3.4</apache-httpclient.version>
 	</properties>
 	<url>http://selendroid.io</url>
 
@@ -31,6 +32,11 @@
 				<groupId>org.seleniumhq.selenium</groupId>
 				<artifactId>selenium-java</artifactId>
 				<version>${selenium.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${apache-httpclient.version}</version>
 			</dependency>
 			<!-- For the grid plugin -->
 			<dependency>
