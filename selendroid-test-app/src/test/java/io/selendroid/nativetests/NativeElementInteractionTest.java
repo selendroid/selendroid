@@ -202,10 +202,10 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
     WebElement acceptAddsCheckbox = driver().findElement(By.id("input_adds"));
     if (acceptAddsCheckbox.isSelected()) {
       acceptAddsCheckbox.click();
-      Assert.assertEquals(true, acceptAddsCheckbox.isSelected());
+      Assert.assertEquals(false, acceptAddsCheckbox.isSelected());
     } else {
       acceptAddsCheckbox.click();
-      Assert.assertEquals(false, acceptAddsCheckbox.isSelected());
+      Assert.assertEquals(true, acceptAddsCheckbox.isSelected());
     }
   }
 

@@ -42,7 +42,7 @@ public class BaseAndroidTest {
   protected SelendroidLauncher selendroidServerLauncher = null;
   final String pathSeparator = File.separator;
   public static final String NATIVE_APP = "NATIVE_APP";
-  public static final String WEBVIEW = "WEBVIEW";
+  public static final String WEBVIEW = "WEBVIEW_0";
 
   public static SelendroidDriver driver() {
     return driver;
