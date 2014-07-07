@@ -52,10 +52,6 @@ public class SelendroidStandaloneServer {
   }
 
   protected void init() throws AndroidSdkException {
-    // just make sure the connection will not be staled because
-    // the long emulator starting time and therefore long time
-    // it needs to create a session
-    webServer.setStaleConnectionTimeout(configuration.getTimeoutEmulatorStart());
     webServer.addHandler(new StatusServlet(driver));
     webServer.addHandler(new SelendroidServlet(driver, configuration));
   }

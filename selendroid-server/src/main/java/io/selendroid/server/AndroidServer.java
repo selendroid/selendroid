@@ -20,8 +20,6 @@ import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
 
-import java.net.UnknownHostException;
-
 public class AndroidServer {
   private int driverPort = 8080;
   private HttpServer webServer;
@@ -34,23 +32,9 @@ public class AndroidServer {
 
   protected void init(ServerInstrumentation androidInstrumentation) {
     SelendroidDriver driver = new DefaultSelendroidDriver(androidInstrumentation);
-    // seems like this must be set first
-    webServer.setStaleConnectionTimeout(604800000); // 1 week.
-    // If the stale connection cleanup is called a ConcurrentModification exception will be thrown.
-    // Thus the significantly high timeout.
     webServer.addHandler(new StatusServlet(androidInstrumentation));
     webServer.addHandler(new InspectorServlet(driver, androidInstrumentation));
     webServer.addHandler(new AndroidServlet(driver));
-  }
-
-  /**
-   * just make sure if the server timeout is set that this method is called as well.
-   * 
-   * @param millies
-   */
-  public void setConnectionTimeout(long millies) {
-    SelendroidLogger.info("using staleConnectionTimeout: " + millies);
-    webServer.setStaleConnectionTimeout(millies);
   }
 
   public void start() {
