@@ -191,7 +191,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     openStartActivity();
     String buttonText = "Show Progress Bar for a while";
     List<WebElement> elements = driver().findElements(By.className("android.widget.Button"));
-    Assert.assertEquals(7, elements.size());
+    Assert.assertEquals(8, elements.size());
     Assert.assertEquals(elements.get(1).getText(), buttonText);
   }
 
@@ -229,7 +229,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     openStartActivity();
     String buttonText = "EN Button";
     List<WebElement> elements = driver().findElements(By.tagName("Button"));
-    Assert.assertEquals(6, elements.size());
+    Assert.assertEquals(7, elements.size());
     Assert.assertEquals(elements.get(0).getText(), buttonText);
   }
 
@@ -337,5 +337,13 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     driver().findElement(By.id("visibleButtonTest")).click();
     Thread.sleep(1000);
     Assert.assertEquals(textview.isDisplayed(), true);
+  }
+  
+  @Test()
+  public void shouldNotFindDuplicateElements() throws Exception {
+    openStartActivity();
+    driver().findElement(By.id("topLevelElementTest")).click();
+    List<WebElement> elements = driver().findElements(By.id("focusedText"));
+    Assert.assertEquals(elements.size(), 1);
   }
 }
