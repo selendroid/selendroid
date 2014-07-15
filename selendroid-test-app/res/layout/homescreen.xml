@@ -155,5 +155,25 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="パソコン版にする" />
+    
+    <Button
+            android:id="@+id/topLevelElementTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="displayAndFocus"
+            android:text="Display and focus on layout" />
 
+    <LinearLayout
+            android:id="@+id/focusedLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+        <TextView
+                android:id="@+id/focusedText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Should only be found once"/>
+    </LinearLayout>
 </LinearLayout>
