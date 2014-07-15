@@ -5,7 +5,7 @@
 - Support for 'activity-alias' manifest tag by adding a new optional capability -launchActivity
 - Adding new background / resume custom api endpoints, available in the client: 
   SelendroidDriver.backgroundApp() and SelendroidDriver.resumeApp()
- 
+- Avoid returning duplicate elements for findElementsBy 
 
 0.10.0
 ---
