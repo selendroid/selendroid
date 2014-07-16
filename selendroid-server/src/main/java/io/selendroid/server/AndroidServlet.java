@@ -15,6 +15,7 @@ package io.selendroid.server;
 
 import io.selendroid.exceptions.AppCrashedException;
 import io.selendroid.exceptions.StaleElementReferenceException;
+import io.selendroid.server.handler.AddCallLog;
 import io.selendroid.server.handler.AddCookie;
 import io.selendroid.server.handler.BackgroundApp;
 import io.selendroid.server.handler.CaptureScreenshot;
@@ -87,9 +88,9 @@ import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
 
-import org.webbitserver.HttpRequest;
-
 import java.net.URLDecoder;
+
+import org.webbitserver.HttpRequest;
 
 public class AndroidServlet extends BaseServlet {
   private SelendroidDriver driver = null;
@@ -184,6 +185,9 @@ public class AndroidServlet extends BaseServlet {
     // Endpoints to send app to background and resume it
     register(postHandler, new BackgroundApp("/wd/hub/session/:sessionId/-selendroid/background"));
     register(postHandler, new ResumeApp("/wd/hub/session/:sessionId/-selendroid/resume"));
+
+    //Endpoints to add a record to call logs
+    register(postHandler, new AddCallLog("/wd/hub/session/:sessionId/-selendroid/addcalllog"));
 
     // currently not yet supported
     register(getHandler, new UnknownCommandHandler(

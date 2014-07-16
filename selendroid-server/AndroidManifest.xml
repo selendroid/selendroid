@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
     <uses-permission android:name="android.permission.INJECT_EVENTS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
 
     <application android:debuggable="true" android:icon="@drawable/selenium_icon" android:label="Selendroid">
         <uses-library android:name="android.test.runner"/>

@@ -21,6 +21,8 @@ import io.selendroid.server.AndroidServer;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.util.SelendroidLogger;
 
+import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
@@ -29,13 +31,20 @@ import org.json.JSONArray;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.PermissionInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.provider.CallLog;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -423,6 +432,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public void resumeActivity() {
     Activity activity = activitiesReporter.getBackgroundActivity();
+    Log.d("TAG","got background activity");
     if (activity == null) {
       SelendroidLogger
         .error("activity class is empty", new NullPointerException(
@@ -430,12 +440,26 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
         return;
       }
       // start now the new activity
+    Log.d("TAG","background activity is not null");
     Intent intent = new Intent(getTargetContext(), activity.getClass());
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
             | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
             | Intent.FLAG_ACTIVITY_SINGLE_TOP
             | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    Log.d("TAG","created intent and got target context");
     getTargetContext().startActivity(intent);
+    Log.d("TAG","got target context and started activity");
     activitiesReporter.setBackgroundActivity(null);
   }
+
+  public void addCallLog(String num, int duration) {
+    ContentValues values = new ContentValues();
+    values.put(CallLog.Calls.CACHED_NUMBER_TYPE, 0);
+    values.put(CallLog.Calls.TYPE, CallLog.Calls.INCOMING_TYPE);
+    values.put(CallLog.Calls.DATE, System.currentTimeMillis());
+    values.put(CallLog.Calls.DURATION, duration);
+    values.put(CallLog.Calls.NUMBER, num);
+    getTargetContext().getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
+  }
+
 }

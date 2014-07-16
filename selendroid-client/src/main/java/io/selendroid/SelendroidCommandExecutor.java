@@ -52,6 +52,8 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
             new CommandInfo("/session/:sessionId/-selendroid/background", HttpVerb.POST));
           put("resumeApp",
             new CommandInfo("/session/:sessionId/-selendroid/resume", HttpVerb.POST));
+          put("addCallLog",
+            new CommandInfo("/session/:sessionId/-selendroid/addcalllog",HttpVerb.POST));
         }
       };
 
