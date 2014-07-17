@@ -26,7 +26,11 @@ public class AddCallLogTest extends BaseAndroidTest {
    */
   @Test
   public void testAddCallLogFeature() throws Exception {
-	  driver().addCallLog("5555555555",100);
+      final String number = "1111111111";
+      final int duration = 123;
+	  driver().addCallLog(number, 123);
+	  String callLog = driver().readCallLog();
+	  Assert.assertTrue(callLog.contains(number) && callLog.contains(String.valueOf(duration)));
   }
 
 }

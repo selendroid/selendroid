@@ -11,26 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.server.handler;
+package io.selendroid.exceptions;
 
-import io.selendroid.server.RequestHandler;
-import io.selendroid.server.Response;
+public class PermissionDeniedException extends RuntimeException {
+  private static final long serialVersionUID = -448720026954672628L;
 
-import org.json.JSONException;
-import io.selendroid.server.SelendroidResponse;
-import io.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpRequest;
-
-public class GetCurrentUrl extends RequestHandler {
-
-  public GetCurrentUrl(String mappedUri) {
-    super(mappedUri);
+  public PermissionDeniedException(String message) {
+    super(message);
   }
 
-  @Override
-  public Response handle(HttpRequest request) throws JSONException{
-    SelendroidLogger.info("get current URL command");
-    
-    return new SelendroidResponse(getSessionId(request), getSelendroidDriver(request).getCurrentUrl());
+  public PermissionDeniedException(Throwable t) {
+    super(t);
+  }
+
+  public PermissionDeniedException(String message, Throwable t) {
+    super(message, t);
   }
 }

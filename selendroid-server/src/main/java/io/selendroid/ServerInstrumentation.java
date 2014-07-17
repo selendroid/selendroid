@@ -16,34 +16,33 @@ package io.selendroid;
 import io.selendroid.android.ActivitiesReporter;
 import io.selendroid.android.AndroidWait;
 import io.selendroid.exceptions.AppCrashedException;
+import io.selendroid.exceptions.PermissionDeniedException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.AndroidServer;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.util.SelendroidLogger;
 
-import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
 
 import org.json.JSONArray;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.PermissionInfo;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.CallLog;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -452,14 +451,59 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     activitiesReporter.setBackgroundActivity(null);
   }
 
-  public void addCallLog(String num, int duration) {
-    ContentValues values = new ContentValues();
-    values.put(CallLog.Calls.CACHED_NUMBER_TYPE, 0);
-    values.put(CallLog.Calls.TYPE, CallLog.Calls.INCOMING_TYPE);
-    values.put(CallLog.Calls.DATE, System.currentTimeMillis());
-    values.put(CallLog.Calls.DURATION, duration);
-    values.put(CallLog.Calls.NUMBER, num);
-    getTargetContext().getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
+  public void addCallLog(String num, int duration) throws PermissionDeniedException {
+    String permission = Manifest.permission.WRITE_CALL_LOG;
+    if(getTargetContext().checkCallingOrSelfPermission(permission)==PackageManager.PERMISSION_GRANTED) {
+      ContentValues values = new ContentValues();
+      values.put(CallLog.Calls.CACHED_NUMBER_TYPE, 0);
+      values.put(CallLog.Calls.TYPE, CallLog.Calls.INCOMING_TYPE);
+      values.put(CallLog.Calls.DATE, System.currentTimeMillis());
+      values.put(CallLog.Calls.DURATION, duration);
+      values.put(CallLog.Calls.NUMBER, num);
+      getTargetContext().getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
+    }
+    else {
+      throw new PermissionDeniedException("Application Under Test does not have the required WRITE_CALL_LOGS permission for this feature..");
+    }
+  }
+  
+  public String readCallLog() throws PermissionDeniedException {
+    if(getTargetContext().checkCallingOrSelfPermission(Manifest.permission.READ_CALL_LOG)==PackageManager.PERMISSION_GRANTED) {
+        StringBuffer sb = new StringBuffer();
+        Cursor managedCursor = getTargetContext().getContentResolver().query(CallLog.Calls.CONTENT_URI,null, null,null, null);
+        int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER); 
+        int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
+        int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
+        int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+        sb.append( "Call Details :");
+        while (managedCursor.moveToNext()) {
+          String phNumber = managedCursor.getString(number);
+          String callType = managedCursor.getString(type);
+          String callDate = managedCursor.getString(date);
+          Date callDayTime = new Date(Long.valueOf(callDate));
+          String callDuration = managedCursor.getString(duration);
+          String dir = null;
+          switch( Integer.parseInt(callType)) {
+            case CallLog.Calls.OUTGOING_TYPE:
+            dir = "OUTGOING";
+            break;
+            case CallLog.Calls.INCOMING_TYPE:
+            dir = "INCOMING";
+            break;
+            case CallLog.Calls.MISSED_TYPE:
+            dir = "MISSED";
+            break;
+          }
+          sb.append( "\nPhone Number:--- "+phNumber +" \nCall Type:--- "+dir+" \nCall Date:--- "+callDayTime+" \nCall duration in sec :--- "+callDuration );
+          sb.append("\n----------------------------------");
+        }
+        managedCursor.close();
+        return sb.toString();
+    }
+    else {
+        throw new PermissionDeniedException("Application under test does not have required READ_CALL_LOG permission for this feature.");
+    }
+        
   }
 
 }

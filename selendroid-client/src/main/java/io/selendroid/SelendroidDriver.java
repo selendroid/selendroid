@@ -225,5 +225,9 @@ public class SelendroidDriver extends RemoteWebDriver
 	Map<String, String> info = ImmutableMap.of("number",number,"duration",String.valueOf(duration));
 	execute("addCallLog", info);
   }
+  
+  public String readCallLog() {
+    return ((String) execute("readCallLog").getValue());
+  }
 
 }

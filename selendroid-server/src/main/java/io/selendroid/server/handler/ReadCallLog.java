@@ -24,26 +24,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
-public class AddCallLog extends RequestHandler {
+import android.util.Log;
 
-  public AddCallLog(String mappedUri) {
+public class ReadCallLog extends RequestHandler {
+
+  public ReadCallLog(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    SelendroidLogger.info("add call log");
-    JSONObject parameters = getPayload(request).getJSONObject("parameters");
-    String number = parameters.getString("number");
-    int duration = Integer.parseInt(parameters.getString("duration"));
+    SelendroidLogger.info("reading call log");
     try {
-        ((DefaultSelendroidDriver) getSelendroidDriver(request)).addCallLog(number, duration);
-        String response = "Added the number "+number+" with duration of "+ duration+" to call log.";
-        SelendroidLogger.info("Succesfully added record to call log.");
+        String response = ((DefaultSelendroidDriver)getSelendroidDriver(request)).readCallLog();
+        SelendroidLogger.info("Succesfully read call log.");
         return new SelendroidResponse(getSessionId(request), response);
     }
     catch(PermissionDeniedException e) {
-        SelendroidLogger.info("WRITE_CALL_LOG permission must be in a.u.t. to write to call log.");
+        SelendroidLogger.info("READ_CALL_LOG permission must be in a.u.t. to read call logs.");
         return new SelendroidResponse(getSessionId(request), 10, e);
     }
   }

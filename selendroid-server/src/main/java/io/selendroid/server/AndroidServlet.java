@@ -61,6 +61,7 @@ import io.selendroid.server.handler.LongPressOnElement;
 import io.selendroid.server.handler.Move;
 import io.selendroid.server.handler.NewSession;
 import io.selendroid.server.handler.OpenUrl;
+import io.selendroid.server.handler.ReadCallLog;
 import io.selendroid.server.handler.Refresh;
 import io.selendroid.server.handler.ResumeApp;
 import io.selendroid.server.handler.RotateScreen;
@@ -186,8 +187,9 @@ public class AndroidServlet extends BaseServlet {
     register(postHandler, new BackgroundApp("/wd/hub/session/:sessionId/-selendroid/background"));
     register(postHandler, new ResumeApp("/wd/hub/session/:sessionId/-selendroid/resume"));
 
-    //Endpoints to add a record to call logs
+    //Endpoints to add to and read call logs
     register(postHandler, new AddCallLog("/wd/hub/session/:sessionId/-selendroid/addcalllog"));
+    register(postHandler, new ReadCallLog("/wd/hub/session/:sessionId/-selendroid/readcalllog"));
 
     // currently not yet supported
     register(getHandler, new UnknownCommandHandler(

@@ -787,8 +787,11 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   public void addCallLog(String number, int duration) {
-	Log.d("TAG","about to set call record");
-    serverInstrumentation.addCallLog(number, duration);
+	serverInstrumentation.addCallLog(number, duration);
+  }
+  
+  public String readCallLog() {
+    return serverInstrumentation.readCallLog();
   }
 
 }
