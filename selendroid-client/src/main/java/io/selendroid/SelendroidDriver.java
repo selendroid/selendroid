@@ -223,7 +223,7 @@ public class SelendroidDriver extends RemoteWebDriver
 
   public void addCallLog(String number, int duration) {
 	Map<String, String> info = ImmutableMap.of("number",number,"duration",String.valueOf(duration));
-	execute("addCallLog", info);
+	execute("addCallLog", ImmutableMap.of("parameters",info));
   }
   
   public String readCallLog() {
