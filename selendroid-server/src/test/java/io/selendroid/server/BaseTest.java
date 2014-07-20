@@ -24,6 +24,7 @@ import io.selendroid.server.internal.Capabilities;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -39,7 +40,7 @@ import org.junit.After;
 import org.junit.Before;
 
 public class BaseTest {
-  public static final int port = 8055;
+  public static final int port = 38055;
   public static final String host = "127.0.0.1";
   protected AndroidServer server;
   public static final String ANY_STRING = "ANY-STRING";
@@ -65,8 +66,16 @@ public class BaseTest {
     BasicHttpEntityEnclosingRequest request =
         new BasicHttpEntityEnclosingRequest(method.name(), url);
     request.setEntity(new StringEntity(payload, "UTF-8"));
+    return executeRequest((HttpRequest) request);
+  }
 
-    return getHttpClient().execute(new HttpHost("localhost", port), request);
+  private HttpResponse executeRequest(HttpRequest request) throws Exception {
+    try {
+      return getHttpClient().execute(new HttpHost(host, port), request);
+    } catch (Throwable t) {
+      Thread.sleep(1000);
+    }
+    return getHttpClient().execute(new HttpHost(host, port), request);
   }
 
   public JSONObject parseJsonResponse(HttpResponse response) throws Exception {
@@ -84,7 +93,7 @@ public class BaseTest {
     } else {
       throw new RuntimeException("Provided HttpMethod not supported");
     }
-    return getHttpClient().execute(request);
+    return executeRequest(request);
   }
 
   @After
