@@ -64,9 +64,6 @@ public abstract class BaseServlet implements HttpServlet {
     } else if ("DELETE".equals(request.method())) {
       handler = findMatcher(request, deleteHandler);
     }
-    if (handler == null) {
-      response.setStatus(404).setContent("Resource not found.").end();
-    }
     handleRequest(request, response, handler);
   }
 
