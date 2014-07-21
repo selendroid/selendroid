@@ -35,6 +35,8 @@ import io.selendroid.server.model.internal.execute_native.IsElementDisplayedInVi
 import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
 import io.selendroid.server.model.internal.execute_native.TwoPointerGestureAction;
 import io.selendroid.server.model.js.AndroidAtoms;
+import io.selendroid.server.utils.CallLogWrapper;
+import io.selendroid.server.utils.SingleCallLog;
 import io.selendroid.util.Preconditions;
 import io.selendroid.util.SelendroidLogger;
 
@@ -64,7 +66,6 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.webkit.WebView;
@@ -786,11 +787,11 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     serverInstrumentation.resumeActivity();
   }
 
-  public void addCallLog(String number, int duration) {
-	serverInstrumentation.addCallLog(number, duration);
+  public void addCallLog(SingleCallLog log) {
+	serverInstrumentation.addCallLog(log);
   }
   
-  public String readCallLog() {
+  public CallLogWrapper readCallLog() {
     return serverInstrumentation.readCallLog();
   }
 

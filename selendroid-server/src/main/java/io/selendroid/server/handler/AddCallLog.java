@@ -18,11 +18,14 @@ import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.DefaultSelendroidDriver;
+import io.selendroid.server.utils.SingleCallLog;
 import io.selendroid.util.SelendroidLogger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
+
+import com.google.gson.Gson;
 
 public class AddCallLog extends RequestHandler {
 
@@ -34,11 +37,11 @@ public class AddCallLog extends RequestHandler {
   public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("add call log");
     JSONObject parameters = getPayload(request).getJSONObject("parameters");
-    String number = parameters.getString("number");
-    int duration = Integer.parseInt(parameters.getString("duration"));
+    String callLogJson = parameters.getString("calllogjson");
+    SingleCallLog log = new Gson().fromJson(callLogJson, SingleCallLog.class);
     try {
-        ((DefaultSelendroidDriver) getSelendroidDriver(request)).addCallLog(number, duration);
-        String response = "Added the number "+number+" with duration of "+ duration+" to call log.";
+        ((DefaultSelendroidDriver) getSelendroidDriver(request)).addCallLog(log);
+        String response = "Added the number "+log.getNumber()+" with duration of "+ log.getDuration()+" to call log.";
         SelendroidLogger.info("Succesfully added record to call log.");
         return new SelendroidResponse(getSessionId(request), response);
     }

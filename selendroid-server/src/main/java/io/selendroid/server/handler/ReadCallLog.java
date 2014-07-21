@@ -18,13 +18,13 @@ import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.DefaultSelendroidDriver;
+import io.selendroid.server.utils.CallLogWrapper;
 import io.selendroid.util.SelendroidLogger;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.webbitserver.HttpRequest;
 
-import android.util.Log;
+import com.google.gson.Gson;
 
 public class ReadCallLog extends RequestHandler {
 
@@ -36,9 +36,9 @@ public class ReadCallLog extends RequestHandler {
   public Response handle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("reading call log");
     try {
-        String response = ((DefaultSelendroidDriver)getSelendroidDriver(request)).readCallLog();
+        CallLogWrapper response = ((DefaultSelendroidDriver)getSelendroidDriver(request)).readCallLog();
         SelendroidLogger.info("Succesfully read call log.");
-        return new SelendroidResponse(getSessionId(request), response);
+        return new SelendroidResponse(getSessionId(request), new Gson().toJson(response));
     }
     catch(PermissionDeniedException e) {
         SelendroidLogger.info("READ_CALL_LOG permission must be in a.u.t. to read call logs.");

@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.2.1</version>
+			<version>4.3.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -76,6 +76,12 @@
 		<dependency>
 			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-client</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.selendroid</groupId>
+			<artifactId>selendroid-server-common</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
