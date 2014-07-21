@@ -14,7 +14,6 @@
 package io.selendroid;
 
 import io.selendroid.adb.AdbConnection;
-import io.selendroid.server.utils.CallLogWrapper;
 import io.selendroid.server.utils.CallLogEntry;
 
 import java.net.URL;
@@ -43,6 +42,7 @@ import org.openqa.selenium.remote.Response;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * {@inheritDoc}
@@ -229,8 +229,8 @@ public class SelendroidDriver extends RemoteWebDriver
 	execute("addCallLog", ImmutableMap.of("parameters",info));
   }
   
-  public CallLogWrapper readCallLog() {
-    return new Gson().fromJson((String)execute("readCallLog").getValue(), CallLogWrapper.class);
+  public List<CallLogEntry> readCallLog() {
+    return new Gson().fromJson((String)execute("readCallLog").getValue(), new TypeToken<List<CallLogEntry>>(){}.getType());
   }
 
 }

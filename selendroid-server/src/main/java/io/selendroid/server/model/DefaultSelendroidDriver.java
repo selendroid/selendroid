@@ -791,7 +791,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 	serverInstrumentation.addCallLog(log);
   }
   
-  public CallLogWrapper readCallLog() {
+  public List<CallLogEntry> readCallLog() {
     return serverInstrumentation.readCallLog();
   }
 

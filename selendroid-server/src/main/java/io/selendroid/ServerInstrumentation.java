@@ -20,11 +20,12 @@ import io.selendroid.exceptions.PermissionDeniedException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.AndroidServer;
 import io.selendroid.server.ServerDetails;
-import io.selendroid.server.utils.CallLogWrapper;
 import io.selendroid.server.utils.CallLogEntry;
 import io.selendroid.util.SelendroidLogger;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
@@ -469,9 +470,9 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     }
   }
   
-  public CallLogWrapper readCallLog() throws PermissionDeniedException {
+  public List<CallLogEntry> readCallLog() throws PermissionDeniedException {
     if(getTargetContext().checkCallingOrSelfPermission(Manifest.permission.READ_CALL_LOG)==PackageManager.PERMISSION_GRANTED) {
-        CallLogWrapper logs = new CallLogWrapper();
+        List<CallLogEntry> logs = new ArrayList<CallLogEntry>();
         Cursor managedCursor = getTargetContext().getContentResolver().query(CallLog.Calls.CONTENT_URI,null, null,null, null);
         int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER); 
         int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
@@ -483,7 +484,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
           String callDate = managedCursor.getString(date);
           Date callDayTime = new Date(Long.valueOf(callDate));
           String callDuration = managedCursor.getString(duration);
-          logs.addLog(phNumber, Integer.parseInt(callDuration), callDayTime, Integer.parseInt(callType));
+          logs.add(new CallLogEntry(phNumber, Integer.parseInt(callDuration), callDayTime, Integer.parseInt(callType)));
         }
         managedCursor.close();
         return logs;
