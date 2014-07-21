@@ -14,7 +14,7 @@
 package io.selendroid.nativetests;
 
 import io.selendroid.server.utils.CallLogWrapper;
-import io.selendroid.server.utils.SingleCallLog;
+import io.selendroid.server.utils.CallLogEntry;
 import io.selendroid.support.BaseAndroidTest;
 
 import java.util.Date;
@@ -34,17 +34,17 @@ public class AddCallLogTest extends BaseAndroidTest {
   public void testAddCallLogFeature() throws Exception {
       final String number = "1111111111";
       final int duration = 123;
-      final int direction = SingleCallLog.INCOMING_TYPE;
+      final int direction = CallLogEntry.INCOMING_TYPE;
       final Date date = new Date();
-	  driver().addCallLog(new SingleCallLog(number,duration,date,direction));
+	  driver().addCallLog(new CallLogEntry(number,duration,date,direction));
 	  CallLogWrapper callLog = driver().readCallLog();
 	  Assert.assertTrue(callLog.containsLogFromNumber(number));
-	  List<SingleCallLog> logs = callLog.getAllLogsOfDuration(100, true);
-	  for(SingleCallLog cn : logs) {
+	  List<CallLogEntry> logs = callLog.getAllLogsOfDuration(100, true);
+	  for(CallLogEntry cn : logs) {
 	      Assert.assertTrue(cn.getDuration()>=100);
 	  }
 	  logs = callLog.getAllLogsOfDuration(100, false);
-	  for(SingleCallLog cn : logs) {
+	  for(CallLogEntry cn : logs) {
 	      Assert.assertTrue(cn.getDuration()<100);
 	  }
   }

@@ -36,7 +36,7 @@ import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
 import io.selendroid.server.model.internal.execute_native.TwoPointerGestureAction;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.server.utils.CallLogWrapper;
-import io.selendroid.server.utils.SingleCallLog;
+import io.selendroid.server.utils.CallLogEntry;
 import io.selendroid.util.Preconditions;
 import io.selendroid.util.SelendroidLogger;
 
@@ -787,7 +787,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     serverInstrumentation.resumeActivity();
   }
 
-  public void addCallLog(SingleCallLog log) {
+  public void addCallLog(CallLogEntry log) {
 	serverInstrumentation.addCallLog(log);
   }
   

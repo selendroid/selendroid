@@ -2,7 +2,7 @@ package io.selendroid.server.utils;
 
 import java.util.Date;
 
-public class SingleCallLog {
+public class CallLogEntry {
     public String number;
     public int duration;
     public Date time;
@@ -11,7 +11,7 @@ public class SingleCallLog {
     public static final int OUTGOING_TYPE = 2;
     public static final int MISSED_TYPE = 3;
     
-    public SingleCallLog(String number, int duration) {
+    public CallLogEntry(String number, int duration) {
         this(number, duration, new Date(), INCOMING_TYPE);
     }
     
@@ -25,7 +25,7 @@ public class SingleCallLog {
      * Direction of call, use INCOMING_TYPE, OUTGOING_TYPE, or MISSED_TYPE
      * @param direction
      */
-    public SingleCallLog(String number, int duration, Date time, int direction) {
+    public CallLogEntry(String number, int duration, Date time, int direction) {
         this.number = number;
         this.duration = duration;
         this.time = time;

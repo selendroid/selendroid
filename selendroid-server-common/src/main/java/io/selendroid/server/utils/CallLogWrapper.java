@@ -8,14 +8,14 @@ public class CallLogWrapper {
 
 	//list of calls made. include name and duration.
 	
-	List<SingleCallLog> logs;
+	List<CallLogEntry> logs;
 	
 	public CallLogWrapper() {
-		logs = new ArrayList<SingleCallLog>();
+		logs = new ArrayList<CallLogEntry>();
 	}
 	
 	public void addLog(String number, int duration, Date date, int direction) {
-		logs.add(new SingleCallLog(number,duration,date,direction));
+		logs.add(new CallLogEntry(number,duration,date,direction));
 	}
 	
 	/**
@@ -24,7 +24,7 @@ public class CallLogWrapper {
 	 * Call Duration: 100
 	 * --------------------------
 	 */
-	public List<SingleCallLog> getAllLogs() {
+	public List<CallLogEntry> getAllLogs() {
 		return logs;
 	}
 	
@@ -36,9 +36,9 @@ public class CallLogWrapper {
 	 * @param greaterthan
 	 * @return
 	 */
-	public List<SingleCallLog> getAllLogsOfDuration(int duration, boolean greaterthan) {
-		List<SingleCallLog> list = new ArrayList<SingleCallLog>();
-		for(SingleCallLog log : logs) {
+	public List<CallLogEntry> getAllLogsOfDuration(int duration, boolean greaterthan) {
+		List<CallLogEntry> list = new ArrayList<CallLogEntry>();
+		for(CallLogEntry log : logs) {
 			if(log.duration<duration ^ greaterthan) {
 			    list.add(log);
 			}
@@ -50,7 +50,7 @@ public class CallLogWrapper {
 	 * returns true if call log of specified number exists
 	 */
 	public boolean containsLogFromNumber(String number) {
-        for(SingleCallLog log : logs) {
+        for(CallLogEntry log : logs) {
             if(log.number.equals(number)) {
                 return true;
             }

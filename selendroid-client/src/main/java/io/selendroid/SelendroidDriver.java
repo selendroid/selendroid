@@ -15,7 +15,7 @@ package io.selendroid;
 
 import io.selendroid.adb.AdbConnection;
 import io.selendroid.server.utils.CallLogWrapper;
-import io.selendroid.server.utils.SingleCallLog;
+import io.selendroid.server.utils.CallLogEntry;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -224,7 +224,7 @@ public class SelendroidDriver extends RemoteWebDriver
     execute("resumeApp");
   }
 
-  public void addCallLog(SingleCallLog log) {
+  public void addCallLog(CallLogEntry log) {
 	Map<String, String> info = ImmutableMap.of("calllogjson", new Gson().toJson(log));
 	execute("addCallLog", ImmutableMap.of("parameters",info));
   }

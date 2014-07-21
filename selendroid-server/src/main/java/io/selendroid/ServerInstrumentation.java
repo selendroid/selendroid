@@ -21,7 +21,7 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.AndroidServer;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.utils.CallLogWrapper;
-import io.selendroid.server.utils.SingleCallLog;
+import io.selendroid.server.utils.CallLogEntry;
 import io.selendroid.util.SelendroidLogger;
 
 import java.util.Date;
@@ -453,7 +453,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     activitiesReporter.setBackgroundActivity(null);
   }
 
-  public void addCallLog(SingleCallLog log) throws PermissionDeniedException {
+  public void addCallLog(CallLogEntry log) throws PermissionDeniedException {
     String permission = Manifest.permission.WRITE_CALL_LOG;
     if(getTargetContext().checkCallingOrSelfPermission(permission)==PackageManager.PERMISSION_GRANTED) {
       ContentValues values = new ContentValues();
