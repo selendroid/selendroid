@@ -17,15 +17,14 @@ import io.selendroid.exceptions.PermissionDeniedException;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.utils.CallLogEntry;
 import io.selendroid.util.SelendroidLogger;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import org.json.JSONException;
-import org.webbitserver.HttpRequest;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
