@@ -15,10 +15,10 @@ package io.selendroid.server;
 
 
 
+import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.server.internal.SelendroidAssert;
 
 import org.apache.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
 import org.junit.Assert;
 
@@ -41,7 +41,7 @@ public class FindElementHandlerTest extends BaseTest {
     payload.put("using", "id");
     payload.put("value", "my_button_bar");
 
-    String url = "http://"+host+":" + port + "/wd/hub/session/" + sessionId + "/element";
+    String url = "http://" + host + ":" + port + "/wd/hub/session/" + sessionId + "/element";
     HttpResponse element = executeRequestWithPayload(url, HttpMethod.POST, payload.toString());
     SelendroidAssert.assertResponseIsOk(element);
   }

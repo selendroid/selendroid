@@ -34,17 +34,12 @@ public class UserRegistrationTest extends BaseAndroidTest {
   @Test
   public void assertUserAccountCanRegistered() throws Exception {
     UserDO user =
-        new UserDO("u$erNAme", "me@myserver.com", "mySecret", "Dominik Dary",
+        new UserDO("u$erNAme", "me@myserver.com", "mySecret", "Selendroid User",
             PreferedProgrammingLanguage.JAVA_SCRIPT);
     registerUser(user);
     verifyUser(user);
   }
 
-
-  // ((HasInputDevices) driver).getKeyboard().sendKeys(SelendroidKeys.MENU);
-  // Thread.sleep(500);
-  // driver.findElement(By.linkText("User Registration Settings")).click();
-  // driver.findElement(By.linkText("I agree")).click();
   private void registerUser(UserDO user) throws Exception {
     WebElement button = driver().findElement(By.id("startUserRegistration"));
     
@@ -57,8 +52,6 @@ public class UserRegistrationTest extends BaseAndroidTest {
     Assert.assertEquals(nameInput.getText(), "Mr. Burns");
     nameInput.clear();
     nameInput.sendKeys(user.getName());
-    driver().findElement(By.id("btnRegisterUser")).click();
-
 
     driver().findElement(By.id("inputEmail")).sendKeys(user.getEmail());
     driver().findElement(By.id("inputPassword")).sendKeys(user.getPassword());

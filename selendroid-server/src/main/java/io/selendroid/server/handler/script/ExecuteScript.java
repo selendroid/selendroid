@@ -23,7 +23,7 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.UnsupportedOperationException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class ExecuteScript extends RequestHandler {
 

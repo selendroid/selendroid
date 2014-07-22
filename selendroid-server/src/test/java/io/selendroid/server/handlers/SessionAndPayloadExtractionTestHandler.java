@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class SessionAndPayloadExtractionTestHandler extends RequestHandler {
 

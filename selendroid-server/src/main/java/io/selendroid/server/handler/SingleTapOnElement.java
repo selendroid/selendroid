@@ -24,7 +24,7 @@ import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.TouchScreen;
 import io.selendroid.server.model.interactions.Coordinates;
 import io.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class SingleTapOnElement extends RequestHandler {
 

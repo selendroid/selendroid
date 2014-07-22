@@ -14,6 +14,8 @@
 package io.selendroid.server.inspector.view;
 
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.server.http.HttpRequest;
+import io.selendroid.server.http.HttpResponse;
 import io.selendroid.server.inspector.InspectorServlet;
 import io.selendroid.server.inspector.SelendroidInspectorView;
 import io.selendroid.server.model.SelendroidDriver;
@@ -22,10 +24,7 @@ import io.selendroid.util.SelendroidLogger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
-import org.webbitserver.HttpRequest;
-import org.webbitserver.HttpResponse;
 
 public class ResourceView extends SelendroidInspectorView {
   public static final String SCREENSHOT = "deviceScreenshot.png";
@@ -36,15 +35,14 @@ public class ResourceView extends SelendroidInspectorView {
 
   @Override
   public void render(HttpRequest request, HttpResponse httpResponse) {
-    httpResponse.charset(Charset.forName("UTF-8"));
-    httpResponse.status(200);
+    httpResponse.setStatus(200);
     if (request.uri().startsWith(InspectorServlet.INSPECTOR_RESSOURCE + "/" + SCREENSHOT)) {
-      httpResponse.header("Content-Type", "image/png");
+      httpResponse.setContentType("image/png");
       byte[] screenshot = driver.takeScreenshot();
       if (screenshot == null) {
         SelendroidLogger.info("screenshot is null");
       } else {
-        httpResponse.header("Content-Length", screenshot.length).content(screenshot);
+        httpResponse.setContent(screenshot);
       }
     } else {
       try {
@@ -52,7 +50,7 @@ public class ResourceView extends SelendroidInspectorView {
             "inspector" + request.uri().replaceFirst(InspectorServlet.INSPECTOR_RESSOURCE, "");
         InputStream asset = serverInstrumentation.getContext().getAssets().open(filename);
 
-        httpResponse.content(toByteArray(asset));
+        httpResponse.setContent(toByteArray(asset));
       } catch (IOException e) {
         e.printStackTrace();
       }

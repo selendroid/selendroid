@@ -16,10 +16,11 @@ package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
-import io.selendroid.util.SelendroidLogger;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.util.SelendroidLogger;
+
 import org.json.JSONException;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class DeleteCookies extends RequestHandler {
 

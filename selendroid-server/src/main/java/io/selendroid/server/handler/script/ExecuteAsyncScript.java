@@ -8,7 +8,7 @@ import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class ExecuteAsyncScript extends RequestHandler {
   public ExecuteAsyncScript(String mappedUri) {

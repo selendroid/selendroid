@@ -268,7 +268,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public void setImplicitWait(long millies) {
     androidWait.setTimeoutInMillis(millies);
-    serverThread.getServer().setConnectionTimeout(millies);
   }
 
   @Override

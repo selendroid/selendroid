@@ -24,6 +24,11 @@ public class SelendroidAssert {
   public static void assertResponseIsServerError(HttpResponse response) {
     assertResponseStatusCode(response, 500);
   }
+  
+  public static void assertResponseIsResourceNotFound(HttpResponse response) {
+    assertResponseStatusCode(response, 404);
+  }
+  
   public static void assertResponseIsRedirect(HttpResponse response) {
     assertResponseStatusCode(response, 301);
   }

@@ -13,38 +13,23 @@
  */
 package io.selendroid.server;
 
+import io.netty.handler.codec.http.HttpMethod;
+import io.selendroid.server.http.HttpServer;
 import io.selendroid.server.internal.SelendroidAssert;
-
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.util.concurrent.Executors;
+import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.junit.Test;
-import org.webbitserver.WebServer;
-import org.webbitserver.WebServers;
-import org.webbitserver.helpers.NamingThreadFactory;
 
 public class HandlerRegisteredTest extends BaseTest {
-  private WebServer server = null;
+  private HttpServer server = null;
 
   @Override
   public void setup() throws Exception {
-    //server = WebServers.createWebServer(port);
-    URI remoteUri =
-        URI.create("http://127.0.0.1"
-            + (port == 80 ? "" : (":" + port)) + "/");
-
-    NamingThreadFactory namingThreadFactory =
-            new NamingThreadFactory(Executors.defaultThreadFactory(), "selendroid-test-handler");
-    server =
-        WebServers.createWebServer(Executors.newSingleThreadExecutor(namingThreadFactory),
-            new InetSocketAddress(port), remoteUri);
-    server.add(new AndroidTestServlet());
+    server = new HttpServer(port);
+    server.addHandler(new AndroidTestServlet());
     server.start();
   }
 
@@ -75,7 +60,7 @@ public class HandlerRegisteredTest extends BaseTest {
   public void postStatusHandlerNotRegistered() throws Exception {
     String url = "http://" + host + ":" + port + "/wd/hub/session/1234567890/element";
     HttpResponse response = executeRequest(url, HttpMethod.POST);
-    SelendroidAssert.assertResponseIsServerError(response);
+    SelendroidAssert.assertResponseIsResourceNotFound(response);
   }
 
   @Override

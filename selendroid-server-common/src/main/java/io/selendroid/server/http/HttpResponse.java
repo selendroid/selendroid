@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Selenium committers Copyright 2012 Software Freedom Conservancy
+ * Copyright 2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -11,25 +11,27 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.selendroid.server;
+package io.selendroid.server.http;
 
 import java.nio.charset.Charset;
 
 public interface HttpResponse {
 
-  void setStatus(int status);
+  HttpResponse setStatus(int status);
 
-  void setContentType(String mimeType);
+  HttpResponse setContentType(String mimeType);
 
-  void setContent(byte[] data);
+  HttpResponse setContent(byte[] data);
 
-  void setContent(String message);
+  HttpResponse setContent(String message);
 
-  void setEncoding(Charset charset);
+  HttpResponse setEncoding(Charset charset);
 
-  void sendRedirect(String to);
+  HttpResponse sendRedirect(String to);
 
-  void sendTemporaryRedirect(String to);
+  HttpResponse sendTemporaryRedirect(String to);
 
   void end();
+
+  boolean isClosed();
 }

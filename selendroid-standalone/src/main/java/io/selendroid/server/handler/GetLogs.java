@@ -20,7 +20,7 @@ import io.selendroid.server.model.ActiveSession;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.openqa.selenium.logging.LogEntry;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class GetLogs extends BaseSelendroidServerHandler {
 

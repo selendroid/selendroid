@@ -20,6 +20,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+  BackgroundAppTest.class,
   BrightnessTest.class,
   CommandConfigurationTest.class,
   NativeChildElementFindingTest.class,

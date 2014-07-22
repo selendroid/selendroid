@@ -13,8 +13,6 @@
  */
 package io.selendroid.server.handler;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.selendroid.exceptions.NoSuchElementException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.StaleElementReferenceException;
@@ -26,7 +24,10 @@ import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.internal.NativeAndroidBySelector;
 import io.selendroid.util.SelendroidLogger;
-import org.webbitserver.HttpRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import io.selendroid.server.http.HttpRequest;
 
 public class FindChildElement extends RequestHandler {
 

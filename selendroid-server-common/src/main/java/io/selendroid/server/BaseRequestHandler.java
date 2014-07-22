@@ -13,9 +13,10 @@
  */
 package io.selendroid.server;
 
+import io.selendroid.server.http.HttpRequest;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webbitserver.HttpRequest;
 
 public abstract class BaseRequestHandler {
   protected String mappedUri = null;

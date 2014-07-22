@@ -15,17 +15,16 @@ package io.selendroid.server.inspector.view;
 
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.http.HttpRequest;
+import io.selendroid.server.http.HttpResponse;
 import io.selendroid.server.inspector.SelendroidInspectorView;
 import io.selendroid.server.inspector.TreeUtil;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
 
-import java.nio.charset.Charset;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webbitserver.HttpRequest;
-import org.webbitserver.HttpResponse;
+
 
 public class TreeView extends SelendroidInspectorView {
   public TreeView(ServerInstrumentation serverInstrumentation, SelendroidDriver driver) {
@@ -38,14 +37,12 @@ public class TreeView extends SelendroidInspectorView {
       source = driver.getFullWindowTree();
     } catch (SelendroidException e) {
       SelendroidLogger.error("error getting WindowSource in TreeView", e);
-      response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
-          .content("{}").end();
+      response.setContentType("application/x-javascript").setContent("{}").end();
       return;
     }
 
     JSONObject convertedTree = TreeUtil.createFromNativeWindowsSource(source);
     convertedTree.getJSONObject("metadata").put("xml", TreeUtil.getXMLSource(source));
-    response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
-        .content(convertedTree.toString()).end();
+    response.setContentType("application/x-javascript").setContent(convertedTree.toString()).end();
   }
 }
