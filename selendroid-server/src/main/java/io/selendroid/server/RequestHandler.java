@@ -14,13 +14,15 @@
 package io.selendroid.server;
 
 import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.KnownElements;
 import io.selendroid.server.model.SelendroidDriver;
+
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.webbitserver.HttpRequest;
+
 
 public abstract class RequestHandler extends BaseRequestHandler {
 

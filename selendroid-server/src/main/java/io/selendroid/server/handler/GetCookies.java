@@ -18,12 +18,13 @@ import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.Cookie;
 import io.selendroid.util.SelendroidLogger;
+
+import java.util.Set;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webbitserver.HttpRequest;
-
-import java.util.Set;
+import io.selendroid.server.http.HttpRequest;
 
 public class GetCookies extends RequestHandler {
 

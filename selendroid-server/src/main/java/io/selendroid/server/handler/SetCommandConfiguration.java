@@ -21,7 +21,7 @@ import io.selendroid.util.SelendroidLogger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 /**
  * Allow a command to be configured during runtime.

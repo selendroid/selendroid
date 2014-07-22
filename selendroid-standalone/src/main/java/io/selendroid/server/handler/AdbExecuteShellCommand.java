@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class AdbExecuteShellCommand extends BaseSelendroidServerHandler {
   private static final Logger log = Logger.getLogger(AdbExecuteShellCommand.class.getName());

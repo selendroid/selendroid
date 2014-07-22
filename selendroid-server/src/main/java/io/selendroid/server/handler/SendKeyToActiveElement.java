@@ -19,7 +19,7 @@ import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.SelendroidResponse;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class SendKeyToActiveElement extends RequestHandler {
 

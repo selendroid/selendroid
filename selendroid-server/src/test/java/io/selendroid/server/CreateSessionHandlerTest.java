@@ -13,11 +13,11 @@
  */
 package io.selendroid.server;
 
+import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.server.internal.Capabilities;
 import io.selendroid.server.internal.SelendroidAssert;
 
 import org.apache.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,8 +30,9 @@ public class CreateSessionHandlerTest extends BaseTest {
     HttpResponse response = executeCreateSessionRequest();
     SelendroidAssert.assertResponseIsRedirect(response);
     JSONObject json = parseJsonResponse(response);
-    Assert.assertEquals("http://localhost:8055/wd/hub/session/" + json.getString("sessionId"),
-        response.getFirstHeader("location").getValue());
+    Assert.assertEquals(
+        "http://" + host + ":" + port + "/wd/hub/session/" + json.getString("sessionId"), response
+            .getFirstHeader("location").getValue());
   }
 
   @Test

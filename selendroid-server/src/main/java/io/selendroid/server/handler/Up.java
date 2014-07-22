@@ -15,12 +15,14 @@ package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
+import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.TouchScreen;
 import io.selendroid.util.SelendroidLogger;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.SelendroidResponse;
-import org.webbitserver.HttpRequest;
+
 
 public class Up extends RequestHandler {
 

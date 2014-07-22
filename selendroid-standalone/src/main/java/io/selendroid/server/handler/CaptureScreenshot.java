@@ -19,7 +19,7 @@ import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import org.json.JSONException;
 import org.openqa.selenium.internal.Base64Encoder;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 import java.util.logging.Logger;
 
@@ -32,7 +32,7 @@ public class CaptureScreenshot extends BaseSelendroidServerHandler {
 
   @Override
   public Response handle(HttpRequest request) throws JSONException {
-    log.info("take screenshot command");
+    log.info("take devcie screenshot command");
     byte[] rawPng;
     try {
       rawPng = getSelendroidDriver(request).takeScreenshot(getSessionId(request));

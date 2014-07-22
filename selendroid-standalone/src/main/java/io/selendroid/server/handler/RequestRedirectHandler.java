@@ -25,7 +25,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 import java.util.logging.Logger;
 

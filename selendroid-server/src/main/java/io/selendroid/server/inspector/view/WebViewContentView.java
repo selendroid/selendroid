@@ -14,14 +14,13 @@
 package io.selendroid.server.inspector.view;
 
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.server.http.HttpRequest;
+import io.selendroid.server.http.HttpResponse;
 import io.selendroid.server.inspector.SelendroidInspectorView;
 import io.selendroid.server.model.SelendroidDriver;
 
-import java.nio.charset.Charset;
-
 import org.json.JSONException;
-import org.webbitserver.HttpRequest;
-import org.webbitserver.HttpResponse;
+
 
 public class WebViewContentView extends SelendroidInspectorView {
   public WebViewContentView(ServerInstrumentation serverInstrumentation, SelendroidDriver driver) {
@@ -30,7 +29,6 @@ public class WebViewContentView extends SelendroidInspectorView {
 
   public void render(HttpRequest request, HttpResponse response) throws JSONException {
     String source = "<html><head></head><body>SAMPLE SOURCE</body></html>";
-    response.header("Content-type", "application/x-javascript").charset(Charset.forName("UTF-8"))
-        .content(source).end();
+    response.setContentType("application/x-javascript").setContent(source).setStatus(200).end();
   }
 }

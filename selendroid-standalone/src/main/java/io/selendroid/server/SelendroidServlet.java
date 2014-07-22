@@ -30,6 +30,7 @@ import io.selendroid.server.handler.InspectorTreeHandler;
 import io.selendroid.server.handler.InspectorUiHandler;
 import io.selendroid.server.handler.ListSessionsHandler;
 import io.selendroid.server.handler.RequestRedirectHandler;
+import io.selendroid.server.http.HttpResponse;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
 import java.nio.charset.Charset;
@@ -37,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class SelendroidServlet extends BaseServlet {
   private static final Logger log = Logger.getLogger(SelendroidServlet.class.getName());

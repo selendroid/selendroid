@@ -83,13 +83,14 @@ import io.selendroid.server.handler.script.ExecuteScript;
 import io.selendroid.server.handler.timeouts.AsyncTimeoutHandler;
 import io.selendroid.server.handler.timeouts.SetImplicitWaitTimeout;
 import io.selendroid.server.handler.timeouts.TimeoutsHandler;
+import io.selendroid.server.http.HttpResponse;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
 
-import org.webbitserver.HttpRequest;
-
 import java.net.URLDecoder;
+
+import io.selendroid.server.http.HttpRequest;
 
 public class AndroidServlet extends BaseServlet {
   private SelendroidDriver driver = null;
@@ -272,12 +273,10 @@ public class AndroidServlet extends BaseServlet {
   @Override
   public void handleRequest(HttpRequest request, HttpResponse response, BaseRequestHandler handler) {
     if ("/favicon.ico".equals(request.uri()) && handler == null) {
-      response.setStatus(404);
-      response.end();
+      response.setStatus(404).end();
       return;
     } else if (handler == null) {
-      SelendroidLogger.info("handler is null. not support uri is: " + request.uri());
-      replyWithServerError(response);
+      response.setStatus(404).end();
       return;
     }
     Response result = null;

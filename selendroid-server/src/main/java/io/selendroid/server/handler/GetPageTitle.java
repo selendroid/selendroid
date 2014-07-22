@@ -19,7 +19,7 @@ import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.SelendroidDriver;
 
 import org.json.JSONException;
-import org.webbitserver.HttpRequest;
+import io.selendroid.server.http.HttpRequest;
 
 public class GetPageTitle extends RequestHandler {
 

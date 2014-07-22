@@ -15,15 +15,12 @@ package io.selendroid.server.handler;
 
 import io.selendroid.server.RequestHandler;
 import io.selendroid.server.Response;
-
-import org.json.JSONException;
-
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
 
-import org.webbitserver.HttpRequest;
+import org.json.JSONException;
 
 public class ResumeApp extends RequestHandler {
 
