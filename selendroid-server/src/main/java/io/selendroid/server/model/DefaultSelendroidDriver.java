@@ -470,7 +470,14 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
       views.addAll(viewAnalyzer.getTopLevelViews());
       if (instrumentation.getCurrentActivity() != null
           && instrumentation.getCurrentActivity().getCurrentFocus() != null) {
-        views.add(instrumentation.getCurrentActivity().getCurrentFocus());
+        // Make sure the focused view is not a child of an already added top level view
+        View focusedView = instrumentation.getCurrentActivity().getCurrentFocus();
+        View focusedRoot = focusedView.getRootView();
+        boolean topLevel = true;
+        for (View view : views){
+          topLevel = topLevel && !focusedRoot.equals(view);
+        }
+        if (topLevel) views.add(focusedView);
       }
       // sort them to have most recently drawn view show up first
       Collections.sort(views, new Comparator<View>() {

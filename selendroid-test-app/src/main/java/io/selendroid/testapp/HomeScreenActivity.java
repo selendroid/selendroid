@@ -41,6 +41,7 @@ import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout;
 
 /**
  * Demo project to verify selendroid actions.
@@ -143,6 +144,16 @@ public class HomeScreenActivity extends Activity {
     }
   }
 
+  public void displayAndFocus(View view) {
+    LinearLayout linearLayout = ((LinearLayout) findViewById(io.selendroid.testapp.R.id.focusedLayout));
+    if (linearLayout.isShown()) {
+      linearLayout.setVisibility(View.GONE);
+    } else {
+      linearLayout.setVisibility(View.VISIBLE);
+      linearLayout.requestFocus();
+    }
+  }
+  
   @Override
   protected Dialog onCreateDialog(int id) {
     switch (id) {
