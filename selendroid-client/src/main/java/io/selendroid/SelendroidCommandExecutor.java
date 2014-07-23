@@ -44,15 +44,19 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
           put("selendroid-adb-sendKeyEvent", new CommandInfo(
               "-selendroid/:sessionId/adb/sendKeyEvent", HttpMethod.POST));
           put("selendroid-adb-sendText", new CommandInfo("-selendroid/:sessionId/adb/sendText",
-              HttpMethod.POST));
-          put("selendroid-adb-tap", new CommandInfo("-selendroid/:sessionId/adb/tap",
-              HttpMethod.POST));
-          put("selendroid-adb-executeShellCommand", new CommandInfo(
-              "-selendroid/:sessionId/adb/executeShellCommand", HttpMethod.POST));
-          put("backgroundApp", new CommandInfo("/session/:sessionId/-selendroid/background",
-              HttpMethod.POST));
-          put("resumeApp", new CommandInfo("/session/:sessionId/-selendroid/resume",
-              HttpMethod.POST));
+              HttpVerb.POST));
+          put("selendroid-adb-tap",
+              new CommandInfo("-selendroid/:sessionId/adb/tap", HttpVerb.POST));
+          put("selendroid-adb-executeShellCommand",
+            new CommandInfo("-selendroid/:sessionId/adb/executeShellCommand", HttpVerb.POST));
+          put("backgroundApp",
+            new CommandInfo("/session/:sessionId/-selendroid/background", HttpVerb.POST));
+          put("resumeApp",
+            new CommandInfo("/session/:sessionId/-selendroid/resume", HttpVerb.POST));
+          put("addCallLog",
+            new CommandInfo("/session/:sessionId/-selendroid/addcalllog",HttpVerb.POST));
+          put("readCallLog",
+            new CommandInfo("/session/:sessionId/-selendroid/readcalllog",HttpVerb.POST));
         }
       };
 

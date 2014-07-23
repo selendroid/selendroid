@@ -4,6 +4,10 @@
     <uses-sdk android:minSdkVersion="10"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+
 
     <application android:debuggable="true" android:icon="@drawable/icon" android:label="selendroid-test-app">
         <activity android:name=".HomeScreenActivity">

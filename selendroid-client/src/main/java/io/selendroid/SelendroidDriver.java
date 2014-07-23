@@ -14,6 +14,7 @@
 package io.selendroid;
 
 import io.selendroid.adb.AdbConnection;
+import io.selendroid.server.utils.CallLogEntry;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -40,6 +41,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.Response;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * {@inheritDoc}
@@ -219,6 +222,15 @@ public class SelendroidDriver extends RemoteWebDriver
    */
   public void resumeApp() {
     execute("resumeApp");
+  }
+
+  public void addCallLog(CallLogEntry log) {
+	Map<String, String> info = ImmutableMap.of("calllogjson", new Gson().toJson(log));
+	execute("addCallLog", ImmutableMap.of("parameters",info));
+  }
+  
+  public List<CallLogEntry> readCallLog() {
+    return new Gson().fromJson((String)execute("readCallLog").getValue(), new TypeToken<List<CallLogEntry>>(){}.getType());
   }
 
 }

@@ -16,26 +16,37 @@ package io.selendroid;
 import io.selendroid.android.ActivitiesReporter;
 import io.selendroid.android.AndroidWait;
 import io.selendroid.exceptions.AppCrashedException;
+import io.selendroid.exceptions.PermissionDeniedException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.AndroidServer;
 import io.selendroid.server.ServerDetails;
+import io.selendroid.server.utils.CallLogEntry;
 import io.selendroid.util.SelendroidLogger;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
 
 import org.json.JSONArray;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.provider.CallLog;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -422,6 +433,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public void resumeActivity() {
     Activity activity = activitiesReporter.getBackgroundActivity();
+    Log.d("TAG","got background activity");
     if (activity == null) {
       SelendroidLogger
         .error("activity class is empty", new NullPointerException(
@@ -429,12 +441,57 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
         return;
       }
       // start now the new activity
+    Log.d("TAG","background activity is not null");
     Intent intent = new Intent(getTargetContext(), activity.getClass());
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
             | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
             | Intent.FLAG_ACTIVITY_SINGLE_TOP
             | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    Log.d("TAG","created intent and got target context");
     getTargetContext().startActivity(intent);
+    Log.d("TAG","got target context and started activity");
     activitiesReporter.setBackgroundActivity(null);
   }
+
+  public void addCallLog(CallLogEntry log) throws PermissionDeniedException {
+    String permission = Manifest.permission.WRITE_CALL_LOG;
+    if(getTargetContext().checkCallingOrSelfPermission(permission)==PackageManager.PERMISSION_GRANTED) {
+      ContentValues values = new ContentValues();
+      values.put(CallLog.Calls.CACHED_NUMBER_TYPE, 0);
+      values.put(CallLog.Calls.TYPE, log.getDirection());
+      values.put(CallLog.Calls.DATE, log.getDate().getTime());
+      values.put(CallLog.Calls.DURATION, log.getDuration());
+      values.put(CallLog.Calls.NUMBER, log.getNumber());
+      getTargetContext().getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
+    }
+    else {
+      throw new PermissionDeniedException("Application Under Test does not have the required WRITE_CALL_LOGS permission for this feature..");
+    }
+  }
+  
+  public List<CallLogEntry> readCallLog() throws PermissionDeniedException {
+    if(getTargetContext().checkCallingOrSelfPermission(Manifest.permission.READ_CALL_LOG)==PackageManager.PERMISSION_GRANTED) {
+        List<CallLogEntry> logs = new ArrayList<CallLogEntry>();
+        Cursor managedCursor = getTargetContext().getContentResolver().query(CallLog.Calls.CONTENT_URI,null, null,null, null);
+        int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER); 
+        int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
+        int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
+        int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+        while (managedCursor.moveToNext()) {
+          String phNumber = managedCursor.getString(number);
+          String callType = managedCursor.getString(type);
+          String callDate = managedCursor.getString(date);
+          Date callDayTime = new Date(Long.valueOf(callDate));
+          String callDuration = managedCursor.getString(duration);
+          logs.add(new CallLogEntry(phNumber, Integer.parseInt(callDuration), callDayTime, Integer.parseInt(callType)));
+        }
+        managedCursor.close();
+        return logs;
+    }
+    else {
+        throw new PermissionDeniedException("Application under test does not have required READ_CALL_LOG permission for this feature.");
+    }
+        
+  }
+
 }
