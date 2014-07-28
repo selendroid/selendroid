@@ -21,6 +21,7 @@
         <activity android:name=".MultipleWebViewsActivity"/>
         <activity android:name=".RegisterUserActivity"/>
         <activity android:name=".VerifyUserActivity"/>
+        <activity android:name=".ExtremLargeActivity"/>
         <activity android:name=".SearchUsersActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>

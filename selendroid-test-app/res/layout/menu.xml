@@ -19,6 +19,11 @@
         android:title="Open Web View Dialog"/>
 
     <item
+        android:id="@+id/extreem_large_view"
+        android:contentDescription="extreem_large_view"
+        android:title="Open Extreem Large Dialog"/>
+
+    <item
         android:id="@+id/menu_multiple_web_views"
         android:contentDescription="menu_multiple_web_views"
         android:title="Open Dialog with multiple web views"/>

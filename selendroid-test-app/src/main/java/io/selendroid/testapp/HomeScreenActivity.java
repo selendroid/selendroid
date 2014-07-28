@@ -38,14 +38,14 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.LinearLayout;
 
 /**
  * Demo project to verify selendroid actions.
- *
+ * 
  * @author ddary
  */
 public class HomeScreenActivity extends Activity {
@@ -145,7 +145,8 @@ public class HomeScreenActivity extends Activity {
   }
 
   public void displayAndFocus(View view) {
-    LinearLayout linearLayout = ((LinearLayout) findViewById(io.selendroid.testapp.R.id.focusedLayout));
+    LinearLayout linearLayout =
+        ((LinearLayout) findViewById(io.selendroid.testapp.R.id.focusedLayout));
     if (linearLayout.isShown()) {
       linearLayout.setVisibility(View.GONE);
     } else {
@@ -153,7 +154,7 @@ public class HomeScreenActivity extends Activity {
       linearLayout.requestFocus();
     }
   }
-  
+
   @Override
   protected Dialog onCreateDialog(int id) {
     switch (id) {
@@ -256,6 +257,9 @@ public class HomeScreenActivity extends Activity {
       case io.selendroid.testapp.R.id.menu_multiple_web_views:
         startActivity(new Intent(getApplicationContext(), MultipleWebViewsActivity.class));
         return true;
+      case io.selendroid.testapp.R.id.extreem_large_view:
+        startActivity(new Intent(getApplicationContext(), ExtremLargeActivity.class));
+        return true;
       case io.selendroid.testapp.R.id.menu_find_employee:
         Intent intent = new Intent("android.intent.action.MAIN");
         intent
@@ -273,7 +277,8 @@ public class HomeScreenActivity extends Activity {
   }
 
   private void initExceptionTestButton() {
-    Button exceptionTestButton = (Button) findViewById(io.selendroid.testapp.R.id.exceptionTestButton);
+    Button exceptionTestButton =
+        (Button) findViewById(io.selendroid.testapp.R.id.exceptionTestButton);
     exceptionTestButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -283,7 +288,8 @@ public class HomeScreenActivity extends Activity {
   }
 
   private void initExceptionTestField() {
-    EditText exceptionTestField = (EditText) findViewById(io.selendroid.testapp.R.id.exceptionTestField);
+    EditText exceptionTestField =
+        (EditText) findViewById(io.selendroid.testapp.R.id.exceptionTestField);
     exceptionTestField.addTextChangedListener(new TextWatcher() {
       @Override
       public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {}
