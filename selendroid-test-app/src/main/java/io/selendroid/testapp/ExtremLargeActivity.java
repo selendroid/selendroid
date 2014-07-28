@@ -34,14 +34,14 @@ public class ExtremLargeActivity extends Activity {
       LinearLayout row = new LinearLayout(this);
       row.setOrientation(LinearLayout.HORIZONTAL);
       Button myButton = new Button(this);
-      myButton.setText("Press me " + i);
+      myButton.setText("Press me \u2666 \u2665" + i);
       myButton.setId(28 + i);
       myButton.setBackgroundColor(Color.YELLOW);
 
       row.addView(myButton);
       EditText text = new EditText(this);
       text.setId(500 + i);
-      text.setText("TextField with some text: " + i);
+      text.setText("TextField with text \u2660 \u2663: " + i);
       row.addView(text);
       myLayout.addView(row);
     }
