@@ -1,4 +1,8 @@
-0.11.-SNAPSHOT (under development)
+0.12.-SNAPSHOT (under development)
+---
+
+
+0.11.0
 ---
 - Upgrading to latest Selenium 2.42.2
 - Fixed http response encoding header
@@ -7,6 +11,8 @@
   SelendroidDriver.backgroundApp() and SelendroidDriver.resumeApp()
 - Avoid returning duplicate elements for findElementsBy 
 - Migrated http-server from webbit to netty
+- Adding new call log feature: SelendroidDriver.addCallLog / readCallLog
+- Fixes: [#487](../../issues/487)
 
 0.10.0
 ---
