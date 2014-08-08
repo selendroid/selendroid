@@ -13,6 +13,14 @@
  */
 package io.selendroid.server.model;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.base.Strings;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
@@ -28,12 +36,13 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.impl.DefaultPortFinder;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DeviceStore {
@@ -164,79 +173,48 @@ public class DeviceStore {
   /**
    * Finds a device for the requested capabilities. <b>important note:</b> if the device is not any
    * longer used, call the {@link #release(AndroidDevice, AndroidApp)} method.
-   * 
+   *
    * @param caps The desired test session capabilities.
    * @return Matching device for a test session.
    * @throws DeviceStoreException
    * @see {@link #release(AndroidDevice, AndroidApp)}
    */
-  public synchronized AndroidDevice findAndroidDevice(SelendroidCapabilities caps)
-      throws DeviceStoreException {
-    if (caps == null) {
-      throw new IllegalArgumentException("Error: capabilities are null");
-    }
+  public synchronized AndroidDevice findAndroidDevice(SelendroidCapabilities caps) throws DeviceStoreException {
+
+    Preconditions.checkArgument(caps != null, "Error: capabilities are null");
+
     if (androidDevices.isEmpty()) {
-      throw new DeviceStoreException(
-          "Fatal Error: Device Store does not contain any Android Device.");
+      throw new DeviceStoreException("Fatal Error: Device Store does not contain any Android Device.");
     }
+
     String platformVersion = caps.getPlatformVersion();
-    
-    List<AndroidDevice> devices = null;
-    if (platformVersion == null || platformVersion.isEmpty()) {
-      devices = new ArrayList<AndroidDevice>();
-      for (List<AndroidDevice> list : androidDevices.values()) {
-        devices.addAll(list);
+
+    Iterable<AndroidDevice> candidateDevices = Strings.isNullOrEmpty(platformVersion) ?
+      Iterables.concat(androidDevices.values()) : androidDevices.get(DeviceTargetPlatform.fromPlatformVersion(platformVersion));
+
+    candidateDevices = Objects.firstNonNull(candidateDevices, Collections.EMPTY_LIST);
+
+    FluentIterable<AndroidDevice> allMatchingDevices = FluentIterable.from(candidateDevices)
+      .filter(deviceNotInUse())
+      .filter(deviceSatisfiesCapabilities(caps));
+
+    if (!allMatchingDevices.isEmpty()) {
+
+      AndroidDevice matchingDevice = allMatchingDevices.filter(deviceRunning()).first()
+              .or(allMatchingDevices.first()).get();
+
+      if (!deviceRunning().apply(matchingDevice)) {
+        log.info("Using potential match: " + matchingDevice);
       }
+
+      devicesInUse.add(matchingDevice);
+      return matchingDevice;
+
     } else {
-      DeviceTargetPlatform platform = DeviceTargetPlatform.fromPlatformVersion(platformVersion);
-      devices = androidDevices.get(platform);
-    }
-    if (devices == null) {
-      devices = new ArrayList<AndroidDevice>();
-    }
-
-    // keep a list of emulators that aren't started to be used as backup
-    List<AndroidDevice> potentialMatches = new ArrayList<AndroidDevice>();
-    for (AndroidDevice device : devices) {
-      log.info("Evaluating if this device is a match for this session: " + device.toString());
-
-      // logic of precedence to select a device -
-      // screen size must match the capabilities, if no screen size capability sent this is ignored
-      // enforce isEmulator capability request
-      // enforce API level capability
-      //  1) running unused device or running unused emulator
-      //  2) non-running emulator
-
-      if (device.screenSizeMatches(caps.getScreenSize())) {
-        if (devicesInUse.contains(device)) {
-          log.info("Device is in use.");
-          continue;
-        }
-        if (caps.getEmulator() == null
-            || (caps.getEmulator() == true && device instanceof DefaultAndroidEmulator)
-            || (caps.getEmulator() == false && device instanceof DefaultHardwareDevice)) {
-          String serial = caps.getSerial();
-          if (serial != null && device.getSerial().equals(serial)) {
-            devicesInUse.add(device);
-            return device;
-          }
-          if (device instanceof DefaultAndroidEmulator && !((DefaultAndroidEmulator) device).isEmulatorStarted()) {
-            potentialMatches.add(device);
-            continue;
-          }
-          devicesInUse.add(device);
-          return device;
-        }
-      }
-    }
-    if (potentialMatches.size() > 0) {
-      log.info("Using potential match: " + potentialMatches.get(0));
-      devicesInUse.add(potentialMatches.get(0));
-      return potentialMatches.get(0);
-    }
-    throw new DeviceStoreException("No devices are found. "
+      throw new DeviceStoreException("No devices are found. "
         + "This can happen if the devices are in use or no device screen "
         + "matches the required capabilities.");
+    }
   }
 
   private boolean isEmulatorSwitchedOff(AndroidDevice device) throws DeviceStoreException {
@@ -304,6 +282,40 @@ public class DeviceStore {
 
   public void setClearData(boolean clearData) {
     this.clearData = clearData;
+  }
+
+  private Predicate<AndroidDevice> deviceNotInUse() {
+    return new Predicate<AndroidDevice>() {
+      @Override
+      public boolean apply(AndroidDevice candidate) {
+        return !devicesInUse.contains(candidate);
+      }
+    };
+  }
+
+  private Predicate<AndroidDevice> deviceSatisfiesCapabilities(final SelendroidCapabilities capabilities) {
+    return new Predicate<AndroidDevice>() {
+      @Override
+        public boolean apply(AndroidDevice candidate) {
+          ArrayList<Boolean> booleanExpressions = Lists.newArrayList(
+            candidate.screenSizeMatches(capabilities.getScreenSize()),
+            capabilities.getEmulator() == null ? true : capabilities.getEmulator() ?
+              candidate instanceof DefaultAndroidEmulator : candidate instanceof DefaultHardwareDevice,
+            StringUtils.isNotBlank(capabilities.getSerial()) ? capabilities.getSerial().equals(candidate.getSerial()) : true
+          );
+
+          return Iterables.all(booleanExpressions, Predicates.equalTo(true));
+        }
+    };
+  }
+
+  private Predicate<AndroidDevice> deviceRunning() {
+    return new Predicate<AndroidDevice>() {
+      @Override
+      public boolean apply(AndroidDevice candidate) {
+        return !(candidate instanceof DefaultAndroidEmulator && !((DefaultAndroidEmulator) candidate).isEmulatorStarted());
+      }
+    };
   }
 
   class DefaultEmulatorPowerStateListener implements AndroidEmulatorPowerStateListener {

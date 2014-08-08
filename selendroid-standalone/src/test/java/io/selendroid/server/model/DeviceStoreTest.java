@@ -22,10 +22,14 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
@@ -248,8 +252,6 @@ public class DeviceStoreTest {
     assertThat(deviceStore.getDevicesList().values(), hasSize(2));
   }
 
-
-
   @Test
   public void testShouldBeAbleToAddDevices() throws Exception {
     AndroidDevice device = mock(AndroidDevice.class);
@@ -315,6 +317,74 @@ public class DeviceStoreTest {
 
     assertThat(store.getDevicesInUse(), hasSize(0));
   }
+
+  @Test
+  public void shouldFindRealDeviceBySerial() throws Exception {
+      AndroidDevice device1 = mock(DefaultHardwareDevice.class);
+      String device1Serial = "device1Serial";
+      AndroidDevice device2 = mock(DefaultHardwareDevice.class);
+      String device2Serial = "device2Serial";
+
+      for (AndroidDevice device : Lists.newArrayList(device1, device2)) {
+          when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
+          when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
+          when(device.getScreenSize()).thenReturn("320x480");
+          when(device.screenSizeMatches("320x480")).thenReturn(Boolean.TRUE);
+      }
+
+      when(device1.getSerial()).thenReturn(device1Serial);
+      when(device2.getSerial()).thenReturn(device2Serial);
+
+      DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+      store.addDevice(device1);
+      store.addDevice(device2);
+      assertThat(store.getDevicesList().values(), hasSize(1));
+      assertThat(store.getDevicesList().get(DeviceTargetPlatform.ANDROID16), hasSize(2));
+      assertThat(store.getDevicesInUse(), hasSize(0));
+
+      SelendroidCapabilities capa = withDefaultCapabilities();
+      capa.setEmulator(false);
+      capa.setSerial(device2Serial);
+
+      AndroidDevice foundDevice = store.findAndroidDevice(capa);
+      assertThat(foundDevice, equalTo(device2));
+      assertThat(Iterables.getOnlyElement(store.getDevicesInUse()), is(device2));
+  }
+
+  @Test(expected = DeviceStoreException.class)
+  public void willNotReturnADeviceInUse() throws Exception {
+      AndroidDevice device = mock(DefaultHardwareDevice.class);
+      String serial = "device1Serial";
+
+      when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
+      when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
+      when(device.getScreenSize()).thenReturn("320x480");
+      when(device.screenSizeMatches("320x480")).thenReturn(Boolean.TRUE);
+      when(device.getSerial()).thenReturn(serial);
+
+      DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+      store.addDevice(device);
+      store.getDevicesInUse().add(device);
+
+      SelendroidCapabilities capa = withDefaultCapabilities();
+      capa.setEmulator(false);
+      capa.setSerial(serial);
+      store.findAndroidDevice(withDefaultCapabilities());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void findAndroidDeviceThrowsIllegalArgumentExceptionIfCapabilitiesNull() throws Exception {
+      DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+      store.findAndroidDevice(null);
+  }
+
+  @Test(expected = DeviceStoreException.class)
+  public void findAndroidDeviceThrowsDeviceStoreExceptionIfNoDevices() throws Exception {
+      DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+      store.getDevices().clear();
+      store.findAndroidDevice(withDefaultCapabilities());
+  }
+
 
   @Test
   public void shouldRemoveHardwareDevice() throws Exception {
