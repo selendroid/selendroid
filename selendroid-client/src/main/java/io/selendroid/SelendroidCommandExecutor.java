@@ -13,15 +13,14 @@
  */
 package io.selendroid;
 
+import org.openqa.selenium.remote.CommandInfo;
+import org.openqa.selenium.remote.HttpCommandExecutor;
+import org.openqa.selenium.remote.HttpVerb;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.openqa.selenium.remote.CommandInfo;
-import org.openqa.selenium.remote.HttpCommandExecutor;
-import org.openqa.selenium.remote.HttpVerb;
-import org.openqa.selenium.remote.http.HttpMethod;
 
 public class SelendroidCommandExecutor extends HttpCommandExecutor {
 
@@ -30,19 +29,19 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
         {
           // TODO remove network connection once 2.42 is released for Selenium
           put("getNetworkConnection", new CommandInfo("/session/:sessionId/network_connection",
-              HttpMethod.GET));
+              HttpVerb.GET));
           put("setNetworkConnection", new CommandInfo("/session/:sessionId/network_connection",
-              HttpMethod.POST));
+              HttpVerb.POST));
           put("selendroid-getBrightness", new CommandInfo(
-              "-selendroid/:sessionId/screen/brightness", HttpMethod.GET));
+              "-selendroid/:sessionId/screen/brightness", HttpVerb.GET));
           put("selendroid-setBrightness", new CommandInfo(
-              "-selendroid/:sessionId/screen/brightness", HttpMethod.POST));
+              "-selendroid/:sessionId/screen/brightness", HttpVerb.POST));
           put("selendroid-getCommandConfiguration", new CommandInfo(
-              "-selendroid/:sessionId/configure/command/:command", HttpMethod.GET));
+              "-selendroid/:sessionId/configure/command/:command", HttpVerb.GET));
           put("selendroid-setCommandConfiguration", new CommandInfo(
-              "-selendroid/:sessionId/configure/command/:command", HttpMethod.POST));
+              "-selendroid/:sessionId/configure/command/:command", HttpVerb.POST));
           put("selendroid-adb-sendKeyEvent", new CommandInfo(
-              "-selendroid/:sessionId/adb/sendKeyEvent", HttpMethod.POST));
+              "-selendroid/:sessionId/adb/sendKeyEvent", HttpVerb.POST));
           put("selendroid-adb-sendText", new CommandInfo("-selendroid/:sessionId/adb/sendText",
               HttpVerb.POST));
           put("selendroid-adb-tap",
@@ -65,6 +64,6 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
   }
 
   public SelendroidCommandExecutor() throws MalformedURLException {
-    super(SELENDROID_COMMANDS, (URL) null);
+    super(SELENDROID_COMMANDS, null);
   }
 }
