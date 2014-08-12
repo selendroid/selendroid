@@ -13,15 +13,14 @@
  */
 package io.selendroid;
 
+import org.openqa.selenium.remote.CommandInfo;
+import org.openqa.selenium.remote.HttpCommandExecutor;
+import org.openqa.selenium.remote.http.HttpMethod;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.openqa.selenium.remote.CommandInfo;
-import org.openqa.selenium.remote.HttpCommandExecutor;
-import org.openqa.selenium.remote.HttpVerb;
-import org.openqa.selenium.remote.http.HttpMethod;
 
 public class SelendroidCommandExecutor extends HttpCommandExecutor {
 
@@ -32,7 +31,7 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
           put("getNetworkConnection", new CommandInfo("/session/:sessionId/network_connection",
               HttpMethod.GET));
           put("setNetworkConnection", new CommandInfo("/session/:sessionId/network_connection",
-              HttpMethod.POST));
+                  HttpMethod.POST));
           put("selendroid-getBrightness", new CommandInfo(
               "-selendroid/:sessionId/screen/brightness", HttpMethod.GET));
           put("selendroid-setBrightness", new CommandInfo(
@@ -44,19 +43,19 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
           put("selendroid-adb-sendKeyEvent", new CommandInfo(
               "-selendroid/:sessionId/adb/sendKeyEvent", HttpMethod.POST));
           put("selendroid-adb-sendText", new CommandInfo("-selendroid/:sessionId/adb/sendText",
-              HttpVerb.POST));
+                  HttpMethod.POST));
           put("selendroid-adb-tap",
-              new CommandInfo("-selendroid/:sessionId/adb/tap", HttpVerb.POST));
+              new CommandInfo("-selendroid/:sessionId/adb/tap", HttpMethod.POST));
           put("selendroid-adb-executeShellCommand",
-            new CommandInfo("-selendroid/:sessionId/adb/executeShellCommand", HttpVerb.POST));
+            new CommandInfo("-selendroid/:sessionId/adb/executeShellCommand", HttpMethod.POST));
           put("backgroundApp",
-            new CommandInfo("/session/:sessionId/-selendroid/background", HttpVerb.POST));
+            new CommandInfo("/session/:sessionId/-selendroid/background", HttpMethod.POST));
           put("resumeApp",
-            new CommandInfo("/session/:sessionId/-selendroid/resume", HttpVerb.POST));
+            new CommandInfo("/session/:sessionId/-selendroid/resume", HttpMethod.POST));
           put("addCallLog",
-            new CommandInfo("/session/:sessionId/-selendroid/addcalllog",HttpVerb.POST));
+            new CommandInfo("/session/:sessionId/-selendroid/addcalllog",HttpMethod.POST));
           put("readCallLog",
-            new CommandInfo("/session/:sessionId/-selendroid/readcalllog",HttpVerb.POST));
+            new CommandInfo("/session/:sessionId/-selendroid/readcalllog",HttpMethod.POST));
         }
       };
 
@@ -65,6 +64,6 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
   }
 
   public SelendroidCommandExecutor() throws MalformedURLException {
-    super(SELENDROID_COMMANDS, (URL) null);
+    super(SELENDROID_COMMANDS, null);
   }
 }
