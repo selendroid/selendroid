@@ -365,6 +365,11 @@ public class SelendroidWebDriver {
           // Geo location settings
           settings.setGeolocationEnabled(true);
           settings.setGeolocationDatabasePath("/data/data/selendroid");
+
+          // viewport meta tag support
+          settings.setUseWideViewPort(true);
+          settings.setLoadWithOverviewMode(true);
+
         } catch (Exception e) {
           SelendroidLogger.error("An error occured while configuring the web view", e);
         }
