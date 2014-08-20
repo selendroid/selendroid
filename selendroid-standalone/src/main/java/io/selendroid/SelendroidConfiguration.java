@@ -60,6 +60,12 @@ public class SelendroidConfiguration {
   @Parameter(description = "The file of the keystore to be used", names = {"-keystore"})
   private String keystore = null;
 
+  @Parameter(description = "The password for the keystore to be used", names = {"-keystorePassword"})
+  private String keystorePassword = null;
+  
+  @Parameter(description = "The alias of the keystore to be used", names = {"-keystoreAlias"})
+  private String keystoreAlias = null;
+  
   @Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio",
              names = {"-emulatorOptions"})
   private String emulatorOptions = null;
@@ -112,6 +118,22 @@ public class SelendroidConfiguration {
     return keystore;
   }
 
+  public void setKeystorePassword(String keystorePassword) {
+	    this.keystorePassword = keystorePassword;
+	  }
+  
+  public String getKeystorePassword() {
+	    return keystorePassword;
+	  }
+  public void setKeystoreAlias(String keystoreAlias) {
+	    this.keystoreAlias = keystoreAlias;
+	  }
+  
+  public String getKeystoreAlias() {
+	    return keystoreAlias;
+	  }	  
+	  
+  
   public void setSelendroidServerPort(int selendroidServerPort) {
     this.selendroidServerPort = selendroidServerPort;
   }

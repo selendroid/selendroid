@@ -13,6 +13,7 @@
  */
 package io.selendroid.builder;
 
+import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.impl.DefaultAndroidApp;
@@ -33,6 +34,8 @@ public class SelendroidServerBuilderTest {
       "src/test/resources/selendroid-server.apk";
   public static final String ANDROID_APPLICATION_XML_TEMPLATE =
       "src/test/resources/AndroidManifest.xml";
+  public static SelendroidConfiguration selendroidConfiguration = null; 
+  
 
   @Test
   public void testShouldBeAbleToCreateCustomizedSelendroidServerAndCleantTUp() throws Exception {
@@ -98,6 +101,34 @@ public class SelendroidServerBuilderTest {
     assertResultDoesContainFile(output, "META-INF/ANDROIDD.RSA");
     assertResultDoesContainFile(output, "AndroidManifest.xml");
   }
+  
+  @Test
+  public void testShouldBeAbleToResignAnSignedAppWithCustomKeystore() throws Exception {
+    SelendroidServerBuilder builder = getDefaultBuilderWithCustomKeystore();
+    File androidApp = File.createTempFile("testapp", ".apk");
+    System.out.println("Kamesh:" + androidApp.getName());
+    FileUtils.copyFile(new File(APK_FILE), androidApp);
+    AndroidApp app = builder.resignApp(androidApp);
+    Assert.assertEquals("resigned-" + androidApp.getName(),
+        new File(app.getAbsolutePath()).getName());
+    // Verify that apk is signed
+    CommandLine cmd = new CommandLine(AndroidSdk.aapt());
+    cmd.addArgument("list", false);
+    cmd.addArgument(app.getAbsolutePath(), false);
+
+    String output = ShellCommand.exec(cmd);
+    String sigFileName = selendroidConfiguration.getKeystoreAlias().toUpperCase();
+    if(sigFileName.length() > 8)
+    {
+    	sigFileName = sigFileName.substring(0, 8);
+    }
+
+    assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");
+    assertResultDoesNotContainFile(output, "META-INF/CERT.SF");
+    assertResultDoesContainFile(output, "META-INF/"+ sigFileName + ".SF");
+    assertResultDoesContainFile(output, "META-INF/" + sigFileName + ".RSA");
+    assertResultDoesContainFile(output, "AndroidManifest.xml");
+  }
 
   @Test
   public void testShouldBeAbleToCreateASignedSelendroidServer() throws Exception {
@@ -120,6 +151,33 @@ public class SelendroidServerBuilderTest {
     assertResultDoesContainFile(output, "META-INF/ANDROIDD.RSA");
     assertResultDoesContainFile(output, "AndroidManifest.xml");
   }
+  
+  @Test
+  public void testShouldBeAbleToCreateASignedSelendroidServerWithCustomKeystore() throws Exception {
+    SelendroidServerBuilder builder = getDefaultBuilderWithCustomKeystore();
+    builder.init(new DefaultAndroidApp(new File(APK_FILE)));
+    builder.cleanUpPrebuildServer();
+    File file = File.createTempFile("testserver1", "apk");
+    builder.signTestServer(builder.createAndAddCustomizedAndroidManifestToSelendroidServer(), file);
+
+    // Verify that apk is signed
+    CommandLine cmd = new CommandLine(AndroidSdk.aapt());
+    cmd.addArgument("list", false);
+    cmd.addArgument(file.getAbsolutePath(), false);
+
+    String output = ShellCommand.exec(cmd);
+    String sigFileName = selendroidConfiguration.getKeystoreAlias().toUpperCase();
+    if(sigFileName.length() > 8)
+    {
+    	sigFileName = sigFileName.substring(0, 8);
+    }
+
+    assertResultDoesNotContainFile(output, "META-INF/CERT.RSA");
+    assertResultDoesNotContainFile(output, "META-INF/CERT.SF");
+    assertResultDoesContainFile(output, "META-INF/"+ sigFileName + ".SF");
+    assertResultDoesContainFile(output, "META-INF/" + sigFileName + ".RSA");
+    assertResultDoesContainFile(output, "AndroidManifest.xml");
+  }
 
   void assertResultDoesNotContainFile(String output, String file) {
     if (output.contains(file)) {
@@ -135,5 +193,13 @@ public class SelendroidServerBuilderTest {
 
   public static SelendroidServerBuilder getDefaultBuilder() {
     return new SelendroidServerBuilder(SELENDROID_PREBUILD_SERVER, ANDROID_APPLICATION_XML_TEMPLATE);
+  }
+  
+  public static SelendroidServerBuilder getDefaultBuilderWithCustomKeystore() {
+	  selendroidConfiguration = new SelendroidConfiguration(); 
+	  selendroidConfiguration.setKeystore("src/test/resources/selendriodtest1.keystore");
+	  selendroidConfiguration.setKeystorePassword("selendroid");
+	  selendroidConfiguration.setKeystoreAlias("selendroid1");
+	  return new SelendroidServerBuilder(SELENDROID_PREBUILD_SERVER, ANDROID_APPLICATION_XML_TEMPLATE,selendroidConfiguration);
   }
 }
