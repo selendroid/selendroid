@@ -33,6 +33,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -59,6 +61,9 @@ public class SelendroidServerBuilder {
   private AndroidApp selendroidServer = null;
   private AndroidApp applicationUnderTest = null;
   private SelendroidConfiguration serverConfiguration = null;
+  private String storepass = null; 
+  private String alias = null; 
+  private X509Certificate cert509;
 
   /**
    * FOR TESTING ONLY
@@ -68,6 +73,15 @@ public class SelendroidServerBuilder {
     this.selendroidPrebuildServerPath = selendroidPrebuildServerPath;
     this.selendroidApplicationXmlTemplate = selendroidApplicationXmlTemplate;
   }
+  /**
+   * FOR TESTING ONLY
+   */
+  /* package */SelendroidServerBuilder(String selendroidPrebuildServerPath,
+	      String selendroidApplicationXmlTemplate, SelendroidConfiguration selendroidConfiguration) {
+	    this.selendroidPrebuildServerPath = selendroidPrebuildServerPath;
+	    this.selendroidApplicationXmlTemplate = selendroidApplicationXmlTemplate;
+	    this.serverConfiguration = selendroidConfiguration; 
+	  }
 
   public SelendroidServerBuilder() {
     this(null);
@@ -260,17 +274,17 @@ public class SelendroidServerBuilder {
     CommandLine commandline = new CommandLine(JavaSdk.jarsigner());
 
     commandline.addArgument("-sigalg", false);
-    commandline.addArgument("MD5withRSA", false);
+    commandline.addArgument(getSigAlg(), false);
     commandline.addArgument("-digestalg", false);
     commandline.addArgument("SHA1", false);
     commandline.addArgument("-signedjar", false);
     commandline.addArgument(outputFileName.getAbsolutePath(), false);
     commandline.addArgument("-storepass", false);
-    commandline.addArgument("android", false);
-    commandline.addArgument("-keystore", false);
+    commandline.addArgument(storepass!=null?storepass:"android", false);
+    commandline.addArgument("-keystore", false);    
     commandline.addArgument(androidKeyStore.toString(), false);
     commandline.addArgument(customSelendroidServer.getAbsolutePath(), false);
-    commandline.addArgument("androiddebugkey", false);
+    commandline.addArgument(alias!=null?alias:"androiddebugkey", false);
     String output = ShellCommand.exec(commandline, 20000);
     if (log.isLoggable(Level.INFO)) {
       log.info("App signing output: " + output);
@@ -284,10 +298,13 @@ public class SelendroidServerBuilder {
       return new File(FileUtils.getUserDirectory(), File.separatorChar + ".android"
           + File.separatorChar + "debug.keystore");
     } else {
+      storepass = serverConfiguration.getKeystorePassword();
+      alias = serverConfiguration.getKeystoreAlias();
+      // there is a possibility that keystore path may be invalid due to user typo. Should we add a try catch? 
       return new File(serverConfiguration.getKeystore());
     }
   }
-
+  
   /**
    * Cleans the selendroid server by removing certificates and manifest file.
    * 
@@ -362,5 +379,31 @@ public class SelendroidServerBuilder {
     Attributes attr = manifest.getMainAttributes();
     String value = attr.getValue("version");
     return value;
+  }
+  
+  private String getSigAlg()
+  {
+	  String sigAlg = "MD5withRSA"; 
+      FileInputStream in;
+      try
+      {
+        if(serverConfiguration != null){
+        String keystoreFile = 	serverConfiguration.getKeystore();
+		if(keystoreFile != null){
+          in = new FileInputStream(keystoreFile);
+		
+          KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+          keystore.load(in, serverConfiguration.getKeystorePassword().toCharArray());
+          cert509 = (X509Certificate) keystore.getCertificate(serverConfiguration.getKeystoreAlias());
+          sigAlg = cert509.getSigAlgName();
+          }
+        }
+      }
+      catch (Exception e1)
+      {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+      }
+      return sigAlg; 
   }
 }
