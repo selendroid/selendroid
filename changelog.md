@@ -1,6 +1,6 @@
 0.12.-SNAPSHOT (under development)
 ---
-
+- Support to custom keystore, password, alias.
 
 0.11.0
 ---
