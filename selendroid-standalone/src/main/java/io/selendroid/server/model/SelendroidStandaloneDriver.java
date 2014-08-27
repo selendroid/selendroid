@@ -312,7 +312,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         } catch (InterruptedException e) {
         }
       } else {
-        throw new SelendroidException("Selendroid server on the device didn't came up after "
+        throw new SelendroidException("Selendroid server on the device didn't come up after "
                                       + startTimeOut / 1000 + "sec:");
       }
     }
