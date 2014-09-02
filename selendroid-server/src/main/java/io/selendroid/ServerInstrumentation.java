@@ -54,7 +54,7 @@ import android.view.View;
 public class ServerInstrumentation extends Instrumentation implements ServerDetails {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
   private static ServerInstrumentation instance = null;
-  public static Class<? extends Activity> mainActivity = null;
+  public static String mainActivityName = null;
   private HttpdThread serverThread = null;
   private AndroidWait androidWait = new AndroidWait();
   private PowerManager.WakeLock wakeLock;
@@ -65,18 +65,14 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public void startMainActivity() {
     finishAllActivities();
-    startActivity(mainActivity);
+    startActivity(mainActivityName);
   }
 
-  public void startActivity(Class activity) {
-    if (activity == null) {
-      SelendroidLogger.error("activity class is empty", new NullPointerException(
-          "Activity class to start is null."));
-      return;
-    }
+  public void startActivity(String activityClassName) {
     finishAllActivities();
     // start now the new activity
-    Intent intent = new Intent(getTargetContext(), activity);
+    Intent intent = new Intent();
+    intent.setClassName(getTargetContext(), activityClassName);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
     intent.setAction(Intent.ACTION_MAIN);
@@ -103,7 +99,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   @Override
   public void onCreate(Bundle arguments) {
 
-    String activityClazzName = arguments.getString("main_activity");
+    mainActivityName = arguments.getString("main_activity");
 
     int parsedServerPort = 0;
 
@@ -121,18 +117,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       this.serverPort = parsedServerPort;
     }
 
-    Class<? extends Activity> clazz = null;
-    try {
-      clazz = (Class<? extends Activity>) Class.forName(activityClazzName);
-    } catch (ClassNotFoundException exception) {
-      SelendroidLogger.error("The class with name '" + activityClazzName + "' does not exist.",
-          exception);
-    }
-    mainActivity = clazz;
-    SelendroidLogger.info("Instrumentation initialized with main activity: " + activityClazzName);
-    if (clazz == null) {
-      SelendroidLogger.info("Clazz is null - but should be an instance of: " + activityClazzName);
-    }
+    SelendroidLogger.info("Instrumentation initialized with main activity: " + mainActivityName);
     instance = this;
 
     mainThreadExecutor = provideMainThreadExecutor(Looper.getMainLooper());
