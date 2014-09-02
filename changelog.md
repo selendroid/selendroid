@@ -7,7 +7,8 @@
 - Optimize searching for elements in selendroid #560
 - Allowed disabling of adb logcat device logging with flag #561 
 - Cleaned up repetitive error handling in selendroid-server #562 
-- Stop swallowing exception when waiting for instrumentation #563 
+- Stop swallowing exception when waiting for instrumentation #563
+- Allow selendroid-server start timeout to be passed on command line #564
 
 0.11.0
 ---
