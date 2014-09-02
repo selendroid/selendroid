@@ -13,8 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
@@ -26,23 +25,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.http.HttpRequest;
 
-public class DoubleTapOnElement extends RequestHandler {
+public class DoubleTapOnElement extends SafeRequestHandler {
 
   public DoubleTapOnElement(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("double tap on element gesture");
     JSONObject payload = getPayload(request);
     String elementId = payload.getString("element");
     TouchScreen touchScreen = getSelendroidDriver(request).getTouch();
     AndroidElement element = getElementFromCache(request, elementId);
-    if (element == null) {
-      return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '"
-          + elementId + "' was not found."));
-    }
     Coordinates elementLocation = element.getCoordinates();
 
     touchScreen.doubleTap(elementLocation);

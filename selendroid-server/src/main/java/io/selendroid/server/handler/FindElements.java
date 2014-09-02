@@ -13,31 +13,28 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.exceptions.NoSuchElementException;
-import io.selendroid.exceptions.UnsupportedOperationException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.internal.NativeAndroidBySelector;
 import io.selendroid.util.SelendroidLogger;
-
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.http.HttpRequest;
 
-public class FindElements extends RequestHandler {
+import java.util.List;
+
+public class FindElements extends SafeRequestHandler {
 
   public FindElements(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     JSONObject payload = getPayload(request);
     String method = payload.getString("using");
     String selector = payload.getString("value");
@@ -45,14 +42,8 @@ public class FindElements extends RequestHandler {
         selector));
 
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
-    List<AndroidElement> elements = null;
-    try {
-      elements = getSelendroidDriver(request).findElements(by);
-    } catch (NoSuchElementException e) {
-      return new SelendroidResponse(getSessionId(request), new JSONArray());
-    } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(request), 32, e);
-    }
+    List<AndroidElement> elements = getSelendroidDriver(request).findElements(by);
+
     JSONArray result = new JSONArray();
     for (AndroidElement element : elements) {
       JSONObject jsonElement = new JSONObject();

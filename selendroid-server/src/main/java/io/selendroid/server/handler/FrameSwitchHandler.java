@@ -13,7 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 
@@ -21,14 +21,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.http.HttpRequest;
 
-public class FrameSwitchHandler extends RequestHandler {
+public class FrameSwitchHandler extends SafeRequestHandler {
 
   public FrameSwitchHandler(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     JSONObject payload = getPayload(request);
     getSelendroidDriver(request).setFrameContext(payload.get("id"));
     return new SelendroidResponse(getSessionId(request), null);

@@ -18,6 +18,7 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.StatusCode;
 import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.http.HttpRequest;
@@ -38,7 +39,7 @@ public class GetCapabilities extends BaseSelendroidServerHandler {
 
     SelendroidCapabilities caps = getSelendroidDriver(request).getSessionCapabilities(sessionId);
     if (caps == null) {
-      return new SelendroidResponse(sessionId, 13, new SelendroidException("Session was not found"));
+      return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, new SelendroidException("Session was not found"));
     }
     return new SelendroidResponse(sessionId, new JSONObject(caps.asMap()));
   }

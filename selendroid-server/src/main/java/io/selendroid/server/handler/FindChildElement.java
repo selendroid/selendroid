@@ -13,30 +13,25 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.exceptions.NoSuchElementException;
-import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.exceptions.UnsupportedOperationException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.internal.NativeAndroidBySelector;
 import io.selendroid.util.SelendroidLogger;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.http.HttpRequest;
 
-public class FindChildElement extends RequestHandler {
+public class FindChildElement extends SafeRequestHandler {
 
   public FindChildElement(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException{
+  public Response safeHandle(HttpRequest request) throws JSONException{
     JSONObject payload = getPayload(request);
     String method = payload.getString("using");
     String selector = payload.getString("value");
@@ -45,29 +40,14 @@ public class FindChildElement extends RequestHandler {
 
     String elementId = getElementId(request);
     AndroidElement root = getElementFromCache(request, elementId);
-    if (root == null) {
-      return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("The element with Id: "
-          + elementId + " was not found."));
-    }
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
     AndroidElement element = null;
-    try {
-      element = root.findElement(by);
-    } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(request), 10, se);
-    } catch (NoSuchElementException e) {
-      return new SelendroidResponse(getSessionId(request), 7, e);
-    } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(request), 32, e);
-    }
+    element = root.findElement(by);
     JSONObject result = new JSONObject();
 
     String id = getIdOfKnownElement(request, element);
-    if (id == null) {
-      return new SelendroidResponse(getSessionId(request), 7, new NoSuchElementException("Element was not found."));
-    }
     result.put("ELEMENT", id);
 
-    return new SelendroidResponse(getSessionId(request), 0, result);
+    return new SelendroidResponse(getSessionId(request), result);
   }
 }

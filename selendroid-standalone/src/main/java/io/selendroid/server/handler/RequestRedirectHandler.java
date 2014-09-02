@@ -18,6 +18,7 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.StatusCode;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
 import org.apache.http.HttpResponse;
@@ -43,11 +44,11 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 
     ActiveSession session = getSelendroidDriver(request).getActiveSession(sessionId);
     if (session == null) {
-      return new SelendroidResponse(sessionId, 13, new SelendroidException(
+      return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, new SelendroidException(
           "No session found for given sessionId: " + sessionId));
     }
     if (session.isInvalid()) {
-      return new SelendroidResponse(sessionId, 13, new SelendroidException(
+      return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, new SelendroidException(
           "The test session has been marked as invalid. "
               + "This happens if a hardware device was disconnected but a "
               + "test session was still active on the device."));
@@ -73,7 +74,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
               System.out.println(le.getMessage());
             }
           }
-          return new SelendroidResponse(sessionId, 13,
+          return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR,
                   new SelendroidException(
                           "Error occured while communicating with selendroid server on the device: ",
                           e));
@@ -96,7 +97,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     log.fine("return value from selendroid android server: " + value);
     log.fine("return status from selendroid android server: " + status);
 
-    return new SelendroidResponse(sessionId, status, value);
+    return new SelendroidResponse(sessionId, StatusCode.fromInteger(status), value);
   }
 
   private JSONObject redirectRequest(HttpRequest request, ActiveSession session, String url, String method)

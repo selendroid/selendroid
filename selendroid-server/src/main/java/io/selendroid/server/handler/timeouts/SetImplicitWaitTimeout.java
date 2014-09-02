@@ -14,23 +14,22 @@
 package io.selendroid.server.handler.timeouts;
 
 import io.selendroid.ServerInstrumentation;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.http.HttpRequest;
 
-public class SetImplicitWaitTimeout extends RequestHandler {
+public class SetImplicitWaitTimeout extends SafeRequestHandler {
 
   public SetImplicitWaitTimeout(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("set implicit wait timeout called");
-
     Long timeout = getPayload(request).getLong("ms");
     
     ServerInstrumentation.getInstance().setImplicitWait(timeout);

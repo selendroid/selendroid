@@ -13,28 +13,25 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.exceptions.NoSuchElementException;
-import io.selendroid.exceptions.UnsupportedOperationException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.By;
 import io.selendroid.server.model.internal.NativeAndroidBySelector;
 import io.selendroid.util.SelendroidLogger;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.http.HttpRequest;
 
-public class FindElement extends RequestHandler {
+public class FindElement extends SafeRequestHandler {
 
   public FindElement(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     JSONObject payload = getPayload(request);
     String method = payload.getString("using");
     String selector = payload.getString("value");
@@ -42,23 +39,12 @@ public class FindElement extends RequestHandler {
             method, selector));
 
     By by = new NativeAndroidBySelector().pickFrom(method, selector);
-    AndroidElement element = null;
-    try {
-      element = getSelendroidDriver(request).findElement(by);
-    } catch (NoSuchElementException e) {
-      return new SelendroidResponse(getSessionId(request), 7, e);
-    } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(request), 32, e);
-    }
+    AndroidElement element = getSelendroidDriver(request).findElement(by);
     JSONObject result = new JSONObject();
 
     String id = getIdOfKnownElement(request, element);
-
-    if (id == null) {
-      return new SelendroidResponse(getSessionId(request), 7, new NoSuchElementException("Element was not found."));
-    }
     result.put("ELEMENT", id);
 
-    return new SelendroidResponse(getSessionId(request), 0, result);
+    return new SelendroidResponse(getSessionId(request), result);
   }
 }

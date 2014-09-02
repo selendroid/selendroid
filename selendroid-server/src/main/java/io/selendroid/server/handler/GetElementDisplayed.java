@@ -13,36 +13,26 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
-
 import org.json.JSONException;
-import io.selendroid.server.http.HttpRequest;
 
-public class GetElementDisplayed extends RequestHandler {
+public class GetElementDisplayed extends SafeRequestHandler {
 
   public GetElementDisplayed(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("is element displayed command");
     String id = getElementId(request);
 
     AndroidElement element = getElementFromCache(request, id);
-    if (element == null) {
-      return new SelendroidResponse(getSessionId(request), 10, new StaleElementReferenceException("Element with id '" + id
-          + "' was not found."));
-    }
-    try {
-      return new SelendroidResponse(getSessionId(request), element.isDisplayed());
-    } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(request), 10, se);
-    }
+    return new SelendroidResponse(getSessionId(request), element.isDisplayed());
   }
 }

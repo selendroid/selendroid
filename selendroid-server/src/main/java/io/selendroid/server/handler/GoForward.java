@@ -13,30 +13,24 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.exceptions.UnsupportedOperationException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
-import io.selendroid.util.SelendroidLogger;
-
-import org.json.JSONException;
 import io.selendroid.server.http.HttpRequest;
+import io.selendroid.util.SelendroidLogger;
+import org.json.JSONException;
 
-public class GoForward extends RequestHandler {
+public class GoForward extends SafeRequestHandler {
 
   public GoForward(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("Go Forward");
-    try {
-      getSelendroidDriver(request).forward();
-      return new SelendroidResponse(getSessionId(request), "");
-    } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(request), 9, e);
-    }
+    getSelendroidDriver(request).forward();
+    return new SelendroidResponse(getSessionId(request), "");
   }
 
 }

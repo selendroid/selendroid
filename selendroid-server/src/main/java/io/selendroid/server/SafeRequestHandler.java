@@ -13,23 +13,24 @@
  */
 package io.selendroid.server;
 
-import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.exceptions.*;
+import io.selendroid.exceptions.UnsupportedOperationException;
 import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.KnownElements;
 import io.selendroid.server.model.SelendroidDriver;
 
+import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 
-public abstract class RequestHandler extends BaseRequestHandler {
+public abstract class SafeRequestHandler extends BaseRequestHandler {
 
-  public RequestHandler(String mappedUri) {
+  public SafeRequestHandler(String mappedUri) {
     super(mappedUri);
   }
-
   
   protected SelendroidDriver getSelendroidDriver(HttpRequest request) {
     return (DefaultSelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
@@ -37,16 +38,17 @@ public abstract class RequestHandler extends BaseRequestHandler {
 
   protected String getIdOfKnownElement(HttpRequest request, AndroidElement element) {
     KnownElements knownElements = getKnownElements(request);
-    if (knownElements == null) {
-      return null;
+    if (knownElements == null || knownElements.getIdOfElement(element) == null) {
+      throw new NoSuchElementException("Element was not found.");
     }
     return knownElements.getIdOfElement(element);
   }
 
   protected AndroidElement getElementFromCache(HttpRequest request, String id) {
     KnownElements knownElements = getKnownElements(request);
-    if (knownElements == null) {
-      return null;
+    if (knownElements == null || knownElements.get(id) == null) {
+      throw new StaleElementReferenceException(
+          "The element with id '" + id + "' was not found.");
     }
     return knownElements.get(id);
   }
@@ -71,6 +73,32 @@ public abstract class RequestHandler extends BaseRequestHandler {
     }
 
     return toReturn;
+  }
+
+  public abstract Response safeHandle(HttpRequest request) throws JSONException;
+
+  @Override
+  public final Response handle(HttpRequest request) throws JSONException {
+    try {
+      return safeHandle(request);
+    } catch (ElementNotVisibleException ev) {
+      return new SelendroidResponse(getSessionId(request), StatusCode.ELEMENT_NOT_VISIBLE, ev);
+    } catch (StaleElementReferenceException se) {
+      return new SelendroidResponse(getSessionId(request), StatusCode.STALE_ELEMENT_REFERENCE, se);
+    } catch (IllegalStateException ise) {
+      return new SelendroidResponse(getSessionId(request), StatusCode.INVALID_ELEMENT_STATE, ise);
+    } catch (NoSuchElementException e) {
+      return new SelendroidResponse(getSessionId(request), StatusCode.NO_SUCH_ELEMENT, e);
+    } catch (UnsupportedOperationException e) {
+      return new SelendroidResponse(getSessionId(request), StatusCode.INVALID_SELECTOR, e);
+    } catch (NoSuchContextException e) {
+      //TODO update error code when w3c spec gets updated
+      return new SelendroidResponse(getSessionId(request), StatusCode.NO_SUCH_WINDOW,
+          new SelendroidException("Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
+    } catch (Exception e) {
+      SelendroidLogger.error("Error while handling action in: " + this.getClass().getName(), e);
+      return new SelendroidResponse(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
+    }
   }
 
 }

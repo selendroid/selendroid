@@ -13,18 +13,18 @@
  */
 package io.selendroid.server.handlers;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.http.HttpRequest;
 
-public class SessionAndIdExtractionTestHandler extends RequestHandler {
+public class SessionAndIdExtractionTestHandler extends SafeRequestHandler {
 
   public SessionAndIdExtractionTestHandler(String mappedUri) {
     super(mappedUri);
   }
 
-  public Response handle(HttpRequest request) {
+  public Response safeHandle(HttpRequest request) {
     return new SelendroidResponse(null, "sessionId#" + getSessionId(request) + " elementId#" + getElementId(request));
   }
 }

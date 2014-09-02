@@ -13,7 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 
 import org.json.JSONException;
@@ -22,20 +22,20 @@ import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import io.selendroid.server.http.HttpRequest;
 
-public class OpenUrl extends RequestHandler {
+public class OpenUrl extends SafeRequestHandler {
 
   public OpenUrl(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("Open URL command");
     String url = getPayload(request).getString("url");
     if (url == null || url.isEmpty()) {
-      return new SelendroidResponse(getSessionId(request), 13, new SelendroidException(
-          "Not able to open Url because Url is missing."));
+      throw new SelendroidException("Not able to open Url because Url is missing.");
     }
+
     getSelendroidDriver(request).get(url);
     return new SelendroidResponse(getSessionId(request), "");
   }

@@ -13,7 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.Session;
@@ -26,14 +26,14 @@ import io.selendroid.server.http.HttpRequest;
 /**
  * Allow a command to be configured during runtime.
  */
-public class SetCommandConfiguration extends RequestHandler {
+public class SetCommandConfiguration extends SafeRequestHandler {
 
   public SetCommandConfiguration(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("set command configuration command");
     JSONObject payload = getPayload(request);
     Session session = getSelendroidDriver(request).getSession();

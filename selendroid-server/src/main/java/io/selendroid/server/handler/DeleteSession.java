@@ -13,7 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.SelendroidDriver;
@@ -22,14 +22,14 @@ import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import io.selendroid.server.http.HttpRequest;
 
-public class DeleteSession extends RequestHandler {
+public class DeleteSession extends SafeRequestHandler {
 
   public DeleteSession(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException{
+  public Response safeHandle(HttpRequest request) throws JSONException{
     SelendroidLogger.info("delete session command");
     SelendroidDriver driver = getSelendroidDriver(request);
 
