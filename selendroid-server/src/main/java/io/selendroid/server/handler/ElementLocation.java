@@ -14,41 +14,30 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.android.internal.Point;
-import io.selendroid.exceptions.NoSuchElementException;
-import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.http.HttpRequest;
 
-public class ElementLocation extends RequestHandler {
+public class ElementLocation extends SafeRequestHandler {
 
   public ElementLocation(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("Get element location command");
     String id = getElementId(request);
     AndroidElement element = getElementFromCache(request, id);
-    if (element == null) {
-      return new SelendroidResponse(getSessionId(request), 10, new NoSuchElementException("The element with id '"
-          + id + "' was not found."));
-    }
     Point point = element.getLocation();
     JSONObject result = new JSONObject();
     result.put("x", point.x);
     result.put("y", point.y);
-    try {
-      return new SelendroidResponse(getSessionId(request), result);
-    } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(request), 10, se);
-    }
+    return new SelendroidResponse(getSessionId(request), result);
   }
 }

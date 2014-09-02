@@ -13,24 +13,23 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.server.http.HttpRequest;
 
-public class Scroll extends RequestHandler {
+public class Scroll extends SafeRequestHandler {
 
   public Scroll(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     String elementId = getElementId(request);
     JSONObject payload = getPayload(request);
     int xoffset = payload.getInt("xoffset");
@@ -39,10 +38,6 @@ public class Scroll extends RequestHandler {
       getSelendroidDriver(request).getTouch().scroll(xoffset, yoffset);
     } else {
       AndroidElement element = getElementFromCache(request, elementId);
-      if (element == null) {
-        return new SelendroidResponse(getSessionId(request), 10, new SelendroidException("Element with id '"
-            + elementId + "' was not found."));
-      }
       getSelendroidDriver(request).getTouch().scroll(element.getCoordinates(), xoffset, yoffset);
     }
     return new SelendroidResponse(getSessionId(request), "");

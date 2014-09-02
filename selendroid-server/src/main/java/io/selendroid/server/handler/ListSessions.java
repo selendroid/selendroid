@@ -13,7 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 
 import org.json.JSONArray;
@@ -22,14 +22,14 @@ import org.json.JSONObject;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.http.HttpRequest;
 
-public class ListSessions extends RequestHandler {
+public class ListSessions extends SafeRequestHandler {
 
   public ListSessions(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     JSONArray sessions = new JSONArray();
     if (getSelendroidDriver(request).getSession() != null) {
       JSONObject sessionResponse = new JSONObject();

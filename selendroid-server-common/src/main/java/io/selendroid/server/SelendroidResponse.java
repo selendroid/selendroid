@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -20,86 +20,90 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class SelendroidResponse implements Response {
-    private String sessionId;
-    private int status;
-    private Object value;
+  private String sessionId;
+  private int status;
+  private Object value;
 
-    protected SelendroidResponse() {
+  protected SelendroidResponse() {
+  }
+
+  private SelendroidResponse(String sessionId, int status, Exception e) throws JSONException {
+    this.value = buildErrorValue(e);
+    this.sessionId = sessionId;
+    this.status = status;
+  }
+
+  private SelendroidResponse(String sessionId, int status, Object value) {
+    this.sessionId = sessionId;
+    this.status = status;
+    this.value = value;
+  }
+
+  public SelendroidResponse(String sessionId, Object value) {
+    this(sessionId, 0, value);
+  }
+
+  public SelendroidResponse(String sessionId, StatusCode status, JSONObject value) {
+    this(sessionId, status.getCode(), value);
+  }
+
+  public SelendroidResponse(String sessionId, StatusCode status, Object value) {
+    this(sessionId, status.getCode(), value);
+  }
+
+  public SelendroidResponse(String sessionId, StatusCode status, Exception e) throws JSONException {
+    this(sessionId, status.getCode(), e);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see io.selendroid.server.Response#getSessionId()
+   */
+  @Override
+  public String getSessionId() {
+    return sessionId;
+  }
+
+  public int getStatus() {
+    return status;
+  }
+
+  public Object getValue() {
+    return value;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see io.selendroid.server.Response#render()
+   */
+  @Override
+  public String render() {
+    JSONObject o = new JSONObject();
+    try {
+      if (sessionId != null) {
+        o.put("sessionId", sessionId);
+      }
+      o.put("status", status);
+      if (value != null) {
+        o.put("value", value);
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
+    return o.toString();
+  }
 
-    public SelendroidResponse(String sessionId, int status, JSONObject value) {
-        this.sessionId = sessionId;
-        this.status = status;
-        this.value = value;
-    }
+  private JSONObject buildErrorValue(Throwable t) throws JSONException {
+    JSONObject errorValue = new JSONObject();
+    errorValue.put("class", t.getClass().getCanonicalName());
 
-    public SelendroidResponse(String sessionId, int status, Exception e) throws JSONException {
-        this.value = buildErrorValue(e);
-        this.sessionId = sessionId;
-        this.status = status;
-    }
-
-    public SelendroidResponse(String sessionId, Object value) {
-        this.sessionId = sessionId;
-        this.status = 0;
-        this.value = value;
-    }
-
-    public SelendroidResponse(String sessionId, int status, Object value) {
-        this.sessionId = sessionId;
-        this.status = status;
-        this.value = value;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.selendroid.server.Response#getSessionId()
-     */
-    @Override
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.selendroid.server.Response#render()
-     */
-    @Override
-    public String render() {
-        JSONObject o = new JSONObject();
-        try {
-            if (sessionId != null) {
-                o.put("sessionId", sessionId);
-            }
-            o.put("status", status);
-            if (value != null) {
-                o.put("value", value);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return o.toString();
-    }
-
-    private JSONObject buildErrorValue(Throwable t) throws JSONException {
-        JSONObject errorValue = new JSONObject();
-        errorValue.put("class", t.getClass().getCanonicalName());
-
-        // TODO: Form exception in a way that will be unpacked nicely on the local end.
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        t.printStackTrace(printWriter);
-        errorValue.put("message", t.getMessage() + "\n" + stringWriter.toString());
+    // TODO: Form exception in a way that will be unpacked nicely on the local end.
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter printWriter = new PrintWriter(stringWriter);
+    t.printStackTrace(printWriter);
+    errorValue.put("message", t.getMessage() + "\n" + stringWriter.toString());
 
         /*
          * There is no easy way to attach exception 'cause' clauses here.
@@ -116,6 +120,6 @@ public class SelendroidResponse implements Response {
 //      }
 //      errorValue.put("stackTrace", stackTrace);
 
-        return errorValue;
-    }
+    return errorValue;
+  }
 }

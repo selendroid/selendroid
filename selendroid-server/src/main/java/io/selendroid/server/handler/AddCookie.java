@@ -13,7 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.Cookie;
@@ -25,7 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.http.HttpRequest;
 
-public class AddCookie extends RequestHandler {
+public class AddCookie extends SafeRequestHandler {
 
   public AddCookie(String mappedUri) {
     super(mappedUri);
@@ -33,8 +33,7 @@ public class AddCookie extends RequestHandler {
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-
+  public Response safeHandle(HttpRequest request) throws JSONException {
     Date expiry = null;
     SelendroidLogger.info("set cookie to a session command");
     String url = getSelendroidDriver(request).getCurrentUrl();

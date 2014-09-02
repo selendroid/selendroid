@@ -13,9 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.exceptions.NoSuchElementException;
-import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
@@ -24,29 +22,18 @@ import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import io.selendroid.server.http.HttpRequest;
 
-public class ClearElement extends RequestHandler {
+public class ClearElement extends SafeRequestHandler {
 
   public ClearElement(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request)throws JSONException {
+  public Response safeHandle(HttpRequest request)throws JSONException {
     SelendroidLogger.info("Clear element command");
     String id = getElementId(request);
     AndroidElement element = getElementFromCache(request, id);
-    if (element == null) {
-      return new SelendroidResponse(getSessionId(request), 10, new NoSuchElementException("The element with id '"
-          + id + "' was not found."));
-    }
-    try {
-      element.clear();
-    } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(request), 10, se);
-    } catch (Exception e) {
-      SelendroidLogger.error("error while clearing the element: ", e);
-      return new SelendroidResponse(getSelendroidDriver(request).getSession().getSessionId(), 13, e);
-    }
+    element.clear();
     return new SelendroidResponse(getSessionId(request), "");
   }
 }

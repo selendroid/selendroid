@@ -14,7 +14,7 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.exceptions.PermissionDeniedException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.http.HttpRequest;
@@ -27,14 +27,14 @@ import org.json.JSONObject;
 
 import com.google.gson.Gson;
 
-public class AddCallLog extends RequestHandler {
+public class AddCallLog extends SafeRequestHandler {
 
   public AddCallLog(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("add call log");
     JSONObject parameters = getPayload(request).getJSONObject("parameters");
     String callLogJson = parameters.getString("calllogjson");
@@ -47,7 +47,7 @@ public class AddCallLog extends RequestHandler {
     }
     catch(PermissionDeniedException e) {
         SelendroidLogger.info("WRITE_CALL_LOG permission must be in a.u.t. to write to call log.");
-        return new SelendroidResponse(getSessionId(request), 10, e);
+        throw e;
     }
   }
   

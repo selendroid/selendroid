@@ -14,9 +14,10 @@
 package io.selendroid.server.handler;
 
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 
+import io.selendroid.server.StatusCode;
 import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.exceptions.SelendroidException;
@@ -24,14 +25,14 @@ import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import io.selendroid.server.http.HttpRequest;
 
-public class NewSession extends RequestHandler {
+public class NewSession extends SafeRequestHandler {
 
   public NewSession(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("new session command");
     JSONObject payload = getPayload(request);
 
@@ -42,8 +43,8 @@ public class NewSession extends RequestHandler {
       sessionID = getSelendroidDriver(request).initializeSession(desiredCapabilities);
     } catch (SelendroidException e) {
       SelendroidLogger.error("Error while creating new session: ", e);
-      return new SelendroidResponse("", 33, e);
+      return new SelendroidResponse("", StatusCode.SESSION_NOT_CREATED_EXCEPTION, e);
     }
-    return new SelendroidResponse(sessionID, 0, desiredCapabilities);
+    return new SelendroidResponse(sessionID, desiredCapabilities);
   }
 }

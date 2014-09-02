@@ -13,9 +13,10 @@
  */
 package io.selendroid.server.handler.script;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 
+import io.selendroid.server.StatusCode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,14 +26,14 @@ import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 import io.selendroid.server.http.HttpRequest;
 
-public class ExecuteScript extends RequestHandler {
+public class ExecuteScript extends SafeRequestHandler {
 
   public ExecuteScript(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("execute script command");
     JSONObject payload = getPayload(request);
     String script = payload.getString("script");
@@ -45,7 +46,7 @@ public class ExecuteScript extends RequestHandler {
         value = getSelendroidDriver(request).executeScript(script);
       }
     } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(request), 13, e);
+      return new SelendroidResponse(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
     }
     if (value instanceof String) {
       String result = (String) value;
@@ -53,8 +54,9 @@ public class ExecuteScript extends RequestHandler {
         JSONObject json = new JSONObject(result);
         int status = json.optInt("status");
         if (0 != status) {
-          return new SelendroidResponse(getSessionId(request), status, new SelendroidException(
-              json.optString("value")));
+          return new SelendroidResponse(getSessionId(request),
+              StatusCode.fromInteger(status),
+              new SelendroidException(json.optString("value")));
         }
         if (json.isNull("value")) {
           return new SelendroidResponse(getSessionId(request), null);

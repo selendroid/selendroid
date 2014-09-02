@@ -13,7 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.http.HttpRequest;
@@ -22,14 +22,14 @@ import io.selendroid.util.SelendroidLogger;
 
 import org.json.JSONException;
 
-public class ResumeApp extends RequestHandler {
+public class ResumeApp extends SafeRequestHandler {
 
   public ResumeApp(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("Resume app command");
     ((DefaultSelendroidDriver)getSelendroidDriver(request)).resumeApp();
     return new SelendroidResponse(getSessionId(request), "brought app to foreground");

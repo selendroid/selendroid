@@ -19,6 +19,7 @@ import io.selendroid.server.SelendroidResponse;
 
 import java.util.logging.Logger;
 
+import io.selendroid.server.StatusCode;
 import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.http.HttpRequest;
@@ -43,8 +44,8 @@ public class CreateSessionHandler extends BaseSelendroidServerHandler {
     } catch (Exception e) {
       log.severe("Error while creating new session: " + e.getMessage());
       e.printStackTrace();
-      return new SelendroidResponse("", 33, e);
+      return new SelendroidResponse("", StatusCode.SESSION_NOT_CREATED_EXCEPTION, e);
     }
-    return new SelendroidResponse(sessionID, 0, desiredCapabilities);
+    return new SelendroidResponse(sessionID, desiredCapabilities);
   }
 }

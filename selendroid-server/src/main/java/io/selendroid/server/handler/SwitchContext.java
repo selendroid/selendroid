@@ -13,39 +13,29 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.exceptions.NoSuchContextException;
 import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.http.HttpRequest;
-import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
-
 import org.json.JSONException;
 
-public class SwitchContext extends RequestHandler {
+public class SwitchContext extends SafeRequestHandler {
 
   public SwitchContext(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("Switch Context/Window command");
     String windowName = getPayload(request).getString("name");
     if (windowName == null || windowName.isEmpty()) {
-      return new SelendroidResponse(getSessionId(request), 13, new SelendroidException(
-          "Window name is missing."));
+      throw new SelendroidException("Window name is missing.");
     }
-    SelendroidDriver driver = getSelendroidDriver(request);
-    try {
-      driver.switchContext(windowName);
-    } catch(NoSuchContextException nsce) {
-      //TODO update error code when w3c spec gets updated
-      return new SelendroidResponse(getSessionId(request), 23, new SelendroidException(
-              "Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
-    }
+
+    getSelendroidDriver(request).switchContext(windowName);
     return new SelendroidResponse(getSessionId(request), "");
   }
 }

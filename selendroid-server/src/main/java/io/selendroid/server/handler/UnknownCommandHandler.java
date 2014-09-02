@@ -13,23 +13,24 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 
+import io.selendroid.server.StatusCode;
 import org.json.JSONException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.http.HttpRequest;
 
-public class UnknownCommandHandler extends RequestHandler {
+public class UnknownCommandHandler extends SafeRequestHandler {
 
   public UnknownCommandHandler(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-    return new SelendroidResponse(getSessionId(request), 9, new SelendroidException(
+  public Response safeHandle(HttpRequest request) throws JSONException {
+    return new SelendroidResponse(getSessionId(request), StatusCode.UNKNOWN_COMMAND, new SelendroidException(
         "The requested command is currently not yet supported by selendroid."));
   }
 }

@@ -13,9 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.exceptions.ElementNotVisibleException;
-import io.selendroid.exceptions.StaleElementReferenceException;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.AndroidElement;
@@ -24,33 +22,18 @@ import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
 import io.selendroid.server.http.HttpRequest;
 
-public class ClickElement extends RequestHandler {
+public class ClickElement extends SafeRequestHandler {
 
   public ClickElement(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("Click element command");
     String id = getElementId(request);
     AndroidElement element = getElementFromCache(request, id);
-    if (element == null) {
-      return new SelendroidResponse(getSessionId(request), 10, new StaleElementReferenceException(
-          "The element with id '" + id + "' was not found."));
-    }
-    try {
-      element.click();
-    } catch (ElementNotVisibleException ev) {
-      return new SelendroidResponse(getSessionId(request), 11, ev);
-    } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(request), 10, se);
-    } catch (IllegalStateException ise) {
-      return new SelendroidResponse(getSessionId(request), 10, ise);
-    } catch (Exception e) {
-      SelendroidLogger.error("error while clicking the element: ", e);
-      return new SelendroidResponse(getSessionId(request), 13, e);
-    }
+    element.click();
     return new SelendroidResponse(getSessionId(request), "");
   }
 }

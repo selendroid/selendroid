@@ -293,7 +293,9 @@ public class AndroidServlet extends BaseServlet {
             (DefaultSelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
         if (driver != null && driver.isAlertPresent()) {
           result =
-              new SelendroidResponse(handler.getSessionId(request), 26, "Unhandled Alert present");
+              new SelendroidResponse(handler.getSessionId(request),
+                  StatusCode.UNEXPECTED_ALERT_OPEN,
+                  "Unhandled Alert present");
           handleResponse(request, response, (SelendroidResponse) result);
           return;
         }
@@ -302,7 +304,7 @@ public class AndroidServlet extends BaseServlet {
     } catch (StaleElementReferenceException se) {
       try {
         String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
-        result = new SelendroidResponse(sessionId, 10, se);
+        result = new SelendroidResponse(sessionId, StatusCode.STALE_ELEMENT_REFERENCE, se);
       } catch (Exception e) {
         SelendroidLogger.error("Error occurred while handling request and got StaleRef.", e);
         replyWithServerError(response);
@@ -311,7 +313,7 @@ public class AndroidServlet extends BaseServlet {
     } catch (AppCrashedException ae) {
       try {
         String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
-        result = new SelendroidResponse(sessionId, 13, ae);
+        result = new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, ae);
       } catch (Exception e) {
         SelendroidLogger.error("Error occurred while handling request and got AppCrashedException.",
             e);

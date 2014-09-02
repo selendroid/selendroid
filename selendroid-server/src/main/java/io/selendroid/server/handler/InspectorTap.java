@@ -14,7 +14,7 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.android.internal.Point;
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.SelendroidDriver;
@@ -25,14 +25,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.http.HttpRequest;
 
-public class InspectorTap extends RequestHandler {
+public class InspectorTap extends SafeRequestHandler {
 
   public InspectorTap(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("Inspector click on position command");
 
     JSONObject payload = getPayload(request);

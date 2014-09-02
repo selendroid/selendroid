@@ -13,21 +13,21 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.RequestHandler;
+import io.selendroid.server.SafeRequestHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.util.SelendroidLogger;
 
 import io.selendroid.server.http.HttpRequest;
 
-public class LogElementTree extends RequestHandler {
+public class LogElementTree extends SafeRequestHandler {
 
   public LogElementTree(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) {
+  public Response safeHandle(HttpRequest request) {
     SelendroidLogger.info("LogElementTree for session: "
         + getSelendroidDriver(request).getSession().getSessionId());
     String source = getSelendroidDriver(request).getWindowSource();
