@@ -13,6 +13,7 @@
  */
 package io.selendroid.android.impl;
 
+import com.google.common.base.Throwables;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
@@ -247,7 +248,8 @@ public abstract class AbstractDevice implements AndroidDevice {
             ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class));
         detailedResult = executeCommandQuietly(getErrorDetailCommand);
       } catch (Exception e) {
-        detailedResult = "";
+        detailedResult = "Could not run get detailed result: " +
+            e.getMessage() + "\n" + Throwables.getStackTraceAsString(e);
       }
       throw new SelendroidException("Error occurred while starting selendroid-server on the device",
           new Throwable(result + "\nDetails:\n" + detailedResult));
