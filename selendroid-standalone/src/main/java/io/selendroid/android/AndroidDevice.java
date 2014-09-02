@@ -51,6 +51,10 @@ public interface AndroidDevice {
 
   public List<LogEntry> getLogs();
 
+  public boolean isLoggingEnabled();
+
+  public void setLoggingEnabled(boolean loggingEnabled);
+
   public boolean screenSizeMatches(String requestedScreenSize);
 
   public Locale getLocale();

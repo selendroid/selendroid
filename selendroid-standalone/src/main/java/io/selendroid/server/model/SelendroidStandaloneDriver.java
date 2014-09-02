@@ -288,6 +288,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       device.runAdbCommand(adbCommandParameter);
     }
 
+    // Configure logging on the device
+    device.setLoggingEnabled(serverConfiguration.isDeviceLog());
+
     // It's GO TIME!
     // start the selendroid server on the device and make sure it's up
     try {

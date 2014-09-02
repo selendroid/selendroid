@@ -66,10 +66,12 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
       } catch (Exception e) {
         if (retries == 0) {
           AndroidDevice device = session.getDevice();
-          log.info("getting logs");
-          device.setVerbose();
-          for (LogEntry le : device.getLogs()) {
-            System.out.println(le.getMessage());
+          if (device.isLoggingEnabled()) {
+            log.info("getting logs");
+            device.setVerbose();
+            for (LogEntry le : device.getLogs()) {
+              System.out.println(le.getMessage());
+            }
           }
           return new SelendroidResponse(sessionId, 13,
                   new SelendroidException(
