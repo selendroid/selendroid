@@ -317,14 +317,22 @@ public abstract class AbstractNativeElementContext
   }
 
   class ViewContentDescriptionPredicate implements Predicate<View> {
-    private String contenDescription = null;
+    private String contentDescription = null;
 
-    ViewContentDescriptionPredicate(String contenDescription) {
-      this.contenDescription = contenDescription;
+    ViewContentDescriptionPredicate(String contentDescription) {
+      this.contentDescription = contentDescription;
     }
 
     public boolean apply(View view) {
-      return contenDescription.equals(view.getContentDescription());
+      return charSequenceEquals(contentDescription, view.getContentDescription());
+    }
+
+    private boolean charSequenceEquals(String s, CharSequence cs) {
+      if (s == null) {
+        return cs == null;
+      } else {
+        return cs != null && s.contentEquals(cs);
+      }
     }
   }
 
