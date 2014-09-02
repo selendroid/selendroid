@@ -53,7 +53,6 @@ import com.android.ddmlib.RawImage;
 import com.android.ddmlib.TimeoutException;
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ObjectArrays;
-import org.openqa.selenium.remote.Command;
 
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
@@ -64,6 +63,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   private ByteArrayOutputStream logoutput;
   private ExecuteWatchdog logcatWatchdog;
   private static final Integer COMMAND_TIMEOUT = 20000;
+  private boolean loggingEnabled = true;
 
   /**
    * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
@@ -237,7 +237,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
 
     forwardSelendroidPort(port);
-    startLogging();
+
+    if(isLoggingEnabled()) {
+      startLogging();
+    }
   }
 
   public void forwardPort(int local, int remote) {
@@ -306,6 +309,16 @@ public abstract class AbstractDevice implements AndroidDevice {
       log.fine(lines[x]);
     }
     return logs;
+  }
+
+  @Override
+  public boolean isLoggingEnabled() {
+    return loggingEnabled;
+  }
+
+  @Override
+  public void setLoggingEnabled(boolean loggingEnabled) {
+    this.loggingEnabled = loggingEnabled;
   }
 
   private void startLogging() {

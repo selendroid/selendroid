@@ -13,19 +13,15 @@
  */
 package io.selendroid;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-
-import com.google.common.reflect.Reflection;
-
+import io.selendroid.log.LogLevelConverter;
+import io.selendroid.log.LogLevelEnum;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import io.selendroid.log.LogLevelConverter;
-import io.selendroid.log.LogLevelEnum;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SelendroidConfiguration {
 
@@ -109,6 +105,11 @@ public class SelendroidConfiguration {
   @Parameter(names = "-logLevel", converter = LogLevelConverter.class,
              description = "Specifies the log level of selendroid. Available values are: ERROR, WARNING, INFO, DEBUG and VERBOSE.")
   private LogLevelEnum logLevel = LogLevelEnum.ERROR;
+
+  @Parameter(names = "-deviceLog",
+             description = "Specifies whether or not adb logging should be enabled for the device running the test",
+             arity = 1)
+  private boolean deviceLog = true;
 
   public void setKeystore(String keystore) {
     this.keystore = keystore;
@@ -266,6 +267,14 @@ public class SelendroidConfiguration {
 
   public void setLogLevel(LogLevelEnum logLevel) {
     this.logLevel = logLevel;
+  }
+
+  public boolean isDeviceLog() {
+    return deviceLog;
+  }
+
+  public void setDeviceLog(boolean deviceLog) {
+    this.deviceLog = deviceLog;
   }
 
   @Override
