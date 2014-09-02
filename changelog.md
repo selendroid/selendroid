@@ -1,14 +1,14 @@
 0.12.-SNAPSHOT (under development)
 ---
-- Support to custom keystore, password, alias. #536
-- Added freeing on selendroidPort on driver.quit() #557
-- The activity class is not any longer immediately loaded. #558
-- Fixes bug in findElementsByName() #559
-- Optimize searching for elements in selendroid #560
-- Allowed disabling of adb logcat device logging with flag #561 
-- Cleaned up repetitive error handling in selendroid-server #562 
-- Stop swallowing exception when waiting for instrumentation #563
-- Allow selendroid-server start timeout to be passed on command line #564
+- Support to custom keystore, password, alias. [#536](../../issues/536)
+- Added freeing on selendroidPort on driver.quit() [#557](../../issues/557)
+- The activity class is not any longer immediately loaded. [#558](../../issues/558)
+- Fixes bug in findElementsByName() [#559](../../issues/559)
+- Optimize searching for elements in selendroid [#560](../../issues/560)
+- Allowed disabling of adb logcat device logging with flag [#561](../../issues/561)
+- Cleaned up repetitive error handling in selendroid-server [#562](../../issues/562) 
+- Stop swallowing exception when waiting for instrumentation [#563](../../issues/563)
+- Allow selendroid-server start timeout to be passed on command line [#564](../../issues/564)
 
 0.11.0
 ---
