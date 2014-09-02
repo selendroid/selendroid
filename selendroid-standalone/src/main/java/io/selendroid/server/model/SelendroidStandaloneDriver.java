@@ -306,7 +306,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
                                            + e.getMessage());
     }
     long start = System.currentTimeMillis();
-    long startTimeOut = 20000;
+    long startTimeOut = serverConfiguration.getServerStartTimeout();
     long timemoutEnd = start + startTimeOut;
     while (device.isSelendroidRunning() == false) {
       if (timemoutEnd >= System.currentTimeMillis()) {

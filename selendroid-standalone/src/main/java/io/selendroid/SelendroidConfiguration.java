@@ -111,6 +111,10 @@ public class SelendroidConfiguration {
              arity = 1)
   private boolean deviceLog = true;
 
+  @Parameter(description = "Maximum time in milliseconds to wait for the selendroid-server to come up on the device",
+      names = "-serverStartTimeout")
+  private long serverStartTimeout = 20000;
+
   public void setKeystore(String keystore) {
     this.keystore = keystore;
   }
@@ -275,6 +279,14 @@ public class SelendroidConfiguration {
 
   public void setDeviceLog(boolean deviceLog) {
     this.deviceLog = deviceLog;
+  }
+
+  public long getServerStartTimeout() {
+    return serverStartTimeout;
+  }
+
+  public void setServerStartTimeout(long serverStartTimeout) {
+    this.serverStartTimeout = serverStartTimeout;
   }
 
   @Override
