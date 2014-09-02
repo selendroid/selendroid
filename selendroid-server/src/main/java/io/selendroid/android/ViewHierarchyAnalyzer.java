@@ -163,11 +163,12 @@ public class ViewHierarchyAnalyzer {
   public static String getNativeId(View view) {
     String id = "";
     try {
+
       id =
           ServerInstrumentation.getInstance().getCurrentActivity().getResources()
               .getResourceName(view.getId());
       // remove the package name
-      id = id.split(":")[1];
+      id = id.substring(id.indexOf(':') + 1);
     } catch (Resources.NotFoundException e) {
       // can happen
     }
