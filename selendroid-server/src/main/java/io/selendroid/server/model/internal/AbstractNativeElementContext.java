@@ -259,16 +259,12 @@ public abstract class AbstractNativeElementContext
 
   @Override
   public AndroidElement findElementById(String using) {
-    List<AndroidElement> elements = findElementsById(using, true);
-    if (!elements.isEmpty()) {
-      return elements.get(0);
-    }
-    return null;
+    return findFirstByPredicate(new ViewIdPredicate(using));
   }
 
   @Override
   public List<AndroidElement> findElementsById(String using) {
-    return findElementsById(using, false);
+    return findAllByPredicate(new ViewIdPredicate(using));
   }
 
 
@@ -311,18 +307,7 @@ public abstract class AbstractNativeElementContext
     }
     return null;
   }
-
-  private List<AndroidElement> findElementsById(String using, Boolean findJustOne) {
-    List<View> root = new ArrayList<View>();
-    root.add(viewAnalyzer.getRecentDecorView());
-    List<AndroidElement> elements = searchViews(
-        root,
-        new ViewIdPredicate(using),
-        findJustOne);
-    return elements;
-
-  }
-
+  
   @Override
   public AndroidElement findElementByName(String using) {
     return findFirstByPredicate(new ViewContentDescriptionPredicate(using));
