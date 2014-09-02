@@ -53,7 +53,6 @@ import com.android.ddmlib.RawImage;
 import com.android.ddmlib.TimeoutException;
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ObjectArrays;
-import org.openqa.selenium.remote.Command;
 
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
@@ -137,7 +136,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     // Reinstall if already installed, Install otherwise
     CommandLine command = adbCommand("install", "-r", app.getAbsolutePath());
 
-    String out = executeCommand(command, COMMAND_TIMEOUT * 6);
+    String out = executeCommandQuietly(command, COMMAND_TIMEOUT * 6);
     try {
       // give it a second to recover from the install
       Thread.sleep(1000);
@@ -157,7 +156,7 @@ public abstract class AbstractDevice implements AndroidDevice {
         adbCommand("shell", "am", "start", "-a", "android.intent.action.MAIN", "-n",
             app.getBasePackage() + "/" + mainActivity);
 
-    String out = executeCommand(command);
+    String out = executeCommandQuietly(command);
     try {
       // give it a second to recover from the activity start
       Thread.sleep(1000);
@@ -167,15 +166,16 @@ public abstract class AbstractDevice implements AndroidDevice {
     return out.contains("Starting: Intent");
   }
   
-  protected String executeCommand(CommandLine command) {
-    return executeCommand(command, COMMAND_TIMEOUT);
+  protected String executeCommandQuietly(CommandLine command) {
+    return executeCommandQuietly(command, COMMAND_TIMEOUT);
   }
 
-  protected String executeCommand(CommandLine command, long timeout) {
+  protected String executeCommandQuietly(CommandLine command, long timeout) {
     try {
       return ShellCommand.exec(command, timeout);
     } catch (ShellCommandException e) {
-      e.printStackTrace();
+      String logMessage = String.format("Could not execute command: %s", command);
+      log.log(Level.WARNING, logMessage, e);
       return "";
     }
   }
@@ -184,7 +184,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   public void uninstall(AndroidApp app) throws AndroidSdkException {
     CommandLine command = adbCommand("uninstall", app.getBasePackage());
 
-    executeCommand(command);
+    executeCommandQuietly(command);
     try {
       // give it a second to recover from the uninstall
       Thread.sleep(1000);
@@ -196,18 +196,34 @@ public abstract class AbstractDevice implements AndroidDevice {
   @Override
   public void clearUserData(AndroidApp app) throws AndroidSdkException {
     CommandLine command = adbCommand("shell", "pm", "clear", app.getBasePackage());
-    executeCommand(command);
+    executeCommandQuietly(command);
   }
 
   @Override
   public void kill(AndroidApp aut) throws AndroidDeviceException, AndroidSdkException {
-
-    CommandLine command = adbCommand("shell", "am", "force-stop", aut.getBasePackage());
-    executeCommand(command);
+    try {
+      CommandLine command = adbCommand("shell", "am", "force-stop", aut.getBasePackage());
+      executeCommandQuietly(command);
+    } finally {
+      freeSelendroidPort();
+    }
 
     if (logcatWatchdog != null && logcatWatchdog.isWatching()) {
       logcatWatchdog.destroyProcess();
       logcatWatchdog = null;
+    }
+  }
+
+  private void freeSelendroidPort() {
+    if (this.port == null) {
+      // Not set
+      return;
+    }
+    CommandLine command = adbCommand("forward", "--remove", "tcp:" + this.port);
+    try {
+      ShellCommand.exec(command, 20000);
+    } catch (ShellCommandException e) {
+      log.log(Level.WARNING, "Could not free Selendroid port", e);
     }
   }
 
@@ -221,14 +237,14 @@ public abstract class AbstractDevice implements AndroidDevice {
         "io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation"};
     CommandLine command = adbCommand(
         ObjectArrays.concat(new String[]{"shell", "am", "instrument"}, args, String.class));
-    String result = executeCommand(command);
+    String result = executeCommandQuietly(command);
     if (result.contains("FAILED")) {
       String detailedResult;
       try {
         // Try again, waiting for instrumentation to finish. This way we'll get more error output.
         CommandLine getErrorDetailCommand = adbCommand(
             ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class));
-        detailedResult = executeCommand(getErrorDetailCommand);
+        detailedResult = executeCommandQuietly(getErrorDetailCommand);
       } catch (Exception e) {
         detailedResult = "";
       }
@@ -242,7 +258,20 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   public void forwardPort(int local, int remote) {
     CommandLine command = adbCommand("forward", "tcp:" + local, "tcp:" + remote);
-    executeCommand(command);
+    try {
+      ShellCommand.exec(command, 20000);
+    } catch (ShellCommandException forwardException) {
+      String debugForwardList;
+      try {
+        debugForwardList = ShellCommand.exec(adbCommand("forward", "--list"), 10000);
+      } catch (ShellCommandException listException) {
+        debugForwardList = "Could not get list of forwarded ports.";
+      }
+
+      throw new SelendroidException(
+          "Could not forward port: " + command + "\nList of forwarded ports:\n" + debugForwardList,
+          forwardException);
+    }
   }
 
   private void forwardSelendroidPort(int port) {
@@ -327,7 +356,7 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   protected String getProp(String key) {
     CommandLine command = adbCommand("shell", "getprop", key);
-    String prop = executeCommand(command);
+    String prop = executeCommandQuietly(command);
 
     return prop == null ? "" : prop.replace("\r", "").replace("\n", "");
   }
@@ -363,7 +392,7 @@ public abstract class AbstractDevice implements AndroidDevice {
       command.addArgument(params[i], false);
     }
 
-    executeCommand(command);
+    executeCommandQuietly(command);
   }
 
   public byte[] takeScreenshot() throws AndroidDeviceException {
@@ -438,7 +467,7 @@ public abstract class AbstractDevice implements AndroidDevice {
    * @param value - Key to be sent to 'adb shell input keyevent'
    */
   public void inputKeyevent(int value) {
-    executeCommand(adbCommand("shell", "input", "keyevent", "" + value));
+    executeCommandQuietly(adbCommand("shell", "input", "keyevent", "" + value));
     // need to wait a beat for the UI to respond
     try {
       Thread.sleep(500);
@@ -448,7 +477,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   public void invokeActivity(String activity) {
-    executeCommand(adbCommand("shell", "am", "start", "-a", activity));
+    executeCommandQuietly(adbCommand("shell", "am", "start", "-a", activity));
     // need to wait a beat for the UI to respond
     try {
       Thread.sleep(500);
@@ -458,14 +487,14 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   public void restartADB() {
-    executeCommand(adbCommand("kill-server"));
+    executeCommandQuietly(adbCommand("kill-server"));
     try {
       Thread.sleep(500);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
     // make sure it's backup again
-    executeCommand(adbCommand("devices"));
+    executeCommandQuietly(adbCommand("devices"));
   }
   
   private CommandLine adbCommand() {
