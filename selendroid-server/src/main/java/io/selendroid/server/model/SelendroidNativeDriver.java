@@ -114,16 +114,7 @@ public class SelendroidNativeDriver {
       return;
     }
 
-    Class<?> clazz;
-    try {
-      clazz = Class.forName(dest.getAuthority());
-    } catch (ClassNotFoundException exception) {
-      exception.printStackTrace();
-      throw new SelendroidException("The specified Activity class does not exist: "
-          + dest.getAuthority(), exception);
-    }
-
-    serverInstrumentation.startActivity(clazz);
+    serverInstrumentation.startActivity(dest.getAuthority());
     DefaultSelendroidDriver.sleepQuietly(500);
   }
 
