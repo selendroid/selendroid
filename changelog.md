@@ -12,6 +12,7 @@
 - Added "-h" and" --help" options to selendroid-standalone-server.
 - Split up SelendroidLauncher main(), getInstance() can now be used to get a launcher programmatically.
 - Added capability to load in extension handlers and a test bootstrap class
+- Assume AUT is already installed if LaunchActivity specified & no matching appsStore entry [#567](../../issues/567)
 
 0.11.0
 ---

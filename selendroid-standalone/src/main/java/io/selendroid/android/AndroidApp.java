@@ -22,6 +22,8 @@ public interface AndroidApp {
 
   public String getMainActivity() throws AndroidSdkException;
 
+  public void setMainActivity(String mainActivity);
+
   public String getVersionName() throws AndroidSdkException;
 
   public void deleteFileFromWithinApk(String file) throws ShellCommandException,

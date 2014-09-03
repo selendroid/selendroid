@@ -91,6 +91,11 @@ public class DefaultAndroidApp implements AndroidApp {
     return mainActivity;
   }
 
+
+  public void setMainActivity(String mainActivity) {
+    this.mainActivity = mainActivity;
+  }
+
   /*
    * (non-Javadoc)
    * 
