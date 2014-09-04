@@ -43,6 +43,40 @@ public class SelendroidLauncher {
     this.config = config;
   }
 
+  public static SelendroidLauncher getInstance(SelendroidConfiguration config) {
+    // Log the loaded configuration
+    System.out.println("################# Configuration in use #################");
+    System.out.println(config.toString());
+
+    //to be backward compatible
+    if (LogLevelEnum.ERROR.equals(config.getLogLevel())) {
+      Logger.getLogger(LOGGER_NAME).setLevel(LogLevelEnum.VERBOSE.level);
+    } else {
+      Logger.getLogger(LOGGER_NAME).setLevel(config.getLogLevel().level);
+    }
+
+    return new SelendroidLauncher(config);
+  }
+
+  public static SelendroidConfiguration parseConfig(String[] args) {
+    SelendroidConfiguration config = new SelendroidConfiguration();
+    JCommander jCommander = null;
+    try {
+      jCommander = new JCommander(config, args);
+      jCommander.setProgramName("Selendroid Standalone Server");
+    } catch (ParameterException e) {
+      log.severe("An error occurred while starting selendroid: " + e.getMessage());
+      throw Throwables.propagate(e);
+    }
+
+    if(config.isPrintHelp()) {
+      jCommander.usage();
+      System.exit(0);
+    }
+
+    return config;
+  }
+
   private void launchServer() {
     try {
       log.info("Starting selendroid-server port " + config.getPort());
@@ -82,33 +116,8 @@ public class SelendroidLauncher {
     }
 
     System.out.println("################# Selendroid #################");
-    SelendroidConfiguration config = new SelendroidConfiguration();
-    JCommander jCommander = null;
-    try {
-      jCommander = new JCommander(config, args);
-      jCommander.setProgramName("Selendroid Standalone Server");
-    } catch (ParameterException e) {
-      log.severe("An error occurred while starting selendroid: " + e.getMessage());
-      System.exit(0);
-    }
-
-    if (config.isPrintHelp()) {
-      jCommander.usage();
-    } else {
-      // Log the loaded configuration
-      System.out.println("################# Configuration in use #################");
-      System.out.println(config.toString());
-
-      //to be backward compatible
-      if (LogLevelEnum.ERROR.equals(config.getLogLevel())) {
-        Logger.getLogger(LOGGER_NAME).setLevel(LogLevelEnum.VERBOSE.level);
-      } else {
-        Logger.getLogger(LOGGER_NAME).setLevel(config.getLogLevel().level);
-      }
-
-      SelendroidLauncher laucher = new SelendroidLauncher(config);
-      laucher.launchServer();
-    }
+    SelendroidConfiguration config = parseConfig(args);
+    getInstance(config).launchServer();
   }
 
   private static void configureLogging() throws Exception {
