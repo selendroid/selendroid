@@ -13,6 +13,7 @@
  */
 package io.selendroid;
 
+import com.google.common.collect.Maps;
 import io.selendroid.adb.AdbConnection;
 import io.selendroid.server.utils.CallLogEntry;
 
@@ -231,6 +232,18 @@ public class SelendroidDriver extends RemoteWebDriver
   
   public List<CallLogEntry> readCallLog() {
     return new Gson().fromJson((String)execute("readCallLog").getValue(), new TypeToken<List<CallLogEntry>>(){}.getType());
+  }
+
+  public Object callExtension(String extensionMethod) {
+    return callExtension(extensionMethod, ImmutableMap.<String, Object>of());
+  }
+
+  public Object callExtension(String extensionMethod, Map<String, ?> parameters) {
+    Map<String, Object> paramsWithHandler = Maps.newHashMap();
+    paramsWithHandler.putAll(parameters);
+    paramsWithHandler.put("handlerName", extensionMethod);
+    Response response = execute("selendroid-handle-by-extension", paramsWithHandler);
+    return response.getValue();
   }
 
 }

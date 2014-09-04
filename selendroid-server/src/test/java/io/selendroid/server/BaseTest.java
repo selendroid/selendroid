@@ -13,15 +13,12 @@
  */
 package io.selendroid.server;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
 import io.selendroid.server.handlers.SessionAndPayloadExtractionTestHandler;
 import io.selendroid.server.internal.Capabilities;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -38,6 +35,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BaseTest {
   public static final int port = 38055;
@@ -106,7 +106,7 @@ public class BaseTest {
   /** Configuring AndroidServlet to use special test handler. */
   public class AndroidTestServlet extends AndroidServlet {
     public AndroidTestServlet() {
-      super(null);
+      super(null, null);
     }
 
     @Override

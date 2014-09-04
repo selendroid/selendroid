@@ -15,6 +15,7 @@ package io.selendroid.server;
 
 import io.selendroid.exceptions.AppCrashedException;
 import io.selendroid.exceptions.StaleElementReferenceException;
+import io.selendroid.extension.ExtensionLoader;
 import io.selendroid.server.handler.AddCallLog;
 import io.selendroid.server.handler.AddCookie;
 import io.selendroid.server.handler.BackgroundApp;
@@ -79,12 +80,14 @@ import io.selendroid.server.handler.alert.Alert;
 import io.selendroid.server.handler.alert.AlertAccept;
 import io.selendroid.server.handler.alert.AlertDismiss;
 import io.selendroid.server.handler.alert.AlertSendKeys;
+import io.selendroid.server.handler.extension.ExtensionCallHandler;
 import io.selendroid.server.handler.network.GetNetworkConnectionType;
 import io.selendroid.server.handler.script.ExecuteAsyncScript;
 import io.selendroid.server.handler.script.ExecuteScript;
 import io.selendroid.server.handler.timeouts.AsyncTimeoutHandler;
 import io.selendroid.server.handler.timeouts.SetImplicitWaitTimeout;
 import io.selendroid.server.handler.timeouts.TimeoutsHandler;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.http.HttpResponse;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
@@ -92,13 +95,13 @@ import io.selendroid.util.SelendroidLogger;
 
 import java.net.URLDecoder;
 
-import io.selendroid.server.http.HttpRequest;
-
 public class AndroidServlet extends BaseServlet {
   private SelendroidDriver driver = null;
+  protected ExtensionLoader extensionLoader = null;
 
-  public AndroidServlet(SelendroidDriver driver) {
+  public AndroidServlet(SelendroidDriver driver, ExtensionLoader extensionLoader) {
     this.driver = driver;
+    this.extensionLoader = extensionLoader;
     init();
   }
 
@@ -188,9 +191,13 @@ public class AndroidServlet extends BaseServlet {
     register(postHandler, new BackgroundApp("/wd/hub/session/:sessionId/-selendroid/background"));
     register(postHandler, new ResumeApp("/wd/hub/session/:sessionId/-selendroid/resume"));
 
-    //Endpoints to add to and read call logs
+    // Endpoints to add to and read call logs
     register(postHandler, new AddCallLog("/wd/hub/session/:sessionId/-selendroid/addcalllog"));
     register(postHandler, new ReadCallLog("/wd/hub/session/:sessionId/-selendroid/readcalllog"));
+
+    // Handle calls to dynamically loaded handlers
+    register(postHandler, new ExtensionCallHandler(
+        "/wd/hub/session/:sessionId/-selendroid/extension", extensionLoader));
 
     // currently not yet supported
     register(getHandler, new UnknownCommandHandler(

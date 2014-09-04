@@ -13,12 +13,18 @@
  */
 package io.selendroid.server.support;
 
+import com.android.ddmlib.IDevice;
+import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.util.HttpClientUtil;
+import org.apache.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.json.JSONObject;
+import org.openqa.selenium.logging.LogEntry;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,16 +32,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.json.JSONObject;
-import org.openqa.selenium.logging.LogEntry;
-
-import com.android.ddmlib.IDevice;
-
 public class DeviceForTest extends DefaultAndroidEmulator {
   @Override
-  public void runAdbCommand(String parameter) {}
+  public String runAdbCommand(String parameter) {
+    return "";
+  }
 
   @Override
   public Locale getLocale() {
@@ -82,7 +83,7 @@ public class DeviceForTest extends DefaultAndroidEmulator {
   }
 
   @Override
-  public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
+  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities caps) throws AndroidSdkException {
     try {
       selendroidDeviceServerStub = new SelendroidDeviceServerStub(port, testSessionListener);
     } catch (IOException e) {

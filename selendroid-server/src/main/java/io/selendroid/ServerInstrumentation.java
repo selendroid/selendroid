@@ -13,25 +13,6 @@
  */
 package io.selendroid;
 
-import io.selendroid.android.ActivitiesReporter;
-import io.selendroid.android.AndroidWait;
-import io.selendroid.exceptions.AppCrashedException;
-import io.selendroid.exceptions.PermissionDeniedException;
-import io.selendroid.exceptions.SelendroidException;
-import io.selendroid.server.AndroidServer;
-import io.selendroid.server.ServerDetails;
-import io.selendroid.server.utils.CallLogEntry;
-import io.selendroid.util.SelendroidLogger;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.concurrent.FutureTask;
-
-import org.json.JSONArray;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -50,6 +31,25 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import io.selendroid.android.ActivitiesReporter;
+import io.selendroid.android.AndroidWait;
+import io.selendroid.exceptions.AppCrashedException;
+import io.selendroid.exceptions.PermissionDeniedException;
+import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.extension.ExtensionLoader;
+import io.selendroid.server.AndroidServer;
+import io.selendroid.server.ServerDetails;
+import io.selendroid.server.model.ExternalStorage;
+import io.selendroid.server.utils.CallLogEntry;
+import io.selendroid.util.SelendroidLogger;
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.FutureTask;
 
 public class ServerInstrumentation extends Instrumentation implements ServerDetails {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
@@ -62,6 +62,10 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   private UiThreadController uiController;
   private Executor mainThreadExecutor;
+
+  /** Arguments this instrumentation was started with. */
+  public InstrumentationArguments args = null;
+  private ExtensionLoader extensionLoader;
 
   public void startMainActivity() {
     finishAllActivities();
@@ -98,18 +102,19 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   @SuppressWarnings("unchecked")
   @Override
   public void onCreate(Bundle arguments) {
+    this.args = new InstrumentationArguments(arguments);
 
     mainActivityName = arguments.getString("main_activity");
 
     int parsedServerPort = 0;
 
     try {
-      String port = arguments.getString("server_port");
-      if (port != null && port.isEmpty() == false) {
+      String port = args.getServerPort();
+      if (port != null && !port.isEmpty()) {
         parsedServerPort = Integer.parseInt(port);
       }
     } catch (NumberFormatException ex) {
-      SelendroidLogger.info("Unable to parse the value of server_port key.");
+      SelendroidLogger.error("Unable to parse the value of server_port key, defaulting to " + this.serverPort);
       parsedServerPort = this.serverPort;
     }
 
@@ -136,6 +141,17 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     SelendroidLogger.debug("debug");
     synchronized (ServerInstrumentation.class) {
       try {
+        Context context = getTargetContext();
+        if (args.isLoadExtensions()) {
+          extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
+          String bootstrapClassNames = args.getBootstrapClassNames();
+          if (bootstrapClassNames != null) {
+            extensionLoader.runBootstrapClasses(this, bootstrapClassNames.split(","));
+          }
+        } else {
+          extensionLoader = new ExtensionLoader(context);
+        }
+
         startMainActivity();
         startServer();
       } catch (Exception e) {
@@ -340,6 +356,10 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   @Override
   public String getOsName() {
     return "Android";
+  }
+
+  public ExtensionLoader getExtensionLoader() {
+    return extensionLoader;
   }
 
   public interface InputEventSender {

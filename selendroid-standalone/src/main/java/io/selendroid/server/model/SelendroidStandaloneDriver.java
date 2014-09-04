@@ -33,7 +33,6 @@ import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.SessionNotCreatedException;
 import io.selendroid.exceptions.ShellCommandException;
-import io.selendroid.log.LogLevelEnum;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.util.HttpClientUtil;
 
@@ -285,13 +284,21 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       device.runAdbCommand(adbCommandParameter);
     }
 
+    // Push extension dex to device if specified
+    String extensionFile = desiredCapabilities.getSelendroidExtensions();
+    if (extensionFile != null) {
+      String externalStorageDirectory = device.getExternalStoragePath();
+      String deviceDexPath = new File(externalStorageDirectory, "extension.dex").getAbsolutePath();
+      device.runAdbCommand(String.format("push %s %s", extensionFile, deviceDexPath));
+    }
+
     // Configure logging on the device
     device.setLoggingEnabled(serverConfiguration.isDeviceLog());
 
     // It's GO TIME!
     // start the selendroid server on the device and make sure it's up
     try {
-      device.startSelendroid(app, port);
+      device.startSelendroid(app, port, desiredCapabilities);
     } catch (AndroidSdkException e) {
       log.info("error while starting selendroid: " + e.getMessage());
 

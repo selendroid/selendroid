@@ -1,16 +1,3 @@
-/*
- * Copyright 2012-2013 eBay Software Foundation and selendroid committers.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- */
 package io.selendroid.support;
 
 import io.selendroid.android.AndroidSdk;
@@ -19,10 +6,23 @@ import io.selendroid.server.util.HttpClientUtil;
 import org.apache.commons.exec.CommandLine;
 import org.junit.BeforeClass;
 
+import java.io.File;
 
-public class BaseAndroidTest extends AbstractAndroidTest{
+public class BaseAndroidExtensionTest extends AbstractAndroidTest{
   @BeforeClass
   public static void startSelendroidServer() throws Exception {
+    CommandLine externalStorageLocator = new CommandLine(AndroidSdk.adb());
+    externalStorageLocator.addArgument("shell");
+    externalStorageLocator.addArgument("echo");
+    externalStorageLocator.addArgument("$EXTERNAL_STORAGE");
+    String externalStorageDir = ShellCommand.exec(externalStorageLocator).trim();
+
+    CommandLine pushExtensions = new CommandLine(AndroidSdk.adb());
+    pushExtensions.addArgument("push");
+    pushExtensions.addArgument("src/test/resources/extension.dex");
+    pushExtensions.addArgument(new File(externalStorageDir, "extension.dex").getAbsolutePath());
+    ShellCommand.exec(pushExtensions);
+
     CommandLine startSelendroid = new CommandLine(AndroidSdk.adb());
     startSelendroid.addArgument("shell");
     startSelendroid.addArgument("am");
@@ -30,8 +30,12 @@ public class BaseAndroidTest extends AbstractAndroidTest{
     startSelendroid.addArgument("-e");
     startSelendroid.addArgument("main_activity");
     startSelendroid.addArgument("io.selendroid.testapp.HomeScreenActivity");
+    startSelendroid.addArgument("-e");
+    startSelendroid.addArgument("load_extensions");
+    startSelendroid.addArgument("true");
     startSelendroid.addArgument("io.selendroid/.ServerInstrumentation");
     ShellCommand.exec(startSelendroid);
+
     CommandLine forwardPort = new CommandLine(AndroidSdk.adb());
     forwardPort.addArgument("forward");
     forwardPort.addArgument("tcp:8080");

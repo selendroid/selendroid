@@ -13,10 +13,13 @@
  */
 package io.selendroid;
 
-import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
-import static org.openqa.selenium.remote.CapabilityType.PLATFORM;
-import static org.openqa.selenium.remote.CapabilityType.VERSION;
 import io.selendroid.device.DeviceTargetPlatform;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openqa.selenium.remote.BrowserType;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,12 +27,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.openqa.selenium.remote.BrowserType;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
+import static org.openqa.selenium.remote.CapabilityType.PLATFORM;
+import static org.openqa.selenium.remote.CapabilityType.VERSION;
+
 
 public class SelendroidCapabilities extends DesiredCapabilities {
   private static final long serialVersionUID = -7061568919298342362L;
@@ -47,6 +48,9 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String AUTOMATION_NAME = "automationName";
   
   public static final String LAUNCH_ACTIVITY = "launchActivity";
+  public static final String SELENDROID_EXTENSIONS = "selendroidExtensions";
+  public static final String BOOTSTRAP_CLASS_NAMES = "bootstrapClassNames";
+
 
   public SelendroidCapabilities(Map<String, ?> from) {
     for (String key : from.keySet()) {
@@ -99,6 +103,22 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return (String) getRawCapabilities().get(SCREEN_SIZE);
   }
 
+  /**
+   * Full path of the dex file (on the host machine) containing Selendroid extensions to be loaded at run time
+   * Example: /home/user/extension.dex
+   */
+  public String getSelendroidExtensions() {
+    return (String) getRawCapabilities().get(SELENDROID_EXTENSIONS);
+  }
+
+  /**
+   * Full name of class to run on the device before starting the app under test.
+   * The class must be a part of an extension dex pushed to the device.
+   */
+  public String getBootstrapClassNames() {
+    return (String) getRawCapabilities().get(BOOTSTRAP_CLASS_NAMES);
+  }
+
   public void setSerial(String serial) {
     setCapability(SERIAL, serial);
   }
@@ -126,7 +146,24 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public void setScreenSize(String screenSize) {
     setCapability(SCREEN_SIZE, screenSize);
   }
- 
+
+  public SelendroidCapabilities setSelendroidExtensions(String filePath) {
+    setCapability(SELENDROID_EXTENSIONS, filePath);
+    return this;
+  }
+
+  /**
+   * Adds a class to run on app startup. Class names are stored as a string separated by commas.
+   */
+  public SelendroidCapabilities addBootstrapClass(String className) {
+    String currentClassNames = getBootstrapClassNames();
+    if (currentClassNames == null || currentClassNames.isEmpty()) {
+      setCapability(BOOTSTRAP_CLASS_NAMES, className);
+    } else {
+      setCapability(BOOTSTRAP_CLASS_NAMES, currentClassNames + "," + className);
+    }
+    return this;
+  }
 
   public SelendroidCapabilities(JSONObject source) throws JSONException {
     Iterator<String> iter = source.keys();

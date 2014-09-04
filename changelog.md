@@ -6,11 +6,12 @@
 - Fixes bug in findElementsByName() [#559](../../issues/559)
 - Optimize searching for elements in selendroid [#560](../../issues/560)
 - Allowed disabling of adb logcat device logging with flag [#561](../../issues/561)
-- Cleaned up repetitive error handling in selendroid-server [#562](../../issues/562) 
+- Cleaned up repetitive error handling in selendroid-server [#562](../../issues/562)
 - Stop swallowing exception when waiting for instrumentation [#563](../../issues/563)
 - Allow selendroid-server start timeout to be passed on command line [#564](../../issues/564)
 - Added "-h" and" --help" options to selendroid-standalone-server.
 - Split up SelendroidLauncher main(), getInstance() can now be used to get a launcher programmatically.
+- Added capability to load in extension handlers and a test bootstrap class
 
 0.11.0
 ---

@@ -13,14 +13,14 @@
  */
 package io.selendroid.android;
 
+import io.selendroid.SelendroidCapabilities;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
+import org.openqa.selenium.logging.LogEntry;
 
 import java.util.List;
 import java.util.Locale;
-
-import org.openqa.selenium.logging.LogEntry;
 
 public interface AndroidDevice {
   public boolean isDeviceReady();
@@ -39,7 +39,7 @@ public interface AndroidDevice {
 
   public void clearUserData(AndroidApp app) throws AndroidSdkException;
 
-  public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException;
+  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities capabilities) throws AndroidSdkException;
 
   public boolean isSelendroidRunning();
 
@@ -61,7 +61,7 @@ public interface AndroidDevice {
 
   public DeviceTargetPlatform getTargetPlatform();
 
-  public void runAdbCommand(String parameter);
+  public String runAdbCommand(String parameter);
 
   public byte[] takeScreenshot() throws AndroidDeviceException;
 
@@ -74,4 +74,6 @@ public interface AndroidDevice {
   public void invokeActivity(String activity);
 
   public void restartADB();
+
+  public String getExternalStoragePath();
 }
