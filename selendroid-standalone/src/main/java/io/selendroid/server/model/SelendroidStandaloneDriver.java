@@ -20,11 +20,10 @@ import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.DeviceManager;
-import io.selendroid.android.impl.DefaultAndroidApp;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultDeviceManager;
 import io.selendroid.android.impl.DefaultHardwareDevice;
-import io.selendroid.android.impl.MultiActivityAndroidApp;
+import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.builder.AndroidDriverAPKBuilder;
 import io.selendroid.builder.SelendroidServerBuilder;
 import io.selendroid.exceptions.AndroidDeviceException;
@@ -39,6 +38,7 @@ import io.selendroid.server.util.HttpClientUtil;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -142,13 +142,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
-    } else if (appsStore.isEmpty()) {
-      // note this only happens now when someone uses -noWebViewApp & forgets to specify -aut/app
-      // (or the app doesn't exist or some other error condition above ^ )
-      throw new SelendroidException(
-          "Fatal error initializing SelendroidDriver: configured app(s) have not been found.");
     }
-
   }
 
   /* package */void initAndroidDevices() throws AndroidDeviceException {
@@ -196,10 +190,18 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     }
 
     // Find the App being requested for use
-    AndroidApp app = appsStore.get(desiredCapabilities.getAut());
+    String aut = desiredCapabilities.getAut();
+    AndroidApp app = appsStore.get(aut);
     if (app == null) {
-      throw new SessionNotCreatedException(
-          "The requested application under test is not configured in selendroid server.");
+      if (desiredCapabilities.getLaunchActivity() != null) {
+        String appInfo = String.format("%s/%s", aut, desiredCapabilities.getLaunchActivity());
+        log.log(Level.INFO, "The requested application under test is not configured in selendroid server, " +
+            "assuming the " + appInfo + " is installed on the device.");
+        app = new InstalledAndroidApp(appInfo);
+      } else {
+        throw new SessionNotCreatedException(
+            "The requested application under test is not configured in selendroid server.");
+      }
     }
     // adjust app based on capabilities (some parameters are session specific)
     app = augmentApp(app, desiredCapabilities);
@@ -247,7 +249,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       }
       emulator.setIDevice(deviceManager.getVirtualDevice(emulator.getAvdName()));
     }
-    boolean appInstalledOnDevice = device.isInstalled(app);
+    boolean appInstalledOnDevice = device.isInstalled(app) || app instanceof InstalledAndroidApp;
     if (!appInstalledOnDevice || serverConfiguration.isForceReinstall()) {
       device.install(app);
     } else {
@@ -353,7 +355,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     this.sessions.put(sessionId, session);
 
     // We are requesting an "AndroidDriver" so automatically switch to the webview
-    if (BrowserType.ANDROID.equals(desiredCapabilities.getAut())) {
+    if (BrowserType.ANDROID.equals(aut)) {
       // arbitrarily high wait time, will this cover our slowest possible device/emulator?
       WebDriverWait wait = new WebDriverWait(driver, 60);
       // wait for the WebView to appear
@@ -375,15 +377,10 @@ public class SelendroidStandaloneDriver implements ServerDetails {
    */
   private AndroidApp augmentApp(AndroidApp app,
 		SelendroidCapabilities desiredCapabilities) {
-	  AndroidApp returnApp = app;
-	  // override mainActivity of the app
 	  if (desiredCapabilities.getLaunchActivity() != null) {
-		  MultiActivityAndroidApp augmentedApp = new MultiActivityAndroidApp((DefaultAndroidApp)returnApp);
-		  augmentedApp.setMainActivity(desiredCapabilities.getLaunchActivity());
-		  // set the app for return
-		  returnApp = augmentedApp;
+      app.setMainActivity(desiredCapabilities.getLaunchActivity());
 	  }
-	  return returnApp;
+	  return app;
 }
 
 private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkException {

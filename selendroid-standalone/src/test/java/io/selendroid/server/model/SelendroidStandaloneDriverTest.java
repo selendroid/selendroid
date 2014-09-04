@@ -38,8 +38,7 @@ import org.openqa.selenium.remote.BrowserType;
 
 public class SelendroidStandaloneDriverTest {
   public static final String TEST_APP_ID = "io.selendroid.testapp:0.4-SNAPSHOT";
-  private static final String TEST_APP_INSTALLED =
-      "io.selendroid.testapp/HomeScreenActivity:0.4-SNAPSHOT";
+  private static final String TEST_APP_LAUNCH_ACTIVITY = "HomeScreenActivity";
   public static final String APK_FILE = "src/test/resources/selendroid-test-app.apk";
   public static final String INVALID_APK_FILE =
       "src/test/resources/selendroid-test-app-invalid.apk";
@@ -51,7 +50,7 @@ public class SelendroidStandaloneDriverTest {
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     driver.initApplicationsUnderTest(conf);
-    assertThatTestappHasBeenSuccessfullyRegistered(driver);
+    assertThatTestAppHasBeenSuccessfullyRegistered(driver);
   }
 
   @Test
@@ -61,7 +60,7 @@ public class SelendroidStandaloneDriverTest {
     conf.addSupportedApp(new File(INVALID_APK_FILE).getAbsolutePath());
     SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     driver.initApplicationsUnderTest(conf);
-    assertThatTestappHasBeenSuccessfullyRegistered(driver);
+    assertThatTestAppHasBeenSuccessfullyRegistered(driver);
   }
 
   @Test
@@ -71,23 +70,6 @@ public class SelendroidStandaloneDriverTest {
       driver.initApplicationsUnderTest(new SelendroidConfiguration());
     } catch (SelendroidException e) {
       Assert.assertEquals("Configuration error - no apps has been configured.", e.getMessage());
-    }
-  }
-
-  @Test
-  public void shouldInitDriverIfNoValidAppIsAvailableAndNoWebViewApp() throws Exception {
-    SelendroidConfiguration conf = new SelendroidConfiguration();
-    conf.setNoWebViewApp(true);
-    conf.addSupportedApp(new File("NonExistentialFile").getAbsolutePath());
-    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
-    try {
-      driver.initApplicationsUnderTest(conf);
-      Assert
-          .fail("With complete invalid app configuration the driver should not be able to initialize.");
-    } catch (SelendroidException e) {
-      Assert.assertEquals(
-          "Fatal error initializing SelendroidDriver: configured app(s) have not been found.",
-          e.getMessage());
     }
   }
 
@@ -104,7 +86,7 @@ public class SelendroidStandaloneDriverTest {
         .get(BrowserType.ANDROID).getAppId(), BrowserType.ANDROID);
   }
 
-  protected void assertThatTestappHasBeenSuccessfullyRegistered(SelendroidStandaloneDriver driver) {
+  protected void assertThatTestAppHasBeenSuccessfullyRegistered(SelendroidStandaloneDriver driver) {
     Map<String, AndroidApp> apps = driver.getConfiguredApps();
     Assert.assertTrue("expecting 2 test app has been registered but was " + apps.size(),
         apps.size() == 2);
@@ -115,10 +97,26 @@ public class SelendroidStandaloneDriverTest {
 
   @Test
   public void shouldCreateNewTestSession() throws Exception {
-    // Setting up driver with test app and device stub
-    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
+
+    SelendroidCapabilities caps = new SelendroidCapabilities();
+    caps.setAut(TEST_APP_ID);
+
+    createTestSession(conf, caps);
+  }
+
+  @Test
+  public void shouldCreateNewTestSessionIfNoApkPassed() throws Exception {
+    SelendroidCapabilities caps = new SelendroidCapabilities();
+    caps.setAut(TEST_APP_ID);
+    caps.setLaunchActivity(TEST_APP_LAUNCH_ACTIVITY);
+    createTestSession(new SelendroidConfiguration(), caps);
+  }
+
+  private void createTestSession(SelendroidConfiguration conf, SelendroidCapabilities caps) throws Exception{
+    // Setting up driver with test app and device stub
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     driver.initApplicationsUnderTest(conf);
     DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
 
@@ -136,11 +134,9 @@ public class SelendroidStandaloneDriverTest {
     driver.setDeviceStore(store);
 
     // testing new session creation
-    SelendroidCapabilities capa = new SelendroidCapabilities();
-    capa.setAut(TEST_APP_ID);
-    capa.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
+    caps.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
     try {
-      String sessionId = driver.createNewTestSession(new JSONObject(capa.asMap()), 0);
+      String sessionId = driver.createNewTestSession(new JSONObject(caps.asMap()), 0);
       Assert.assertNotNull(UUID.fromString(sessionId));
     } finally {
       // this will also stop the http server
