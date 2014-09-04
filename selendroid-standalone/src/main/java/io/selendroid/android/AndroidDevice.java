@@ -76,4 +76,6 @@ public interface AndroidDevice {
   public void restartADB();
 
   public String getExternalStoragePath();
+
+  public String getCrashLog();
 }
