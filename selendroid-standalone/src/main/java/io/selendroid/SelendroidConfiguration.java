@@ -115,6 +115,9 @@ public class SelendroidConfiguration {
       names = "-serverStartTimeout")
   private long serverStartTimeout = 20000;
 
+  @Parameter(names = {"-h", "--help"}, description = "Prints usage instructions to the terminal")
+  private boolean printHelp = false;
+
   public void setKeystore(String keystore) {
     this.keystore = keystore;
   }
@@ -287,6 +290,14 @@ public class SelendroidConfiguration {
 
   public void setServerStartTimeout(long serverStartTimeout) {
     this.serverStartTimeout = serverStartTimeout;
+  }
+
+  public boolean isPrintHelp() {
+    return printHelp;
+  }
+
+  public void setPrintHelp(boolean printHelp) {
+    this.printHelp = printHelp;
   }
 
   @Override
