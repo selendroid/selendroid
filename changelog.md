@@ -10,6 +10,7 @@
 - Stop swallowing exception when waiting for instrumentation [#563](../../issues/563)
 - Allow selendroid-server start timeout to be passed on command line [#564](../../issues/564)
 - Added "-h" and" --help" options to selendroid-standalone-server.
+- Split up SelendroidLauncher main(), getInstance() can now be used to get a launcher programmatically.
 
 0.11.0
 ---
