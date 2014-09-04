@@ -13,24 +13,24 @@
  */
 package io.selendroid.android.impl;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.android.ddmlib.IDevice;
+import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.io.ShellCommand;
 import io.selendroid.server.util.HttpClientUtil;
 import io.selendroid.util.SelendroidAssert;
-
-import java.io.File;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.android.ddmlib.IDevice;
+import java.io.File;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -74,7 +74,7 @@ public class DefaultHardwareDeviceTests {
     Assert.assertTrue(installedAPKs.contains(AUT_PACKAGE));
 
     // start selendroid
-    emulator.startSelendroid(aut, port);
+    emulator.startSelendroid(aut, port, new SelendroidCapabilities());
     String url = "http://localhost:" + port + "/wd/hub/status";
     HttpResponse response = HttpClientUtil.executeRequest(url, HttpMethod.GET);
     SelendroidAssert.assertResponseIsOk(response);

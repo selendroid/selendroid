@@ -18,7 +18,6 @@ import io.selendroid.server.http.HttpServer;
 import io.selendroid.server.inspector.InspectorServlet;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
-import io.selendroid.util.SelendroidLogger;
 
 public class AndroidServer {
   private int driverPort = 8080;
@@ -34,7 +33,7 @@ public class AndroidServer {
     SelendroidDriver driver = new DefaultSelendroidDriver(androidInstrumentation);
     webServer.addHandler(new StatusServlet(androidInstrumentation));
     webServer.addHandler(new InspectorServlet(driver, androidInstrumentation));
-    webServer.addHandler(new AndroidServlet(driver));
+    webServer.addHandler(new AndroidServlet(driver, androidInstrumentation.getExtensionLoader()));
   }
 
   public void start() {

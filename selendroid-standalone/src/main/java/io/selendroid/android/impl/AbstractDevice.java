@@ -13,7 +13,14 @@
  */
 package io.selendroid.android.impl;
 
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.RawImage;
+import com.android.ddmlib.TimeoutException;
+import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Throwables;
+import com.google.common.collect.ObjectArrays;
+import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.AndroidSdk;
@@ -22,19 +29,6 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
@@ -48,12 +42,16 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.openqa.selenium.logging.LogEntry;
 
-import com.android.ddmlib.AdbCommandRejectedException;
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.RawImage;
-import com.android.ddmlib.TimeoutException;
-import com.beust.jcommander.internal.Lists;
-import com.google.common.collect.ObjectArrays;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
@@ -230,7 +228,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   @Override
-  public void startSelendroid(AndroidApp aut, int port) throws AndroidSdkException {
+  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities capabilities) throws AndroidSdkException {
     this.port = port;
 
     String[] args =  {
@@ -239,6 +237,13 @@ public abstract class AbstractDevice implements AndroidDevice {
         "io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation"};
     CommandLine command = adbCommand(
         ObjectArrays.concat(new String[]{"shell", "am", "instrument"}, args, String.class));
+    if (capabilities.getSelendroidExtensions() != null) {
+      command.addArguments(new String[]{"-e", "load_extensions", "true"});
+      if (capabilities.getBootstrapClassNames() != null) {
+        command.addArguments(new String[]{"-e", "bootstrap", capabilities.getBootstrapClassNames()});
+      }
+    }
+
     String result = executeCommandQuietly(command);
     if (result.contains("FAILED")) {
       String detailedResult;
@@ -396,9 +401,9 @@ public abstract class AbstractDevice implements AndroidDevice {
     return getScreenSize().equals(requestedScreenSize);
   }
 
-  public void runAdbCommand(String parameter) {
-    if (parameter == null || parameter.isEmpty() == true) {
-      return;
+  public String runAdbCommand(String parameter) {
+    if (parameter == null || parameter.isEmpty()) {
+      return null;
     }
     System.out.println("running command: adb " + parameter);
     CommandLine command = adbCommand();
@@ -408,7 +413,8 @@ public abstract class AbstractDevice implements AndroidDevice {
       command.addArgument(params[i], false);
     }
 
-    executeCommandQuietly(command);
+    String commandOutput = executeCommandQuietly(command);
+    return commandOutput.trim();
   }
 
   public byte[] takeScreenshot() throws AndroidDeviceException {
@@ -528,6 +534,10 @@ public abstract class AbstractDevice implements AndroidDevice {
       command.addArgument(arg, false);
     }
     return command;
+  }
+
+  public String getExternalStoragePath() {
+    return runAdbCommand("shell echo $EXTERNAL_STORAGE");
   }
 
 }
