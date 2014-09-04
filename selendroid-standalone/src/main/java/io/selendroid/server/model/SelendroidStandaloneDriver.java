@@ -163,25 +163,22 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
   @Override
   public String getServerVersion() {
-    return selendroidApkBuilder.getJarVersionNumber();
+    return SelendroidServerBuilder.getJarVersionNumber();
   }
 
   @Override
   public String getCpuArch() {
-    String arch = System.getProperty("os.arch");
-    return arch;
+    return System.getProperty("os.arch");
   }
 
   @Override
   public String getOsVersion() {
-    String os = System.getProperty("os.version");
-    return os;
+    return System.getProperty("os.version");
   }
 
   @Override
   public String getOsName() {
-    String os = System.getProperty("os.name");
-    return os;
+    return System.getProperty("os.name");
   }
 
   protected SelendroidConfiguration getSelendroidConfiguration() {
@@ -308,7 +305,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     long start = System.currentTimeMillis();
     long startTimeOut = serverConfiguration.getServerStartTimeout();
     long timemoutEnd = start + startTimeOut;
-    while (device.isSelendroidRunning() == false) {
+    while (!device.isSelendroidRunning()) {
       if (timemoutEnd >= System.currentTimeMillis()) {
         try {
           Thread.sleep(2000);
@@ -403,9 +400,8 @@ private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkEx
       return null;
     }
     String[] localeStr = capa.getLocale().split("_");
-    Locale locale = new Locale(localeStr[0], localeStr[1]);
 
-    return locale;
+    return new Locale(localeStr[0], localeStr[1]);
   }
 
   /* package */AndroidDevice getAndroidDevice(SelendroidCapabilities caps)
@@ -448,10 +444,7 @@ private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkEx
   }
 
   public boolean isValidSession(String sessionId) {
-    if (sessionId != null && sessionId.isEmpty() == false) {
-      return sessions.containsKey(sessionId);
-    }
-    return false;
+    return sessionId != null && !sessionId.isEmpty() && sessions.containsKey(sessionId);
   }
 
   public void stopSession(String sessionId) throws AndroidDeviceException {
@@ -468,13 +461,12 @@ private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkEx
 
       // remove session
       sessions.remove(sessionId);
-      session = null;
     }
   }
 
   public void quitSelendroid() {
     List<String> sessionsToQuit = Lists.newArrayList(sessions.keySet());
-    if (sessionsToQuit != null && sessionsToQuit.isEmpty() == false) {
+    if (!sessionsToQuit.isEmpty()) {
       for (String sessionId : sessionsToQuit) {
         try {
           stopSession(sessionId);
@@ -537,7 +529,7 @@ private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkEx
 
         list.put(deviceInfo);
       } catch (Exception e) {
-        log.info("Error occured when building suported device info: " + e.getMessage());
+        log.info("Error occurred when building supported device info: " + e.getMessage());
       }
     }
     return list;
@@ -554,8 +546,8 @@ private AndroidApp createSelendroidServerApk(AndroidApp aut) throws AndroidSdkEx
   }
 
   public byte[] takeScreenshot(String sessionId) throws AndroidDeviceException {
-    if (sessionId == null || sessions.containsKey(sessionId) == false) {
-      throw new SelendroidException("The gicen session id '" + sessionId + "' was not found.");
+    if (sessionId == null || !sessions.containsKey(sessionId)) {
+      throw new SelendroidException("The given session id '" + sessionId + "' was not found.");
     }
     return sessions.get(sessionId).getDevice().takeScreenshot();
   }
