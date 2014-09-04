@@ -168,33 +168,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
             client.close();
           }
         }
-        Socket socket = null;
-        PrintWriter out = null;
-        BufferedReader in = null;
-        try {
-          socket = new Socket("127.0.0.1", port);
-          out = new PrintWriter(socket.getOutputStream(), true);
-          in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-          if (in.readLine() == null) {
-            throw new AndroidDeviceException("error");
-          }
-
-          out.write("avd name\r\n");
-          out.flush();
-          in.readLine();// OK
-          String avdName = in.readLine();
-          mapping.put(avdName, port);
-        } catch (Exception e) {
-          // ignore
-        } finally {
-          try {
-            out.close();
-            in.close();
-            socket.close();
-          } catch (Exception e) {
-            // do nothing
-          }
-        }
       }
     }
     scanner.close();
