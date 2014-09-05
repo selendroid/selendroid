@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -27,6 +28,11 @@ public class WebViewActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_web_view);
     WebView webview = (WebView) findViewById(R.id.webview);
+    WebSettings settings = webview.getSettings();
+    // viewport meta tag support
+    settings.setUseWideViewPort(true);
+    settings.setLoadWithOverviewMode(true);
+
     webview.setWebViewClient(new AndroidDriverClient());
     webview.loadData("<html><body><h1 id='AndroidDriver'>Android driver webview app</h1>" +
         "</body></html>", "text/html", "UTF-8");
