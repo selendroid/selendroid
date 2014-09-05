@@ -58,6 +58,7 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
             new CommandInfo("/session/:sessionId/-selendroid/addcalllog",HttpMethod.POST));
           put("readCallLog",
             new CommandInfo("/session/:sessionId/-selendroid/readcalllog",HttpMethod.POST));
+          put("actions", new CommandInfo("/session/:sessionId/actions", HttpMethod.POST));
         }
       };
 

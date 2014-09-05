@@ -16,6 +16,7 @@ package io.selendroid.server;
 import io.selendroid.exceptions.AppCrashedException;
 import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.extension.ExtensionLoader;
+import io.selendroid.server.handler.Actions;
 import io.selendroid.server.handler.AddCallLog;
 import io.selendroid.server.handler.AddCookie;
 import io.selendroid.server.handler.BackgroundApp;
@@ -198,6 +199,9 @@ public class AndroidServlet extends BaseServlet {
     // Handle calls to dynamically loaded handlers
     register(postHandler, new ExtensionCallHandler(
         "/wd/hub/session/:sessionId/-selendroid/extension", extensionLoader));
+
+    // Actions sequencing endpoint
+    register(postHandler, new Actions("/wd/hub/session/:sessionId/actions"));
 
     // currently not yet supported
     register(getHandler, new UnknownCommandHandler(

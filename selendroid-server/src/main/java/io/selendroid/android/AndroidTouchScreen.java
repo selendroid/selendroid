@@ -35,6 +35,7 @@ import io.selendroid.android.internal.Point;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.model.TouchScreen;
 import io.selendroid.server.model.interactions.Coordinates;
+import io.selendroid.server.action.touch.FlickDirection;
 import io.selendroid.util.SelendroidLogger;
 
 import java.util.ArrayList;
@@ -96,10 +97,10 @@ public class AndroidTouchScreen implements TouchScreen {
 
     Scroll scroll = new Scroll(origin, destination, downTime);
     // Initial acceleration from origin to reference point
-    motionEvents.addAll(getMoveEvents(downTime, downTime, origin, scroll.getDecelerationPoint(),
+    motionEvents.add(getBatchedMotionEvent(downTime, downTime, origin, scroll.getDecelerationPoint(),
         Scroll.INITIAL_STEPS, Scroll.TIME_BETWEEN_EVENTS));
     // Deceleration phase from reference point to destination
-    motionEvents.addAll(getMoveEvents(downTime, scroll.getEventTimeForReferencePoint(),
+    motionEvents.add(getBatchedMotionEvent(downTime, scroll.getEventTimeForReferencePoint(),
         scroll.getDecelerationPoint(), destination, Scroll.DECELERATION_STEPS,
         Scroll.TIME_BETWEEN_EVENTS));
 
@@ -243,9 +244,29 @@ public class AndroidTouchScreen implements TouchScreen {
     List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
     Point origin = where.getLocationOnScreen();
     Point destination = new Point(origin.x + xOffset, origin.y + yOffset);
-    Flick flick = new Flick(speed);
+    DynamicIntervalFlick flick = new DynamicIntervalFlick(speed);
     motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, origin));
-    motionEvents.addAll(getMoveEvents(downTime, downTime, origin, destination, flick.getNumberOfSteps(),
+    motionEvents.add(getBatchedMotionEvent(downTime, downTime, origin, destination, flick.getNumberOfSteps(),
+        flick.getTimeBetweenEvents()));
+    motionEvents.add(getMotionEvent(downTime, flick.getTimeForDestinationPoint(downTime),
+        MotionEvent.ACTION_UP, destination));
+    motions.send(motionEvents);
+  }
+
+  public void flick(Point origin, FlickDirection direction, int distance, int duration) {
+    int xOffset = distance * direction.getxMultiplier();
+    int yOffset = distance * direction.getyMultiplier();
+    Point destination = new Point(origin.x + xOffset, origin.y + yOffset);
+    generateFlickMotions(origin, destination, new FixedIntervalFlick(duration));
+  }
+
+  private void generateFlickMotions(Point origin, Point destination, Flick flick) {
+    long downTime = SystemClock.uptimeMillis();
+
+    List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
+    motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, origin));
+    motionEvents.add(getBatchedMotionEvent(
+        downTime, downTime, origin, destination, flick.getNumberOfSteps(),
         flick.getTimeBetweenEvents()));
     motionEvents.add(getMotionEvent(downTime, flick.getTimeForDestinationPoint(downTime),
         MotionEvent.ACTION_UP, destination));
@@ -256,28 +277,29 @@ public class AndroidTouchScreen implements TouchScreen {
     return MotionEvent.obtain(start, eventTime, action, coords.x, coords.y, 0);
   }
 
-  private List<MotionEvent> getMoveEvents(long downTime, long startingEVentTime, Point origin,
-      Point destination, int steps, long timeBetweenEvents) {
-    List<MotionEvent> move = new ArrayList<MotionEvent>();
-    MotionEvent event;
-
+  private MotionEvent getBatchedMotionEvent(long downTime, long startingEventTime, Point origin,
+                                            Point destination, int steps, long timeBetweenEvents) {
     float xStep = (destination.x - origin.x) / steps;
     float yStep = (destination.y - origin.y) / steps;
     float x = origin.x;
     float y = origin.y;
-    long eventTime = startingEVentTime;
+    long eventTime = startingEventTime;
+
+    x += xStep;
+    y += yStep;
+    MotionEvent event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_MOVE, x, y, 0);
 
     for (int i = 0; i < steps - 1; i++) {
       x += xStep;
       y += yStep;
+
       eventTime += timeBetweenEvents;
-      event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_MOVE, x, y, 0);
-      move.add(event);
+      event.addBatch(eventTime, x, y, 1.0f, 1.0f, 0);
     }
 
     eventTime += timeBetweenEvents;
-    move.add(getMotionEvent(downTime, eventTime, MotionEvent.ACTION_MOVE, destination));
-    return move;
+    event.addBatch(eventTime, destination.getX(), destination.getY(), 1.0f, 1.0f, 0);
+    return event;
   }
 
   @Override
@@ -378,7 +400,13 @@ public class AndroidTouchScreen implements TouchScreen {
     }
   }
 
-  final class Flick {
+  interface Flick {
+    public int getNumberOfSteps();
+    public long getTimeBetweenEvents();
+    public long getTimeForDestinationPoint(long downTime);
+  }
+
+  final class DynamicIntervalFlick implements Flick {
 
     private final int SPEED_NORMAL = 0;
     private final int SPEED_FAST = 1;
@@ -386,7 +414,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
     private int speed;
 
-    public Flick(int speed) {
+    public DynamicIntervalFlick(int speed) {
       this.speed = speed;
     }
 
@@ -394,7 +422,7 @@ public class AndroidTouchScreen implements TouchScreen {
       return speed == SPEED_SLOW ? 8 : 4;
     }
 
-    private long getTimeBetweenEvents() {
+    public long getTimeBetweenEvents() {
       switch (speed) {
         case SPEED_SLOW:
           return 50;
@@ -410,8 +438,30 @@ public class AndroidTouchScreen implements TouchScreen {
       }
     }
 
-    private long getTimeForDestinationPoint(long downTime) {
+    public long getTimeForDestinationPoint(long downTime) {
       return (downTime + getNumberOfSteps() * getTimeBetweenEvents());
+    }
+  }
+
+  final class FixedIntervalFlick implements Flick {
+    private int EVENT_INTERVAL_MS = 15;
+
+    private int time; // Total time in ms of flick gesture
+
+    public FixedIntervalFlick(int time) {
+      this.time = time;
+    }
+
+    public int getNumberOfSteps() {
+      return time / EVENT_INTERVAL_MS;
+    }
+
+    public long getTimeBetweenEvents() {
+      return (time == 0) ? 0 : EVENT_INTERVAL_MS;
+    }
+
+    public long getTimeForDestinationPoint(long downTime) {
+      return downTime + time;
     }
   }
 
