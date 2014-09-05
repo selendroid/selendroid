@@ -140,18 +140,21 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     SelendroidLogger.error("Error");
     SelendroidLogger.debug("debug");
     synchronized (ServerInstrumentation.class) {
-      try {
-        Context context = getTargetContext();
-        if (args.isLoadExtensions()) {
-          extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
-          String bootstrapClassNames = args.getBootstrapClassNames();
-          if (bootstrapClassNames != null) {
-            extensionLoader.runBootstrapClasses(this, bootstrapClassNames.split(","));
-          }
-        } else {
-          extensionLoader = new ExtensionLoader(context);
-        }
+      UncaughtExceptionHandling.clearCrashLogFile();
+      UncaughtExceptionHandling.setGlobalExceptionHandler();
 
+      Context context = getTargetContext();
+      if (args.isLoadExtensions()) {
+        extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
+        String bootstrapClassNames = args.getBootstrapClassNames();
+        if (bootstrapClassNames != null) {
+          extensionLoader.runBootstrapClasses(this, bootstrapClassNames.split(","));
+        }
+      } else {
+        extensionLoader = new ExtensionLoader(context);
+      }
+
+      try {
         startMainActivity();
         startServer();
       } catch (Exception e) {

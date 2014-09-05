@@ -29,6 +29,7 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
+import io.selendroid.server.model.ExternalStorageFile;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
@@ -46,6 +47,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -538,6 +540,19 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   public String getExternalStoragePath() {
     return runAdbCommand("shell echo $EXTERNAL_STORAGE");
+  }
+
+  /**
+   * Get crash log from AUT
+   * @return empty string if there is no crash log on the device, otherwise returns the stack trace
+   * caused by the crash of the AUT
+   */
+  public String getCrashLog() {
+    String crashLogFile = ExternalStorageFile.APP_CRASH_LOG.toString();
+    String crashLogPath = new File(getExternalStoragePath(), crashLogFile).getAbsolutePath();
+    CommandLine command = adbCommand("shell", "test", "-e", crashLogPath, "&&", "cat", crashLogPath);
+
+    return executeCommandQuietly(command);
   }
 
 }

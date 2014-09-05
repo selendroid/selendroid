@@ -14,6 +14,7 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.android.AndroidDevice;
+import io.selendroid.exceptions.AppCrashedException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
@@ -67,6 +68,12 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
       } catch (Exception e) {
         if (retries == 0) {
           AndroidDevice device = session.getDevice();
+
+          String crashMessage = device.getCrashLog();
+          if (!crashMessage.isEmpty()) {
+            return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, new AppCrashedException(crashMessage));
+          }
+
           if (device.isLoggingEnabled()) {
             log.info("getting logs");
             device.setVerbose();
@@ -74,6 +81,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
               System.out.println(le.getMessage());
             }
           }
+
           return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR,
                   new SelendroidException(
                           "Error occured while communicating with selendroid server on the device: ",
