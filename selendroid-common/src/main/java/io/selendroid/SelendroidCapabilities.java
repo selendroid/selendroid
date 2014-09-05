@@ -23,6 +23,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,13 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String SELENDROID_EXTENSIONS = "selendroidExtensions";
   public static final String BOOTSTRAP_CLASS_NAMES = "bootstrapClassNames";
 
+  public static SelendroidCapabilities empty() {
+    return new SelendroidCapabilities(new HashMap<String, Object>());
+  }
+
+  public static SelendroidCapabilities copyOf(SelendroidCapabilities caps) {
+    return new SelendroidCapabilities(caps.getRawCapabilities());
+  }
 
   public SelendroidCapabilities(Map<String, ?> from) {
     for (String key : from.keySet()) {
@@ -304,5 +312,17 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     } else {
       return o;
     }
+  }
+  
+  /**
+   * Returns a copy of this instance with {@code caps} merged, overwriting existing keys on
+   * collision.
+   */
+  public SelendroidCapabilities withMerged(SelendroidCapabilities caps) {
+    SelendroidCapabilities copy = SelendroidCapabilities.copyOf(this);
+    for (Map.Entry<String, Object> entry: caps.getRawCapabilities().entrySet()) {
+      copy.setCapability(entry.getKey(), entry.getValue());
+    }
+    return copy;
   }
 }

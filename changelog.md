@@ -15,6 +15,7 @@
 - Assume AUT is already installed if LaunchActivity specified & no matching appsStore entry [#567](../../issues/567)
 - Propagate unhandled exceptions in AUT as AppCrashedException
 - Added server-side support for low-level actions API
+- Added empty()/copyOf()/withMerged() to SelendroidCapabilities
 
 0.11.0
 ---
