@@ -14,6 +14,8 @@
 package io.selendroid.server.model;
 
 
+import io.selendroid.android.internal.Point;
+import io.selendroid.server.action.touch.FlickDirection;
 import io.selendroid.server.model.interactions.Coordinates;
 
 /**
@@ -101,6 +103,16 @@ public interface TouchScreen {
    * @param yOffset The y offset relative to the viewport
    */
   void flick(Coordinates where, int xOffset, int yOffset, int speed);
+
+  /***
+   * Allows the execution of a flick gesture at a given starting point
+   *
+   * @param origin Starting point of the flick
+   * @param direction Direction in which the flick should be performed
+   * @param distance Distance over which the finger should be down during the flick motion
+   * @param duration Duration the finger should be down on the touch screen
+   */
+  void flick(Point origin, FlickDirection direction, int distance, int duration);
 
   /**
    * @return The current screen brightness as a float between 0 and 1. If the screen is off, 0.0 will be returned.

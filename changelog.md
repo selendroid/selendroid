@@ -14,6 +14,7 @@
 - Added capability to load in extension handlers and a test bootstrap class
 - Assume AUT is already installed if LaunchActivity specified & no matching appsStore entry [#567](../../issues/567)
 - Propagate unhandled exceptions in AUT as AppCrashedException
+- Added server-side support for low-level actions API
 
 0.11.0
 ---
