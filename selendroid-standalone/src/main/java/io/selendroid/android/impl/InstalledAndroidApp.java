@@ -30,9 +30,9 @@ public class InstalledAndroidApp implements AndroidApp {
     Pattern infoPattern = Pattern.compile("(.+):(.+)/(.+)");
     Matcher patternMatcher = infoPattern.matcher(appInfo);
     if (patternMatcher.matches()) {
-      packageName = patternMatcher.group(0);
-      version = patternMatcher.group(1);
-      activityName = patternMatcher.group(2);
+      packageName = patternMatcher.group(1);
+      version = patternMatcher.group(2);
+      activityName = patternMatcher.group(3);
     } else {
       throw new RuntimeException("Format for installed app is:  tld.company.app:version/ActivityClass");
     }
