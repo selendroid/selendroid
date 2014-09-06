@@ -19,18 +19,14 @@ import com.beust.jcommander.ParameterException;
 import com.google.common.base.Throwables;
 
 import io.selendroid.exceptions.AndroidSdkException;
-import io.selendroid.io.ShellCommand;
 import io.selendroid.log.LogLevelEnum;
 import io.selendroid.server.SelendroidStandaloneServer;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-
-import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class SelendroidLauncher {
 
@@ -41,21 +37,6 @@ public class SelendroidLauncher {
 
   public SelendroidLauncher(SelendroidConfiguration config) {
     this.config = config;
-  }
-
-  public static SelendroidLauncher getInstance(SelendroidConfiguration config) {
-    // Log the loaded configuration
-    System.out.println("################# Configuration in use #################");
-    System.out.println(config.toString());
-
-    //to be backward compatible
-    if (LogLevelEnum.ERROR.equals(config.getLogLevel())) {
-      Logger.getLogger(LOGGER_NAME).setLevel(LogLevelEnum.VERBOSE.level);
-    } else {
-      Logger.getLogger(LOGGER_NAME).setLevel(config.getLogLevel().level);
-    }
-
-    return new SelendroidLauncher(config);
   }
 
   public static SelendroidConfiguration parseConfig(String[] args) {
@@ -117,7 +98,18 @@ public class SelendroidLauncher {
 
     System.out.println("################# Selendroid #################");
     SelendroidConfiguration config = parseConfig(args);
-    getInstance(config).launchServer();
+    // Log the loaded configuration
+    System.out.println("################# Configuration in use #################");
+    System.out.println(config.toString());
+
+    //to be backward compatible
+    if (LogLevelEnum.ERROR.equals(config.getLogLevel())) {
+      Logger.getLogger(LOGGER_NAME).setLevel(LogLevelEnum.VERBOSE.level);
+    } else {
+      Logger.getLogger(LOGGER_NAME).setLevel(config.getLogLevel().level);
+    }
+
+    new SelendroidLauncher(config).launchServer();
   }
 
   private static void configureLogging() throws Exception {

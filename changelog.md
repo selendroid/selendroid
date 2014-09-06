@@ -10,7 +10,7 @@
 - Stop swallowing exception when waiting for instrumentation [#563](../../issues/563)
 - Allow selendroid-server start timeout to be passed on command line [#564](../../issues/564)
 - Added "-h" and" --help" options to selendroid-standalone-server.
-- Split up SelendroidLauncher main(), getInstance() can now be used to get a launcher programmatically.
+- Split up SelendroidLauncher main().
 - Added capability to load in extension handlers and a test bootstrap class
 - Assume AUT is already installed if LaunchActivity specified & no matching appsStore entry [#567](../../issues/567)
 - Propagate unhandled exceptions in AUT as AppCrashedException
