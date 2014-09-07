@@ -14,6 +14,8 @@
 package io.selendroid.server.util;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
+
+import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.SelendroidCapabilities;
 
 import java.util.logging.Logger;
@@ -29,7 +31,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,7 +46,7 @@ public class HttpClientUtil {
   public static HttpResponse executeRequestWithPayload(String uri, int port, HttpMethod method,
       String payload) throws Exception {
     BasicHttpEntityEnclosingRequest request =
-        new BasicHttpEntityEnclosingRequest(method.getName(), uri);
+        new BasicHttpEntityEnclosingRequest(method.name(), uri);
     request.setEntity(new StringEntity(payload, "UTF-8"));
 
     return getHttpClient().execute(new HttpHost("localhost", port), request);

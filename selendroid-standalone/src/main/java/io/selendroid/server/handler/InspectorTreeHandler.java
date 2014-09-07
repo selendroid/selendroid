@@ -23,7 +23,7 @@ import io.selendroid.server.util.HttpClientUtil;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.jboss.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import io.selendroid.server.http.HttpRequest;
 

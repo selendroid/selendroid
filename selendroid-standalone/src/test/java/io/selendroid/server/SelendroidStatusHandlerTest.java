@@ -15,6 +15,8 @@ package io.selendroid.server;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
@@ -22,7 +24,6 @@ import io.selendroid.server.util.HttpClientUtil;
 import io.selendroid.util.SelendroidAssert;
 
 import org.apache.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -31,7 +32,7 @@ import org.junit.BeforeClass;
 /**
  * TODO ddary: revisit when looking at buck
  */
-public class SelendroidSatusHandlerTest {
+public class SelendroidStatusHandlerTest {
   protected static int port = 7777;
   private static SelendroidStandaloneServer server;
   public static final String URL = "http://localhost:" + port + "/wd/hub/status";

@@ -14,15 +14,15 @@
 package io.selendroid.driver;
 
 import static io.selendroid.waiter.TestWaiter.waitFor;
+
+import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.SelendroidDriver;
-import io.selendroid.exceptions.NoSuchContextException;
 import io.selendroid.server.util.HttpClientUtil;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.waiter.WaitingConditions;
 
 import java.util.Set;
 
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;

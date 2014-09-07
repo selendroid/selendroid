@@ -14,6 +14,7 @@
 package io.selendroid.server.support;
 
 import com.android.ddmlib.IDevice;
+import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
@@ -22,7 +23,6 @@ import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.util.HttpClientUtil;
 import org.apache.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;
 
