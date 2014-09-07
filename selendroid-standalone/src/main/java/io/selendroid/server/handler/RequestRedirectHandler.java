@@ -13,6 +13,7 @@
  */
 package io.selendroid.server.handler;
 
+import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.exceptions.AppCrashedException;
 import io.selendroid.exceptions.SelendroidException;
@@ -23,7 +24,6 @@ import io.selendroid.server.StatusCode;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
 import org.apache.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;

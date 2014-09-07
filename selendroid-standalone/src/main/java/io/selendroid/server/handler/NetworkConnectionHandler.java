@@ -1,16 +1,14 @@
 package io.selendroid.server.handler;
 
+import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.android.KeyEvent;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
-import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
-import org.apache.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.http.HttpRequest;
