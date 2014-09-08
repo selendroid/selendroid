@@ -74,6 +74,20 @@ public class JsonXmlUtil {
     node.setAttribute("id", from.optString("id"));
     node.setAttribute("shown", from.optString("shown"));
 
+    JSONObject rect = from.optJSONObject("rect");
+    if (rect != null) {
+      Element rectNode = document.createElement("rect");
+      JSONObject size = rect.optJSONObject("size");
+      JSONObject origin = rect.optJSONObject("origin");
+
+      rectNode.setAttribute("x", origin.optString("x"));
+      rectNode.setAttribute("y", origin.optString("y"));
+      rectNode.setAttribute("height", size.optString("height"));
+      rectNode.setAttribute("width", size.optString("width"));
+
+      node.appendChild(rectNode);
+    }
+
     JSONArray array = from.optJSONArray("children");
     if (array != null) {
       for (int i = 0; i < array.length(); i++) {
