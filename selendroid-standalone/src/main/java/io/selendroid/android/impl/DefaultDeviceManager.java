@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.android.ddmlib.AndroidDebugBridge;
@@ -147,7 +148,8 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
         client = new TelnetClient(port);
         avdName = client.sendCommand("avd name");
       } catch (AndroidDeviceException e) {
-        // ignore
+        String logMessage = "Could not get avdName for device " + serial;
+        log.log(Level.WARNING, logMessage, e);
       } finally {
         if (client != null) {
           client.close();

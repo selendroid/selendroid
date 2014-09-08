@@ -30,6 +30,7 @@ import io.selendroid.android.DeviceManager;
 import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.android.impl.DefaultAndroidEmulator;
 import io.selendroid.android.impl.DefaultHardwareDevice;
+import io.selendroid.android.impl.InstalledAndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
@@ -78,6 +79,7 @@ public class DeviceStore {
    * @see {@link #findAndroidDevice(SelendroidCapabilities)}
    */
   public void release(AndroidDevice device, AndroidApp aut) {
+    log.info("Releasing device " + device);
     if (devicesInUse.contains(device)) {
       // stop the app anyway - better in case people do use snapshots
       try {
@@ -92,7 +94,7 @@ public class DeviceStore {
           e.printStackTrace();
         }
       }
-      if (device instanceof AndroidEmulator) {
+      if (device instanceof AndroidEmulator && !(aut instanceof InstalledAndroidApp)) {
         AndroidEmulator emulator = (AndroidEmulator) device;
         try {
           emulator.stop();
