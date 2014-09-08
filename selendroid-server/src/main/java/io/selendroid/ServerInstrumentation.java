@@ -60,9 +60,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   private PowerManager.WakeLock wakeLock;
   private int serverPort = 8080;
 
-  private UiThreadController uiController;
-  private Executor mainThreadExecutor;
-
   /** Arguments this instrumentation was started with. */
   public InstrumentationArguments args = null;
   private ExtensionLoader extensionLoader;
@@ -124,9 +121,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
     SelendroidLogger.info("Instrumentation initialized with main activity: " + mainActivityName);
     instance = this;
-
-    mainThreadExecutor = provideMainThreadExecutor(Looper.getMainLooper());
-    uiController = new UiThreadController();
 
     start();
   }
@@ -361,72 +355,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public ExtensionLoader getExtensionLoader() {
     return extensionLoader;
-  }
-
-  public interface InputEventSender {
-    public void sendEvent(Object data);
-  }
-
-  /*
-   * No need to override the following methods: - sendStringSync() - sendCharacterSync() -
-   * sendKeyDownUpSync() All of them just aggregate several calls of sendKeySync().
-   */
-  @Override
-  public void sendKeySync(final KeyEvent event) {
-    sendInputEventSync(new InputEventSender() {
-      @Override
-      public void sendEvent(Object event) {
-        ServerInstrumentation.super.sendKeySync((KeyEvent) event);
-      }
-    }, event);
-  }
-
-  @Override
-  public void sendPointerSync(final MotionEvent event) {
-    sendInputEventSync(new InputEventSender() {
-      @Override
-      public void sendEvent(Object event) {
-        ServerInstrumentation.super.sendPointerSync((MotionEvent) event);
-      }
-    }, event);
-  }
-
-  @Override
-  public void sendTrackballEventSync(MotionEvent event) {
-    sendInputEventSync(new InputEventSender() {
-      @Override
-      public void sendEvent(Object event) {
-        ServerInstrumentation.super.sendTrackballEventSync((MotionEvent) event);
-      }
-    }, event);
-  }
-
-  private void sendInputEventSync(final InputEventSender eventSender, final Object event) {
-    runSynchronouslyOnUiThread(new Runnable() {
-      public void run() {
-        uiController.injectInputEventWaitingForCompletion(eventSender, event);
-      }
-    });
-  }
-
-  private void runSynchronouslyOnUiThread(Runnable action) {
-    FutureTask<Void> uiTask = new FutureTask<Void>(action, null);
-    mainThreadExecutor.execute(uiTask);
-    try {
-      uiTask.get();
-    } catch (Exception e) {
-      throw new AppCrashedException("Unhandled exception from application under test.", e);
-    }
-  }
-
-  private Executor provideMainThreadExecutor(Looper mainLooper) {
-    final Handler handler = new Handler(mainLooper);
-    return new Executor() {
-      @Override
-      public void execute(Runnable runnable) {
-        handler.post(runnable);
-      }
-    };
   }
 
   public void backgroundActivity() {

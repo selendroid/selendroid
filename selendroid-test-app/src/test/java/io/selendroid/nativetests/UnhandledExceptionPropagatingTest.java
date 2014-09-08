@@ -15,6 +15,7 @@ package io.selendroid.nativetests;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -26,6 +27,7 @@ import io.selendroid.support.BaseAndroidTest;
  * Checks if we are able to fetch and propagate unhandled exception, occurring
  * in application under test and causing a crash, to the local end.
  */
+@Ignore("These tests no longer work as the standalone server (which checks for crashes) is bypassed.")
 public class UnhandledExceptionPropagatingTest extends BaseAndroidTest {
 
   @Before

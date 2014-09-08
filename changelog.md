@@ -18,6 +18,7 @@
 - Added empty()/copyOf()/withMerged() to SelendroidCapabilities
 - Added ability to run GC and set system properties.
 - GetElementAttribute returns null if attribute is not set. Fixes [#568](../../issues/568)
+- Removed manual looper as we can now get the device to dump crash logs to a file
 
 0.11.0
 ---
