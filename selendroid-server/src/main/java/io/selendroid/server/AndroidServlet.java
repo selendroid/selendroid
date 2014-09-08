@@ -34,6 +34,7 @@ import io.selendroid.server.handler.FindChildElements;
 import io.selendroid.server.handler.FindElement;
 import io.selendroid.server.handler.FindElements;
 import io.selendroid.server.handler.Flick;
+import io.selendroid.server.handler.ForceGcExplicitly;
 import io.selendroid.server.handler.FrameSwitchHandler;
 import io.selendroid.server.handler.GetCapabilities;
 import io.selendroid.server.handler.GetCommandConfiguration;
@@ -72,6 +73,7 @@ import io.selendroid.server.handler.SendKeyToActiveElement;
 import io.selendroid.server.handler.SendKeys;
 import io.selendroid.server.handler.SetCommandConfiguration;
 import io.selendroid.server.handler.SetScreenState;
+import io.selendroid.server.handler.SetSystemProperty;
 import io.selendroid.server.handler.SingleTapOnElement;
 import io.selendroid.server.handler.SubmitForm;
 import io.selendroid.server.handler.SwitchContext;
@@ -187,6 +189,8 @@ public class AndroidServlet extends BaseServlet {
         "/wd/hub/-selendroid/:sessionId/configure/command/:command"));
     register(postHandler, new SetCommandConfiguration(
         "/wd/hub/-selendroid/:sessionId/configure/command/:command"));
+    register(postHandler, new ForceGcExplicitly("/wd/hub/session/:sessionId/-selendroid/gc"));
+    register(postHandler, new SetSystemProperty("/wd/hub/session/:sessionId/-selendroid/system_property"));
 
     // Endpoints to send app to background and resume it
     register(postHandler, new BackgroundApp("/wd/hub/session/:sessionId/-selendroid/background"));

@@ -16,6 +16,7 @@
 - Propagate unhandled exceptions in AUT as AppCrashedException
 - Added server-side support for low-level actions API
 - Added empty()/copyOf()/withMerged() to SelendroidCapabilities
+- Added ability to run GC and set system properties.
 
 0.11.0
 ---
