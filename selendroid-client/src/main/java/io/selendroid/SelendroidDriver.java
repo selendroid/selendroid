@@ -13,6 +13,7 @@
  */
 package io.selendroid;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import io.selendroid.adb.AdbConnection;
 import io.selendroid.server.utils.CallLogEntry;
@@ -57,7 +58,9 @@ public class SelendroidDriver extends RemoteWebDriver
       Configuration,
       JavascriptExecutor,
       AdbSupport,
-      ContextAware {
+      ContextAware,
+      SetsSystemProperties,
+      CallsGc {
 
   private RemoteTouchScreen touchScreen;
   private RemoteAdbConnection adbConnection;
@@ -229,7 +232,7 @@ public class SelendroidDriver extends RemoteWebDriver
 	Map<String, String> info = ImmutableMap.of("calllogjson", new Gson().toJson(log));
 	execute("addCallLog", ImmutableMap.of("parameters",info));
   }
-  
+
   public List<CallLogEntry> readCallLog() {
     return new Gson().fromJson((String)execute("readCallLog").getValue(), new TypeToken<List<CallLogEntry>>(){}.getType());
   }
@@ -244,6 +247,30 @@ public class SelendroidDriver extends RemoteWebDriver
     paramsWithHandler.put("handlerName", extensionMethod);
     Response response = execute("selendroid-handle-by-extension", paramsWithHandler);
     return response.getValue();
+  }
+
+  /**
+   * Sets a Java System Property.
+   */
+  @Override
+  public void setSystemProperty(String propertyName, String value) {
+    if (Strings.isNullOrEmpty(propertyName)) {
+      throw new IllegalArgumentException("Property name can't be empty.");
+    }
+
+    execute(
+        "-selendroid-setAndroidOsSystemProperty",
+        ImmutableMap.of(
+            "propertyName", propertyName,
+            "value", value));
+  }
+
+  /**
+   * Synchronously calls "System.gc()" on device.
+   */
+  @Override
+  public void gc() {
+    execute("-selendroid-forceGcExplicitly");
   }
 
 }
