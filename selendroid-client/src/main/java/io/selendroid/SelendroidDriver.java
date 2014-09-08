@@ -245,7 +245,7 @@ public class SelendroidDriver extends RemoteWebDriver
     Map<String, Object> paramsWithHandler = Maps.newHashMap();
     paramsWithHandler.putAll(parameters);
     paramsWithHandler.put("handlerName", extensionMethod);
-    Response response = execute("selendroid-handle-by-extension", paramsWithHandler);
+    Response response = execute("selendroid-handleByExtension", paramsWithHandler);
     return response.getValue();
   }
 
