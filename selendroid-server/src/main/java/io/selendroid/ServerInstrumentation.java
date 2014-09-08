@@ -137,8 +137,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   @Override
   public void onStart() {
-    SelendroidLogger.error("Error");
-    SelendroidLogger.debug("debug");
     synchronized (ServerInstrumentation.class) {
       UncaughtExceptionHandling.clearCrashLogFile();
       UncaughtExceptionHandling.setGlobalExceptionHandler();
