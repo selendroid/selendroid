@@ -234,17 +234,18 @@ public abstract class AbstractDevice implements AndroidDevice {
     this.port = port;
 
     String[] args =  {
+        "shell", "am", "instrument",
         "-e", "main_activity", aut.getMainActivity(),
-        "-e", "server_port", Integer.toString(port),
-        "io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation"};
-    CommandLine command = adbCommand(
-        ObjectArrays.concat(new String[]{"shell", "am", "instrument"}, args, String.class));
+        "-e", "server_port", Integer.toString(port)
+    };
+    CommandLine command = adbCommand(args);
     if (capabilities.getSelendroidExtensions() != null) {
       command.addArguments(new String[]{"-e", "load_extensions", "true"});
       if (capabilities.getBootstrapClassNames() != null) {
         command.addArguments(new String[]{"-e", "bootstrap", capabilities.getBootstrapClassNames()});
       }
     }
+    command.addArgument("io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation");
 
     String result = executeCommandQuietly(command);
     if (result.contains("FAILED")) {
