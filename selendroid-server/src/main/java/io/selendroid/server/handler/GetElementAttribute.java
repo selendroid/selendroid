@@ -21,6 +21,7 @@ import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.AndroidElement;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class GetElementAttribute extends SafeRequestHandler {
 
@@ -34,7 +35,7 @@ public class GetElementAttribute extends SafeRequestHandler {
     String id = getElementId(request);
     String attributeName = getNameAttribute(request);
     AndroidElement element = getElementFromCache(request, id);
-    String text = null;
+    Object text = JSONObject.NULL;
     try {
       text = element.getAttribute(attributeName);
     } catch (NoSuchElementAttributeException e) {
