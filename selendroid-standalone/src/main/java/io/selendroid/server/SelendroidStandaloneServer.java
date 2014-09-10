@@ -32,21 +32,21 @@ public class SelendroidStandaloneServer {
 
   /**
    * for testing only
-   * 
+   *
    * @throws AndroidSdkException
    */
   protected SelendroidStandaloneServer(SelendroidConfiguration configuration,
-      SelendroidStandaloneDriver driver) throws AndroidSdkException {
+                                       SelendroidStandaloneDriver driver) throws AndroidSdkException {
     this.configuration = configuration;
     this.driver = driver;
-    webServer=new HttpServer(configuration.getPort());
+    webServer = new HttpServer(configuration.getPort());
     init();
   }
 
   public SelendroidStandaloneServer(SelendroidConfiguration configuration)
       throws AndroidSdkException, AndroidDeviceException {
     this.configuration = configuration;
-    webServer=new HttpServer(configuration.getPort());
+    webServer = new HttpServer(configuration.getPort());
     driver = initializeSelendroidServer();
     init();
   }
@@ -63,8 +63,8 @@ public class SelendroidStandaloneServer {
 
   public void start() {
     webServer.start();
-    if (StringUtils.isBlank(configuration.getRegistrationUrl()) == false
-        && StringUtils.isBlank(configuration.getServerHost()) == false) {
+    if (!StringUtils.isBlank(configuration.getRegistrationUrl())
+        && !StringUtils.isBlank(configuration.getServerHost())) {
       try {
         new SelfRegisteringRemote(configuration, driver).performRegistration();
       } catch (Exception e) {
