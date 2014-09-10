@@ -124,4 +124,8 @@ public class SelendroidLauncher {
       server.stop();
     }
   }
+
+  public SelendroidStandaloneServer getServer() {
+    return server;
+  }
 }

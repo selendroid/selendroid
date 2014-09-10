@@ -69,6 +69,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private AndroidDriverAPKBuilder androidDriverAPKBuilder = null;
   private SelendroidConfiguration serverConfiguration = null;
   private DeviceManager deviceManager;
+  private SelendroidStandaloneDriverEventListener eventListener
+      = new DummySelendroidStandaloneDriverEventListener();
 
 
   public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration)
@@ -300,6 +302,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
     // It's GO TIME!
     // start the selendroid server on the device and make sure it's up
+    eventListener.onBeforeDeviceServerStart();
     try {
       device.startSelendroid(app, port, desiredCapabilities);
     } catch (AndroidSdkException e) {
@@ -330,6 +333,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
             + startTimeOut / 1000 + "sec:");
       }
     }
+    eventListener.onAfterDeviceServerStart();
 
     // arbitrary sleeps? yay...
     // looks like after the server starts responding
@@ -560,5 +564,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       throw new SelendroidException("The given session id '" + sessionId + "' was not found.");
     }
     return sessions.get(sessionId).getDevice().takeScreenshot();
+  }
+
+  public void setEventListener(SelendroidStandaloneDriverEventListener eventListener) {
+    this.eventListener = eventListener;
   }
 }
