@@ -327,6 +327,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
             throw new AppCrashedException(crashMessage);
           }
         } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
         }
       } else {
         throw new SelendroidException("Selendroid server on the device didn't come up after "
@@ -341,7 +342,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     try {
       Thread.sleep(500);
     } catch (InterruptedException e1) {
-      e1.printStackTrace();
+      Thread.currentThread().interrupt();
     }
 
     // create the new session on the device server
