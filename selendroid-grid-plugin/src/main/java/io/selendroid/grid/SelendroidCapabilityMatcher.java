@@ -24,6 +24,7 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
   public static final String PLATFORM_NAME = "platformName";
   public static final String SCREEN_SIZE = "screenSize";
   public static final String BROWSER_NAME = "browserName";
+  public static final String PLATFORM_VERSION = "platformVersion";
   private final List<String> toConsider = new ArrayList<String>();
 
   public SelendroidCapabilityMatcher() {
@@ -31,6 +32,7 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
     toConsider.add(AUT);
     toConsider.add(PLATFORM_NAME);
     toConsider.add(SCREEN_SIZE);
+    toConsider.add(PLATFORM_VERSION);
   }
 
   @Override
@@ -42,13 +44,11 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
       if (toConsider.contains(key)) {
         if (requestedCapability.get(key) != null) {
           String value = requestedCapability.get(key).toString();
-          if (value != null) {
-            if (!value.equals(nodeCapability.get(key))) {
-              return false;
-            }
-          } else {
-            // null value matches anything.
+          if (!value.equals(nodeCapability.get(key))) {
+            return false;
           }
+        } else {
+          // null value matches anything.
         }
       }
     }
