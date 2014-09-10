@@ -160,7 +160,9 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
         listener.onDeviceStarted(avdName, device.getSerialNumber());
       }
     } else {
-      connectedDevices.put(device, new DefaultHardwareDevice(device));
+      if (!connectedDevices.containsKey(device)) {
+        connectedDevices.put(device, new DefaultHardwareDevice(device));
+      }
       for (HardwareDeviceListener listener : deviceListeners) {
         listener.onDeviceConnected(connectedDevices.get(device));
       }

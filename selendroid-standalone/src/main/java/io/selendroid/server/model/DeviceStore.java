@@ -160,16 +160,23 @@ public class DeviceStore {
    * @throws AndroidDeviceException
    */
   protected synchronized void addDeviceToStore(AndroidDevice device) throws AndroidDeviceException {
-    if (androidDevices.containsKey(device.getTargetPlatform())) {
-      if (androidDevices.get(device.getTargetPlatform()) == null) {
-        androidDevices.put(device.getTargetPlatform(), new ArrayList<AndroidDevice>());
-      }
-      androidDevices.get(device.getTargetPlatform()).add((AndroidDevice) device);
-    } else {
-      List<AndroidDevice> devices = new ArrayList<AndroidDevice>();
-      devices.add((AndroidDevice) device);
-      androidDevices.put(device.getTargetPlatform(), devices);
+    DeviceTargetPlatform apiLevel = device.getTargetPlatform();
+    List<AndroidDevice> devices;
+
+    // remove device from "null" api level list
+    if (device instanceof DefaultHardwareDevice && apiLevel != null) {
+      removeDeviceFromStore(null, device, false);
     }
+    if (!androidDevices.containsKey(apiLevel) || androidDevices.get(apiLevel) == null) {
+      devices = new ArrayList<AndroidDevice>();
+      androidDevices.put(apiLevel, devices);
+    } else {
+      devices = androidDevices.get(apiLevel);
+      if (devices.contains(device)) {
+        return;
+      }
+    }
+    devices.add(device);
   }
 
   /**
@@ -269,16 +276,28 @@ public class DeviceStore {
     }
 
     release(device, null);
-    DeviceTargetPlatform apiLevel = device.getTargetPlatform();
+    removeDeviceFromStore(device.getTargetPlatform(), device, true);
+  }
+
+  /**
+   * Internal method to remove an actual device from the store.
+   *
+   * @param apiLevel The apiLevel used to specify list from which to remove device
+   * @param device The device to remove.
+   * @param logging log removal information or not
+   */
+  private void removeDeviceFromStore(DeviceTargetPlatform apiLevel, AndroidDevice device, boolean logging) {
     if (androidDevices.containsKey(apiLevel)) {
-      log.info("Removing: " + device);
+      if (logging) {
+        log.info("Removing: " + device);
+      }
       androidDevices.get(apiLevel).remove(device);
       if (androidDevices.get(apiLevel).isEmpty()) {
         androidDevices.remove(apiLevel);
       }
-    } else {
+    } else if (logging) {
       log.warning("The target platform version of the device is not found in device store.");
-      log.warning("The device was propably already removed.");
+      log.warning("The device was probably already removed.");
     }
   }
 
