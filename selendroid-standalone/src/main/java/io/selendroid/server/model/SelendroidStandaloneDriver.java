@@ -531,6 +531,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         } else {
           deviceInfo.put(SelendroidCapabilities.EMULATOR, false);
           deviceInfo.put("model", ((DefaultHardwareDevice) device).getModel());
+          deviceInfo.put(SelendroidCapabilities.SERIAL,((DefaultHardwareDevice) device).getSerial());
         }
         deviceInfo
             .put(SelendroidCapabilities.PLATFORM_VERSION, device.getTargetPlatform().getApi());
