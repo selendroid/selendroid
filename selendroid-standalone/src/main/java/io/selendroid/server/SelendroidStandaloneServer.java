@@ -85,7 +85,7 @@ public class SelendroidStandaloneServer {
     return webServer.getPort();
   }
 
-  protected SelendroidStandaloneDriver getDriver() {
+  public SelendroidStandaloneDriver getDriver() {
     return driver;
   }
 }
