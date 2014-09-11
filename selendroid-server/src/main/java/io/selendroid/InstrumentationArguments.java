@@ -38,7 +38,8 @@ public class InstrumentationArguments {
   public String getActivityClassName() {
     return mainActivityClassName;
   }
-
+  
+  /** Should we load extensions (assumes they have already been pushed to the device) */
   public boolean isLoadExtensions() {
     return loadExtensions;
   }
