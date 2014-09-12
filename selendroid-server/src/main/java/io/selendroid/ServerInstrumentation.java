@@ -28,12 +28,9 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.CallLog;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import io.selendroid.android.ActivitiesReporter;
 import io.selendroid.android.AndroidWait;
-import io.selendroid.exceptions.AppCrashedException;
 import io.selendroid.exceptions.PermissionDeniedException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.extension.ExtensionLoader;
@@ -48,8 +45,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.concurrent.FutureTask;
 
 public class ServerInstrumentation extends Instrumentation implements ServerDetails {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
@@ -60,7 +55,9 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   private PowerManager.WakeLock wakeLock;
   private int serverPort = 8080;
 
-  /** Arguments this instrumentation was started with. */
+  /**
+   * Arguments this instrumentation was started with.
+   */
   public InstrumentationArguments args = null;
   private ExtensionLoader extensionLoader;
 
@@ -71,34 +68,30 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public void startActivity(String activityClassName) {
     finishAllActivities();
-    // start now the new activity
+
+    // Start the new activity
     Intent intent = new Intent();
     intent.setClassName(getTargetContext(), activityClassName);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
     intent.setAction(Intent.ACTION_MAIN);
     intent.addCategory(Intent.CATEGORY_LAUNCHER);
-    Activity a = startActivitySync(intent);
+    getTargetContext().startActivity(intent);
   }
 
   public void finishAllActivities() {
-    runOnMainSync(new Runnable() {
-      @Override
-      public void run() {
-        Set<Activity> activities = getActivities();
-        if (activities != null && !activities.isEmpty()) {
-          for (Activity activity : activities) {
-            activity.finish();
-          }
-        }
+    Set<Activity> activities = getActivities();
+    if (activities != null && !activities.isEmpty()) {
+      for (Activity activity : activities) {
+        activity.finish();
       }
-    });
-
+    }
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public void onCreate(Bundle arguments) {
+    Handler handler = new Handler();
     this.args = new InstrumentationArguments(arguments);
 
     mainActivityName = arguments.getString("main_activity");
@@ -122,39 +115,36 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     SelendroidLogger.info("Instrumentation initialized with main activity: " + mainActivityName);
     instance = this;
 
-    start();
+    final Context context = getTargetContext();
+    // Queue bootstrapping and starting of the main activity on the main thread.
+    handler.post(new Runnable() {
+      @Override
+      public void run() {
+        UncaughtExceptionHandling.clearCrashLogFile();
+        UncaughtExceptionHandling.setGlobalExceptionHandler();
+
+        if (args.isLoadExtensions()) {
+          extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
+          String bootstrapClassNames = args.getBootstrapClassNames();
+          if (bootstrapClassNames != null) {
+            extensionLoader.runBootstrapClasses(instance, bootstrapClassNames.split(","));
+          }
+        } else {
+          extensionLoader = new ExtensionLoader(context);
+        }
+
+        startMainActivity();
+        try {
+          startServer();
+        } catch (Exception e) {
+          SelendroidLogger.error("Failed to start selendroid server", e);
+        }
+      }
+    });
   }
 
   private boolean isValidPort(int port) {
     return port >= 1024 && port <= 65535;
-  }
-
-  @Override
-  public void onStart() {
-    synchronized (ServerInstrumentation.class) {
-      UncaughtExceptionHandling.clearCrashLogFile();
-      UncaughtExceptionHandling.setGlobalExceptionHandler();
-
-      Context context = getTargetContext();
-      if (args.isLoadExtensions()) {
-        extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
-        String bootstrapClassNames = args.getBootstrapClassNames();
-        if (bootstrapClassNames != null) {
-          extensionLoader.runBootstrapClasses(this, bootstrapClassNames.split(","));
-        }
-      } else {
-        extensionLoader = new ExtensionLoader(context);
-      }
-
-      try {
-        startMainActivity();
-        startServer();
-      } catch (Exception e) {
-        SelendroidLogger.error("Exception when starting selendroid.", e);
-      }
-    }
-    // make sure this is always displayed
-    System.out.println("Selendroid started on port " + serverThread.getServer().getPort());
   }
 
   public static synchronized ServerInstrumentation getInstance() {
@@ -273,7 +263,8 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     try {
       versionName =
           context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-    } catch (NameNotFoundException e) {}
+    } catch (NameNotFoundException e) {
+    }
     return versionName;
   }
 
@@ -318,7 +309,8 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
         wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
         try {
           wakeLock.acquire();
-        } catch (SecurityException e) {}
+        } catch (SecurityException e) {
+        }
 
         server.start();
 
@@ -359,37 +351,37 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public void backgroundActivity() {
     activitiesReporter.setBackgroundActivity(activitiesReporter.getCurrentActivity());
-    Intent homeIntent= new Intent(Intent.ACTION_MAIN);
+    Intent homeIntent = new Intent(Intent.ACTION_MAIN);
     homeIntent.addCategory(Intent.CATEGORY_HOME);
     homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     getTargetContext().startActivity(homeIntent);
-}
+  }
 
   public void resumeActivity() {
     Activity activity = activitiesReporter.getBackgroundActivity();
-    Log.d("TAG","got background activity");
+    Log.d("TAG", "got background activity");
     if (activity == null) {
       SelendroidLogger
-        .error("activity class is empty", new NullPointerException(
-                          "Activity class to start is null."));
-        return;
-      }
-      // start now the new activity
-    Log.d("TAG","background activity is not null");
+          .error("activity class is empty", new NullPointerException(
+              "Activity class to start is null."));
+      return;
+    }
+    // start now the new activity
+    Log.d("TAG", "background activity is not null");
     Intent intent = new Intent(getTargetContext(), activity.getClass());
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-            | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-            | Intent.FLAG_ACTIVITY_SINGLE_TOP
-            | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    Log.d("TAG","created intent and got target context");
+        | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+        | Intent.FLAG_ACTIVITY_SINGLE_TOP
+        | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    Log.d("TAG", "created intent and got target context");
     getTargetContext().startActivity(intent);
-    Log.d("TAG","got target context and started activity");
+    Log.d("TAG", "got target context and started activity");
     activitiesReporter.setBackgroundActivity(null);
   }
 
   public void addCallLog(CallLogEntry log) throws PermissionDeniedException {
     String permission = Manifest.permission.WRITE_CALL_LOG;
-    if(getTargetContext().checkCallingOrSelfPermission(permission)==PackageManager.PERMISSION_GRANTED) {
+    if (getTargetContext().checkCallingOrSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       ContentValues values = new ContentValues();
       values.put(CallLog.Calls.CACHED_NUMBER_TYPE, 0);
       values.put(CallLog.Calls.TYPE, log.getDirection());
@@ -397,35 +389,33 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       values.put(CallLog.Calls.DURATION, log.getDuration());
       values.put(CallLog.Calls.NUMBER, log.getNumber());
       getTargetContext().getContentResolver().insert(CallLog.Calls.CONTENT_URI, values);
-    }
-    else {
+    } else {
       throw new PermissionDeniedException("Application Under Test does not have the required WRITE_CALL_LOGS permission for this feature..");
     }
   }
-  
+
   public List<CallLogEntry> readCallLog() throws PermissionDeniedException {
-    if(getTargetContext().checkCallingOrSelfPermission(Manifest.permission.READ_CALL_LOG)==PackageManager.PERMISSION_GRANTED) {
-        List<CallLogEntry> logs = new ArrayList<CallLogEntry>();
-        Cursor managedCursor = getTargetContext().getContentResolver().query(CallLog.Calls.CONTENT_URI,null, null,null, null);
-        int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER); 
-        int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
-        int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-        int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
-        while (managedCursor.moveToNext()) {
-          String phNumber = managedCursor.getString(number);
-          String callType = managedCursor.getString(type);
-          String callDate = managedCursor.getString(date);
-          Date callDayTime = new Date(Long.valueOf(callDate));
-          String callDuration = managedCursor.getString(duration);
-          logs.add(new CallLogEntry(phNumber, Integer.parseInt(callDuration), callDayTime, Integer.parseInt(callType)));
-        }
-        managedCursor.close();
-        return logs;
+    if (getTargetContext().checkCallingOrSelfPermission(Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
+      List<CallLogEntry> logs = new ArrayList<CallLogEntry>();
+      Cursor managedCursor = getTargetContext().getContentResolver().query(CallLog.Calls.CONTENT_URI, null, null, null, null);
+      int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
+      int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
+      int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
+      int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+      while (managedCursor.moveToNext()) {
+        String phNumber = managedCursor.getString(number);
+        String callType = managedCursor.getString(type);
+        String callDate = managedCursor.getString(date);
+        Date callDayTime = new Date(Long.valueOf(callDate));
+        String callDuration = managedCursor.getString(duration);
+        logs.add(new CallLogEntry(phNumber, Integer.parseInt(callDuration), callDayTime, Integer.parseInt(callType)));
+      }
+      managedCursor.close();
+      return logs;
+    } else {
+      throw new PermissionDeniedException("Application under test does not have required READ_CALL_LOG permission for this feature.");
     }
-    else {
-        throw new PermissionDeniedException("Application under test does not have required READ_CALL_LOG permission for this feature.");
-    }
-        
+
   }
 
 }

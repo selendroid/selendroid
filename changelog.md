@@ -20,6 +20,7 @@
 - GetElementAttribute returns null if attribute is not set. Fixes [#568](../../issues/568)
 - Removed manual looper as we can now get the device to dump crash logs to a file
 - Added SelendroidStandaloneDriverEventListener to allow hooking into events during Selendroid startup
+- Run bootstrap and launch main activity on the UI thread in ServerInstrumentation
 
 0.11.0
 ---
