@@ -184,10 +184,9 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
     JSONObject copy;
     try {
-      if (session.getCapabilities().names() != null) {
-        copy =
-            new JSONObject(session.getCapabilities(), session.getCapabilities().names().join(",")
-                .split(","));
+      JSONObject capabilities = session.getCapabilities();
+      if (capabilities != null) {
+        copy = new JSONObject(capabilities.toString());
       } else {
         copy = new JSONObject();
       }

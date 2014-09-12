@@ -21,6 +21,7 @@
 - Removed manual looper as we can now get the device to dump crash logs to a file
 - Added SelendroidStandaloneDriverEventListener to allow hooking into events during Selendroid startup
 - Run bootstrap and launch main activity on the UI thread in ServerInstrumentation
+- Fixed cloning of existing session capabilities in GetCapabilities()
 
 0.11.0
 ---
