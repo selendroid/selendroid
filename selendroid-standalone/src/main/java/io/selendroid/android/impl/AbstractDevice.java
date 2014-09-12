@@ -233,27 +233,30 @@ public abstract class AbstractDevice implements AndroidDevice {
   public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities capabilities) throws AndroidSdkException {
     this.port = port;
 
-    String[] args =  {
-        "shell", "am", "instrument",
+    List<String> argList = Lists.newArrayList(
         "-e", "main_activity", aut.getMainActivity(),
         "-e", "server_port", Integer.toString(port)
-    };
-    CommandLine command = adbCommand(args);
+        );
     if (capabilities.getSelendroidExtensions() != null) {
-      command.addArguments(new String[]{"-e", "load_extensions", "true"});
+      argList.addAll(Lists.newArrayList("-e", "load_extensions", "true"));
       if (capabilities.getBootstrapClassNames() != null) {
-        command.addArguments(new String[]{"-e", "bootstrap", capabilities.getBootstrapClassNames()});
+        argList.addAll(Lists.newArrayList("-e", "bootstrap", capabilities.getBootstrapClassNames()));
       }
     }
-    command.addArgument("io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation");
+    argList.add("io.selendroid." + aut.getBasePackage() + "/io.selendroid.ServerInstrumentation");
+
+    String[] args = argList.toArray(new String[argList.size()]);
+    CommandLine command
+        = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument"}, args, String.class));
 
     String result = executeCommandQuietly(command);
     if (result.contains("FAILED")) {
       String detailedResult;
       try {
         // Try again, waiting for instrumentation to finish. This way we'll get more error output.
-        CommandLine getErrorDetailCommand = adbCommand(
-            ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class));
+        String[] instrumentCmd =
+            ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class);
+        CommandLine getErrorDetailCommand = adbCommand(instrumentCmd);
         detailedResult = executeCommandQuietly(getErrorDetailCommand);
       } catch (Exception e) {
         detailedResult = "Could not run get detailed result: " +
