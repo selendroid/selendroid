@@ -92,6 +92,7 @@ import io.selendroid.server.handler.timeouts.SetImplicitWaitTimeout;
 import io.selendroid.server.handler.timeouts.TimeoutsHandler;
 import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.http.HttpResponse;
+import io.selendroid.server.http.TrafficCounter;
 import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.util.SelendroidLogger;
@@ -341,5 +342,10 @@ public class AndroidServlet extends BaseServlet {
       return;
     }
     handleResponse(request, response, (SelendroidResponse) result);
+    String trafficStatistics = String.format(
+        "traffic_stats: rx_bytes %d tx_bytes %d",
+        TrafficCounter.readBytes(),
+        TrafficCounter.writtenBytes());
+    SelendroidLogger.info(trafficStatistics);
   }
 }

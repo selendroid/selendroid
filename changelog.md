@@ -22,6 +22,7 @@
 - Added SelendroidStandaloneDriverEventListener to allow hooking into events during Selendroid startup
 - Run bootstrap and launch main activity on the UI thread in ServerInstrumentation
 - Fixed cloning of existing session capabilities in GetCapabilities()
+- Added logging of selendroid traffic statistics
 
 0.11.0
 ---
