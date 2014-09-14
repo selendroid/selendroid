@@ -25,9 +25,11 @@ import io.selendroid.server.http.impl.NettyHttpRequest;
 import io.selendroid.server.http.impl.NettyHttpResponse;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-
+  private final static Logger LOGGER = Logger.getLogger(ServerHandler.class.getName());
   private List<HttpServlet> httpHandlers;
 
   public ServerHandler(List<HttpServlet> handlers) {
@@ -59,16 +61,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+    super.channelRead(ctx, msg);
   }
 
   @Override
   public void channelReadComplete(ChannelHandlerContext ctx) {
     ctx.flush();
+    ctx.fireChannelReadComplete();
   }
 
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-    cause.printStackTrace();
+    LOGGER.log(Level.SEVERE, "Error handling request", cause);
     ctx.close();
+    super.exceptionCaught(ctx, cause);
   }
 }
