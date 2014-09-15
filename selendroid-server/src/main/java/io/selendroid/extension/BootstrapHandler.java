@@ -16,8 +16,17 @@ package io.selendroid.extension;
 import android.app.Instrumentation;
 
 public interface BootstrapHandler {
+
   /**
-   * Additional setup on app startup.
+   * This method is called by ServerInstrumentation before callApplicationOnCreate() has been called.
+   * @param instrumentation ServerInstrumentation instance
    */
-  void run(Instrumentation instrumentation);
+  void runBeforeApplicationCreate(Instrumentation instrumentation);
+
+  /**
+   * This method is called by ServerInstrumentation after callApplicationOnCreate() has been called, but before
+   * the main activity has been loaded.
+   * @param instrumentation ServerInstrumentation instance
+   */
+  void runAfterApplicationCreate(Instrumentation instrumentation);
 }

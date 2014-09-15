@@ -38,7 +38,6 @@ public class ExtensionLoader {
   }
 
   public ExtensionLoader(Context context, String extensionDexPath) {
-    ;
     SelendroidLogger.info("Loading extension: " + extensionDexPath);
 
     File dexables = context.getDir("dexables", 0);
@@ -59,9 +58,9 @@ public class ExtensionLoader {
   }
 
   /**
-   * Run bootstrap all bootstrap classes provided in order.
+   * Run bootstrap all BootstrapHandler#runBeforeApplicationCreate classes provided in order.
    */
-  public void runBootstrapClasses(
+  public void runBeforeApplicationCreateBootstrap(
       Instrumentation instrumentation, String[] bootstrapClasses) {
     if (!isExtensionLoaded) {
       SelendroidLogger.error(
@@ -71,9 +70,32 @@ public class ExtensionLoader {
 
     for (String bootstrapClassName : bootstrapClasses) {
       try {
-        SelendroidLogger.info("Running bootstrap: " + bootstrapClassName);
-        loadBootstrap(bootstrapClassName).run(instrumentation);
-        SelendroidLogger.info("Ran bootstrap: " + bootstrapClassName);
+        SelendroidLogger.info("Running beforeApplicationCreate bootstrap: " + bootstrapClassName);
+        loadBootstrap(bootstrapClassName).runBeforeApplicationCreate(instrumentation);
+        SelendroidLogger.info("\"Running beforeApplicationCreate bootstrap: " + bootstrapClassName);
+      } catch (Exception e) {
+        throw new SelendroidException(
+            "Cannot run bootstrap " + bootstrapClassName, e);
+      }
+    }
+  }
+
+  /**
+   * Run bootstrap all BootstrapHandler#runAfterApplicationCreate classes provided in order.
+   */
+  public void runAfterApplicationCreateBootstrap(
+      Instrumentation instrumentation, String[] bootstrapClasses) {
+    if (!isExtensionLoaded) {
+      SelendroidLogger.error(
+          "Cannot run bootstrap. Must load an extension first.");
+      return;
+    }
+
+    for (String bootstrapClassName : bootstrapClasses) {
+      try {
+        SelendroidLogger.info("Running afterApplicationCreate bootstrap: " + bootstrapClassName);
+        loadBootstrap(bootstrapClassName).runAfterApplicationCreate(instrumentation);
+        SelendroidLogger.info("\"Running afterApplicationCreate bootstrap: " + bootstrapClassName);
       } catch (Exception e) {
         throw new SelendroidException(
             "Cannot run bootstrap " + bootstrapClassName, e);

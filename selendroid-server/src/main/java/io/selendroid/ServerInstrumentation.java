@@ -117,20 +117,24 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
     final Context context = getTargetContext();
     // Queue bootstrapping and starting of the main activity on the main thread.
+    if (args.isLoadExtensions()) {
+      extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
+      String bootstrapClassNames = args.getBootstrapClassNames();
+      if (bootstrapClassNames != null) {
+        extensionLoader.runBeforeApplicationCreateBootstrap(instance, bootstrapClassNames.split(","));
+      }
+    } else {
+      extensionLoader = new ExtensionLoader(context);
+    }
+
     handler.post(new Runnable() {
       @Override
       public void run() {
         UncaughtExceptionHandling.clearCrashLogFile();
         UncaughtExceptionHandling.setGlobalExceptionHandler();
 
-        if (args.isLoadExtensions()) {
-          extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
-          String bootstrapClassNames = args.getBootstrapClassNames();
-          if (bootstrapClassNames != null) {
-            extensionLoader.runBootstrapClasses(instance, bootstrapClassNames.split(","));
-          }
-        } else {
-          extensionLoader = new ExtensionLoader(context);
+        if (args.isLoadExtensions() && args.getBootstrapClassNames() != null) {
+          extensionLoader.runAfterApplicationCreateBootstrap(instance, args.getBootstrapClassNames().split(","));
         }
 
         startMainActivity();
