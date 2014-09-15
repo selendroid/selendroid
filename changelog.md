@@ -23,6 +23,7 @@
 - Run bootstrap and launch main activity on the UI thread in ServerInstrumentation
 - Fixed cloning of existing session capabilities in GetCapabilities()
 - Added logging of selendroid traffic statistics
+- Prevent hardware devices from showing up multiple times in the DeviceStore
 
 0.11.0
 ---

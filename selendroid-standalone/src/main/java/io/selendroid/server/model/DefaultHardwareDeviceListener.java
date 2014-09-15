@@ -18,6 +18,7 @@ import io.selendroid.android.HardwareDeviceListener;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.DeviceStoreException;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DefaultHardwareDeviceListener implements HardwareDeviceListener {
@@ -36,7 +37,7 @@ public class DefaultHardwareDeviceListener implements HardwareDeviceListener {
     try {
       store.addDevice(device);
     } catch (AndroidDeviceException e) {
-      log.info(e.getMessage());
+      log.log(Level.WARNING, "Could not add device to store", e);
     }
   }
 
@@ -54,6 +55,15 @@ public class DefaultHardwareDeviceListener implements HardwareDeviceListener {
       store.removeAndroidDevice(device);
     } catch (DeviceStoreException e) {
       log.severe("The device cannot be removed: " + e.getMessage());
+    }
+  }
+
+  @Override
+  public void onDeviceChanged(AndroidDevice device) {
+    try {
+      store.updateDevice(device);
+    } catch (AndroidDeviceException e) {
+      log.log(Level.WARNING, "Could not update device.", e);
     }
   }
 }

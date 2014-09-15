@@ -62,7 +62,7 @@ public class DeviceStore {
   }
 
   public DeviceStore(EmulatorPortFinder androidEmulatorPortFinder,
-      DeviceManager deviceManager) {
+                     DeviceManager deviceManager) {
     this.deviceManager = deviceManager;
     this.androidEmulatorPortFinder = androidEmulatorPortFinder;
   }
@@ -74,7 +74,7 @@ public class DeviceStore {
   /**
    * After a test session a device should be released. That means id will be removed from the list
    * of devices in use and in case of an emulator it will be stopped.
-   * 
+   *
    * @param device The device to release
    * @see {@link #findAndroidDevice(SelendroidCapabilities)}
    */
@@ -108,7 +108,7 @@ public class DeviceStore {
   }
 
   /* package */void initAndroidDevices(HardwareDeviceListener hardwareDeviceListener,
-      boolean shouldKeepAdbAlive) throws AndroidDeviceException {
+                                       boolean shouldKeepAdbAlive) throws AndroidDeviceException {
     emulatorPowerStateListener = new DefaultEmulatorPowerStateListener();
     deviceManager.initialize(hardwareDeviceListener, emulatorPowerStateListener);
 
@@ -141,6 +141,21 @@ public class DeviceStore {
     }
   }
 
+  public synchronized void updateDevice(AndroidDevice device) throws AndroidDeviceException {
+    boolean deviceRemoved = false;
+    for (DeviceTargetPlatform targetPlatform : androidDevices.keySet()) {
+      List<AndroidDevice> platformDevices = androidDevices.get(targetPlatform);
+      // Attempt to remove the device from this target platform;
+      deviceRemoved = platformDevices.remove(device);
+    }
+
+    if (deviceRemoved) {
+      addDeviceToStore(device);
+    } else {
+      log.warning("Attempted to update device which did could not be found in the device store");
+    }
+  }
+
   public void addEmulators(List<AndroidEmulator> emulators) throws AndroidDeviceException {
     if (emulators == null || emulators.isEmpty()) {
       log.info("No emulators has been found.");
@@ -155,20 +170,18 @@ public class DeviceStore {
 
   /**
    * Internal method to add an actual device to the store.
-   * 
+   *
    * @param device The device to add.
    * @throws AndroidDeviceException
    */
   protected synchronized void addDeviceToStore(AndroidDevice device) throws AndroidDeviceException {
     if (androidDevices.containsKey(device.getTargetPlatform())) {
-      if (androidDevices.get(device.getTargetPlatform()) == null) {
-        androidDevices.put(device.getTargetPlatform(), new ArrayList<AndroidDevice>());
+      List<AndroidDevice> platformDevices = androidDevices.get(device.getTargetPlatform());
+      if (!platformDevices.contains(device)) {
+        platformDevices.add(device);
       }
-      androidDevices.get(device.getTargetPlatform()).add((AndroidDevice) device);
     } else {
-      List<AndroidDevice> devices = new ArrayList<AndroidDevice>();
-      devices.add((AndroidDevice) device);
-      androidDevices.put(device.getTargetPlatform(), devices);
+      androidDevices.put(device.getTargetPlatform(), Lists.newArrayList(device));
     }
   }
 
@@ -192,18 +205,18 @@ public class DeviceStore {
     String platformVersion = caps.getPlatformVersion();
 
     Iterable<AndroidDevice> candidateDevices = Strings.isNullOrEmpty(platformVersion) ?
-      Iterables.concat(androidDevices.values()) : androidDevices.get(DeviceTargetPlatform.fromPlatformVersion(platformVersion));
+        Iterables.concat(androidDevices.values()) : androidDevices.get(DeviceTargetPlatform.fromPlatformVersion(platformVersion));
 
     candidateDevices = Objects.firstNonNull(candidateDevices, Collections.EMPTY_LIST);
 
     FluentIterable<AndroidDevice> allMatchingDevices = FluentIterable.from(candidateDevices)
-      .filter(deviceNotInUse())
-      .filter(deviceSatisfiesCapabilities(caps));
+        .filter(deviceNotInUse())
+        .filter(deviceSatisfiesCapabilities(caps));
 
     if (!allMatchingDevices.isEmpty()) {
 
       AndroidDevice matchingDevice = allMatchingDevices.filter(deviceRunning()).first()
-              .or(allMatchingDevices.first()).get();
+          .or(allMatchingDevices.first()).get();
 
       if (!deviceRunning().apply(matchingDevice)) {
         log.info("Using potential match: " + matchingDevice);
@@ -214,8 +227,8 @@ public class DeviceStore {
 
     } else {
       throw new DeviceStoreException("No devices are found. "
-        + "This can happen if the devices are in use or no device screen "
-        + "matches the required capabilities.");
+          + "This can happen if the devices are in use or no device screen "
+          + "matches the required capabilities.");
     }
   }
 
@@ -255,7 +268,7 @@ public class DeviceStore {
   /**
    * Removes the given device from store so that it cannot be any longer be used for testing. This
    * can happen if e.g. the hardware device gets unplugged from the computer.
-   * 
+   *
    * @param device the device to remove.
    * @throws DeviceStoreException when parameter is not type of 'DefaultHardwareDevice'.
    */
@@ -277,6 +290,11 @@ public class DeviceStore {
         androidDevices.remove(apiLevel);
       }
     } else {
+      for (List<AndroidDevice> targetDevices : androidDevices.values()) {
+        if (targetDevices.contains(device)) {
+          log.warning("Device in devicestore");
+        }
+      }
       log.warning("The target platform version of the device is not found in device store.");
       log.warning("The device was propably already removed.");
     }
@@ -298,16 +316,16 @@ public class DeviceStore {
   private Predicate<AndroidDevice> deviceSatisfiesCapabilities(final SelendroidCapabilities capabilities) {
     return new Predicate<AndroidDevice>() {
       @Override
-        public boolean apply(AndroidDevice candidate) {
-          ArrayList<Boolean> booleanExpressions = Lists.newArrayList(
+      public boolean apply(AndroidDevice candidate) {
+        ArrayList<Boolean> booleanExpressions = Lists.newArrayList(
             candidate.screenSizeMatches(capabilities.getScreenSize()),
             capabilities.getEmulator() == null ? true : capabilities.getEmulator() ?
-              candidate instanceof DefaultAndroidEmulator : candidate instanceof DefaultHardwareDevice,
+                candidate instanceof DefaultAndroidEmulator : candidate instanceof DefaultHardwareDevice,
             StringUtils.isNotBlank(capabilities.getSerial()) ? capabilities.getSerial().equals(candidate.getSerial()) : true
-          );
+        );
 
-          return Iterables.all(booleanExpressions, Predicates.equalTo(true));
-        }
+        return Iterables.all(booleanExpressions, Predicates.equalTo(true));
+      }
     };
   }
 

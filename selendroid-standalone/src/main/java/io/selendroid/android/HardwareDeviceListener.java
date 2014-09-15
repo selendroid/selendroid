@@ -15,6 +15,8 @@ package io.selendroid.android;
 
 public interface HardwareDeviceListener {
   public void onDeviceConnected(AndroidDevice device);
-  
-  public void onDeviceDisconnected(AndroidDevice device); 
+
+  public void onDeviceDisconnected(AndroidDevice device);
+
+  public void onDeviceChanged(AndroidDevice device);
 }

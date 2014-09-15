@@ -123,13 +123,9 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
   @Override
   public void deviceChanged(IDevice device, int changeMask) {
     // Only fire events if the phone properties are available
-    if (IDevice.CHANGE_BUILD_INFO == changeMask) {
-      if (device.isEmulator()) {
-
-      } else {
-        for (HardwareDeviceListener listener : deviceListeners) {
-          listener.onDeviceConnected(connectedDevices.get(device));
-        }
+    if (IDevice.CHANGE_BUILD_INFO == changeMask && !device.isEmulator()) {
+      for (HardwareDeviceListener listener : deviceListeners) {
+        listener.onDeviceChanged(connectedDevices.get(device));
       }
     }
   }
@@ -211,7 +207,7 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
 
   @Override
   public void initialize(HardwareDeviceListener defaultHardwareListener,
-      AndroidEmulatorPowerStateListener emulatorListener) {
+                         AndroidEmulatorPowerStateListener emulatorListener) {
     registerListener(defaultHardwareListener);
     registerListener(emulatorListener);
     initializeAdbConnection();

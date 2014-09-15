@@ -95,4 +95,6 @@ public class DefaultHardwareDevice extends AbstractDevice {
   public String getSerial() {
 	  return serial;
   }
+
+
 }

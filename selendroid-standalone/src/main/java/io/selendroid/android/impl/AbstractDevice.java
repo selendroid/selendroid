@@ -559,4 +559,18 @@ public abstract class AbstractDevice implements AndroidDevice {
     return executeCommandQuietly(command);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    AbstractDevice that = (AbstractDevice) o;
+
+    return device.equals(that.device);
+  }
+
+  @Override
+  public int hashCode() {
+    return device.hashCode();
+  }
 }
