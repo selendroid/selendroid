@@ -18,6 +18,8 @@ import android.util.Log;
 import java.lang.UnsatisfiedLinkError;
 
 public class SelendroidLogger {
+  public static final String LOG_TAG = "SELENDROID";
+
   public static void error(String message, Exception e) {
     error(message + ": " + e.getMessage());
   }
@@ -30,7 +32,7 @@ public class SelendroidLogger {
 
   private static boolean isLoggable(int logLevel) {
     try {
-      return Log.isLoggable("SELENDROID", logLevel);
+      return Log.isLoggable(LOG_TAG, logLevel);
     } catch (UnsatisfiedLinkError e) { // this lets the tests run on the jvm as well.
       return false;
     }
@@ -38,31 +40,31 @@ public class SelendroidLogger {
 
   public static void debug(String message) {
     if (isLoggable(Log.DEBUG)) {
-      Log.d("SELENDROID", formatMessage(message));
+      Log.d(LOG_TAG, formatMessage(message));
     }
   }
 
   public static void error(String message) {
     if (isLoggable(Log.ERROR)) {
-      Log.e("SELENDROID", formatMessage(message));
+      Log.e(LOG_TAG, formatMessage(message));
     }
   }
 
   public static void info(String message) {
     if (isLoggable(Log.INFO)) {
-      Log.i("SELENDROID", formatMessage(message));
+      Log.i(LOG_TAG, formatMessage(message));
     }
   }
 
   public static void warning(String message) {
     if (isLoggable(Log.WARN)) {
-      Log.w("SELENDROID", formatMessage(message));
+      Log.w(LOG_TAG, formatMessage(message));
     }
   }
 
   public static void verbose(String message) {
     if (isLoggable(Log.VERBOSE)) {
-      Log.v("SELENDROID", formatMessage(message));
+      Log.v(LOG_TAG, formatMessage(message));
     }
   }
 }
