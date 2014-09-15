@@ -29,7 +29,7 @@ public class InstrumentationArguments {
 
   public InstrumentationArguments(Bundle arguments) {
     mainActivityClassName = arguments.getString("main_activity");
-    loadExtensions = "true".equals(arguments.getString("load_extensions"));
+    loadExtensions = Boolean.parseBoolean(arguments.getString("load_extensions"));
     bootstrapClassNames = arguments.getString("bootstrap");
     serverPort = arguments.getString("server_port");
   }
