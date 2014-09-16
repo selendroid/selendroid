@@ -15,6 +15,7 @@ package io.selendroid;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Application;
 import android.app.Instrumentation;
 import android.content.ContentValues;
 import android.content.Context;
@@ -116,7 +117,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     instance = this;
 
     final Context context = getTargetContext();
-    // Queue bootstrapping and starting of the main activity on the main thread.
     if (args.isLoadExtensions()) {
       extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
       String bootstrapClassNames = args.getBootstrapClassNames();
@@ -127,6 +127,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       extensionLoader = new ExtensionLoader(context);
     }
 
+    // Queue bootstrapping and starting of the main activity on the main thread.
     handler.post(new Runnable() {
       @Override
       public void run() {
@@ -153,6 +154,14 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public static synchronized ServerInstrumentation getInstance() {
     return instance;
+  }
+
+  @Override
+  public Application newApplication(ClassLoader cl, String className, Context context) throws InstantiationException,
+      IllegalAccessException, ClassNotFoundException {
+    UncaughtExceptionHandling.clearCrashLogFile();
+    UncaughtExceptionHandling.setGlobalExceptionHandler();
+    return super.newApplication(cl, className, context);
   }
 
   @Override
