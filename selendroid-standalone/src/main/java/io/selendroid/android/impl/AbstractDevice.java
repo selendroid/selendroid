@@ -562,7 +562,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o == null || getClass() != o.getClass() || device == null) return false;
 
     AbstractDevice that = (AbstractDevice) o;
 
