@@ -13,6 +13,8 @@
  */
 package io.selendroid.server.model;
 
+import android.app.Activity;
+import android.util.DisplayMetrics;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.AndroidTouchScreen;
 import io.selendroid.android.InstrumentedMotionSender;
@@ -20,16 +22,11 @@ import io.selendroid.android.internal.Dimension;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.UnsupportedOperationException;
 import io.selendroid.server.model.DefaultSelendroidDriver.NativeSearchScope;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
-import android.graphics.Point;
-import android.view.Display;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class SelendroidNativeDriver {
   public final String ACTIVITY_URL_PREFIX = "and-activity://";
@@ -119,11 +116,14 @@ public class SelendroidNativeDriver {
   }
 
   public Dimension getWindowSize() {
-    Display display =
-        serverInstrumentation.getCurrentActivity().getWindowManager().getDefaultDisplay();
-    Point size = new Point();
-    display.getSize(size);
-    return new Dimension(size.x, size.y);
+    DisplayMetrics metrics = new DisplayMetrics();
+    serverInstrumentation
+        .getCurrentActivity()
+        .getWindowManager()
+        .getDefaultDisplay()
+        .getMetrics(metrics);
+
+    return new Dimension(metrics.widthPixels, metrics.heightPixels);
   }
 
   public void forward() {

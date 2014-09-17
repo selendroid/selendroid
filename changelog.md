@@ -24,6 +24,7 @@
 - Fixed cloning of existing session capabilities in GetCapabilities()
 - Added logging of selendroid traffic statistics
 - Prevent hardware devices from showing up multiple times in the DeviceStore
+- getWindowSize() now supports API levels < 13
 
 0.11.0
 ---
