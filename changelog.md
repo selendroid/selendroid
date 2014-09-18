@@ -25,6 +25,8 @@
 - Added logging of selendroid traffic statistics
 - Prevent hardware devices from showing up multiple times in the DeviceStore
 - getWindowSize() now supports API levels < 13
+- Changed getScreenSize() to use Dimension instead of string,
+  added support for emulators with string skin names
 
 0.11.0
 ---

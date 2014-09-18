@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.android.ddmlib.IDevice;
+import org.openqa.selenium.Dimension;
 
 public interface AndroidEmulator {
   public static final String TIMEOUT_OPTION = "TIMEOUT";
@@ -35,7 +36,7 @@ public interface AndroidEmulator {
 
   public File getAvdRootFolder();
 
-  public String getScreenSize();
+  public Dimension getScreenSize();
 
   public DeviceTargetPlatform getTargetPlatform();
 

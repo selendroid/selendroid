@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
+import org.openqa.selenium.Dimension;
 
 
 public class DefaultHardwareDevice extends AbstractDevice {
@@ -28,7 +29,7 @@ public class DefaultHardwareDevice extends AbstractDevice {
 
   private Locale locale = null;
   private DeviceTargetPlatform targetPlatform = null;
-  private String screenSize = null;
+  private Dimension screenSize = null;
 
   public DefaultHardwareDevice(IDevice device) {
     super(device);
@@ -56,13 +57,11 @@ public class DefaultHardwareDevice extends AbstractDevice {
   }
 
   @Override
-  public String getScreenSize() {
+  public Dimension getScreenSize() {
     if (this.screenSize == null) {
-      RawImage screeshot = null;
-
       try {
-        screeshot = device.getScreenshot();
-        this.screenSize = screeshot.height + "x" + screeshot.width;
+        RawImage screenshot = device.getScreenshot();
+        this.screenSize = new Dimension(screenshot.width, screenshot.height);
       } catch (Exception e) {
         log.warning("was not able to determine screensize: " + e.getMessage());
         // can happen

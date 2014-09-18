@@ -13,6 +13,9 @@
  */
 package io.selendroid.android.impl;
 
+import com.android.ddmlib.IDevice;
+import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.ImmutableMap;
 import io.selendroid.android.AndroidEmulator;
 import io.selendroid.android.AndroidSdk;
 import io.selendroid.android.TelnetClient;
@@ -21,12 +24,12 @@ import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.io.ShellCommand;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Dimension;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,20 +40,23 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.android.ddmlib.IDevice;
-import com.beust.jcommander.internal.Lists;
-
 public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmulator {
   private static final String EMULATOR_SERIAL_PREFIX = "emulator-";
   private static final Logger log = Logger.getLogger(DefaultAndroidEmulator.class.getName());
   public static final String ANDROID_EMULATOR_HARDWARE_CONFIG = "hardware-qemu.ini";
   public static final String FILE_LOCKING_SUFIX = ".lock";
+  private static final ImmutableMap<String, Dimension> SKIN_NAME_DIMENSIONS = new
+      ImmutableMap.Builder<String, Dimension>()
+      .put("QVGA", new Dimension(240, 320))
+      .put("WQVGA400", new Dimension(240, 400))
+      .put("WQVGA432", new Dimension(240, 432))
+      .put("HVGA", new Dimension(320, 480))
+      .put("WVGA800", new Dimension(480, 800))
+      .put("WVGA854", new Dimension(480, 854))
+      .put("WXGA", new Dimension(1280, 800))
+      .build();
 
-  private String screenSize;
+  private Dimension screenSize;
   private DeviceTargetPlatform targetPlatform;
   private String avdName;
   private File avdRootFolder;
@@ -61,8 +67,8 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     this.wasStartedBySelendroid = Boolean.FALSE;
   }
 
-  public DefaultAndroidEmulator(String avdName, String abi, String screenSize, String target,
-      File avdFilePath) {
+  public DefaultAndroidEmulator(String avdName, String abi, Dimension screenSize, String target,
+                                File avdFilePath) {
     this.avdName = avdName;
     this.screenSize = screenSize;
     this.avdRootFolder = avdFilePath;
@@ -74,7 +80,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     return avdRootFolder;
   }
 
-  public String getScreenSize() {
+  public Dimension getScreenSize() {
     return screenSize;
   }
 
@@ -123,7 +129,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         String element = avdsOutput[i];
         String avdName = extractValue("Name: (.*?)$", element);
         String abi = extractValue("ABI: (.*?)$", element);
-        String screenSize = extractValue("Skin: (.*?)$", element);
+        Dimension screenSize = getScreenSizeFromSkin(extractValue("Skin: (.*?)$", element));
         String target = extractValue("\\(API level (.*?)\\)", element);
         File avdFilePath = new File(extractValue("Path: (.*?)$", element));
         DefaultAndroidEmulator emulator =
@@ -135,6 +141,21 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       }
     }
     return avds;
+  }
+
+  public static Dimension getScreenSizeFromSkin(String skinName) {
+    final Pattern dimensionSkinPattern = Pattern.compile("([0-9]+)x([0-9]+)");
+    Matcher matcher = dimensionSkinPattern.matcher(skinName);
+    if (matcher.matches()) {
+      int width = Integer.parseInt(matcher.group(1));
+      int height = Integer.parseInt(matcher.group(2));
+      return new Dimension(width, height);
+    } else if (SKIN_NAME_DIMENSIONS.containsKey(skinName)) {
+      return SKIN_NAME_DIMENSIONS.get(skinName);
+    } else {
+      log.warning("Failed to get dimensions for skin: " + skinName);
+      return null;
+    }
   }
 
   private static Map<String, Integer> mapDeviceNamesToSerial() {
@@ -233,7 +254,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     CommandLine cmd = new CommandLine(AndroidSdk.emulator());
 
 
-
     cmd.addArgument("-no-snapshot-save", false);
     cmd.addArgument("-avd", false);
     cmd.addArgument(avdName, false);
@@ -285,7 +305,8 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       if (timemoutEnd >= System.currentTimeMillis()) {
         try {
           Thread.sleep(2000);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException e) {
+        }
       } else {
         throw new AndroidDeviceException("The emulator with avd '" + getAvdName()
             + "' was not started after " + (System.currentTimeMillis() - start) / 1000
@@ -385,9 +406,8 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   }
 
   private void allAppsGridView() throws AndroidDeviceException {
-    String[] dimensions = screenSize.split("x");
-    int x = Integer.parseInt(dimensions[0]);
-    int y = Integer.parseInt(dimensions[1]);
+    int x = screenSize.width;
+    int y = screenSize.height;
     if (x > y) {
       y = y / 2;
       x = x - 30;

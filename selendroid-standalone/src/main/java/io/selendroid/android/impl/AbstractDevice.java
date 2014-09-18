@@ -41,6 +41,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.logging.LogEntry;
 
 import javax.imageio.ImageIO;
@@ -404,7 +405,15 @@ public abstract class AbstractDevice implements AndroidDevice {
       return true;
     }
 
-    return getScreenSize().equals(requestedScreenSize);
+    Pattern dimensionPattern = Pattern.compile("([0-9]+)x([0-9]+)");
+    Matcher dimensionMatcher = dimensionPattern.matcher(requestedScreenSize);
+    if (dimensionMatcher.matches()) {
+      int width = Integer.parseInt(dimensionMatcher.group(1));
+      int height = Integer.parseInt(dimensionMatcher.group(2));
+      return getScreenSize().equals(new Dimension(width, height));
+    } else {
+      return false;
+    }
   }
 
   public String runAdbCommand(String parameter) {

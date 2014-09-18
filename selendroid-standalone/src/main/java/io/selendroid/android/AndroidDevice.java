@@ -17,6 +17,7 @@ import io.selendroid.SelendroidCapabilities;
 import io.selendroid.device.DeviceTargetPlatform;
 import io.selendroid.exceptions.AndroidDeviceException;
 import io.selendroid.exceptions.AndroidSdkException;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.logging.LogEntry;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public interface AndroidDevice {
 
   public void kill(AndroidApp aut) throws AndroidDeviceException, AndroidSdkException;
 
-  public String getScreenSize();
+  public Dimension getScreenSize();
 
   public List<LogEntry> getLogs();
 

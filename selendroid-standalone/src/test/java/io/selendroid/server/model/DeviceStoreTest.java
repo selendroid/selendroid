@@ -46,6 +46,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.Dimension;
 
 /**
  * @author ddary
@@ -282,7 +283,7 @@ public class DeviceStoreTest {
     AndroidDevice device = mock(DefaultHardwareDevice.class);
     when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
     when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
-    when(device.getScreenSize()).thenReturn("320x480");
+    when(device.getScreenSize()).thenReturn(new Dimension(320, 480));
     when(device.screenSizeMatches("320x480")).thenReturn(Boolean.TRUE);
 
     DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
@@ -301,7 +302,7 @@ public class DeviceStoreTest {
     AndroidDevice device = mock(AndroidDevice.class);
     when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
     when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
-    when(device.getScreenSize()).thenReturn("320x500");
+    when(device.getScreenSize()).thenReturn(new Dimension(320, 500));
     when(device.screenSizeMatches("320x500")).thenReturn(Boolean.FALSE);
 
     DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
@@ -328,7 +329,7 @@ public class DeviceStoreTest {
       for (AndroidDevice device : Lists.newArrayList(device1, device2)) {
           when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
           when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
-          when(device.getScreenSize()).thenReturn("320x480");
+          when(device.getScreenSize()).thenReturn(new Dimension(320, 480));
           when(device.screenSizeMatches("320x480")).thenReturn(Boolean.TRUE);
       }
 
@@ -358,7 +359,7 @@ public class DeviceStoreTest {
 
       when(device.getTargetPlatform()).thenReturn(DeviceTargetPlatform.ANDROID16);
       when(device.isDeviceReady()).thenReturn(Boolean.TRUE);
-      when(device.getScreenSize()).thenReturn("320x480");
+      when(device.getScreenSize()).thenReturn(new Dimension(320, 480));
       when(device.screenSizeMatches("320x480")).thenReturn(Boolean.TRUE);
       when(device.getSerial()).thenReturn(serial);
 

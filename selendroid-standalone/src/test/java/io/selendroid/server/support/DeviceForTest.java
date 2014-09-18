@@ -24,6 +24,7 @@ import io.selendroid.exceptions.AndroidSdkException;
 import io.selendroid.server.util.HttpClientUtil;
 import org.apache.http.HttpResponse;
 import org.json.JSONObject;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.logging.LogEntry;
 
 import java.io.File;
@@ -45,16 +46,16 @@ public class DeviceForTest extends DefaultAndroidEmulator {
 
   public boolean deviceReady = false;
   public SelendroidDeviceServerStub selendroidDeviceServerStub = null;
-  private final String screenSize;
+  private final Dimension screenSize;
   private final DeviceTargetPlatform platform;
   public TestSessionListener testSessionListener = null;
 
   public DeviceForTest(DeviceTargetPlatform platform) {
-    screenSize = "320x480";
+    screenSize = new Dimension(320, 480);
     this.platform = platform;
   }
 
-  public DeviceForTest(DeviceTargetPlatform platform, String screenSize) {
+  public DeviceForTest(DeviceTargetPlatform platform, Dimension screenSize) {
     this.screenSize = screenSize;
     this.platform = platform;
   }
@@ -139,7 +140,7 @@ public class DeviceForTest extends DefaultAndroidEmulator {
   }
 
   @Override
-  public String getScreenSize() {
+  public Dimension getScreenSize() {
     return screenSize;
   }
 

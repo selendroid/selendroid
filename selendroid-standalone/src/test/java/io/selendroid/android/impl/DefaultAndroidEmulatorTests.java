@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.Dimension;
 
 public class DefaultAndroidEmulatorTests {
   @Test
@@ -35,7 +36,7 @@ public class DefaultAndroidEmulatorTests {
   @Test
   public void testShouldBeAbleToStartEmulator() throws Exception {
     AndroidEmulator emulator =
-        new DefaultAndroidEmulator("l10n", "X86", "320x480", "16", new File(
+        new DefaultAndroidEmulator("l10n", "X86", new Dimension(320, 480), "16", new File(
             FileUtils.getUserDirectory(), ".android" + File.separator + "avd" + File.separator
                 + "l10n.avd"));
 

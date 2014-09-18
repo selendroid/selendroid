@@ -29,11 +29,11 @@ public class CaptureScreenshot extends SafeRequestHandler {
   }
 
   @Override
-  public Response safeHandle(HttpRequest request) throws JSONException{
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("take screenshot command");
     byte[] rawPng = getSelendroidDriver(request).takeScreenshot();
     String base64Png = new Base64Encoder().encode(rawPng);
-    
+
     return new SelendroidResponse(getSessionId(request), base64Png);
   }
 }
