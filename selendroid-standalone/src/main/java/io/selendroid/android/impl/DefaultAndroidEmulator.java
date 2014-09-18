@@ -122,11 +122,10 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
     String[] avdsOutput = StringUtils.splitByWholeSeparator(output, "---------");
     if (avdsOutput != null && avdsOutput.length > 0) {
-      for (int i = 0; i < avdsOutput.length; i++) {
-        if (avdsOutput[i].contains("Name:") == false) {
+      for (String element : avdsOutput) {
+        if (!element.contains("Name:")) {
           continue;
         }
-        String element = avdsOutput[i];
         String avdName = extractValue("Name: (.*?)$", element);
         String abi = extractValue("ABI: (.*?)$", element);
         Dimension screenSize = getScreenSizeFromSkin(extractValue("Skin: (.*?)$", element));
@@ -278,7 +277,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     }
     setSerial(emulatorPort);
     Boolean adbKillServerAttempted = false;
-    while (isDeviceReady() == false) {
+    while (!isDeviceReady()) {
 
       if (!adbKillServerAttempted && System.currentTimeMillis() - start > 10000) {
         CommandLine adbDevicesCmd = new CommandLine(AndroidSdk.adb());
@@ -306,6 +305,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         try {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
         }
       } else {
         throw new AndroidDeviceException("The emulator with avd '" + getAvdName()
@@ -383,14 +383,15 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
     }
-    if (homeScreenLaunched != null && homeScreenLaunched.contains("S com.android.launcher")) {
-      if (!delay) return;
+
+    if (homeScreenLaunched != null && homeScreenLaunched.contains("S com.android.launcher") && !delay) {
+      return;
     } else {
       // it's still running, sleep for a bit
       try {
         Thread.sleep(500);
       } catch (InterruptedException e) {
-        throw new RuntimeException(e);
+        Thread.currentThread().interrupt();
       }
       waitForLauncherToComplete(true);
     }
@@ -399,10 +400,10 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     try {
       Thread.sleep(1000);
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      Thread.currentThread().interrupt();
     }
-    waitForLauncherToComplete(false);
 
+    waitForLauncherToComplete(false);
   }
 
   private void allAppsGridView() throws AndroidDeviceException {
@@ -472,8 +473,9 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         try {
           Thread.sleep(500);
         } catch (InterruptedException ie) {
-          throw new RuntimeException(ie);
+          Thread.currentThread().interrupt();
         }
+
         if (!killed) {
           try {
             stopEmulator();

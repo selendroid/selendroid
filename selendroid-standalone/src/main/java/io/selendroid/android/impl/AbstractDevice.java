@@ -47,7 +47,6 @@ import org.openqa.selenium.logging.LogEntry;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -122,11 +121,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     try {
       result = ShellCommand.exec(command);
     } catch (ShellCommandException e) {}
-    if (result != null && result.contains("package:" + appBasePackage)) {
-      return true;
-    }
 
-    return false;
+    return result != null && result.contains("package:" + appBasePackage);
   }
 
   @Override
@@ -150,7 +146,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   public boolean start(AndroidApp app) throws AndroidSdkException {
-    if (isInstalled(app) == false) {
+    if (!isInstalled(app)) {
       install(app);
     }
 
@@ -320,10 +316,7 @@ public abstract class AbstractDevice implements AndroidDevice {
       return false;
     }
 
-    if (response != null && 200 == statusCode && responseValue.contains("selendroid")) {
-      return true;
-    }
-    return false;
+    return statusCode == 200 && responseValue.contains("selendroid");
   }
 
   @Override
@@ -336,21 +329,20 @@ public abstract class AbstractDevice implements AndroidDevice {
     List<LogEntry> logs = Lists.newArrayList();
     String result = logoutput != null ? logoutput.toString() : "";
     String[] lines = result.split("\\r?\\n");
-    int num_lines = lines.length;
     log.fine("getting logcat");
-    for (int x = 0; x < num_lines; x++) {
+    for (String line : lines) {
       Level l;
-      if (lines[x].startsWith("I")) {
+      if (line.startsWith("I")) {
         l = Level.INFO;
-      } else if (lines[x].startsWith("W")) {
+      } else if (line.startsWith("W")) {
         l = Level.WARNING;
-      } else if (lines[x].startsWith("S")) {
+      } else if (line.startsWith("S")) {
         l = Level.SEVERE;
       } else {
         l = Level.FINE;
       }
-      logs.add(new LogEntry(l, System.currentTimeMillis(), lines[x]));
-      log.fine(lines[x]);
+      logs.add(new LogEntry(l, System.currentTimeMillis(), line));
+      log.fine(line);
     }
     return logs;
   }
@@ -424,8 +416,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     CommandLine command = adbCommand();
 
     String[] params = parameter.split(" ");
-    for (int i = 0; i < params.length; i++) {
-      command.addArgument(params[i], false);
+    for (String param : params) {
+      command.addArgument(param, false);
     }
 
     String commandOutput = executeCommandQuietly(command);
@@ -482,11 +474,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     } catch (IOException e) {
       throw new RuntimeException("I/O Error while capturing screenshot: " + e.getMessage());
     } finally {
-      Closeable closeable = (Closeable) stream;
       try {
-        if (closeable != null) {
-          closeable.close();
-        }
+        stream.close();
       } catch (IOException ioe) {
         // ignore
       }
