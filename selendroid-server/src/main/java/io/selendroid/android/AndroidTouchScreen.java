@@ -167,7 +167,7 @@ public class AndroidTouchScreen implements TouchScreen {
     try {
       Thread.sleep((long) (ViewConfiguration.getLongPressTimeout() * 1.5f));
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      Thread.currentThread().interrupt();
     }
 
     eventTime = SystemClock.uptimeMillis();

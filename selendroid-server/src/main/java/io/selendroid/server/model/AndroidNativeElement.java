@@ -137,8 +137,7 @@ public class AndroidNativeElement implements AndroidElement {
         try {
           syncObject.wait(AndroidWait.DEFAULT_SLEEP_INTERVAL);
         } catch (InterruptedException e) {
-          e.printStackTrace();
-          throw new SelendroidException(e);
+          Thread.currentThread().interrupt();
         }
       }
     }

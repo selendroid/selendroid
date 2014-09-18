@@ -17,6 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -29,7 +30,8 @@ public class JsonXmlUtil {
     try {
       builder = builderFactory.newDocumentBuilder();
     } catch (ParserConfigurationException e) {
-      e.printStackTrace();
+      SelendroidLogger.error("Failed to create documentBuilder", e);
+      throw new RuntimeException(e);
     }
     Document document = builder.newDocument();
 

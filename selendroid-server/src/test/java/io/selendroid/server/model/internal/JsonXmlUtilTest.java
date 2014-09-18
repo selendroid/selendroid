@@ -9,6 +9,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import io.selendroid.util.SelendroidLogger;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -51,17 +52,18 @@ public class JsonXmlUtilTest {
   }
 
   private List<Node> validateXPath(String expression, Document xmlDocument) {
+    List<Node> elements = new ArrayList<Node>();
     XPath xPath = XPathFactory.newInstance().newXPath();
 
-    NodeList nodeList = null;
+    NodeList nodeList;
     try {
       // read a nodelist using xpath
       nodeList = (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
     } catch (XPathExpressionException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SelendroidLogger.error("Failed to get NodeList from xPath", e);
+      return elements;
     }
-    List<Node> elements = new ArrayList<Node>();
+
     if (nodeList != null && nodeList.getLength() > 0) {
       for (int i = 0; i < nodeList.getLength(); i++) {
         Node node = nodeList.item(i);

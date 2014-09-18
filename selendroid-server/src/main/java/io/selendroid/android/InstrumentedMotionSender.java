@@ -16,6 +16,7 @@ package io.selendroid.android;
 
 import android.view.MotionEvent;
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.util.SelendroidLogger;
 
 public class InstrumentedMotionSender implements MotionSender {
 
@@ -34,7 +35,7 @@ public class InstrumentedMotionSender implements MotionSender {
       }
       return true;
     } catch (SecurityException ignored) {
-      ignored.printStackTrace();
+      SelendroidLogger.error("Error sending instrumented MotionEvent", ignored);
     }
     return false;
   }

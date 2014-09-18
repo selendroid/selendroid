@@ -225,22 +225,21 @@ public abstract class AbstractNativeElementContext
     try {
       root = getElementTree();
     } catch (JSONException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      SelendroidLogger.error("Could not getElementTree", e1);
     }
 
     Document xmlDocument = JsonXmlUtil.buildXmlDocument(root);
     XPath xPath = XPathFactory.newInstance().newXPath();
 
-    NodeList nodeList = null;
+    List<AndroidElement> elements = new ArrayList<AndroidElement>();
+    NodeList nodeList;
     try {
       // read a nodelist using xpath
       nodeList = (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
     } catch (XPathExpressionException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SelendroidLogger.error("Failed to get NodeList for XPath", e);
+      return elements;
     }
-    List<AndroidElement> elements = new ArrayList<AndroidElement>();
     if (nodeList != null && nodeList.getLength() > 0) {
       for (int i = 0; i < nodeList.getLength(); i++) {
         Node node = nodeList.item(i);

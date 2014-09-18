@@ -52,7 +52,7 @@ public class ResourceView extends SelendroidInspectorView {
 
         httpResponse.setContent(toByteArray(asset));
       } catch (IOException e) {
-        e.printStackTrace();
+        SelendroidLogger.error("Could not render ResourceView", e);
       }
     }
 

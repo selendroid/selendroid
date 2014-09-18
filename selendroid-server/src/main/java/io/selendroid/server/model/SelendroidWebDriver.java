@@ -175,7 +175,7 @@ public class SelendroidWebDriver {
     try {
       return executeAtom(atom, array, ke);
     } catch (JSONException je) {
-      je.printStackTrace();
+      SelendroidLogger.error("Failed to execute atom", je);
       throw new RuntimeException(je);
     }
   }
@@ -242,30 +242,15 @@ public class SelendroidWebDriver {
   }
 
   public Object executeScript(String script) {
-    try {
-      return injectJavascript(script, new JSONArray(), null);
-    } catch (JSONException je) {
-      je.printStackTrace();
-      throw new RuntimeException(je);
-    }
+    return injectJavascript(script, new JSONArray(), null);
   }
 
   public Object executeScript(String script, JSONArray args, KnownElements ke) {
-    try {
-      return injectJavascript(script, args, ke);
-    } catch (JSONException je) {
-      je.printStackTrace();
-      throw new RuntimeException(je);
-    }
+    return injectJavascript(script, args, ke);
   }
 
   public Object executeScript(String script, Object args, KnownElements ke) {
-    try {
-      return injectJavascript(script, args, ke);
-    } catch (JSONException je) {
-      je.printStackTrace();
-      throw new RuntimeException(je);
-    }
+    return injectJavascript(script, args, ke);
   }
 
   public String getCurrentUrl() {
@@ -380,17 +365,22 @@ public class SelendroidWebDriver {
     return (window += "window");
   }
 
-  Object injectJavascript(String toExecute, Object args, KnownElements ke) throws JSONException {
-    String executeScript = AndroidAtoms.EXECUTE_SCRIPT.getValue();
-    toExecute =
-        "var win_context; try{win_context= " + getWindowString() + "}catch(e){"
-            + "win_context=window;}with(win_context){" + toExecute + "}";
-    String wrappedScript =
-        "(function(){ var win; try{win=" + getWindowString() + "}catch(e){win=window}"
-            + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", ["
-            + convertToJsArgs(args, ke) + "], true)}})()";
-    return executeJavascriptInWebView("alert('selendroid<' + document.charset + '>:'+"
-        + wrappedScript + ")");
+  Object injectJavascript(String toExecute, Object args, KnownElements ke) {
+    try {
+      String executeScript = AndroidAtoms.EXECUTE_SCRIPT.getValue();
+      toExecute =
+          "var win_context; try{win_context= " + getWindowString() + "}catch(e){"
+              + "win_context=window;}with(win_context){" + toExecute + "}";
+      String wrappedScript =
+          "(function(){ var win; try{win=" + getWindowString() + "}catch(e){win=window}"
+              + "with(win){return (" + executeScript + ")(" + escapeAndQuote(toExecute) + ", ["
+              + convertToJsArgs(args, ke) + "], true)}})()";
+      return executeJavascriptInWebView("alert('selendroid<' + document.charset + '>:'+"
+          + wrappedScript + ")");
+    } catch (JSONException e) {
+      SelendroidLogger.error("Failed to convert args to jsArgs", e);
+      throw new RuntimeException(e);
+    }
   }
 
   Object injectAtomJavascript(String toExecute, Object args, KnownElements ke) throws JSONException {
@@ -406,7 +396,7 @@ public class SelendroidWebDriver {
           + "true, " + getWindowString() + ")}catch(e){alert('selendroid<' + document.charset + '>:{\"status\":13,\"value\":\"' + e + '\"}')}";
       return executeJavascriptInWebView(script);
     } catch (JSONException je) {
-      je.printStackTrace();
+      SelendroidLogger.error("Failed convert JSONArray to jsArgs", je);
       throw new RuntimeException(je);
     }
   }
@@ -572,7 +562,7 @@ public class SelendroidWebDriver {
       try {
         r.wait(timeout);
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        Thread.currentThread().interrupt();
       }
     }
   }

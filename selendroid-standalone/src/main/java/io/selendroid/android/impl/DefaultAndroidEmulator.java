@@ -445,7 +445,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     try {
       Thread.sleep(750);
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      Thread.currentThread().interrupt();
     }
   }
 
