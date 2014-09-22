@@ -61,8 +61,8 @@ public class SelendroidServerBuilder {
   private AndroidApp selendroidServer = null;
   private AndroidApp applicationUnderTest = null;
   private SelendroidConfiguration serverConfiguration = null;
-  private String storepass = null; 
-  private String alias = null; 
+  private String storepass = null;
+  private String alias = null;
   private X509Certificate cert509;
 
   /**
@@ -80,7 +80,7 @@ public class SelendroidServerBuilder {
 	      String selendroidApplicationXmlTemplate, SelendroidConfiguration selendroidConfiguration) {
 	    this.selendroidPrebuildServerPath = selendroidPrebuildServerPath;
 	    this.selendroidApplicationXmlTemplate = selendroidApplicationXmlTemplate;
-	    this.serverConfiguration = selendroidConfiguration; 
+	    this.serverConfiguration = selendroidConfiguration;
 	  }
 
   public SelendroidServerBuilder() {
@@ -281,7 +281,7 @@ public class SelendroidServerBuilder {
     commandline.addArgument(outputFileName.getAbsolutePath(), false);
     commandline.addArgument("-storepass", false);
     commandline.addArgument(storepass!=null?storepass:"android", false);
-    commandline.addArgument("-keystore", false);    
+    commandline.addArgument("-keystore", false);
     commandline.addArgument(androidKeyStore.toString(), false);
     commandline.addArgument(customSelendroidServer.getAbsolutePath(), false);
     commandline.addArgument(alias!=null?alias:"androiddebugkey", false);
@@ -300,16 +300,16 @@ public class SelendroidServerBuilder {
     } else {
       storepass = serverConfiguration.getKeystorePassword();
       alias = serverConfiguration.getKeystoreAlias();
-      // there is a possibility that keystore path may be invalid due to user typo. Should we add a try catch? 
+      // there is a possibility that keystore path may be invalid due to user typo. Should we add a try catch?
       return new File(serverConfiguration.getKeystore());
     }
   }
-  
+
   /**
    * Cleans the selendroid server by removing certificates and manifest file.
-   * 
+   *
    * Precondition: {@link #init(AndroidApp)} must be called upfront for initialization
-   * 
+   *
    * @throws ShellCommandException
    * @throws AndroidSdkException
    */
@@ -336,7 +336,7 @@ public class SelendroidServerBuilder {
   /**
    * Loads resources as stream and the main reason for having the method is because it can be use
    * while testing and in production for loading files from within jar file.
-   * 
+   *
    * @param resource The resource to load.
    * @return The input stream of the resource.
    * @throws SelendroidException if resource was not found.
@@ -380,10 +380,10 @@ public class SelendroidServerBuilder {
     String value = attr.getValue("version");
     return value;
   }
-  
+
   private String getSigAlg()
   {
-	  String sigAlg = "MD5withRSA"; 
+	  String sigAlg = "MD5withRSA";
       FileInputStream in;
       try
       {
@@ -391,19 +391,18 @@ public class SelendroidServerBuilder {
         String keystoreFile = 	serverConfiguration.getKeystore();
 		if(keystoreFile != null){
           in = new FileInputStream(keystoreFile);
-		
+
           KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-          keystore.load(in, serverConfiguration.getKeystorePassword().toCharArray());
+          String keystorePassword = serverConfiguration.getKeystorePassword();
+          char[] keystorePasswordCharArray = (keystorePassword == null) ? null : keystorePassword.toCharArray();
+          keystore.load(in, keystorePasswordCharArray);
           cert509 = (X509Certificate) keystore.getCertificate(serverConfiguration.getKeystoreAlias());
           sigAlg = cert509.getSigAlgName();
           }
         }
+      } catch (Exception e) {
+          log.log(Level.WARNING, "Error getting signature algorithm", e);
       }
-      catch (Exception e1)
-      {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
-      }
-      return sigAlg; 
+      return sigAlg;
   }
 }

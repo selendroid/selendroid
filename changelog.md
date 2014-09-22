@@ -27,6 +27,7 @@
 - getWindowSize() now supports API levels < 13
 - Changed getScreenSize() to use Dimension instead of string,
   added support for emulators with string skin names
+- Fixed loading of keystores with no password
 
 0.11.0
 ---
