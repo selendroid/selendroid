@@ -39,6 +39,7 @@ import io.selendroid.server.AndroidServer;
 import io.selendroid.server.ServerDetails;
 import io.selendroid.server.model.ExternalStorage;
 import io.selendroid.server.utils.CallLogEntry;
+import io.selendroid.util.Intents;
 import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 
@@ -70,14 +71,10 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   public void startActivity(String activityClassName) {
     finishAllActivities();
 
+    Context context = getTargetContext();
     // Start the new activity
-    Intent intent = new Intent();
-    intent.setClassName(getTargetContext(), activityClassName);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    intent.setAction(Intent.ACTION_MAIN);
-    intent.addCategory(Intent.CATEGORY_LAUNCHER);
-    getTargetContext().startActivity(intent);
+    Intent intent = Intents.CreateIntent(context, activityClassName);
+    context.startActivity(intent);
   }
 
   public void finishAllActivities() {
