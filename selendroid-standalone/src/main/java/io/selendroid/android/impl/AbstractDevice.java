@@ -92,7 +92,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   protected AbstractDevice() {}
 
   protected boolean isSerialConfigured() {
-    return serial != null && serial.isEmpty() == false;
+    return serial != null && !serial.isEmpty();
   }
 
   public void setVerbose() {
@@ -105,11 +105,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     String bootAnimDisplayed = null;
     try {
       bootAnimDisplayed = ShellCommand.exec(command);
-    } catch (ShellCommandException e) {}
-    if (bootAnimDisplayed != null && bootAnimDisplayed.contains("stopped")) {
-      return true;
+    } catch (ShellCommandException e) {
+      log.log(Level.INFO, "Could not get property init.svc.bootanim", e);
     }
-    return false;
+    return bootAnimDisplayed != null && bootAnimDisplayed.contains("stopped");
   }
 
   @Override
