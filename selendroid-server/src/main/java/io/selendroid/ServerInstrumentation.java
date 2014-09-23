@@ -73,7 +73,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
     Context context = getTargetContext();
     // Start the new activity
-    Intent intent = Intents.CreateIntent(context, activityClassName);
+    Intent intent = Intents.createStartActivityIntent(context, activityClassName);
     context.startActivity(intent);
   }
 

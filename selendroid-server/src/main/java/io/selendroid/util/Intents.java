@@ -10,7 +10,7 @@ public class Intents {
     /**
      * Create an intent for test in both ServerInstrumentation and LightweightInstrumentation
      */
-    public static Intent CreateIntent(Context context, String mainActivityName) {
+    public static Intent createStartActivityIntent(Context context, String mainActivityName) {
         Intent intent = new Intent();
         intent.setClassName(context, mainActivityName);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT

@@ -52,7 +52,7 @@ public class LightweightInstrumentation extends Instrumentation {
                 UncaughtExceptionHandling.setGlobalExceptionHandler();
 
                 // Start the new activity
-                Intent intent = Intents.CreateIntent(context, mainActivityName);
+                Intent intent = Intents.createStartActivityIntent(context, mainActivityName);
                 context.startActivity(intent);
             }
         });
