@@ -15,6 +15,7 @@
 - Assume AUT is already installed if LaunchActivity specified & no matching appsStore entry [#567](../../issues/567)
 - Propagate unhandled exceptions in AUT as AppCrashedException
 - Added server-side support for low-level actions API
+- Added client side implementation of the multi touch screen
 - Added empty()/copyOf()/withMerged() to SelendroidCapabilities
 - Added ability to run GC and set system properties.
 - GetElementAttribute returns null if attribute is not set. Fixes [#568](../../issues/568)
@@ -28,6 +29,7 @@
 - Changed getScreenSize() to use Dimension instead of string,
   added support for emulators with string skin names
 - Fixed loading of keystores with no password
+
 
 0.11.0
 ---
