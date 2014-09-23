@@ -36,6 +36,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.interactions.HasTouchScreen;
 import org.openqa.selenium.interactions.TouchScreen;
+import org.openqa.selenium.remote.CommandExecutor;
 import org.openqa.selenium.remote.ExecuteMethod;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteTouchScreen;
@@ -52,6 +53,7 @@ import com.google.gson.reflect.TypeToken;
 public class SelendroidDriver extends RemoteWebDriver
     implements
       HasTouchScreen,
+      HasMultiTouchScreen,
       ScreenBrightness,
       TakesScreenshot,
       Rotatable,
@@ -63,20 +65,23 @@ public class SelendroidDriver extends RemoteWebDriver
       CallsGc {
 
   private RemoteTouchScreen touchScreen;
+  private MultiTouchScreen multiTouchScreen;
   private RemoteAdbConnection adbConnection;
 
-  public SelendroidDriver(URL url, Capabilities caps) throws Exception {
-    super(new SelendroidCommandExecutor(url), caps);
+  private SelendroidDriver(CommandExecutor executor, Capabilities caps) throws Exception {
+    super(executor, caps);
     RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(this);
     touchScreen = new RemoteTouchScreen(executeMethod);
+    multiTouchScreen = new MultiTouchScreen(executeMethod);
     adbConnection = new RemoteAdbConnection(executeMethod);
   }
 
+  public SelendroidDriver(URL url, Capabilities caps) throws Exception {
+    this(new SelendroidCommandExecutor(url), caps);
+  }
+
   public SelendroidDriver(Capabilities caps) throws Exception {
-    super(new SelendroidCommandExecutor(), caps);
-    RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(this);
-    touchScreen = new RemoteTouchScreen(executeMethod);
-    adbConnection = new RemoteAdbConnection(executeMethod);
+    this(new SelendroidCommandExecutor(), caps);
   }
 
   /**
@@ -86,6 +91,8 @@ public class SelendroidDriver extends RemoteWebDriver
   public TouchScreen getTouch() {
     return touchScreen;
   }
+
+  public MultiTouchScreen getMultiTouchScreen() { return multiTouchScreen; }
 
   /**
    * {@inheritDoc}
