@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;
 import io.selendroid.server.http.HttpRequest;
 
+import java.net.SocketException;
 import java.util.logging.Logger;
 
 public class RequestRedirectHandler extends BaseSelendroidServerHandler {
@@ -45,14 +46,15 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 
     ActiveSession session = getSelendroidDriver(request).getActiveSession(sessionId);
     if (session == null) {
-      return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, new SelendroidException(
-          "No session found for given sessionId: " + sessionId));
+      return respondWithRedirectFailure(sessionId,
+          new SelendroidException("No session found for given sessionId: " + sessionId));
     }
     if (session.isInvalid()) {
-      return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, new SelendroidException(
-          "The test session has been marked as invalid. "
-              + "This happens if a hardware device was disconnected but a "
-              + "test session was still active on the device."));
+      return respondWithRedirectFailure(sessionId,
+          new SelendroidException(
+              "The test session has been marked as invalid. " +
+              "This happens if a hardware device was disconnected but a " +
+              "test session was still active on the device."));
     }
     String url = "http://localhost:" + session.getSelendroidServerPort() + request.uri();
 
@@ -71,7 +73,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 
           String crashMessage = device.getCrashLog();
           if (!crashMessage.isEmpty()) {
-            return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, new AppCrashedException(crashMessage));
+            return respondWithRedirectFailure(sessionId, new AppCrashedException(crashMessage));
           }
 
           if (device.isLoggingEnabled()) {
@@ -82,10 +84,16 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
             }
           }
 
-          return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR,
-                  new SelendroidException(
-                          "Error occured while communicating with selendroid server on the device: ",
-                          e));
+          if (e instanceof SocketException) {
+            return respondWithRedirectFailure(sessionId, new SelendroidException(
+                "The selendroid server on the device became unreachable.\nThis most likely means the app under " +
+                "test crashed or has been killed by the OS in a way that can't be detected using the default " +
+                "uncaught exception handler.\n" +
+                "Try to look for the reason of the crash in logcat."));
+          } else {
+            return respondWithRedirectFailure(sessionId, new SelendroidException(
+                "Unexpected error communicating with selendroid server on the device", e));
+          }
         } else {
           log.severe("failed to forward request to Selendroid Server");
         }
@@ -108,8 +116,12 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     return new SelendroidResponse(sessionId, StatusCode.fromInteger(status), value);
   }
 
+  private SelendroidResponse respondWithRedirectFailure(String sessionId, Exception e) throws JSONException {
+    return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, e);
+  }
+
   private JSONObject redirectRequest(HttpRequest request, ActiveSession session, String url, String method)
-      throws Exception, JSONException {
+      throws Exception {
 
     HttpResponse r = null;
     if ("get".equalsIgnoreCase(method)) {
@@ -119,15 +131,13 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
       log.info("POST redirect to: " + url);
       JSONObject payload = getPayload(request);
       log.info("Payload? " + payload);
-      r =
-          HttpClientUtil.executeRequestWithPayload(url, session.getSelendroidServerPort(),
-              HttpMethod.POST, payload.toString());
-
+      r = HttpClientUtil.executeRequestWithPayload(
+          url, session.getSelendroidServerPort(), HttpMethod.POST, payload.toString());
     } else if ("delete".equalsIgnoreCase(method)) {
       log.info("DELETE redirect to: " + url);
       r = HttpClientUtil.executeRequest(url, HttpMethod.DELETE);
     } else {
-      throw new SelendroidException("Http method not supported.");
+      throw new SelendroidException("HTTP method not supported: " + method);
     }
     return HttpClientUtil.parseJsonResponse(r);
   }
