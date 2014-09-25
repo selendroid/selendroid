@@ -24,24 +24,26 @@ import io.selendroid.util.Intents;
 import io.selendroid.util.SelendroidLogger;
 
 /**
- * A light weight instrumentation without server
+ * A lightweight instrumentation without server
+ * It's used for starting the app and running bootstrap only, where you don't want to interact with the app further
  */
 public class LightweightInstrumentation extends Instrumentation {
-    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle arguments) {
-        SelendroidLogger.info("Light weight Instrumentation initialized.");
-        final String mainActivityName = arguments.getString("main_activity");
+        SelendroidLogger.info("LightweightInstrumentation.onCreate");
         final Context context = getTargetContext();
-        InstrumentationArguments args = new InstrumentationArguments(arguments);
+        final InstrumentationArguments args = new InstrumentationArguments(arguments);
+        final ExtensionLoader extensionLoader;
         Handler handler = new Handler();
 
         if (args.isLoadExtensions()) {
-            ExtensionLoader extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
+            extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
             String bootstrapClassNames = args.getBootstrapClassNames();
-            if (bootstrapClassNames != null) {
+            if (bootstrapClassNames != null && !bootstrapClassNames.isEmpty()) {
                 extensionLoader.runBeforeApplicationCreateBootstrap(this, bootstrapClassNames.split(","));
             }
+        } else {
+            extensionLoader = null;
         }
 
         // Queue bootstrapping and starting of the main activity on the main thread.
@@ -51,10 +53,18 @@ public class LightweightInstrumentation extends Instrumentation {
                 UncaughtExceptionHandling.clearCrashLogFile();
                 UncaughtExceptionHandling.setGlobalExceptionHandler();
 
+                if (args.isLoadExtensions() && args.getBootstrapClassNames() != null) {
+                    extensionLoader.runAfterApplicationCreateBootstrap(
+                        LightweightInstrumentation.this,
+                        args.getBootstrapClassNames().split(","));
+                }
+
                 // Start the new activity
-                Intent intent = Intents.createStartActivityIntent(context, mainActivityName);
+                Intent intent = Intents.createStartActivityIntent(context, args.getActivityClassName());
                 context.startActivity(intent);
             }
         });
+        SelendroidLogger.info("LightweightInstrumentation initialized");
     }
 }
+

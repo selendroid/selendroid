@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * A helper class for intent
+ * A helper class for working with intents
  */
 public class Intents {
     /**
-     * Create an intent for test in both ServerInstrumentation and LightweightInstrumentation
+     * Create an intent to start an activity, for both ServerInstrumentation and LightweightInstrumentation
      */
     public static Intent createStartActivityIntent(Context context, String mainActivityName) {
         Intent intent = new Intent();
