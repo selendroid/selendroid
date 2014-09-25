@@ -13,6 +13,10 @@
  */
 package io.selendroid;
 
+import com.google.common.base.Preconditions;
+
+import org.openqa.selenium.WebDriver;
+
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +28,14 @@ public class TouchAction {
     this.actionChain = actionChain;
   }
 
-  public List<Map<String, Object>> getActionChain() {
+  protected List<Map<String, Object>> getActionChain() {
     return actionChain;
+  }
+
+  public void perform(WebDriver driver) {
+    Preconditions.checkState(driver instanceof HasMultiTouchScreen);
+    ((HasMultiTouchScreen) driver)
+        .getMultiTouchScreen()
+        .executeAction(this);
   }
 }

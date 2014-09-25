@@ -13,12 +13,16 @@
  */
 package io.selendroid;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
+import org.openqa.selenium.WebDriver;
 
 import java.util.List;
 
 public class MultiTouchAction {
+
   private List<TouchAction> mTouchActions = Lists.newArrayList();
 
   public MultiTouchAction(TouchAction... touchActions) {
@@ -29,8 +33,16 @@ public class MultiTouchAction {
     mTouchActions.add(touchAction);
     return this;
   }
-  public ImmutableList<TouchAction> getTouchActions() {
+
+  protected ImmutableList<TouchAction> getTouchActions() {
     return ImmutableList.copyOf(mTouchActions);
+  }
+
+  public void perform(WebDriver driver) {
+    Preconditions.checkState(driver instanceof HasMultiTouchScreen);
+    ((HasMultiTouchScreen) driver)
+        .getMultiTouchScreen()
+        .executeAction(this);
   }
 }
 
