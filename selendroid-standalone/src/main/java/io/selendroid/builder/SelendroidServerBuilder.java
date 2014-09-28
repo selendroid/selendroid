@@ -55,7 +55,7 @@ public class SelendroidServerBuilder {
   public static final String SELENDROID_FINAL_NAME = "selendroid-server.apk";
   public static final String PREBUILD_SELENDROID_SERVER_PATH_PREFIX =
       "/prebuild/selendroid-server-";
-  public static final String ANDROID_APPLICATION_XML_TEMPLATE = "/AndroidManifest.xml";
+  public static final String ANDROID_APPLICATION_XML_TEMPLATE = "/AndroidManifestTemplate.xml";
   public static final String ICON = "android:icon=\"@drawable/selenium_icon\"";
   private String selendroidPrebuildServerPath = null;
   private String selendroidApplicationXmlTemplate = null;

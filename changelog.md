@@ -33,6 +33,7 @@
 - Removed 'SelendroidKeys.ANDROID_HOME' because emulating the home key using Instrumentation is not supported in Android. Use adb to emulate the home key in your tests.
 - Return capabilities immediately after session creation instead of redirecting
 - Lowered severity of logs in isSelendroidRunning(), made messages more informative.
+- Made E2E tests use SelendroidStandaloneServer
 
 0.11.0
 ---

@@ -13,34 +13,107 @@
  */
 package io.selendroid.support;
 
-import io.selendroid.android.AndroidSdk;
-import io.selendroid.io.ShellCommand;
-import io.selendroid.server.util.HttpClientUtil;
-import org.apache.commons.exec.CommandLine;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
+import io.selendroid.SelendroidCapabilities;
+import io.selendroid.SelendroidConfiguration;
+import io.selendroid.SelendroidDriver;
+import io.selendroid.SelendroidLauncher;
+import io.selendroid.waiter.WaitingConditions;
+
+import static io.selendroid.waiter.TestWaiter.waitFor;
 
 
-public class BaseAndroidTest extends AbstractAndroidTest{
+public class BaseAndroidTest {
+  private static SelendroidConfiguration conf = new SelendroidConfiguration();
+  private static SelendroidLauncher launcher = new SelendroidLauncher(conf);
+
+  private SelendroidDriver driver = null;
+  public static final String NATIVE_APP = "NATIVE_APP";
+  public static final String WEBVIEW = "WEBVIEW_0";
+
+  public SelendroidDriver driver() {
+    return driver;
+  }
+
+  @Before
+  public void setup() throws Exception {
+    driver =
+            new SelendroidDriver(getDefaultCapabilities());
+    driver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+  }
+
+  @After
+  public void teardown() {
+    if (driver() != null) {
+      driver().quit();
+    }
+  }
+
+  protected void openWebdriverTestPage(String page) {
+    driver().switchTo().window(NATIVE_APP);
+    driver().get("and-activity://" + "io.selendroid.testapp." + "WebViewActivity");
+    waitFor(WaitingConditions.driverUrlToBe(driver(), "and-activity://WebViewActivity"));
+
+    driver().context(WEBVIEW);
+    driver().get(page);
+    //waitFor(WaitingConditions.driverUrlToBe(driver(), page),15,TimeUnit.SECONDS);
+  }
+
+  protected void openStartActivity() {
+    driver().context(NATIVE_APP);
+    driver().get("and-activity://io.selendroid.testapp.HomeScreenActivity");
+  }
+
+  protected DesiredCapabilities getDefaultCapabilities() {
+    SelendroidCapabilities caps = new SelendroidCapabilities();
+    caps.setAut("io.selendroid.testapp:0.12.0-SNAPSHOT");
+    caps.setLaunchActivity("io.selendroid.testapp.HomeScreenActivity");
+    caps.setSelendroidExtensions("src/test/resources/extension.dex");
+
+    return caps;
+  }
+
+  @Rule
+  public TestRule rule = new TestRule() {
+
+    @Override
+    public Statement apply(final Statement base, final Description description) {
+      return new Statement() {
+        @Override
+        public void evaluate() throws Throwable {
+          System.out.println(String.format("%s.%s", description.getTestClass().getName(),
+                  description.getMethodName()));
+          try {
+            base.evaluate();
+          } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+          }
+          System.out.println("test completed.");
+        }
+      };
+    }
+  };
+
   @BeforeClass
   public static void startSelendroidServer() throws Exception {
-    CommandLine startSelendroid = new CommandLine(AndroidSdk.adb());
-    startSelendroid.addArgument("shell");
-    startSelendroid.addArgument("am");
-    startSelendroid.addArgument("instrument");
-    startSelendroid.addArgument("-e");
-    startSelendroid.addArgument("main_activity");
-    startSelendroid.addArgument("io.selendroid.testapp.HomeScreenActivity");
-    startSelendroid.addArgument("io.selendroid/.ServerInstrumentation");
-    ShellCommand.exec(startSelendroid);
-    CommandLine forwardPort = new CommandLine(AndroidSdk.adb());
-    forwardPort.addArgument("forward");
-    forwardPort.addArgument("tcp:8080");
-    forwardPort.addArgument("tcp:8080");
+    launcher.launchSelendroid();
+  }
 
-    ShellCommand.exec(forwardPort);
-    // instrumentation needs a beat to come up before connecting right away
-    // without this the first test often will fail, there's a similar wait
-    // in the selendroid-standalone
-    HttpClientUtil.waitForServer(8080);
+  @AfterClass
+  public static void stopSelendroidServer() {
+    launcher.stopSelendroid();
   }
 }
