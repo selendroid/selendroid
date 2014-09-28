@@ -181,9 +181,9 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void shouldFindButtonByClass() throws Exception {
     openStartActivity();
-    String buttonText = "EN Button";
+    String buttonText = "Display and focus on layout";
     WebElement clickMe = driver().findElement(By.className("android.widget.Button"));
-    Assert.assertEquals(clickMe.getText(), buttonText);
+    Assert.assertEquals(buttonText, clickMe.getText());
   }
 
   @Test
@@ -192,7 +192,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     String buttonText = "Show Progress Bar for a while";
     List<WebElement> elements = driver().findElements(By.className("android.widget.Button"));
     Assert.assertEquals(8, elements.size());
-    Assert.assertEquals(elements.get(1).getText(), buttonText);
+    Assert.assertEquals(buttonText, elements.get(2).getText());
   }
 
   @Test()
@@ -219,9 +219,10 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void shouldFindButtonByTagName() throws Exception {
     openStartActivity();
-    String buttonText = "EN Button";
+    String buttonText = "Display and focus on layout";
     WebElement clickMe = driver().findElement(By.tagName("Button"));
-    Assert.assertEquals(clickMe.getText(), buttonText);
+
+    Assert.assertEquals(buttonText, clickMe.getText());
   }
 
   @Test
@@ -230,7 +231,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
     String buttonText = "EN Button";
     List<WebElement> elements = driver().findElements(By.tagName("Button"));
     Assert.assertEquals(7, elements.size());
-    Assert.assertEquals(elements.get(0).getText(), buttonText);
+    Assert.assertEquals(buttonText, elements.get(1).getText());
   }
 
   @Test()
