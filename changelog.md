@@ -34,6 +34,7 @@
 - Return capabilities immediately after session creation instead of redirecting
 - Lowered severity of logs in isSelendroidRunning(), made messages more informative.
 - Made E2E tests use SelendroidStandaloneServer
+- findElements() returns an empty list instead of throwing an exception.
 
 0.11.0
 ---

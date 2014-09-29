@@ -445,9 +445,6 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
         return new ArrayList<AndroidElement>();
       }
       elements = replyElements((JSONArray) result);
-      if (elements == null || elements.isEmpty()) {
-        throw new NoSuchElementException("The element was not found.");
-      }
       return elements;
     }
   }

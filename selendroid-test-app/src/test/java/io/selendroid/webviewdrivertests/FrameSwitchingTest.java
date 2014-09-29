@@ -13,12 +13,12 @@
  */
 package io.selendroid.webviewdrivertests;
 
-import io.selendroid.exceptions.StaleElementReferenceException;
 import io.selendroid.support.BaseAndroidTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
 public class FrameSwitchingTest extends BaseAndroidTest {

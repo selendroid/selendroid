@@ -72,9 +72,6 @@ public class AndroidWebElement implements AndroidElement {
               AndroidWebElement.this);
 
       List<AndroidElement> elements = replyElements(result);
-      if (elements == null || elements.isEmpty()) {
-        throw new NoSuchElementException("no elements were found.");
-      }
       return elements;
     }
   }

@@ -445,7 +445,7 @@ public abstract class AbstractNativeElementContext
     try {
       viewClass = Class.forName(using);
     } catch (ClassNotFoundException e) {
-      throw new NoSuchElementException("The view class '" + using + "' was not found.");
+      return new ArrayList<AndroidElement>();
     }
     return findAllByPredicate(new InstanceOfPredicate(viewClass));
   }
