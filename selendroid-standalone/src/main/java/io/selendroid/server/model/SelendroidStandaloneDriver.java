@@ -181,19 +181,172 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     return serverConfiguration;
   }
 
-  public String createNewTestSession(JSONObject caps, Integer retries) throws AndroidSdkException,
-      JSONException {
-    SelendroidCapabilities desiredCapabilities = null;
+  public String createNewTestSession(JSONObject caps, Integer retries) {
+    AndroidDevice device = null;
+    Exception lastException = null;
+    while (retries >= 0) {
+      try {
+        SelendroidCapabilities desiredCapabilities = getSelendroidCapabilities(caps);
 
-    // Convert the JSON capabilities to SelendroidCapabilities
-    try {
-      desiredCapabilities = new SelendroidCapabilities(caps);
-    } catch (JSONException e) {
-      throw new SelendroidException("Desired capabilities cannot be parsed.");
+        AndroidApp app = getAndroidApp(desiredCapabilities, desiredCapabilities.getAut());
+        device = deviceStore.findAndroidDevice(desiredCapabilities);
+
+        // If we are using an emulator need to start it up
+        if (device instanceof AndroidEmulator) {
+          startAndroidEmulator(desiredCapabilities, (AndroidEmulator) device);
+        }
+
+        boolean appInstalledOnDevice = device.isInstalled(app) || app instanceof InstalledAndroidApp;
+        if (!appInstalledOnDevice || serverConfiguration.isForceReinstall()) {
+          device.install(app);
+        } else {
+          log.info("the app under test is already installed.");
+        }
+
+        int port = getNextSelendroidServerPort();
+        boolean serverInstalled = device.isInstalled("io.selendroid." + app.getBasePackage());
+        if (!serverInstalled || serverConfiguration.isForceReinstall()) {
+          if (!device.install(createSelendroidServerApk(app))) {
+            throw new SessionNotCreatedException("Could not install selendroid-server on device");
+          }
+        } else {
+          log.info("selendroid-server will not be created and installed " +
+                          "because it already exists for the app under test.");
+        }
+
+        // Run any adb commands requested in the capabilities
+        List<String> preSessionAdbCommands = desiredCapabilities.getPreSessionAdbCommands();
+        runPreSessionCommands(device, preSessionAdbCommands);
+
+        // Push extension dex to device if specified
+        String extensionFile = desiredCapabilities.getSelendroidExtensions();
+        pushExtensionsToDevice(device, extensionFile);
+
+        // Configure logging on the device
+        device.setLoggingEnabled(serverConfiguration.isDeviceLog());
+
+        // It's GO TIME!
+        // start the selendroid server on the device and make sure it's up
+        eventListener.onBeforeDeviceServerStart();
+        device.startSelendroid(app, port, desiredCapabilities);
+        waitForServerStart(device);
+        eventListener.onAfterDeviceServerStart();
+
+        // arbitrary sleeps? yay...
+        // looks like after the server starts responding
+        // we need to give it a moment before starting a session?
+        try {
+          Thread.sleep(500);
+        } catch (InterruptedException e1) {
+          Thread.currentThread().interrupt();
+        }
+
+        // create the new session on the device server
+        RemoteWebDriver driver =
+                new RemoteWebDriver(new URL("http://localhost:" + port + "/wd/hub"), desiredCapabilities);
+        String sessionId = driver.getSessionId().toString();
+        SelendroidCapabilities requiredCapabilities =
+                new SelendroidCapabilities(driver.getCapabilities().asMap());
+        ActiveSession session =
+                new ActiveSession(sessionId, requiredCapabilities, app, device, port, this);
+
+        this.sessions.put(sessionId, session);
+
+        // We are requesting an "AndroidDriver" so automatically switch to the webview
+        if (BrowserType.ANDROID.equals(desiredCapabilities.getAut())) {
+          switchToWebView(driver);
+        }
+
+        return sessionId;
+      } catch (Exception e) {
+        lastException = e;
+        log.log(Level.SEVERE, "Error occurred while starting Selendroid session", e);
+        retries --;
+
+        // Return device to store
+        if (device != null) {
+          deviceStore.release(device, null);
+          device = null;
+        }
+      }
     }
 
-    // Find the App being requested for use
-    String aut = desiredCapabilities.getAut();
+    throw new SessionNotCreatedException("Error starting Selendroid session", lastException);
+  }
+
+  private void switchToWebView(RemoteWebDriver driver) {
+    // arbitrarily high wait time, will this cover our slowest possible device/emulator?
+    WebDriverWait wait = new WebDriverWait(driver, 60);
+    // wait for the WebView to appear
+    wait.until(ExpectedConditions.visibilityOfElementLocated(By
+            .className(
+                    "android.webkit.WebView")));
+    driver.switchTo().window("WEBVIEW");
+    // the 'android-driver' webview has an h1 with id 'AndroidDriver' embedded in it
+    wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("AndroidDriver")));
+  }
+
+  private void waitForServerStart(AndroidDevice device) {
+    long startTimeOut = serverConfiguration.getServerStartTimeout();
+    long timemoutEnd = System.currentTimeMillis() + startTimeOut;
+    while (!device.isSelendroidRunning()) {
+      if (timemoutEnd >= System.currentTimeMillis()) {
+        try {
+          Thread.sleep(2000);
+          String crashMessage = device.getCrashLog();
+          if (!crashMessage.isEmpty()) {
+            throw new AppCrashedException(crashMessage);
+          }
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
+      } else {
+        throw new SelendroidException("Selendroid server on the device didn't come up after "
+                + startTimeOut / 1000 + "sec:");
+      }
+    }
+  }
+
+  private void pushExtensionsToDevice(AndroidDevice device, String extensionFile) {
+    if (extensionFile != null) {
+      String externalStorageDirectory = device.getExternalStoragePath();
+      String deviceDexPath = new File(externalStorageDirectory, "extension.dex").getAbsolutePath();
+      device.runAdbCommand(String.format("push %s %s", extensionFile, deviceDexPath));
+    }
+  }
+
+  private void runPreSessionCommands(AndroidDevice device, List<String> preSessionAdbCommands) {
+    List<String> adbCommands = new ArrayList<String>();
+    adbCommands.add("shell setprop log.tag.SELENDROID " + serverConfiguration.getLogLevel().name());
+    adbCommands.addAll(preSessionAdbCommands);
+
+    for (String adbCommandParameter : adbCommands) {
+      device.runAdbCommand(adbCommandParameter);
+    }
+  }
+
+  private void startAndroidEmulator(SelendroidCapabilities desiredCapabilities, AndroidEmulator device) throws AndroidDeviceException {
+    AndroidEmulator emulator = device;
+    if (emulator.isEmulatorStarted()) {
+      emulator.unlockEmulatorScreen();
+    } else {
+      Map<String, Object> config = new HashMap<String, Object>();
+      if (serverConfiguration.getEmulatorOptions() != null) {
+        config.put(AndroidEmulator.EMULATOR_OPTIONS, serverConfiguration.getEmulatorOptions());
+      }
+      config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
+      if (desiredCapabilities.asMap().containsKey(SelendroidCapabilities.DISPLAY)) {
+        Object d = desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY);
+        config.put(AndroidEmulator.DISPLAY_OPTION, String.valueOf(d));
+      }
+
+      Locale locale = parseLocale(desiredCapabilities);
+      emulator.start(locale, deviceStore.nextEmulatorPort(), config);
+    }
+    emulator.setIDevice(deviceManager.getVirtualDevice(emulator.getAvdName()));
+  }
+
+  private AndroidApp getAndroidApp(SelendroidCapabilities desiredCapabilities, String aut) {
     AndroidApp app = appsStore.get(aut);
     if (app == null) {
       if (desiredCapabilities.getLaunchActivity() != null) {
@@ -208,176 +361,17 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     }
     // adjust app based on capabilities (some parameters are session specific)
     app = augmentApp(app, desiredCapabilities);
+    return app;
+  }
 
-    // Find a device to match the capabilities
-    AndroidDevice device = null;
+  private SelendroidCapabilities getSelendroidCapabilities(JSONObject caps) {
+    SelendroidCapabilities desiredCapabilities;// Convert the JSON capabilities to SelendroidCapabilities
     try {
-      device = getAndroidDevice(desiredCapabilities);
-    } catch (AndroidDeviceException e) {
-      SessionNotCreatedException error =
-          new SessionNotCreatedException("Error occured while finding android device: "
-              + e.getMessage());
-      e.printStackTrace();
-      log.severe(error.getMessage());
-      throw error;
+      desiredCapabilities = new SelendroidCapabilities(caps);
+    } catch (JSONException e) {
+      throw new SelendroidException("Desired capabilities cannot be parsed.");
     }
-
-    // If we are using an emulator need to start it up
-    if (device instanceof AndroidEmulator) {
-      AndroidEmulator emulator = (AndroidEmulator) device;
-      try {
-        if (emulator.isEmulatorStarted()) {
-          emulator.unlockEmulatorScreen();
-        } else {
-          Map<String, Object> config = new HashMap<String, Object>();
-          if (serverConfiguration.getEmulatorOptions() != null) {
-            config.put(AndroidEmulator.EMULATOR_OPTIONS, serverConfiguration.getEmulatorOptions());
-          }
-          config.put(AndroidEmulator.TIMEOUT_OPTION, serverConfiguration.getTimeoutEmulatorStart());
-          if (desiredCapabilities.asMap().containsKey(SelendroidCapabilities.DISPLAY)) {
-            Object d = desiredCapabilities.getCapability(SelendroidCapabilities.DISPLAY);
-            config.put(AndroidEmulator.DISPLAY_OPTION, String.valueOf(d));
-          }
-
-          Locale locale = parseLocale(desiredCapabilities);
-          emulator.start(locale, deviceStore.nextEmulatorPort(), config);
-        }
-      } catch (AndroidDeviceException e) {
-        deviceStore.release(device, app);
-        if (retries > 0) {
-          return createNewTestSession(caps, retries - 1);
-        }
-        throw new SessionNotCreatedException("Error occured while interacting with the emulator: "
-            + emulator + ": " + e.getMessage());
-      }
-      emulator.setIDevice(deviceManager.getVirtualDevice(emulator.getAvdName()));
-    }
-    boolean appInstalledOnDevice = device.isInstalled(app) || app instanceof InstalledAndroidApp;
-    if (!appInstalledOnDevice || serverConfiguration.isForceReinstall()) {
-      device.install(app);
-    } else {
-      log.info("the app under test is already installed.");
-    }
-
-    int port = getNextSelendroidServerPort();
-    Boolean selendroidInstalledSuccessfully =
-        device.isInstalled("io.selendroid." + app.getBasePackage());
-    if (!selendroidInstalledSuccessfully || serverConfiguration.isForceReinstall()) {
-      AndroidApp selendroidServer = createSelendroidServerApk(app);
-
-      selendroidInstalledSuccessfully = device.install(selendroidServer);
-      if (!selendroidInstalledSuccessfully) {
-        if (!device.install(selendroidServer)) {
-          deviceStore.release(device, app);
-
-          if (retries > 0) {
-            return createNewTestSession(caps, retries - 1);
-          }
-        }
-      }
-    } else {
-      log.info(
-          "selendroid-server will not be created and installed because it already exists for the app under test.");
-    }
-
-    // Run any adb commands requested in the capabilities
-    List<String> adbCommands = new ArrayList<String>();
-    adbCommands.add("shell setprop log.tag.SELENDROID " + serverConfiguration.getLogLevel().name());
-    adbCommands.addAll(desiredCapabilities.getPreSessionAdbCommands());
-
-    for (String adbCommandParameter : adbCommands) {
-      device.runAdbCommand(adbCommandParameter);
-    }
-
-    // Push extension dex to device if specified
-    String extensionFile = desiredCapabilities.getSelendroidExtensions();
-    if (extensionFile != null) {
-      String externalStorageDirectory = device.getExternalStoragePath();
-      String deviceDexPath = new File(externalStorageDirectory, "extension.dex").getAbsolutePath();
-      device.runAdbCommand(String.format("push %s %s", extensionFile, deviceDexPath));
-    }
-
-    // Configure logging on the device
-    device.setLoggingEnabled(serverConfiguration.isDeviceLog());
-
-    // It's GO TIME!
-    // start the selendroid server on the device and make sure it's up
-    eventListener.onBeforeDeviceServerStart();
-    try {
-      device.startSelendroid(app, port, desiredCapabilities);
-    } catch (AndroidSdkException e) {
-      log.info("error while starting selendroid: " + e.getMessage());
-
-      deviceStore.release(device, app);
-      if (retries > 0) {
-        return createNewTestSession(caps, retries - 1);
-      }
-      throw new SessionNotCreatedException("Error occurred while starting instrumentation: "
-          + e.getMessage());
-    }
-    long start = System.currentTimeMillis();
-    long startTimeOut = serverConfiguration.getServerStartTimeout();
-    long timemoutEnd = start + startTimeOut;
-    while (!device.isSelendroidRunning()) {
-      if (timemoutEnd >= System.currentTimeMillis()) {
-        try {
-          Thread.sleep(2000);
-          String crashMessage = device.getCrashLog();
-          if (!crashMessage.isEmpty()) {
-            throw new AppCrashedException(crashMessage);
-          }
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }
-      } else {
-        throw new SelendroidException("Selendroid server on the device didn't come up after "
-            + startTimeOut / 1000 + "sec:");
-      }
-    }
-    eventListener.onAfterDeviceServerStart();
-
-    // arbitrary sleeps? yay...
-    // looks like after the server starts responding
-    // we need to give it a moment before starting a session?
-    try {
-      Thread.sleep(500);
-    } catch (InterruptedException e1) {
-      Thread.currentThread().interrupt();
-    }
-
-    // create the new session on the device server
-    RemoteWebDriver driver;
-    try {
-      driver =
-          new RemoteWebDriver(new URL("http://localhost:" + port + "/wd/hub"), desiredCapabilities);
-    } catch (Exception e) {
-      e.printStackTrace();
-      deviceStore.release(device, app);
-      throw new SessionNotCreatedException(
-          "Error occurred while creating session on Android device", e);
-    }
-    String sessionId = driver.getSessionId().toString();
-    SelendroidCapabilities requiredCapabilities =
-        new SelendroidCapabilities(driver.getCapabilities().asMap());
-    ActiveSession session =
-        new ActiveSession(sessionId, requiredCapabilities, app, device, port, this);
-
-    this.sessions.put(sessionId, session);
-
-    // We are requesting an "AndroidDriver" so automatically switch to the webview
-    if (BrowserType.ANDROID.equals(aut)) {
-      // arbitrarily high wait time, will this cover our slowest possible device/emulator?
-      WebDriverWait wait = new WebDriverWait(driver, 60);
-      // wait for the WebView to appear
-      wait.until(ExpectedConditions.visibilityOfElementLocated(By
-          .className(
-              "android.webkit.WebView")));
-      driver.switchTo().window("WEBVIEW");
-      // the 'android-driver' webview has an h1 with id 'AndroidDriver' embedded in it
-      wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("AndroidDriver")));
-    }
-
-    return sessionId;
+    return desiredCapabilities;
   }
 
   /**
@@ -416,20 +410,6 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     String[] localeStr = capa.getLocale().split("_");
 
     return new Locale(localeStr[0], localeStr[1]);
-  }
-
-  /* package */AndroidDevice getAndroidDevice(SelendroidCapabilities caps)
-      throws AndroidDeviceException {
-    AndroidDevice device = null;
-    try {
-      device = deviceStore.findAndroidDevice(caps);
-    } catch (DeviceStoreException e) {
-      e.printStackTrace();
-      log.fine(caps.getRawCapabilities().toString());
-      throw new AndroidDeviceException("Error occurred while looking for devices/emulators.", e);
-    }
-
-    return device;
   }
 
   /**

@@ -87,7 +87,7 @@ public class DeviceStore {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      if (clearData) {
+      if (clearData && aut != null) {
         try {
           device.clearUserData(aut);
         } catch (AndroidSdkException e) {
