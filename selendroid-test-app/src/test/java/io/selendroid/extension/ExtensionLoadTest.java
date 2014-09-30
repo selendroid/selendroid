@@ -1,11 +1,12 @@
 package io.selendroid.extension;
 
-import io.selendroid.support.BaseAndroidExtensionTest;
 import org.junit.Test;
+
+import io.selendroid.support.BaseAndroidTest;
 
 import static org.junit.Assert.assertEquals;
 
-public class ExtensionLoadTest extends BaseAndroidExtensionTest {
+public class ExtensionLoadTest extends BaseAndroidTest {
   @Test
   public void extensionCallShouldSucceed() {
     assertEquals("I'm an extension!",

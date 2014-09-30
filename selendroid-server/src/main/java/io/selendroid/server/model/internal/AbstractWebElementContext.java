@@ -73,12 +73,13 @@ public abstract class AbstractWebElementContext
   }
 
   protected List<AndroidElement> replyElements(JSONArray result) {
-    if (result == null || result.length() == 0) {
-      return null;
-    }
     List<AndroidElement> elements = new ArrayList<AndroidElement>();
+    if (result == null) {
+      return elements;
+    }
+
     try {
-      if (result != null && result.length() > 0) {
+      if (result.length() > 0) {
         for (int i = 0; i < result.length(); i++) {
           JSONObject element = result.getJSONObject(i);
           String id = element.getString("ELEMENT");

@@ -14,7 +14,6 @@
 
 package io.selendroid.webviewdrivertests.touch;
 
-import static io.selendroid.support.BaseAndroidTest.driver;
 import static org.junit.Assert.assertTrue;
 import io.selendroid.webviewdrivertests.HtmlTestData;
 
@@ -33,7 +32,6 @@ public class TouchScrollTest extends TouchTestBase {
   private TouchActions getBuilder(WebDriver driver) {
     return new TouchActions(driver);
   }
-
 
   @Test
   public void testCanScrollVerticallyFromWebElement() {

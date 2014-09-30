@@ -114,6 +114,7 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
     log.info("Removing Device Manager listener from ADB");
     AndroidDebugBridge.removeDeviceChangeListener(this);
     if (!shouldKeepAdbAlive) {
+      AndroidDebugBridge.disconnectBridge();
       AndroidDebugBridge.terminate();
     }
     log.info("stopping Device Manager");

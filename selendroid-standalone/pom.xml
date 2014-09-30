@@ -193,10 +193,10 @@
 				</includes>
 			</resource>
 			<resource>
-				<directory>../selendroid-server/</directory>
+				<directory>./</directory>
 				<filtering>false</filtering>
 				<includes>
-					<include>AndroidManifest.xml</include>
+					<include>AndroidManifestTemplate.xml</include>
 				</includes>
 			</resource>
 			<resource>

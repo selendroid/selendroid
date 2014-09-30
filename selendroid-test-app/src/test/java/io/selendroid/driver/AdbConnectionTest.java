@@ -13,71 +13,57 @@
  */
 package io.selendroid.driver;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
-import static io.selendroid.waiter.WaitingConditions.driverUrlToBe;
-import io.selendroid.SelendroidCapabilities;
-import io.selendroid.SelendroidDriver;
-
-import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 
-public class AdbConnectionTest {
-  private SelendroidDriver driver;
+import java.util.concurrent.TimeUnit;
 
-  @BeforeClass
-  public static void startStandalone() {
-    // start selendroid standalone manually
-  }
+import io.selendroid.support.BaseAndroidTest;
 
-  @Before
-  public void startSelendroidDriver() throws Exception {
-    driver =
-        new SelendroidDriver(new SelendroidCapabilities("io.selendroid.testapp:0.9.0-SNAPSHOT"));
-  }
+import static io.selendroid.waiter.TestWaiter.waitFor;
+import static io.selendroid.waiter.WaitingConditions.driverUrlToBe;
 
-  @Test
+public class AdbConnectionTest extends BaseAndroidTest {  @Test
   public void shouldTapViaAdb() {
-    Point buttonLocation = driver.findElement(By.id("startUserRegistration")).getLocation();
-    driver.getAdbConnection().tap(buttonLocation.x, buttonLocation.y);
-    Assert.assertEquals(driver.getCurrentUrl(), "and-activity://RegisterUserActivity");
+    Point buttonLocation = driver().findElement(By.id("startUserRegistration")).getLocation();
+    driver().getAdbConnection().tap(buttonLocation.x, buttonLocation.y);
+    Assert.assertEquals(driver().getCurrentUrl(), "and-activity://RegisterUserActivity");
   }
 
   @Test
   public void shouldExecuteShellCommand() {
-    Point buttonLocation = driver.findElement(By.id("startUserRegistration")).getLocation();
+    Point buttonLocation = driver().findElement(By.id("startUserRegistration")).getLocation();
     String command = String.format("input tap %s %s", buttonLocation.x, buttonLocation.y);
-    driver.getAdbConnection().executeShellCommand(command);
-    Assert.assertEquals(driver.getCurrentUrl(), "and-activity://RegisterUserActivity");
+    driver().getAdbConnection().executeShellCommand(command);
+    Assert.assertEquals(driver().getCurrentUrl(), "and-activity://RegisterUserActivity");
   }
 
   @Test
   public void shouldSendTextViaAdb() {
-    WebElement input = driver.findElement(By.id("my_text_field"));
+    WebElement input = driver().findElement(By.id("my_text_field"));
     input.click();
     String text = "textViaAdb";
-    driver.getAdbConnection().sendText(text);
+    driver().getAdbConnection().sendText(text);
     Assert.assertEquals(text, input.getText());
   }
 
   @Test
   public void shouldSendKeyEventViaAdb() {
-    driver.findElement(By.id("startUserRegistration")).click();
-    Assert.assertEquals(driver.getCurrentUrl(), "and-activity://RegisterUserActivity");
+    driver().findElement(By.id("startUserRegistration")).click();
+    Assert.assertEquals(driver().getCurrentUrl(), "and-activity://RegisterUserActivity");
     // 4 is back key, will go back to the previous activity.
-    driver.getAdbConnection().sendKeyEvent(4);
-    waitFor(driverUrlToBe(driver, "and-activity://HomeScreenActivity"), 5, TimeUnit.SECONDS);
+    driver().getAdbConnection().sendKeyEvent(4);
+    waitFor(driverUrlToBe(driver(), "and-activity://HomeScreenActivity"), 5, TimeUnit.SECONDS);
   }
 
   @After
   public void quitDriver() {
-    driver.quit();
+    if (driver() != null) {
+      driver().quit();
+    }
   }
 }
