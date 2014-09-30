@@ -44,6 +44,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     FullHttpRequest request = (FullHttpRequest) msg;
     FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
+    response.headers().add("Connection", "close");
 
     HttpRequest httpRequest = new NettyHttpRequest(request);
     HttpResponse httpResponse = new NettyHttpResponse(response);
