@@ -13,28 +13,17 @@
  */
 package io.selendroid.server;
 
-import io.netty.handler.codec.http.HttpMethod;
-import io.selendroid.server.internal.Capabilities;
-import io.selendroid.server.internal.SelendroidAssert;
-
 import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.netty.handler.codec.http.HttpMethod;
+import io.selendroid.server.internal.Capabilities;
+import io.selendroid.server.internal.SelendroidAssert;
+
 
 public class CreateSessionHandlerTest extends BaseTest {
-
-  @Test
-  public void assertNewTestSessionCreationIsReturningNewURI() throws Exception {
-    HttpResponse response = executeCreateSessionRequest();
-    SelendroidAssert.assertResponseIsRedirect(response);
-    JSONObject json = parseJsonResponse(response);
-    Assert.assertEquals(
-        "http://" + host + ":" + port + "/wd/hub/session/" + json.getString("sessionId"), response
-            .getFirstHeader("location").getValue());
-  }
-
   @Test
   public void assertNewTestSessionCreationAndGetCapabilties() throws Exception {
     HttpResponse sessionResponse = executeCreateSessionRequest();

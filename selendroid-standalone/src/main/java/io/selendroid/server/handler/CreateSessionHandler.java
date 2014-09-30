@@ -13,10 +13,12 @@
  */
 package io.selendroid.server.handler;
 
+import io.selendroid.SelendroidCapabilities;
 import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.selendroid.server.StatusCode;
@@ -38,14 +40,14 @@ public class CreateSessionHandler extends BaseSelendroidServerHandler {
 
     JSONObject desiredCapabilities = payload.getJSONObject("desiredCapabilities");
 
-    String sessionID;
     try {
-      sessionID = getSelendroidDriver(request).createNewTestSession(desiredCapabilities, 5);
+      String sessionID = getSelendroidDriver(request).createNewTestSession(desiredCapabilities, 5);
+      SelendroidCapabilities caps = getSelendroidDriver(request).getSessionCapabilities(sessionID);
+
+      return new SelendroidResponse(sessionID, new JSONObject(caps.asMap()));
     } catch (Exception e) {
-      log.severe("Error while creating new session: " + e.getMessage());
-      e.printStackTrace();
+      log.log(Level.SEVERE, "Error while creating new session", e);
       return new SelendroidResponse("", StatusCode.SESSION_NOT_CREATED_EXCEPTION, e);
     }
-    return new SelendroidResponse(sessionID, desiredCapabilities);
   }
 }
