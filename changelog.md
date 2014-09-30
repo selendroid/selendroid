@@ -30,7 +30,7 @@
   added support for emulators with string skin names
 - Fixed loading of keystores with no password
 - Send connection: close header in responses. Fixes [#458](../../issues/458)
-
+- Return capabilities immediately after session creation instead of redirecting
 
 0.11.0
 ---

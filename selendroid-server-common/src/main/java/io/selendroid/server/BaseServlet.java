@@ -123,21 +123,16 @@ public abstract class BaseServlet implements HttpServlet {
 
   protected void handleResponse(HttpRequest request, HttpResponse response,
       SelendroidResponse result) {
-    response.setContentType("application/json");
-    response.setEncoding(Charset.forName("UTF-8"));
     if (result != null) {
       String resultString = result.render();
+      response.setContentType("application/json");
+      response.setEncoding(Charset.forName("UTF-8"));
       response.setContent(resultString);
-    }
-    if (isNewSessionRequest(request) && result.getStatus() == 0) {
-      String session = result.getSessionId();
-
-      String newSessionUri = "http://" + request.header("Host") + request.uri() + "/" + session;
-      System.out.println("new Session URL: " + newSessionUri);
-      response.sendRedirect(newSessionUri);
-    } else {
       response.setStatus(200);
+    } else {
+      replyWithServerError(response);
     }
+
     response.end();
   }
 
