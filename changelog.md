@@ -31,6 +31,7 @@
 - Fixed loading of keystores with no password
 - Send connection: close header in responses. Fixes [#458](../../issues/458)
 - Removed 'SelendroidKeys.ANDROID_HOME' because emulating the home key using Instrumentation is not supported in Android. Use adb to emulate the home key in your tests.
+- Return capabilities immediately after session creation instead of redirecting
 
 0.11.0
 ---
