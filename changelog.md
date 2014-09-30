@@ -35,6 +35,7 @@
 - Lowered severity of logs in isSelendroidRunning(), made messages more informative.
 - Made E2E tests use SelendroidStandaloneServer
 - findElements() returns an empty list instead of throwing an exception.
+- Standardises URLs / makes them compliant with the WebDriver specification
 
 0.11.0
 ---
