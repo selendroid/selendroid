@@ -41,6 +41,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.logging.LogEntry;
 
@@ -293,25 +294,28 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public boolean isSelendroidRunning() {
-    HttpClient httpClient = new DefaultHttpClient();
+    HttpClient httpClient = HttpClientBuilder.create().build();
     String url = WD_STATUS_ENDPOINT.replace("8080", String.valueOf(port));
-    log.info("using url: " + url);
+    log.info("Using url: " + url);
     HttpRequestBase request = new HttpGet(url);
     HttpResponse response = null;
     try {
       response = httpClient.execute(request);
     } catch (Exception e) {
-      log.severe("Error getting status: " + e);
+      log.log(Level.INFO, "Error checking if selendroid-server has started.", e);
+      log.info("Assuming server has not started");
       return false;
     }
+
     int statusCode = response.getStatusLine().getStatusCode();
-    log.info("got response status code: " + statusCode);
+    log.info("Got response status code: " + statusCode);
     String responseValue;
     try {
       responseValue = IOUtils.toString(response.getEntity().getContent());
-      log.info("got response value: " + responseValue);
+      log.info("Got response value: " + responseValue);
     } catch (Exception e) {
-      log.severe("Error getting status: " + e);
+      log.log(Level.INFO, "Error reading response from selendroid-server", e);
+      log.info("Assuming server has not started");
       return false;
     }
 
