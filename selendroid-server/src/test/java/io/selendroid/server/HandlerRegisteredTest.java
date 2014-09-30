@@ -16,12 +16,14 @@ package io.selendroid.server;
 import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.server.http.HttpServer;
 import io.selendroid.server.internal.SelendroidAssert;
-import junit.framework.Assert;
+
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class HandlerRegisteredTest extends BaseTest {
   private HttpServer server = null;
@@ -42,9 +44,11 @@ public class HandlerRegisteredTest extends BaseTest {
     String url = "http://" + host + ":" + port + "/wd/hub/session/1234567890/element";
     HttpResponse response = executeRequestWithPayload(url, HttpMethod.GET, payload.toString());
     SelendroidAssert.assertResponseIsOk(response);
-    Assert.assertEquals(
-        "{\"status\":0,\"value\":\"sessionId#1234567890 using#id value#my_button_bar\"}",
-        IOUtils.toString(response.getEntity().getContent()));
+
+    JSONObject responseJSON = parseJsonResponse(response);
+    assertEquals("0", responseJSON.getString("status"));
+    assertEquals("sessionId#1234567890 using#id value#my_button_bar",
+            responseJSON.getString("value"));
   }
 
   @Test
@@ -52,8 +56,9 @@ public class HandlerRegisteredTest extends BaseTest {
     String url = "http://" + host + ":" + port + "/wd/hub/session/12345/element/815/click";
     HttpResponse response = executeRequest(url, HttpMethod.POST);
     SelendroidAssert.assertResponseIsOk(response);
-    Assert.assertEquals("{\"status\":0,\"value\":\"sessionId#12345 elementId#815\"}",
-        IOUtils.toString(response.getEntity().getContent()));
+    JSONObject responseJSON = parseJsonResponse(response);
+    assertEquals("0", responseJSON.getString("status"));
+    assertEquals("sessionId#12345 elementId#815", responseJSON.getString("value"));
   }
 
   @Test
