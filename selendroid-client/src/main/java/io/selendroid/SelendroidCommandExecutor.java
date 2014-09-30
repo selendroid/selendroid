@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SelendroidCommandExecutor extends HttpCommandExecutor {
-
+  private final static String VENDOR_PREFIX = "/session/:sessionId/selendroid/";
   private final static Map<String, CommandInfo> SELENDROID_COMMANDS =
       new HashMap<String, CommandInfo>() {
         {
@@ -32,39 +32,39 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
               HttpMethod.GET));
           put("setNetworkConnection", new CommandInfo("/session/:sessionId/network_connection",
                   HttpMethod.POST));
-          put("selendroid-getBrightness", new CommandInfo(
-              "-selendroid/:sessionId/screen/brightness", HttpMethod.GET));
-          put("selendroid-setBrightness", new CommandInfo(
-              "-selendroid/:sessionId/screen/brightness", HttpMethod.POST));
-          put("selendroid-getCommandConfiguration", new CommandInfo(
-              "-selendroid/:sessionId/configure/command/:command", HttpMethod.GET));
-          put("selendroid-setCommandConfiguration", new CommandInfo(
-              "-selendroid/:sessionId/configure/command/:command", HttpMethod.POST));
-          put("selendroid-adb-sendKeyEvent", new CommandInfo(
-              "-selendroid/:sessionId/adb/sendKeyEvent", HttpMethod.POST));
-          put("selendroid-adb-sendText", new CommandInfo("-selendroid/:sessionId/adb/sendText",
-                  HttpMethod.POST));
-          put("selendroid-adb-tap",
-              new CommandInfo("-selendroid/:sessionId/adb/tap", HttpMethod.POST));
-          put("selendroid-adb-executeShellCommand",
-            new CommandInfo("-selendroid/:sessionId/adb/executeShellCommand", HttpMethod.POST));
-          put("selendroid-handleByExtension",
-              new CommandInfo("/session/:sessionId/-selendroid/extension", HttpMethod.POST));
-          put("backgroundApp",
-            new CommandInfo("/session/:sessionId/-selendroid/background", HttpMethod.POST));
-          put("resumeApp",
-            new CommandInfo("/session/:sessionId/-selendroid/resume", HttpMethod.POST));
-          put("addCallLog",
-            new CommandInfo("/session/:sessionId/-selendroid/addcalllog",HttpMethod.POST));
-          put("readCallLog",
-            new CommandInfo("/session/:sessionId/-selendroid/readcalllog",HttpMethod.POST));
           put("actions", new CommandInfo("/session/:sessionId/actions", HttpMethod.POST));
-          put("-selendroid-forceGcExplicitly",
-              new CommandInfo("/session/:sessionId/-selendroid/gc", HttpMethod.POST));
+
+          put("selendroid-getBrightness", newVendorCommand("screen/brightness", HttpMethod.GET));
+          put("selendroid-setBrightness", newVendorCommand("screen/brightness", HttpMethod.POST));
+
+          put("selendroid-getCommandConfiguration",
+                  newVendorCommand("configure/command/:command", HttpMethod.GET));
+          put("selendroid-setCommandConfiguration",
+                  newVendorCommand("configure/command/:command", HttpMethod.POST));
+
+          put("selendroid-adb-sendKeyEvent",newVendorCommand("adb/sendKeyEvent", HttpMethod.POST));
+          put("selendroid-adb-sendText", newVendorCommand("adb/sendText", HttpMethod.POST));
+          put("selendroid-adb-tap", newVendorCommand("adb/tap", HttpMethod.POST));
+          put("selendroid-adb-executeShellCommand",
+                  newVendorCommand("adb/executeShellCommand", HttpMethod.POST));
+
+          put("selendroid-handleByExtension", newVendorCommand("extension", HttpMethod.POST));
+
+          put("backgroundApp", newVendorCommand("background", HttpMethod.POST));
+          put("resumeApp", newVendorCommand("resume", HttpMethod.POST));
+
+          put("addCallLog", newVendorCommand("addCallLog", HttpMethod.POST));
+          put("readCallLog", newVendorCommand("readCallLog", HttpMethod.POST));
+
+          put("-selendroid-forceGcExplicitly", newVendorCommand("gc", HttpMethod.POST));
           put("-selendroid-setAndroidOsSystemProperty",
-              new CommandInfo("/session/:sessionId/-selendroid/system_property", HttpMethod.POST));
+                  newVendorCommand("systemProperty", HttpMethod.POST));
         }
       };
+
+  private static CommandInfo newVendorCommand(String path, HttpMethod method) {
+    return new CommandInfo(VENDOR_PREFIX + path, method);
+  }
 
   public SelendroidCommandExecutor(URL url) throws MalformedURLException {
     super(SELENDROID_COMMANDS, url);

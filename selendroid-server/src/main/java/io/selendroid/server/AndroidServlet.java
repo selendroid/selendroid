@@ -183,27 +183,27 @@ public class AndroidServlet extends BaseServlet {
     register(postHandler, new SwitchContext("/wd/hub/session/:sessionId/context"));
 
     // Custom extensions to wire protocol
-    register(getHandler, new GetScreenState("/wd/hub/-selendroid/:sessionId/screen/brightness"));
-    register(postHandler, new SetScreenState("/wd/hub/-selendroid/:sessionId/screen/brightness"));
+    register(getHandler, new GetScreenState("/wd/hub/session/:sessionId/selendroid/screen/brightness"));
+    register(postHandler, new SetScreenState("/wd/hub/session/:sessionId/selendroid/screen/brightness"));
     register(postHandler, new InspectorTap("/wd/hub/session/:sessionId/tap/2"));
     register(getHandler, new GetCommandConfiguration(
-        "/wd/hub/-selendroid/:sessionId/configure/command/:command"));
+        "/wd/hub/session/:sessionId/selendroid/configure/command/:command"));
     register(postHandler, new SetCommandConfiguration(
-        "/wd/hub/-selendroid/:sessionId/configure/command/:command"));
-    register(postHandler, new ForceGcExplicitly("/wd/hub/session/:sessionId/-selendroid/gc"));
-    register(postHandler, new SetSystemProperty("/wd/hub/session/:sessionId/-selendroid/system_property"));
+        "/wd/hub/session/:sessionId/selendroid/configure/command/:command"));
+    register(postHandler, new ForceGcExplicitly("/wd/hub/session/:sessionId/selendroid/gc"));
+    register(postHandler, new SetSystemProperty("/wd/hub/session/:sessionId/selendroid/systemProperty"));
 
     // Endpoints to send app to background and resume it
-    register(postHandler, new BackgroundApp("/wd/hub/session/:sessionId/-selendroid/background"));
-    register(postHandler, new ResumeApp("/wd/hub/session/:sessionId/-selendroid/resume"));
+    register(postHandler, new BackgroundApp("/wd/hub/session/:sessionId/selendroid/background"));
+    register(postHandler, new ResumeApp("/wd/hub/session/:sessionId/selendroid/resume"));
 
     // Endpoints to add to and read call logs
-    register(postHandler, new AddCallLog("/wd/hub/session/:sessionId/-selendroid/addcalllog"));
-    register(postHandler, new ReadCallLog("/wd/hub/session/:sessionId/-selendroid/readcalllog"));
+    register(postHandler, new AddCallLog("/wd/hub/session/:sessionId/selendroid/addCallLog"));
+    register(postHandler, new ReadCallLog("/wd/hub/session/:sessionId/selendroid/readCallLog"));
 
     // Handle calls to dynamically loaded handlers
     register(postHandler, new ExtensionCallHandler(
-        "/wd/hub/session/:sessionId/-selendroid/extension", extensionLoader));
+        "/wd/hub/session/:sessionId/selendroid/extension", extensionLoader));
 
     // Actions sequencing endpoint
     register(postHandler, new Actions("/wd/hub/session/:sessionId/actions"));

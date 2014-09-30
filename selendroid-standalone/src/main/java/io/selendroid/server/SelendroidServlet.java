@@ -72,11 +72,11 @@ public class SelendroidServlet extends BaseServlet {
     register(redirectHandler, new RequestRedirectHandler("/wd/hub/session/"));
 
     register(postHandler, new GetLogs("/wd/hub/session/:sessionId/log"));
-    register(postHandler, new AdbSendKeyEvent("/wd/hub/-selendroid/:sessionId/adb/sendKeyEvent"));
-    register(postHandler, new AdbSendText("/wd/hub/-selendroid/:sessionId/adb/sendText"));
-    register(postHandler, new AdbTap("/wd/hub/-selendroid/:sessionId/adb/tap"));
+    register(postHandler, new AdbSendKeyEvent("/wd/hub/session/:sessionId/selendroid/adb/sendKeyEvent"));
+    register(postHandler, new AdbSendText("/wd/hub/session/:sessionId/selendroid/adb/sendText"));
+    register(postHandler, new AdbTap("/wd/hub/session/:sessionId/selendroid/adb/tap"));
     register(postHandler, new AdbExecuteShellCommand(
-        "/wd/hub/-selendroid/:sessionId/adb/executeShellCommand"));
+        "/wd/hub/session/:sessionId/selendroid/adb/executeShellCommand"));
     register(postHandler, new NetworkConnectionHandler("/wd/hub/session/:sessionId/network_connection"));
   }
 
