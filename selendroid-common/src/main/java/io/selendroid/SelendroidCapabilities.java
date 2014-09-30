@@ -194,11 +194,12 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   }
 
   public SelendroidCapabilities(String aut) {
+    this();
     setAut(aut);
   }
 
   public SelendroidCapabilities(String serial, String aut) {
-    setAut(aut);
+    this(aut);
     setSerial(serial);
     if (serial == null) {
       setEmulator(null);
