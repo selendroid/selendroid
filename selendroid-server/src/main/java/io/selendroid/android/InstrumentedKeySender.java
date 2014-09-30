@@ -93,7 +93,13 @@ public class InstrumentedKeySender implements KeySender {
       char currentCharacter = text.charAt(currentIndex);
       if (AndroidKeys.hasAndroidKeyEvent(currentCharacter)) {
         // The next character is special and must be sent individually
-        instrumentation.sendKeyDownUpSync(AndroidKeys.keyCodeFor(currentCharacter));
+        int keyCode = AndroidKeys.keyCodeFor(currentCharacter);
+        if (keyCode == KeyEvent.KEYCODE_HOME) {
+          throw new RuntimeException("" +
+              "It is not possible to simulate the HOME key on Android using instrumentation. Please use adb, " +
+              "for example 'adb shell input keyevent 3'.");
+        }
+        instrumentation.sendKeyDownUpSync(keyCode);
         currentIndex++;
       } else {
         // There is at least one "normal" character, that is a character

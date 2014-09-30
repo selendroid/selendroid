@@ -35,12 +35,12 @@ public interface SelendroidKeys {
   public static final CharSequence ENTER = Keys.ENTER;
   public static final CharSequence SHIFT_LEFT = Keys.SHIFT;
 
-
   public static final CharSequence BACK = String.valueOf('\uE100');
-  public static final CharSequence ANDROID_HOME = String.valueOf('\uE101');
   public static final CharSequence MENU = String.valueOf('\uE102');
   public static final CharSequence SEARCH = String.valueOf('\uE103');
   public static final CharSequence SYM = String.valueOf('\uE104');
   public static final CharSequence ALT_RIGHT = String.valueOf('\uE105');
   public static final CharSequence SHIFT_RIGHT = String.valueOf('\uE106');
+
+  // Simulating a HOME key on Android using instrumentation is not supported.
 }
