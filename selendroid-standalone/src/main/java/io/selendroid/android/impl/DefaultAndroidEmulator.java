@@ -365,45 +365,28 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   }
 
   private void waitForLauncherToComplete() throws AndroidDeviceException {
-    waitForLauncherToComplete(true);
-  }
-
-  private void waitForLauncherToComplete(Boolean delay) throws AndroidDeviceException {
-    CommandLine event = new CommandLine(AndroidSdk.adb());
-
+    CommandLine processListCommand = new CommandLine(AndroidSdk.adb());
     if (isSerialConfigured()) {
-      event.addArgument("-s", false);
-      event.addArgument(serial, false);
+      processListCommand.addArgument("-s", false);
+      processListCommand.addArgument(serial, false);
     }
-    event.addArgument("shell", false);
-    event.addArgument("ps", false);
-    String homeScreenLaunched = null;
-    try {
-      homeScreenLaunched = ShellCommand.exec(event, 20000);
-    } catch (ShellCommandException e) {
-      throw new AndroidDeviceException(e);
-    }
-
-    if (homeScreenLaunched != null && homeScreenLaunched.contains("S com.android.launcher") && !delay) {
-      return;
-    } else {
-      // it's still running, sleep for a bit
+    processListCommand.addArgument("shell", false);
+    processListCommand.addArgument("ps", false);
+    String processList = null;
+    do {
       try {
-        Thread.sleep(500);
+        processList = ShellCommand.exec(processListCommand, 20000);
+      } catch (ShellCommandException e) {
+        throw new AndroidDeviceException(e);
+      }
+
+      //Wait a bit
+      try {
+        Thread.sleep(1000);
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       }
-      waitForLauncherToComplete(true);
-    }
-
-    // it's done right? ... well, maybe... check again after waiting a second
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-    }
-
-    waitForLauncherToComplete(false);
+    } while (processList == null || !processList.contains("S com.android.launcher"));
   }
 
   private void allAppsGridView() throws AndroidDeviceException {
