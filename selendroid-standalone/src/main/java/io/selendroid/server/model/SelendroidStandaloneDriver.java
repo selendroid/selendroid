@@ -183,12 +183,13 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
   public String createNewTestSession(JSONObject caps, Integer retries) {
     AndroidDevice device = null;
+    AndroidApp app = null;
     Exception lastException = null;
     while (retries >= 0) {
       try {
         SelendroidCapabilities desiredCapabilities = getSelendroidCapabilities(caps);
 
-        AndroidApp app = getAndroidApp(desiredCapabilities, desiredCapabilities.getAut());
+        app = getAndroidApp(desiredCapabilities, desiredCapabilities.getAut());
         device = deviceStore.findAndroidDevice(desiredCapabilities);
 
         // If we are using an emulator need to start it up
@@ -265,7 +266,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
         // Return device to store
         if (device != null) {
-          deviceStore.release(device, null);
+          deviceStore.release(device, app);
           device = null;
         }
       }

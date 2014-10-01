@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DeviceStore {
@@ -81,19 +82,24 @@ public class DeviceStore {
   public void release(AndroidDevice device, AndroidApp aut) {
     log.info("Releasing device " + device);
     if (devicesInUse.contains(device)) {
-      // stop the app anyway - better in case people do use snapshots
-      try {
-        device.kill(aut);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-      if (clearData && aut != null) {
+
+      if (aut != null) {
+        // stop the app anyway - better in case people do use snapshots
         try {
-          device.clearUserData(aut);
-        } catch (AndroidSdkException e) {
-          e.printStackTrace();
+          device.kill(aut);
+        } catch (Exception e) {
+          log.log(Level.WARNING, "Failed to kill android application when releasing device", e);
+        }
+
+        if (clearData) {
+          try {
+            device.clearUserData(aut);
+          } catch (AndroidSdkException e) {
+            log.log(Level.WARNING, "Failed to clear user data of application", e);
+          }
         }
       }
+
       if (device instanceof AndroidEmulator && !(aut instanceof InstalledAndroidApp)) {
         AndroidEmulator emulator = (AndroidEmulator) device;
         try {

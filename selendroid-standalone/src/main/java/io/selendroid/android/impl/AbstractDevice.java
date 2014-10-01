@@ -553,11 +553,18 @@ public abstract class AbstractDevice implements AndroidDevice {
    * caused by the crash of the AUT
    */
   public String getCrashLog() {
-    String crashLogFile = ExternalStorageFile.APP_CRASH_LOG.toString();
-    String crashLogPath = new File(getExternalStoragePath(), crashLogFile).getAbsolutePath();
-    CommandLine command = adbCommand("shell", "test", "-e", crashLogPath, "&&", "cat", crashLogPath);
+    String crashLogFileName = ExternalStorageFile.APP_CRASH_LOG.toString();
+    File crashLogFile = new File(getExternalStoragePath(), crashLogFileName);
 
-    return executeCommandQuietly(command);
+    // the "test" utility doesn't exist on all devices so we'll check the output of ls.
+    CommandLine directoryListCommand = adbCommand("shell", "ls",
+            crashLogFile.getParentFile().getAbsolutePath());
+    String directoryList = executeCommandQuietly(directoryListCommand);
+    if (directoryList.contains(crashLogFileName)) {
+      return executeCommandQuietly(adbCommand("shell", "cat", crashLogFile.getAbsolutePath()));
+    }
+
+    return "";
   }
 
   @Override

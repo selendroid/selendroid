@@ -36,6 +36,8 @@
 - Made E2E tests use SelendroidStandaloneServer
 - findElements() returns an empty list instead of throwing an exception.
 - Standardises URLs / makes them compliant with the WebDriver specification
+- Fixed crashlog detection on older devices
+- Improved cleanup of devices on failed server startup
 
 0.11.0
 ---
