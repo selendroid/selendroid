@@ -19,7 +19,11 @@ import io.selendroid.server.model.Session;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
+/**
+ * 
+ * @deprecated Please use new implemented extension mechanism
+ * @see <a href="https://github.com/selendroid/selendroid-extension">extension mechanism Docu</a>
+ */
 public class InvokeMenuAction implements NativeExecuteScript {
 
   private Session session;

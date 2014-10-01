@@ -38,6 +38,7 @@
 - Standardises URLs / makes them compliant with the WebDriver specification
 - Fixed crashlog detection on older devices
 - Improved cleanup of devices on failed server startup
+- Marked 'execute_native' scripts as deprecated. The native script `TwoPointerGestureAction` was removed, please use the new multi touch implementation._
 
 0.11.0
 ---

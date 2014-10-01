@@ -26,7 +26,10 @@ import android.content.Context;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
-
+/**
+ * @deprecated Please use new implemented extension mechanism
+ * @see <a href="https://github.com/selendroid/selendroid-extension">extension mechanism Docu</a>
+ */
 public class IsElementDisplayedInViewport implements NativeExecuteScript {
   private KnownElements knownElements;
   private ServerInstrumentation instrumentation;

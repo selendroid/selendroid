@@ -19,6 +19,10 @@ import org.json.JSONException;
 
 import java.lang.reflect.Field;
 
+/**
+ * @deprecated Please use new implemented extension mechanism
+ * @see <a href="https://github.com/selendroid/selendroid-extension">extension mechanism Docu</a> 
+ */
 public class FindRId implements NativeExecuteScript {
 
   private ServerInstrumentation serverInstrumentation;

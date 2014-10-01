@@ -31,9 +31,9 @@ import java.util.List;
 /**
  * This class contains the functionality to find an Android view with the tag name assigned to it
  * sample usage : WebElement element = (WebElement)webDriver.executeScript("findElementByAndroidTag", "view_test_tag");
- *
+ * @deprecated Please use new implemented extension mechanism
+ * @see <a href="https://github.com/selendroid/selendroid-extension">extension mechanism Docu</a>
  */
-
 public class FindElementByAndroidTag implements NativeExecuteScript {
 
   private ServerInstrumentation serverInstrumentation;
