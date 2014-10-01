@@ -42,7 +42,9 @@ import io.selendroid.exceptions.DeviceStoreException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -264,6 +266,47 @@ public class DeviceStoreTest {
     assertThat(store.getDevicesList().values(), hasSize(1));
     assertThat(store.getDevicesInUse(), hasSize(0));
     assertThat(store.getDevicesList().values().iterator().next(), contains(device));
+  }
+
+  @Test
+  public void testShouldBeAbleToUpdateDevices() throws Exception {
+    AndroidEmulator emulator = anEmulator("de", DeviceTargetPlatform.ANDROID10, false);
+
+    Map<String,String> prop = new HashMap(); // used for phone properties
+    AndroidDevice device = anDevice("01234ABC", prop);
+
+    DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+    store.addEmulators(Arrays.asList(new AndroidEmulator[] {emulator}));
+
+    // Emulating ddmlib behavior.
+    // Add device with empty property because HardwareDeviceListener#onDeviceConnected is called
+    // before phone properties are available
+    store.addDevice(device);
+    assertThat(store.getDevicesList().get(null), hasSize(1));
+    assertThat(store.getDevicesList().get(null), contains(device));
+
+    // After phone properties are available, HardwareDeviceListener#onDeviceChanged is called
+    prop.put("ro.build.version.sdk", "16");
+    prop.put("ro.product.model", "en");
+    store.updateDevice(device);
+
+    assertThat(store.getDevicesList().get(null), hasSize(0));
+    assertThat(store.getDevicesList().get(DeviceTargetPlatform.ANDROID16), hasSize(1));
+    assertThat(store.getDevicesList().get(DeviceTargetPlatform.ANDROID16), contains(device));
+  }
+
+  @Test
+  public void testShouldBeAbleToRemoveDevices() throws Exception {
+    DefaultAndroidEmulator emulator = anEmulator("de", DeviceTargetPlatform.ANDROID10, false);
+    AndroidDevice device = anDevice("en", DeviceTargetPlatform.ANDROID16);
+
+    DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+    store.addEmulators(Arrays.asList(new AndroidEmulator[] {emulator}));
+    store.addDevice(device);
+    store.removeAndroidDevice(device);
+
+    assertThat(store.getDevicesList().values(), hasSize(1));
+    assertThat(store.getDevicesList().values().iterator().next(), contains((AndroidDevice) emulator));
   }
 
   @Test
