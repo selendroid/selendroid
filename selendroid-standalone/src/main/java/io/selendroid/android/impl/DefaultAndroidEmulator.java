@@ -264,12 +264,12 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       cmd.addArgument("-prop", false);
       cmd.addArgument("persist.sys.country=" + locale.getCountry(), false);
     }
-    if (emulatorOptions != null && emulatorOptions.isEmpty() == false) {
+    if (emulatorOptions != null && !emulatorOptions.isEmpty()) {
       cmd.addArgument(emulatorOptions, false);
     }
 
     long start = System.currentTimeMillis();
-    long timemoutEnd = start + timeout;
+    long timeoutEnd = start + timeout;
     try {
       ShellCommand.execAsync(display, cmd);
     } catch (ShellCommandException e) {
@@ -301,7 +301,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         }
         adbKillServerAttempted = true;
       }
-      if (timemoutEnd >= System.currentTimeMillis()) {
+      if (timeoutEnd >= System.currentTimeMillis()) {
         try {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -330,46 +330,34 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   }
 
   public void unlockEmulatorScreen() throws AndroidDeviceException {
-    CommandLine event82 = new CommandLine(AndroidSdk.adb());
-
-    if (isSerialConfigured()) {
-      event82.addArgument("-s", false);
-      event82.addArgument(serial, false);
-    }
-    event82.addArgument("shell", false);
-    event82.addArgument("input", false);
-    event82.addArgument("keyevent", false);
-    event82.addArgument("82", false);
+    // Send menu key event
+    CommandLine menuKeyCommand = getAdbCommand();
+    menuKeyCommand.addArgument("shell", false);
+    menuKeyCommand.addArgument("input", false);
+    menuKeyCommand.addArgument("keyevent", false);
+    menuKeyCommand.addArgument("82", false);
 
     try {
-      ShellCommand.exec(event82, 20000);
+      ShellCommand.exec(menuKeyCommand, 20000);
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
     }
 
-    CommandLine event4 = new CommandLine(AndroidSdk.adb());
-
-    if (isSerialConfigured()) {
-      event4.addArgument("-s", false);
-      event4.addArgument(serial, false);
-    }
-    event4.addArgument("shell", false);
-    event4.addArgument("input", false);
-    event4.addArgument("keyevent", false);
-    event4.addArgument("4", false);
+    // Send back key event
+    CommandLine backKeyCommand = getAdbCommand();
+    backKeyCommand.addArgument("shell", false);
+    backKeyCommand.addArgument("input", false);
+    backKeyCommand.addArgument("keyevent", false);
+    backKeyCommand.addArgument("4", false);
     try {
-      ShellCommand.exec(event4, 20000);
+      ShellCommand.exec(backKeyCommand, 20000);
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
     }
   }
 
   private void waitForLauncherToComplete() throws AndroidDeviceException {
-    CommandLine processListCommand = new CommandLine(AndroidSdk.adb());
-    if (isSerialConfigured()) {
-      processListCommand.addArgument("-s", false);
-      processListCommand.addArgument(serial, false);
-    }
+    CommandLine processListCommand = getAdbCommand();
     processListCommand.addArgument("shell", false);
     processListCommand.addArgument("ps", false);
     String processList = null;
@@ -387,6 +375,15 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         Thread.currentThread().interrupt();
       }
     } while (processList == null || !processList.contains("S com.android.launcher"));
+  }
+
+  private CommandLine getAdbCommand() {
+    CommandLine processListCommand = new CommandLine(AndroidSdk.adb());
+    if (isSerialConfigured()) {
+      processListCommand.addArgument("-s", false);
+      processListCommand.addArgument(serial, false);
+    }
+    return processListCommand;
   }
 
   private void allAppsGridView() throws AndroidDeviceException {
@@ -409,11 +406,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     coordinates.add("0 0 0");
 
     for (String coordinate : coordinates) {
-      CommandLine event1 = new CommandLine(AndroidSdk.adb());
-      if (isSerialConfigured()) {
-        event1.addArgument("-s", false);
-        event1.addArgument(serial, false);
-      }
+      CommandLine event1 = getAdbCommand();
       event1.addArgument("shell", false);
       event1.addArgument("sendevent", false);
       event1.addArgument("dev/input/event0", false);
