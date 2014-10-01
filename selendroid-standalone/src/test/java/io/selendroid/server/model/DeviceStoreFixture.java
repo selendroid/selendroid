@@ -13,6 +13,10 @@
  */
 package io.selendroid.server.model;
 
+import com.android.ddmlib.IDevice;
+
+import java.util.Map;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import io.selendroid.SelendroidCapabilities;
@@ -33,6 +37,15 @@ public class DeviceStoreFixture {
 
     return device;
   }
+
+  protected static DefaultHardwareDevice anDevice(String serial, Map<String, String> prop)
+      throws AndroidDeviceException {
+    IDevice device = mock(IDevice.class);
+    when(device.getSerialNumber()).thenReturn(serial);
+
+    return new FakeHardwareDevice(device, prop);
+  }
+
 
   protected static DefaultAndroidEmulator anEmulator(String name, DeviceTargetPlatform platform,
       boolean isEmulatorStarted) throws AndroidDeviceException {
@@ -58,5 +71,17 @@ public class DeviceStoreFixture {
     when(finder.getVirtualDevice("emulator-5554")).thenReturn(null);
 
     return finder;
+  }
+
+  static class FakeHardwareDevice extends DefaultHardwareDevice {
+    private Map<String, String> prop;
+    public FakeHardwareDevice(IDevice device, Map<String, String> prop) {
+      super(device);
+      this.prop = prop;
+    }
+    @Override
+    public String getProp(String name) {
+      return prop.get(name);
+    }
   }
 }

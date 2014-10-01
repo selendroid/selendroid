@@ -146,7 +146,7 @@ public class DeviceStore {
     for (DeviceTargetPlatform targetPlatform : androidDevices.keySet()) {
       List<AndroidDevice> platformDevices = androidDevices.get(targetPlatform);
       // Attempt to remove the device from this target platform;
-      deviceRemoved = platformDevices.remove(device);
+      deviceRemoved |= platformDevices.remove(device);
     }
 
     if (deviceRemoved) {
