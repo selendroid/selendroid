@@ -33,6 +33,7 @@ import android.widget.AbsListView;
 import android.widget.ScrollView;
 
 import com.android.internal.util.Predicate;
+import io.selendroid.util.SelendroidLogger;
 
 public class ViewHierarchyAnalyzer {
   private static final ViewHierarchyAnalyzer INSTANCE = new ViewHierarchyAnalyzer();
@@ -101,6 +102,13 @@ public class ViewHierarchyAnalyzer {
   private View getRecentDecorView(Set<View> views) {
     Collection<View> decorViews =
         (Collection<View>) ListUtil.filter(new ArrayList<View>(views), new DecorViewPredicate());
+    if (decorViews.isEmpty()) {
+        SelendroidLogger.warning("In class ViewHierarchyAnalyzer, no top level decor views!");
+        SelendroidLogger.warning("Top level views:");
+        for (View view: views) {
+            SelendroidLogger.warning(view.toString());
+        }
+    }
     View container = null;
     // candidate is to fall back to most recent 'shown' view if none have the 'window focus'
     // this seems to be able to happen with menus
@@ -128,8 +136,10 @@ public class ViewHierarchyAnalyzer {
     @Override
     public boolean apply(E view) {
       // PopupViewContainer can be a top level menu shown
+      // MultiPhoneDecorView is for Samsung real devices
       return "DecorView".equals(view.getClass().getSimpleName())
-          || "PopupViewContainer".equals(view.getClass().getSimpleName());
+          || "PopupViewContainer".equals(view.getClass().getSimpleName())
+          || "MultiPhoneDecorView".equals(view.getClass().getSimpleName());
     }
   }
 
