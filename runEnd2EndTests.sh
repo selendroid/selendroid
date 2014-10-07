@@ -54,6 +54,15 @@ END=$(date +%s)
 DIFF=$(( $END - $START ))
 echo "It took $DIFF seconds"
 
+echo "Make the sdcard writable"
+adb shell <<DONE
+su
+mount -o rw,remount rootfs /
+chmod 777 /mnt/sdcard
+exit
+exit
+DONE
+
 echo "Install test-app apk"
 adb install -r selendroid-test-app/target/selendroid-test-app-${selendroid_version}.apk
 

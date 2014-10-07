@@ -80,7 +80,7 @@ public class BaseAndroidTest {
     SelendroidCapabilities caps = new SelendroidCapabilities();
     caps.setAut("io.selendroid.testapp:0.12.0-SNAPSHOT");
     caps.setLaunchActivity("io.selendroid.testapp.HomeScreenActivity");
-    caps.setSelendroidExtensions("src/test/resources/extension.dex");
+    caps.setSelendroidExtensions("extension.dex");
 
     return caps;
   }
