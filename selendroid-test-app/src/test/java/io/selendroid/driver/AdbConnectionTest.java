@@ -13,6 +13,14 @@
  */
 package io.selendroid.driver;
 
+import static io.selendroid.waiter.TestWaiter.waitFor;
+import static io.selendroid.waiter.WaitingConditions.driverUrlToBe;
+import static io.selendroid.waiter.WaitingConditions.elementTextToContain;
+import io.selendroid.SelendroidKeys;
+import io.selendroid.support.BaseAndroidTest;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,18 +28,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 
-import java.util.concurrent.TimeUnit;
+import android.view.KeyEvent;
 
-import io.selendroid.support.BaseAndroidTest;
-
-import static io.selendroid.waiter.TestWaiter.waitFor;
-import static io.selendroid.waiter.WaitingConditions.driverUrlToBe;
-
-public class AdbConnectionTest extends BaseAndroidTest {  @Test
+public class AdbConnectionTest extends BaseAndroidTest {
+  @Test
   public void shouldTapViaAdb() {
     Point buttonLocation = driver().findElement(By.id("startUserRegistration")).getLocation();
     driver().getAdbConnection().tap(buttonLocation.x, buttonLocation.y);
-    Assert.assertEquals(driver().getCurrentUrl(), "and-activity://RegisterUserActivity");
+    waitFor(driverUrlToBe(driver(), "and-activity://RegisterUserActivity"), 10, TimeUnit.SECONDS);
   }
 
   @Test
@@ -39,25 +43,28 @@ public class AdbConnectionTest extends BaseAndroidTest {  @Test
     Point buttonLocation = driver().findElement(By.id("startUserRegistration")).getLocation();
     String command = String.format("input tap %s %s", buttonLocation.x, buttonLocation.y);
     driver().getAdbConnection().executeShellCommand(command);
-    Assert.assertEquals(driver().getCurrentUrl(), "and-activity://RegisterUserActivity");
+    waitFor(driverUrlToBe(driver(), "and-activity://RegisterUserActivity"), 10, TimeUnit.SECONDS);
   }
 
   @Test
   public void shouldSendTextViaAdb() {
-    WebElement input = driver().findElement(By.id("my_text_field"));
+    final WebElement input = driver().findElement(By.id("my_text_field"));
     input.click();
-    String text = "textViaAdb";
+    final String text = "textViaAdb";
     driver().getAdbConnection().sendText(text);
-    Assert.assertEquals(text, input.getText());
+    waitFor(elementTextToContain( input, text), 10, TimeUnit.SECONDS);
   }
 
   @Test
   public void shouldSendKeyEventViaAdb() {
-    driver().findElement(By.id("startUserRegistration")).click();
-    Assert.assertEquals(driver().getCurrentUrl(), "and-activity://RegisterUserActivity");
+    driver().get(HOMESCREEN_ACTIVITY);
+    driver().get(USER_REGISTRATION_ACTIVITY);
+    waitFor(driverUrlToBe(driver(), "and-activity://RegisterUserActivity"), 5, TimeUnit.SECONDS);
+
     // 4 is back key, will go back to the previous activity.
-    driver().getAdbConnection().sendKeyEvent(4);
-    waitFor(driverUrlToBe(driver(), "and-activity://HomeScreenActivity"), 5, TimeUnit.SECONDS);
+    driver().getAdbConnection().sendKeyEvent(KeyEvent.KEYCODE_BACK);
+    
+    waitFor(driverUrlToBe(driver(), "and-activity://HomeScreenActivity"), 10, TimeUnit.SECONDS);
   }
 
   @After

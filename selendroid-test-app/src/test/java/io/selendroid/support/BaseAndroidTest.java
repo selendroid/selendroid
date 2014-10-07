@@ -31,11 +31,12 @@ import io.selendroid.SelendroidConfiguration;
 import io.selendroid.SelendroidDriver;
 import io.selendroid.SelendroidLauncher;
 import io.selendroid.waiter.WaitingConditions;
-
 import static io.selendroid.waiter.TestWaiter.waitFor;
 
 
 public class BaseAndroidTest {
+  protected static final String HOMESCREEN_ACTIVITY = "and-activity://io.selendroid.testapp.HomeScreenActivity";
+  protected static final String USER_REGISTRATION_ACTIVITY = "and-activity://io.selendroid.testapp.RegisterUserActivity";
   private static SelendroidConfiguration conf = new SelendroidConfiguration();
   private static SelendroidLauncher launcher = new SelendroidLauncher(conf);
 
@@ -49,8 +50,7 @@ public class BaseAndroidTest {
 
   @Before
   public void setup() throws Exception {
-    driver =
-            new SelendroidDriver(getDefaultCapabilities());
+    driver = new SelendroidDriver(getDefaultCapabilities());
     driver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
   }
 
@@ -68,12 +68,12 @@ public class BaseAndroidTest {
 
     driver().context(WEBVIEW);
     driver().get(page);
-    //waitFor(WaitingConditions.driverUrlToBe(driver(), page),15,TimeUnit.SECONDS);
+    // waitFor(WaitingConditions.driverUrlToBe(driver(), page),15,TimeUnit.SECONDS);
   }
 
   protected void openStartActivity() {
     driver().context(NATIVE_APP);
-    driver().get("and-activity://io.selendroid.testapp.HomeScreenActivity");
+    driver().get(HOMESCREEN_ACTIVITY);
   }
 
   protected DesiredCapabilities getDefaultCapabilities() {
@@ -94,7 +94,7 @@ public class BaseAndroidTest {
         @Override
         public void evaluate() throws Throwable {
           System.out.println(String.format("%s.%s", description.getTestClass().getName(),
-                  description.getMethodName()));
+              description.getMethodName()));
           try {
             base.evaluate();
           } catch (Exception e) {
