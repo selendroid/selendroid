@@ -90,7 +90,7 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
     } catch (NoSuchElementException e) {
       return new SelendroidResponse(getSessionId(request), StatusCode.NO_SUCH_ELEMENT, e);
     } catch (UnsupportedOperationException e) {
-      return new SelendroidResponse(getSessionId(request), StatusCode.INVALID_SELECTOR, e);
+      return new SelendroidResponse(getSessionId(request), StatusCode.UNKNOWN_COMMAND, e);
     } catch (NoSuchContextException e) {
       //TODO update error code when w3c spec gets updated
       return new SelendroidResponse(getSessionId(request), StatusCode.NO_SUCH_WINDOW,
