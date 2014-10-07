@@ -18,8 +18,7 @@ public interface AdbConnection {
    * {@code adb shell input keyevent (KEYCODE)} on the command line.
    * 
    * @param keyCode to send to device/emulator.
-   * @see <a href="http://developer.android.com/reference/android/view/KeyEvent
-   *      .html#KEYCODE_0">KEYCODE_ constants</a>
+   * @see <a href="http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_0">KEYCODE_ constants</a>
    */
   public void sendKeyEvent(int keyCode);
 
