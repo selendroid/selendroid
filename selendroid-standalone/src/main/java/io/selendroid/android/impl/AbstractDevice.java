@@ -131,7 +131,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   @Override
-  public Boolean install(AndroidApp app) {
+  public void install(AndroidApp app) throws AndroidSdkException {
     // Reinstall if already installed, Install otherwise
     CommandLine command = adbCommand("install", "-r", app.getAbsolutePath());
 
@@ -142,7 +142,9 @@ public abstract class AbstractDevice implements AndroidDevice {
     } catch (InterruptedException ie) {
       throw new RuntimeException(ie);
     }
-    return out.contains("Success");
+    if (!out.contains("Success")) {
+      throw new AndroidSdkException("APK installation failed. Output:\n" + out);
+    }
   }
 
   public boolean start(AndroidApp app) throws AndroidSdkException {

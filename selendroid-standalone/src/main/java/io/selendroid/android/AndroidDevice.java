@@ -26,7 +26,7 @@ import java.util.Locale;
 public interface AndroidDevice {
   public boolean isDeviceReady();
 
-  public Boolean install(AndroidApp app);
+  public void install(AndroidApp app) throws AndroidSdkException;
 
   public boolean isInstalled(String appBasePackage) throws AndroidSdkException;
   

@@ -207,12 +207,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         int port = getNextSelendroidServerPort();
         boolean serverInstalled = device.isInstalled("io.selendroid." + app.getBasePackage());
         if (!serverInstalled || serverConfiguration.isForceReinstall()) {
-          if (!device.install(createSelendroidServerApk(app))) {
-            throw new SessionNotCreatedException("Could not install selendroid-server on device");
+          try {
+            device.install(createSelendroidServerApk(app));
+          } catch (AndroidSdkException e) {
+            throw new SessionNotCreatedException("Could not install selendroid-server on the device", e);
           }
         } else {
-          log.info("selendroid-server will not be created and installed " +
-                          "because it already exists for the app under test.");
+          log.info(
+              "Not creating and installing selendroid-server because it is already installed for this app under test.");
         }
 
         // Run any adb commands requested in the capabilities

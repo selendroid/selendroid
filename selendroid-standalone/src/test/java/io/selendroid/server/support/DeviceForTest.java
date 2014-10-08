@@ -66,9 +66,8 @@ public class DeviceForTest extends DefaultAndroidEmulator {
   }
 
   @Override
-  public Boolean install(AndroidApp app) {
+  public void install(AndroidApp app) throws AndroidSdkException {
     // do nothing
-    return true;
   }
 
   @Override
