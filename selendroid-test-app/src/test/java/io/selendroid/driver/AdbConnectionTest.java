@@ -58,7 +58,7 @@ public class AdbConnectionTest extends BaseAndroidTest {
   @Test
   public void shouldSendKeyEventViaAdb() {
     driver().get(HOMESCREEN_ACTIVITY);
-    driver().get(USER_REGISTRATION_ACTIVITY);
+    driver().findElement(By.id("startUserRegistration")).click();
     waitFor(driverUrlToBe(driver(), "and-activity://RegisterUserActivity"), 5, TimeUnit.SECONDS);
 
     // 4 is back key, will go back to the previous activity.
