@@ -1,6 +1,6 @@
 {
-  "name": "selendroid",
-  "version": "0.0.12",
+  "name": "appium-selendroid",
+  "version": "1.0.0",
   "description": "Wrapper for downloading Selendroid: Test automation for native or hybrid Android apps and the mobile web with Selendroid",
   "main": "selendroid-server/target/selendroid-server-0.12.0-SNAPSHOT.apk",
   "scripts": {
