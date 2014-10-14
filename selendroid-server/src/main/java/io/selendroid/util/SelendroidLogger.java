@@ -20,10 +20,6 @@ import java.lang.UnsatisfiedLinkError;
 public class SelendroidLogger {
   public static final String LOG_TAG = "SELENDROID";
 
-  public static void error(String message, Exception e) {
-    error(message + ": " + e.getMessage());
-  }
-
   private static String formatMessage(String message) {
     StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[4];
     return String.format("%s#%s:%d - %s", stackTraceElement.getClassName(),
@@ -38,21 +34,15 @@ public class SelendroidLogger {
     }
   }
 
-  public static void debug(String message) {
-    if (isLoggable(Log.DEBUG)) {
-      Log.d(LOG_TAG, formatMessage(message));
-    }
-  }
-
   public static void error(String message) {
     if (isLoggable(Log.ERROR)) {
       Log.e(LOG_TAG, formatMessage(message));
     }
   }
 
-  public static void info(String message) {
-    if (isLoggable(Log.INFO)) {
-      Log.i(LOG_TAG, formatMessage(message));
+  public static void error(String message, Exception e) {
+    if (isLoggable(Log.ERROR)) {
+      Log.e(LOG_TAG, formatMessage(message), e);
     }
   }
 
@@ -62,9 +52,45 @@ public class SelendroidLogger {
     }
   }
 
+  public static void warning(String message, Exception e) {
+    if (isLoggable(Log.WARN)) {
+      Log.w(LOG_TAG, formatMessage(message), e);
+    }
+  }
+
+  public static void info(String message) {
+    if (isLoggable(Log.INFO)) {
+      Log.i(LOG_TAG, formatMessage(message));
+    }
+  }
+
+  public static void info(String message, Exception e) {
+    if (isLoggable(Log.INFO)) {
+      Log.i(LOG_TAG, formatMessage(message), e);
+    }
+  }
+
+  public static void debug(String message) {
+    if (isLoggable(Log.DEBUG)) {
+      Log.d(LOG_TAG, formatMessage(message));
+    }
+  }
+
+  public static void debug(String message, Exception e) {
+    if (isLoggable(Log.DEBUG)) {
+      Log.d(LOG_TAG, formatMessage(message), e);
+    }
+  }
+
   public static void verbose(String message) {
     if (isLoggable(Log.VERBOSE)) {
       Log.v(LOG_TAG, formatMessage(message));
+    }
+  }
+
+  public static void verbose(String message, Exception e) {
+    if (isLoggable(Log.VERBOSE)) {
+      Log.v(LOG_TAG, formatMessage(message), e);
     }
   }
 }

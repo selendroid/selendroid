@@ -319,25 +319,26 @@ public class AndroidServlet extends BaseServlet {
       result = handler.handle(request);
     } catch (StaleElementReferenceException se) {
       try {
+        SelendroidLogger.error("StaleElementReferenceException", se);
         String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
         result = new SelendroidResponse(sessionId, StatusCode.STALE_ELEMENT_REFERENCE, se);
       } catch (Exception e) {
-        SelendroidLogger.error("Error occurred while handling request and got StaleRef.", e);
+        SelendroidLogger.error("Error responding to StaleElementReferenceException", e);
         replyWithServerError(response);
         return;
       }
     } catch (AppCrashedException ae) {
       try {
+        SelendroidLogger.error("App crashed when handling request", ae);
         String sessionId = getParameter(handler.getMappedUri(), request.uri(), ":sessionId");
         result = new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, ae);
       } catch (Exception e) {
-        SelendroidLogger.error("Error occurred while handling request and got AppCrashedException.",
-            e);
+        SelendroidLogger.error("Error responding to app crash", e);
         replyWithServerError(response);
         return;
       }
     } catch (Exception e) {
-      SelendroidLogger.error("Error occurred while handling request.", e);
+      SelendroidLogger.error("Error handling request.", e);
       replyWithServerError(response);
       return;
     }

@@ -81,15 +81,20 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
   public final Response handle(HttpRequest request) throws JSONException {
     try {
       return safeHandle(request);
-    } catch (ElementNotVisibleException ev) {
-      return new SelendroidResponse(getSessionId(request), StatusCode.ELEMENT_NOT_VISIBLE, ev);
-    } catch (StaleElementReferenceException se) {
-      return new SelendroidResponse(getSessionId(request), StatusCode.STALE_ELEMENT_REFERENCE, se);
-    } catch (IllegalStateException ise) {
-      return new SelendroidResponse(getSessionId(request), StatusCode.INVALID_ELEMENT_STATE, ise);
+    } catch (ElementNotVisibleException e) {
+      SelendroidLogger.debug("Element not visible", e);
+      return new SelendroidResponse(getSessionId(request), StatusCode.ELEMENT_NOT_VISIBLE, e);
+    } catch (StaleElementReferenceException e) {
+      SelendroidLogger.debug("Stale element reference", e);
+      return new SelendroidResponse(getSessionId(request), StatusCode.STALE_ELEMENT_REFERENCE, e);
+    } catch (IllegalStateException e) {
+      SelendroidLogger.debug("Invalid element state", e);
+      return new SelendroidResponse(getSessionId(request), StatusCode.INVALID_ELEMENT_STATE, e);
     } catch (NoSuchElementException e) {
+      SelendroidLogger.debug("No such element", e);
       return new SelendroidResponse(getSessionId(request), StatusCode.NO_SUCH_ELEMENT, e);
     } catch (UnsupportedOperationException e) {
+      SelendroidLogger.debug("Unknown command", e);
       return new SelendroidResponse(getSessionId(request), StatusCode.UNKNOWN_COMMAND, e);
     } catch (NoSuchContextException e) {
       //TODO update error code when w3c spec gets updated

@@ -14,6 +14,8 @@
 package io.selendroid.server.model;
 
 
+import android.app.Activity;
+import android.view.ViewParent;
 import io.selendroid.ServerInstrumentation;
 import io.selendroid.android.AndroidWait;
 import io.selendroid.android.KeySender;
@@ -54,8 +56,8 @@ import android.widget.TextView;
 public class AndroidNativeElement implements AndroidElement {
   // TODO revisit
   protected static final long DURATION_OF_LONG_PRESS = 750L;// (long)
-                                                            // (ViewConfiguration.getLongPressTimeout()
-                                                            // * 1.5f);
+  // (ViewConfiguration.getLongPressTimeout()
+  // * 1.5f);
   private WeakReference<View> viewRef;
   private Collection<AndroidElement> children = new LinkedHashSet<AndroidElement>();
   private AndroidElement parent;
@@ -71,7 +73,7 @@ public class AndroidNativeElement implements AndroidElement {
   private final String id;
 
   public AndroidNativeElement(View view, ServerInstrumentation instrumentation, KeySender keys,
-      KnownElements ke) {
+                              KnownElements ke) {
     Preconditions.checkNotNull(view);
     this.viewRef = new WeakReference<View>(view);
     hashCode = view.hashCode() + 31;
@@ -90,12 +92,88 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   public boolean isDisplayed() {
-    boolean hasWindowFocus = getView().hasWindowFocus();
-    boolean isElementDisplayed = getView().isShown();
-    int width = getView().getWidth();
-    int height = getView().getHeight();
+    View view = getView();
+    boolean hasWindowFocus = view.hasWindowFocus();
+    boolean isEnabled = view.isEnabled();
+    int width = view.getWidth();
+    int height = view.getHeight();
+    int visibility = view.getVisibility();
+    boolean isVisible = (View.VISIBLE == visibility);
 
-    return hasWindowFocus && isElementDisplayed && (width > 0) && (height > 0);
+    // Check visibility of the view and its parents as well.
+    // This is more reliable when transitions between activities are in progress.
+    boolean isShown = view.isShown();
+
+    boolean isDisplayed =
+        hasWindowFocus && isEnabled && isVisible && isShown && (width > 0) && (height > 0);
+
+    if (!isDisplayed) {
+      Activity activity = instrumentation.getCurrentActivity();
+      View focusedView = activity.getCurrentFocus();
+      String displayCheckFailureMessage =
+          String.format(
+              "Display check failed\n" +
+                  "for view: %s\n" +
+                  "isVisible: %b\nvisibility: %d\nisShown: %b\nhasWindowFocus: %b\n" +
+                  "isEnabled: %b\nwidth: %d\nheight: %d\ncurrent activity: %s\nfocused view: %s",
+              view, isVisible, visibility, isShown, hasWindowFocus, isEnabled,
+              width, height, activity, focusedView);
+      SelendroidLogger.debug(displayCheckFailureMessage);
+      if (!isShown) {
+        logIsShownCheckFailure(view);
+      }
+      // Check the view belongs to the same view hierarchy as the view with current window focus.
+      // If true, this usually means a system alert dialog is rendered on top of the view
+      // (typically this is an app crash dialog).
+      if (!hasWindowFocus) {
+        if (activity != null && focusedView != null) {
+          if (view.getRootView() == focusedView.getRootView()) {
+             SelendroidLogger.debug("hasWindowFocus() check failed. " +
+                    "This usually means the view is covered by a system dialog.");
+          }
+        }
+      }
+    }
+
+    return isDisplayed;
+  }
+
+  /**
+   * If view.isShown() == false, logs why exactly this evaluates to false.
+   * Copied from Android's implementation of View.isShown().
+   */
+  private void logIsShownCheckFailure(View view) {
+    try {
+      SelendroidLogger.debug("Display check failed because View.isShown() == false");
+      View current = view;
+      do {
+        if ((current.getVisibility()) != View.VISIBLE) {
+          SelendroidLogger.debug(String.format(
+              "isShown: View %s is not visible because its ancestor %s has visibility %d",
+              view, current, current.getVisibility()));
+          break;
+        }
+        ViewParent parent = current.getParent();
+        if (parent == null) {
+          SelendroidLogger.debug(String.format(
+              "isShown: View %s is not visible because its ancestor %s has no parent " +
+                  "(it is not attached to view root): ",
+              view, current));
+          break;
+        }
+        if (!(parent instanceof View)) {
+          // The only case where View.isShown() returns true:
+          // The view needs to have an ancestor that is not a View and all ancestors on the way up have to
+          // be visible.
+          break;
+        }
+        current = (View) parent;
+      } while (current != null);
+      SelendroidLogger.debug(String.format("View %s is not visible", view));
+    } catch (Exception e) {
+      // Don't let an exception in debug printing crash the caller
+      SelendroidLogger.error("isShown() debug printing failed", e);
+    }
   }
 
   private void waitUntilIsDisplayed() {
@@ -397,7 +475,7 @@ public class AndroidNativeElement implements AndroidElement {
 
   private class NativeElementSearchScope extends AbstractNativeElementContext {
     public NativeElementSearchScope(ServerInstrumentation instrumentation, KeySender keys,
-        KnownElements knownElements) {
+                                    KnownElements knownElements) {
       super(instrumentation, keys, knownElements);
     }
 

@@ -204,7 +204,7 @@ public class AndroidWebElement implements AndroidElement {
 
   private Point getCenterCoordinates() {
     if (!isDisplayed()) {
-      final String msg = "This WebElement is not visisble and may not be clicked.";
+      final String msg = "This WebElement is not visible and may not be clicked.";
       if (android.os.Build.VERSION.SDK_INT <= 18) {
         throw new ElementNotVisibleException(msg);
       } else {
