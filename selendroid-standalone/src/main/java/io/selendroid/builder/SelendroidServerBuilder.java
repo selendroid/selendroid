@@ -393,6 +393,9 @@ public class SelendroidServerBuilder {
           String keystorePassword = serverConfiguration.getKeystorePassword();
           char[] keystorePasswordCharArray = (keystorePassword == null)
                                              ? null : keystorePassword.toCharArray();
+          if (keystorePasswordCharArray == null) {
+            throw new RuntimeException("No keystore password configured.");
+          }
           keystore.load(in, keystorePasswordCharArray);
           cert509 =
               (X509Certificate) keystore.getCertificate(serverConfiguration.getKeystoreAlias());
@@ -400,7 +403,8 @@ public class SelendroidServerBuilder {
         }
       }
     } catch (Exception e) {
-      log.log(Level.WARNING, "Error getting signature algorithm", e);
+      log.log(Level.WARNING, String.format(
+          "Error getting signature algorithm for jarsigner. Defaulting to %s. Reason: %s", sigAlg, e.getMessage()));
     }
     return sigAlg;
   }
