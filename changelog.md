@@ -1,3 +1,6 @@
+0.13.0-SNAPSHOT (under current development)
+
+
 0.12.0
 ---
 - Support to custom keystore, password, alias. [#536](../../issues/536)
