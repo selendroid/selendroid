@@ -1,4 +1,4 @@
-0.12.-SNAPSHOT (under development)
+0.12.0
 ---
 - Support to custom keystore, password, alias. [#536](../../issues/536)
 - Added freeing on selendroidPort on driver.quit() [#557](../../issues/557)
