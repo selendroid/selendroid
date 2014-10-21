@@ -68,6 +68,8 @@ adb install -r selendroid-test-app/target/selendroid-test-app-${selendroid_versi
 
 echo "Running End-to-End Tests"
 mvn install -pl selendroid-test-app -DskipTests=false
+# for running aspecific test
+# mvn install -pl selendroid-test-app -DskipTests=false -Dtest=WaitForProgressBarGoneAwayTest
 
 echo "Stopping Emulator"
 adb -s  emulator-$emulator_port emu kill
