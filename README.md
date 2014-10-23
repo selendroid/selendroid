@@ -13,6 +13,10 @@ You want more details?
 
 Check out our [documentation](http://selendroid.io).
 
+Contributing
+------------
+We have [documented Selendroid's Architecture](http://selendroid.io/architecture.html) and all the small tricks you need to know when contributing to selendroid you find in our [wiki](https://github.com/selendroid/selendroid/wiki).
+ Also confirm you have signed the [CLA](http://goo.gl/pAvxEI) when making a Pull Request.
 
 Maven Artifacts
 ---------------
