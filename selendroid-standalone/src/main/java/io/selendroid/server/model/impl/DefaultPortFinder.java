@@ -55,9 +55,11 @@ public class DefaultPortFinder implements EmulatorPortFinder {
    */
   @Override
   public synchronized void release(Integer port) {
-    portsInUse.remove(port);
-    if (port >= minPort && port <= maxPort && isEvenNumber(port)) {
-      availablePorts.add(port);
+    if(port != null){
+      portsInUse.remove(port);
+      if (port >= minPort && port <= maxPort && isEvenNumber(port)) {
+        availablePorts.add(port);
+      }
     }
   }
 
