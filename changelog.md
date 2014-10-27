@@ -1,5 +1,5 @@
 0.13.0-SNAPSHOT (under current development)
-
+- In case of an shutting down selendroid-standalone (using an already started emulator) this fix is fixing the NPE. 
 
 0.12.0
 ---
