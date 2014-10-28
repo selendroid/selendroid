@@ -405,23 +405,6 @@ public class SelendroidWebDriver {
     return !currentWindowOrFrame.getKey().equals("");
   }
 
-  /*
-   * an attempt to help get the proper coordinates of the frame there are seemingly too many other
-   * factors to get this adequately this would be to facilitate 'native' clicks on webelements in
-   * frames see AndroidWebElement#click Point getFrameLocation() { if
-   * (!currentWindowOrFrame.getKey().equals("")) { String script = "function(){var w = " +
-   * getWindowString() +
-   * "getFrameTop = function(f_win){return f_win.frameElement.getBoundingClientRect().top + " +
-   * "(f_win.parent.frameElement ? getFrameTop(f_win.parent):0);};" +
-   * "getFrameLeft = function(f_win){return f_win.frameElement.getBoundingClientRect().left + " +
-   * "(f_win.parent.frameElement ? getFrameLeft(f_win.parent):0);};" +
-   * "return [getFrameTop(w), getFrameLeft(w)]}"; JSONArray ret = null; try { String val =
-   * (String)injectAtomJavascript(script, null, null); SelendroidLogger.log("val - frame location: "
-   * + val); ret = new JSONArray("[" + val + "]"); return new Point(ret.getInt(0), ret.getInt(1)); }
-   * catch (JSONException e) { } } return new Point(0, 0); }
-   */
-
-
   void resetPageIsLoading() {
     pageStartedLoading = false;
     pageDoneLoading = false;
