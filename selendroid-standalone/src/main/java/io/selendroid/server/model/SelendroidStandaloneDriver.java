@@ -181,6 +181,10 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     return serverConfiguration;
   }
 
+  public String createNewTestSession(JSONObject caps) {
+    return createNewTestSession(caps, serverConfiguration.getServerStartRetries());
+  }
+
   public String createNewTestSession(JSONObject caps, Integer retries) {
     AndroidDevice device = null;
     AndroidApp app = null;

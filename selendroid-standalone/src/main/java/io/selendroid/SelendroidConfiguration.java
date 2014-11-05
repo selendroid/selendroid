@@ -118,6 +118,10 @@ public class SelendroidConfiguration {
   @Parameter(names = {"-h", "--help"}, description = "Prints usage instructions to the terminal")
   private boolean printHelp = false;
 
+  @Parameter(names="-serverStartRetries",
+             description="Maximum amount of times the starting of the selendroid-server on the device will be retried")
+  private int serverStartRetries = 5;
+
   public void setKeystore(String keystore) {
     this.keystore = keystore;
   }
@@ -291,6 +295,14 @@ public class SelendroidConfiguration {
 
   public void setServerStartTimeout(long serverStartTimeout) {
     this.serverStartTimeout = serverStartTimeout;
+  }
+
+  public int getServerStartRetries() {
+    return serverStartRetries;
+  }
+
+  public void setServerStartRetries(int serverStartRetries) {
+    this.serverStartRetries = serverStartRetries;
   }
 
   public boolean isPrintHelp() {

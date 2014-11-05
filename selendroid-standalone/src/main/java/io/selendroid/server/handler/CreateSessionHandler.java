@@ -41,7 +41,7 @@ public class CreateSessionHandler extends BaseSelendroidServerHandler {
     JSONObject desiredCapabilities = payload.getJSONObject("desiredCapabilities");
 
     try {
-      String sessionID = getSelendroidDriver(request).createNewTestSession(desiredCapabilities, 5);
+      String sessionID = getSelendroidDriver(request).createNewTestSession(desiredCapabilities);
       SelendroidCapabilities caps = getSelendroidDriver(request).getSessionCapabilities(sessionID);
 
       return new SelendroidResponse(sessionID, new JSONObject(caps.asMap()));

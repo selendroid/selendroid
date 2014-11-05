@@ -16,10 +16,17 @@ package io.selendroid.server.model;
 import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.anDeviceManager;
 import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.getAndroidApkServerBuilder;
 import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.getSelendroidStandaloneDriver;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import io.selendroid.SelendroidCapabilities;
 import io.selendroid.SelendroidConfiguration;
 import io.selendroid.android.AndroidApp;
 import io.selendroid.device.DeviceTargetPlatform;
+import io.selendroid.exceptions.DeviceStoreException;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.support.DeviceForTest;
@@ -152,5 +159,67 @@ public class SelendroidStandaloneDriverTest {
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
     driver.initApplicationsUnderTest(conf);
     driver.initAndroidDevices();
+  }
+
+  @Test
+  public void shouldRetrySessionCreationTheConfiguredAmountOfTimesOnFailure() throws Exception {
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
+
+    // Configure a few retries
+    SelendroidConfiguration conf = new SelendroidConfiguration();
+    int configuredRetries = 5;
+    conf.setServerStartRetries(configuredRetries);
+    driver.initApplicationsUnderTest(conf);
+
+    DeviceStore deviceStore = swapWithFailingDeviceDriver(driver);
+
+    try {
+        driver.createNewTestSession(createCapabilities());
+    } catch (Exception e) {
+    }
+
+    verify(deviceStore, times(configuredRetries + 1))
+      .findAndroidDevice(any(SelendroidCapabilities.class));
+  }
+
+  @Test
+  public void shouldTryAtLeastOneTimeIfNoRetriesConfigured() throws Exception {
+    SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
+
+    // Configure a few retries
+    SelendroidConfiguration conf = new SelendroidConfiguration();
+    conf.setServerStartRetries(0);
+    driver.initApplicationsUnderTest(conf);
+
+    DeviceStore deviceStore = swapWithFailingDeviceDriver(driver);
+
+    try {
+        driver.createNewTestSession(createCapabilities());
+    } catch (Exception e) {
+    }
+
+    verify(deviceStore, times(1))
+      .findAndroidDevice(any(SelendroidCapabilities.class));
+  }
+
+  private DeviceStore swapWithFailingDeviceDriver(SelendroidStandaloneDriver driver) throws Exception {
+    //count the amount of calls to DeviceStore to check how many times it was retried
+    DeviceStore deviceStore = mock(DeviceStore.class);
+
+    // throw to simulate failure, triggering a retry
+    when(deviceStore.findAndroidDevice(any(SelendroidCapabilities.class)))
+          .thenThrow(new DeviceStoreException("Empty store"));
+
+    driver.setDeviceStore(deviceStore);
+
+    return deviceStore;
+  }
+
+  private JSONObject createCapabilities() {
+    SelendroidCapabilities caps = new SelendroidCapabilities();
+    caps.setAut(TEST_APP_ID);
+    caps.setLaunchActivity(TEST_APP_LAUNCH_ACTIVITY);
+
+    return new JSONObject(caps.asMap());
   }
 }
