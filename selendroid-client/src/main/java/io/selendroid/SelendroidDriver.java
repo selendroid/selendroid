@@ -15,6 +15,7 @@ package io.selendroid;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import io.selendroid.adb.AdbConnection;
 import io.selendroid.server.utils.CallLogEntry;
 
@@ -190,8 +191,8 @@ public class SelendroidDriver extends RemoteWebDriver
     }
 
     @Override
-    public void executeShellCommand(String command) {
-      execute("selendroid-adb-executeShellCommand", ImmutableMap.of("command", command));
+    public String executeShellCommand(String command) {
+      return (String) execute("selendroid-adb-executeShellCommand", ImmutableMap.of("command", command)).getValue();
     }
   }
 
