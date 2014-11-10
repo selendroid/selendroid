@@ -37,7 +37,7 @@ public class AdbExecuteShellCommand extends BaseSelendroidServerHandler {
     log.info("execute shell command via adb");
     ActiveSession session = getSelendroidDriver(request).getActiveSession(getSessionId(request));
     String command = "shell " + payload.getString("command");
-    session.getDevice().runAdbCommand(command);
-    return new SelendroidResponse(getSessionId(request), "");
+    String result = session.getDevice().runAdbCommand(command);
+    return new SelendroidResponse(getSessionId(request), result);
   }
 }

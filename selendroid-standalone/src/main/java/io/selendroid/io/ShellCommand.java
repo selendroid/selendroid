@@ -51,7 +51,9 @@ public class ShellCommand {
                                       new ShellCommandException(outputStream.getOutput())
       );
     }
-    return (outputStream.getOutput());
+    String result = outputStream.getOutput().trim();
+    log.info("execution output\n-->\n" + result + "\n<--");
+    return result;
   }
 
   public static void execAsync(CommandLine commandline) throws ShellCommandException {

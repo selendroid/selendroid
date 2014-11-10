@@ -35,6 +35,7 @@ public interface AdbConnection {
    * Sends the @command to the emulator.
    * 
    * @param command The command to execute on the device under test.
+   * @return command execution output
    */
-  public void executeShellCommand(String command);
+  public String executeShellCommand(String command);
 }
