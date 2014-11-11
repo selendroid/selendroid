@@ -50,7 +50,7 @@ public class DefaultAndroidAppTest {
   }
 
   @Test()
-  public void testShouldNotBeAbleToExtractMainAcivity() throws Exception {
+  public void testShouldNotBeAbleToExtractMainActivity() throws Exception {
     AndroidApp app = new DefaultAndroidApp(new File(INVALID_APK_FILE));
     try {
       app.getMainActivity();

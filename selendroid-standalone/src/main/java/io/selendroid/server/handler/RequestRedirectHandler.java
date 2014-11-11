@@ -13,6 +13,8 @@
  */
 package io.selendroid.server.handler;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.android.AndroidDevice;
 import io.selendroid.exceptions.AppCrashedException;
@@ -24,6 +26,7 @@ import io.selendroid.server.StatusCode;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;
@@ -85,17 +88,15 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
           }
 
           if (e instanceof SocketException) {
-            return respondWithRedirectFailure(sessionId, new SelendroidException(
-                "The selendroid server on the device became unreachable.\nThis most likely means the app under " +
-                "test crashed or has been killed by the OS in a way that can't be detected using the default " +
-                "uncaught exception handler.\n" +
-                "Try to look for the reason of the crash in logcat."));
+            respondWithSelendroidServerUnreachable(sessionId, session.getDevice());
+          } else if (e instanceof NoHttpResponseException) {
+            respondWithSelendroidServerUnreachable(sessionId, session.getDevice());
           } else {
             return respondWithRedirectFailure(sessionId, new SelendroidException(
                 "Unexpected error communicating with selendroid server on the device", e));
           }
         } else {
-          log.severe("failed to forward request to Selendroid Server");
+          log.severe("failed to forward request to Selendroid Server: " + e.getMessage());
         }
       }
     }
@@ -115,6 +116,29 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 
     return new SelendroidResponse(sessionId, StatusCode.fromInteger(status), value);
   }
+
+  /**
+   * selendroid-server can't be reached and there is no crash log file.
+   */
+  private SelendroidResponse respondWithSelendroidServerUnreachable(String sessionId, AndroidDevice device)
+      throws JSONException {
+    String message =
+        "The selendroid server on the device became unreachable and there is no crash log from Android's " +
+        "uncaught exception handler. This can mean:\n" +
+        "- The test is trying to use a driver associated to a process that has finished " +
+        "(has the app been killed by the test?)\n" +
+        "- The app has been killed by the OS abruptly or there was a native crash (look at logcat)";
+    try {
+      String psOutput = device.listRunningThirdPartyProcesses();
+      if (!Strings.isNullOrEmpty(psOutput)) {
+        message += "\nCurrently running processes excluding system processes (via 'adb shell ps'):\n" + psOutput;
+      }
+    } catch (Exception e) {
+      message += "\nCould not get list of running processes: " + e.getMessage();
+    }
+    return respondWithRedirectFailure(sessionId, new SelendroidException(message));
+  }
+
 
   private SelendroidResponse respondWithRedirectFailure(String sessionId, Exception e) throws JSONException {
     return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, e);

@@ -17,6 +17,7 @@ import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.TimeoutException;
+import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ObjectArrays;
@@ -40,7 +41,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.logging.LogEntry;
@@ -549,24 +549,37 @@ public abstract class AbstractDevice implements AndroidDevice {
     return runAdbCommand("shell echo $EXTERNAL_STORAGE");
   }
 
-  /**
-   * Get crash log from AUT
-   * @return empty string if there is no crash log on the device, otherwise returns the stack trace
-   * caused by the crash of the AUT
-   */
+  /** {@inheritdoc} */
   public String getCrashLog() {
     String crashLogFileName = ExternalStorageFile.APP_CRASH_LOG.toString();
     File crashLogFile = new File(getExternalStoragePath(), crashLogFileName);
 
-    // the "test" utility doesn't exist on all devices so we'll check the output of ls.
-    CommandLine directoryListCommand = adbCommand("shell", "ls",
-            crashLogFile.getParentFile().getAbsolutePath());
-    String directoryList = executeCommandQuietly(directoryListCommand);
+    // The "test" utility doesn't exist on all devices so we'll check the output of ls.
+    String crashLogDirPath = crashLogFile.getParentFile().getAbsolutePath();
+    if (!crashLogDirPath.endsWith("/")) {
+      crashLogDirPath += "/";  // Make sure it ends with '/' so we're listing directory contents.
+    }
+    String directoryList = executeCommandQuietly(adbCommand("shell", "ls", crashLogDirPath));
     if (directoryList.contains(crashLogFileName)) {
       return executeCommandQuietly(adbCommand("shell", "cat", crashLogFile.getAbsolutePath()));
     }
 
     return "";
+  }
+
+  /** {@inheritDoc} */
+  public String listRunningThirdPartyProcesses() {
+    String psOutput = runAdbCommand("shell ps");
+    StringBuilder sb = new StringBuilder();
+    boolean isFirstHeaderLine = true;
+    for (String line: Splitter.on("\n").split(psOutput)) {
+      boolean isThirdPartyProcess = line.contains(".") && !line.contains("com.android");
+      if (isFirstHeaderLine || isThirdPartyProcess) {
+        sb.append(line + "\n");
+      }
+      isFirstHeaderLine = false;
+    }
+    return sb.toString();
   }
 
   @Override

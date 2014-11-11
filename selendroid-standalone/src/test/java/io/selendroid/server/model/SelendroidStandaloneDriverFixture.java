@@ -45,7 +45,7 @@ public class SelendroidStandaloneDriverFixture {
     return builder;
   }
 
-  public static DeviceManager anDeviceManager() throws AndroidDeviceException {
+  public static DeviceManager getDeviceManager() throws AndroidDeviceException {
     DeviceManager finder = mock(DeviceManager.class);
     when(finder.getVirtualDevice("emulator-5554")).thenReturn(null);
 
@@ -80,6 +80,6 @@ public class SelendroidStandaloneDriverFixture {
   protected static SelendroidStandaloneDriver getSelendroidStandaloneDriver(
       SelendroidServerBuilder builder) throws IOException, ShellCommandException,
       AndroidSdkException, AndroidDeviceException {
-    return new SelendroidStandaloneDriver(builder, anDeviceManager(), getAndroidDriverAPKBuilder());
+    return new SelendroidStandaloneDriver(builder, getDeviceManager(), getAndroidDriverAPKBuilder());
   }
 }

@@ -268,7 +268,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       } catch (Exception e) {
         lastException = e;
         log.log(Level.SEVERE, "Error occurred while starting Selendroid session", e);
-        retries --;
+        retries--;
 
         // Return device to store
         if (device != null) {
@@ -278,26 +278,29 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       }
     }
 
-    throw new SessionNotCreatedException("Error starting Selendroid session", lastException);
+    if (lastException instanceof RuntimeException) {
+      // Don't wrap the exception
+      throw (RuntimeException)lastException;
+    } else {
+      throw new SessionNotCreatedException("Error starting Selendroid session", lastException);
+    }
   }
 
   private void switchToWebView(RemoteWebDriver driver) {
     // arbitrarily high wait time, will this cover our slowest possible device/emulator?
     WebDriverWait wait = new WebDriverWait(driver, 60);
     // wait for the WebView to appear
-    wait.until(ExpectedConditions.visibilityOfElementLocated(By
-            .className(
-                    "android.webkit.WebView")));
+    wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("android.webkit.WebView")));
     driver.switchTo().window("WEBVIEW");
     // the 'android-driver' webview has an h1 with id 'AndroidDriver' embedded in it
     wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("AndroidDriver")));
   }
 
   private void waitForServerStart(AndroidDevice device) {
-    long startTimeOut = serverConfiguration.getServerStartTimeout();
-    long timemoutEnd = System.currentTimeMillis() + startTimeOut;
+    long startTimeout = serverConfiguration.getServerStartTimeout();
+    long timeoutEnd = System.currentTimeMillis() + startTimeout;
     while (!device.isSelendroidRunning()) {
-      if (timemoutEnd >= System.currentTimeMillis()) {
+      if (timeoutEnd >= System.currentTimeMillis()) {
         try {
           Thread.sleep(2000);
           String crashMessage = device.getCrashLog();
@@ -309,7 +312,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
       } else {
         throw new SelendroidException("Selendroid server on the device didn't come up after "
-                + startTimeOut / 1000 + "sec:");
+                + startTimeout / 1000 + "sec:");
       }
     }
   }

@@ -18,8 +18,6 @@ import io.selendroid.android.AndroidEmulator;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -39,7 +37,6 @@ public class DefaultAndroidEmulatorTests {
         new DefaultAndroidEmulator("l10n", "X86", new Dimension(320, 480), "16", new File(
             FileUtils.getUserDirectory(), ".android" + File.separator + "avd" + File.separator
                 + "l10n.avd"));
-
 
     Assert.assertTrue("expecting emulators exists: ", emulator.isEmulatorAlreadyExistent());
     Assert.assertFalse("expecting emulator is not yet started: ", emulator.isEmulatorStarted());

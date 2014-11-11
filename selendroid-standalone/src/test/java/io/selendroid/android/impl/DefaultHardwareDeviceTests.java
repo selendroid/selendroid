@@ -32,7 +32,6 @@ import java.io.File;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 /**
  * Works only if - android_home and java_home are set and - if one emulator is already running - and
  * selendroid project is build (apks are existent)

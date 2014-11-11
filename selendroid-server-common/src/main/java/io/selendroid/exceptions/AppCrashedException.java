@@ -13,6 +13,9 @@
  */
 package io.selendroid.exceptions;
 
+/**
+ * Thrown when an unhandled exception in the app under test was detected.
+ */
 public class AppCrashedException extends SelendroidException {
 
   public AppCrashedException(String message) {

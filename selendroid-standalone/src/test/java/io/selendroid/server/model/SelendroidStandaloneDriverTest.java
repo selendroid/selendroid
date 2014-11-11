@@ -13,7 +13,7 @@
  */
 package io.selendroid.server.model;
 
-import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.anDeviceManager;
+import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.getDeviceManager;
 import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.getAndroidApkServerBuilder;
 import static io.selendroid.server.model.SelendroidStandaloneDriverFixture.getSelendroidStandaloneDriver;
 import static org.mockito.Matchers.any;
@@ -125,7 +125,7 @@ public class SelendroidStandaloneDriverTest {
     // Setting up driver with test app and device stub
     SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     driver.initApplicationsUnderTest(conf);
-    DeviceStore store = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+    DeviceStore store = new DeviceStore(EMULATOR_PORT, getDeviceManager());
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
     Random random = new Random();

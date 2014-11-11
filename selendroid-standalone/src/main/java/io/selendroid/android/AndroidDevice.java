@@ -78,5 +78,15 @@ public interface AndroidDevice {
 
   public String getExternalStoragePath();
 
+  /**
+   * Get crash log from AUT
+   * @return empty string if there is no crash log on the device, otherwise returns the stack trace
+   * caused by the crash of the AUT
+   */
   public String getCrashLog();
+
+  /**
+   * Returns the output of running 'adb shell ps', filtering out system processes.
+   */
+  public String listRunningThirdPartyProcesses();
 }
