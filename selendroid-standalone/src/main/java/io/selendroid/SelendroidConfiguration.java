@@ -62,7 +62,7 @@ public class SelendroidConfiguration {
   @Parameter(description = "The alias of the keystore to be used", names = {"-keystoreAlias"})
   private String keystoreAlias = null;
 
-  @Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio",
+  @Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio. When passing multiple options, put them in double quotes: e.g. \"-no-audio -no-window\"",
              names = {"-emulatorOptions"})
   private String emulatorOptions = null;
 

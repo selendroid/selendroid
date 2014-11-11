@@ -265,7 +265,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       cmd.addArgument("persist.sys.country=" + locale.getCountry(), false);
     }
     if (emulatorOptions != null && !emulatorOptions.isEmpty()) {
-      cmd.addArgument(emulatorOptions, false);
+      cmd.addArguments(emulatorOptions.split(" "), false);
     }
 
     long start = System.currentTimeMillis();
