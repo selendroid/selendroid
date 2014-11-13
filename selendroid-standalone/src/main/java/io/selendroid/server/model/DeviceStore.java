@@ -54,6 +54,7 @@ public class DeviceStore {
       new HashMap<DeviceTargetPlatform, List<AndroidDevice>>();
   private EmulatorPortFinder androidEmulatorPortFinder = null;
   private boolean clearData = true;
+  private boolean keepEmulator = false;
   private AndroidEmulatorPowerStateListener emulatorPowerStateListener = null;
   private DeviceManager deviceManager = null;
 
@@ -100,7 +101,7 @@ public class DeviceStore {
         }
       }
 
-      if (device instanceof AndroidEmulator && !(aut instanceof InstalledAndroidApp)) {
+      if (device instanceof AndroidEmulator && !(aut instanceof InstalledAndroidApp) && !keepEmulator) {
         AndroidEmulator emulator = (AndroidEmulator) device;
         try {
           emulator.stop();
@@ -308,6 +309,10 @@ public class DeviceStore {
 
   public void setClearData(boolean clearData) {
     this.clearData = clearData;
+  }
+
+  public void setKeepEmulator(boolean keepEmulator) {
+    this.keepEmulator = keepEmulator;
   }
 
   private Predicate<AndroidDevice> deviceNotInUse() {

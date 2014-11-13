@@ -62,9 +62,13 @@ public class SelendroidConfiguration {
   @Parameter(description = "The alias of the keystore to be used", names = {"-keystoreAlias"})
   private String keystoreAlias = null;
 
-  @Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio",
+  @Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio. When passing multiple options, put them in double quotes: e.g. \"-no-audio -no-window\"",
              names = {"-emulatorOptions"})
   private String emulatorOptions = null;
+
+  @Parameter(names = "-keepEmulator",
+          description = "if true, emulator will be kept running after test ends.")
+  private boolean keepEmulator = false;
 
   @Parameter(
       description = "if specified, will send a registration request to the given url. Example : http://localhost:4444/grid/register",
@@ -311,6 +315,14 @@ public class SelendroidConfiguration {
 
   public void setPrintHelp(boolean printHelp) {
     this.printHelp = printHelp;
+  }
+
+  public boolean isKeepEmulator() {
+    return keepEmulator;
+  }
+
+  public void setKeepEmulator(boolean keepEmulator) {
+    this.keepEmulator = keepEmulator;
   }
 
   @Override

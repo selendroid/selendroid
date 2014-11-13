@@ -59,6 +59,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   public static final String WD_RESP_KEY_VALUE = "value";
   public static final String WD_RESP_KEY_STATUS = "status";
   public static final String WD_RESP_KEY_SESSION_ID = "sessionId";
+  public static final String APP_BASE_PACKAGE = "basePackage";
   private static int selendroidServerPort = 38080;
   private static final Logger log = Logger.getLogger(SelendroidStandaloneDriver.class.getName());
   private Map<String, AndroidApp> appsStore = new HashMap<String, AndroidApp>();
@@ -84,6 +85,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
     deviceStore.setClearData(!serverConfiguration.isNoClearData());
+    deviceStore.setKeepEmulator(serverConfiguration.isKeepEmulator());
   }
 
   /**
@@ -505,7 +507,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       JSONObject appInfo = new JSONObject();
       try {
         appInfo.put("appId", app.getAppId());
-        appInfo.put("basePackage", app.getBasePackage());
+        appInfo.put(APP_BASE_PACKAGE, app.getBasePackage());
         appInfo.put("mainActivity", app.getMainActivity());
         list.put(appInfo);
       } catch (Exception e) {
