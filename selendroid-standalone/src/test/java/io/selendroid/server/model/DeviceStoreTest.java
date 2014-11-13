@@ -101,6 +101,29 @@ public class DeviceStoreTest {
   }
 
   @Test
+  public void shouldReleaseActiveEmulatorButKeepItRunning() throws Exception {
+    AndroidEmulator deEmulator = anEmulator("de", DeviceTargetPlatform.ANDROID16, false);
+    when(deEmulator.getPort()).thenReturn(5554);
+
+    EmulatorPortFinder finder = mock(EmulatorPortFinder.class);
+    when(finder.next()).thenReturn(5554);
+    DeviceStore deviceStore = new DeviceStore(finder, anDeviceManager());
+    deviceStore.setKeepEmulator(true); // given should keep emulator is set
+
+    deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {deEmulator}));
+    Assert.assertEquals(deviceStore.getDevicesInUse().size(), 0);
+    AndroidDevice foundDevice = deviceStore.findAndroidDevice(withDefaultCapabilities());
+    Assert.assertEquals(deEmulator, foundDevice);
+    Assert.assertEquals(deviceStore.getDevicesInUse().size(), 1);
+    deviceStore.release(foundDevice, null);
+    // make sure the emulator has NOT been stopped
+    verify(deEmulator, times(0)).stop();
+    verify(finder, times(0)).release(5554);
+    // Make sure the device has been removed from devices in use
+    Assert.assertEquals(deviceStore.getDevicesInUse().size(), 0);
+  }
+
+  @Test
   public void shouldRegisterMultipleNotStatedEmulators() throws Exception {
     AndroidEmulator deEmulator10 = anEmulator("de", DeviceTargetPlatform.ANDROID10, false);
     AndroidEmulator enEmulator10 = anEmulator("en", DeviceTargetPlatform.ANDROID10, false);
