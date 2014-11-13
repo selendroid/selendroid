@@ -34,8 +34,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.remote.CapabilityType;
 
+import static io.selendroid.server.model.SelendroidStandaloneDriver.APP_BASE_PACKAGE;
+
 public class SelfRegisteringRemote {
   private static final Logger log = Logger.getLogger(SelfRegisteringRemote.class.getName());
+  public static final String ANDROIDDRIVER_APP = "io.selendroid.androiddriver";
   private SelendroidConfiguration config;
   private SelendroidStandaloneDriver driver;
 
@@ -56,7 +59,11 @@ public class SelfRegisteringRemote {
     BasicHttpEntityEnclosingRequest r =
         new BasicHttpEntityEnclosingRequest("POST", registration.toExternalForm());
     JSONObject nodeConfig = getNodeConfig();
-    r.setEntity(new StringEntity(nodeConfig.toString()));
+    String nodeConfigString = nodeConfig.toString();
+    if (log.isLoggable(Level.INFO)) {
+      log.info("Registering selendroid node with following config:\n" + nodeConfigString);
+    }
+    r.setEntity(new StringEntity(nodeConfigString));
 
     HttpHost host = new HttpHost(registration.getHost(), registration.getPort());
     HttpResponse response = client.execute(host, r);
@@ -80,7 +87,17 @@ public class SelfRegisteringRemote {
         String version = device.getString(SelendroidCapabilities.PLATFORM_VERSION);
         capa.put(SelendroidCapabilities.PLATFORM_VERSION, version);
         capa.put(SelendroidCapabilities.EMULATOR, device.getString(SelendroidCapabilities.EMULATOR));
-        capa.put(CapabilityType.BROWSER_NAME, "selendroid");
+
+        // if no AUT and embedded AndroidDriver app is available, then register at hub as android browser
+        JSONObject app;
+        if (!config.isNoWebViewApp() && driver.getSupportedApps().length() == 1
+                && (app = driver.getSupportedApps().getJSONObject(0)) != null
+                && ANDROIDDRIVER_APP.equals(app.get(APP_BASE_PACKAGE))) {
+          capa.put(CapabilityType.BROWSER_NAME, "android");
+        } else {
+          capa.put(CapabilityType.BROWSER_NAME, "selendroid");
+        }
+
         capa.put(CapabilityType.PLATFORM, "ANDROID");
         capa.put(CapabilityType.VERSION, version);
         caps.put(capa);
