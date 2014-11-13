@@ -66,6 +66,10 @@ public class SelendroidConfiguration {
              names = {"-emulatorOptions"})
   private String emulatorOptions = null;
 
+  @Parameter(names = "-keepEmulator",
+          description = "if true, emulator will be kept running after test ends.")
+  private boolean keepEmulator = false;
+
   @Parameter(
       description = "if specified, will send a registration request to the given url. Example : http://localhost:4444/grid/register",
       names = "-hub")
@@ -311,6 +315,14 @@ public class SelendroidConfiguration {
 
   public void setPrintHelp(boolean printHelp) {
     this.printHelp = printHelp;
+  }
+
+  public boolean isKeepEmulator() {
+    return keepEmulator;
+  }
+
+  public void setKeepEmulator(boolean keepEmulator) {
+    this.keepEmulator = keepEmulator;
   }
 
   @Override
