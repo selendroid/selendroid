@@ -43,7 +43,7 @@ public class ViewHierarchyAnalyzer {
   }
 
   public Set<View> getTopLevelViews() {
-    Class<?> windowManager = null;
+    Class<?> windowManager;
     try {
       String windowManagerClassName;
       if (android.os.Build.VERSION.SDK_INT >= 17) {
@@ -52,11 +52,10 @@ public class ViewHierarchyAnalyzer {
         windowManagerClassName = "android.view.WindowManagerImpl";
       }
       windowManager = Class.forName(windowManagerClassName);
-
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     } catch (SecurityException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
     Field views;
     Field instanceField;
@@ -73,16 +72,10 @@ public class ViewHierarchyAnalyzer {
           return new HashSet<View>((ArrayList) views.get(instance));
         }
       }
-    } catch (SecurityException e) {
-      e.printStackTrace();
-    } catch (NoSuchFieldException e) {
-      e.printStackTrace();
-    } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      SelendroidLogger.error("Cannot get top level views", e);
+      return new HashSet<View>();
     }
-    return null;
   }
 
   private String getWindowManagerString() {

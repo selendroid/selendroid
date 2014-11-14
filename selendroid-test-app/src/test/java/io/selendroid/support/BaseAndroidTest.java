@@ -33,7 +33,6 @@ import io.selendroid.SelendroidLauncher;
 import io.selendroid.waiter.WaitingConditions;
 import static io.selendroid.waiter.TestWaiter.waitFor;
 
-
 public class BaseAndroidTest {
   protected static final String HOMESCREEN_ACTIVITY = "and-activity://io.selendroid.testapp.HomeScreenActivity";
   protected static final String USER_REGISTRATION_ACTIVITY = "and-activity://io.selendroid.testapp.RegisterUserActivity";

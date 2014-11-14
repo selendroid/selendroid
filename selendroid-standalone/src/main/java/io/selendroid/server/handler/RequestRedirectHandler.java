@@ -88,9 +88,9 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
           }
 
           if (e instanceof SocketException) {
-            respondWithSelendroidServerUnreachable(sessionId, session.getDevice());
+            return respondWithSelendroidServerUnreachable(sessionId, session.getDevice());
           } else if (e instanceof NoHttpResponseException) {
-            respondWithSelendroidServerUnreachable(sessionId, session.getDevice());
+            return respondWithSelendroidServerUnreachable(sessionId, session.getDevice());
           } else {
             return respondWithRedirectFailure(sessionId, new SelendroidException(
                 "Unexpected error communicating with selendroid server on the device", e));
@@ -99,6 +99,10 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
           log.severe("failed to forward request to Selendroid Server: " + e.getMessage());
         }
       }
+    }
+    if (response == null) {
+      return respondWithRedirectFailure(sessionId, new SelendroidException(
+          "Selendroid server on the device became unreachable"));
     }
     Object value = response.opt("value");
     if (value != null) {
@@ -147,7 +151,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
   private JSONObject redirectRequest(HttpRequest request, ActiveSession session, String url, String method)
       throws Exception {
 
-    HttpResponse r = null;
+    HttpResponse r;
     if ("get".equalsIgnoreCase(method)) {
       log.info("GET redirect to: " + url);
       r = HttpClientUtil.executeRequest(url, HttpMethod.GET);

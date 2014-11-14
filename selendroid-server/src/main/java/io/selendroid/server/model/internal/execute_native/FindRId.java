@@ -14,6 +14,7 @@
 package io.selendroid.server.model.internal.execute_native;
 
 import io.selendroid.ServerInstrumentation;
+import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -39,7 +40,7 @@ public class FindRId implements NativeExecuteScript {
           serverInstrumentation.getTargetContext().getPackageName() +".R$id"
       );
     } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+      SelendroidLogger.error("Cannot find id", e);
       return "";
     }
     String using = null;

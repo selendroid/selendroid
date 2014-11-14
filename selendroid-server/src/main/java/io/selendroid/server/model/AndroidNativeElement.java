@@ -13,7 +13,6 @@
  */
 package io.selendroid.server.model;
 
-
 import android.app.Activity;
 import android.view.ViewParent;
 import io.selendroid.ServerInstrumentation;
@@ -248,7 +247,7 @@ public class AndroidNativeElement implements AndroidElement {
     if (getView() instanceof TextView) {
       return ((TextView) getView()).getText().toString();
     }
-    System.err.println("not supported elment for getting the text: "
+    SelendroidLogger.warning("Element does not support getText(): "
         + getView().getClass().getSimpleName());
     return null;
   }

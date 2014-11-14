@@ -90,7 +90,7 @@ public class SelendroidResponse implements Response {
         o.put("value", value);
       }
     } catch (JSONException e) {
-      e.printStackTrace();
+      System.out.println("Cannot render response: " + e.getMessage());
     }
     return o.toString();
   }

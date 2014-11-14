@@ -17,6 +17,7 @@ import io.selendroid.ServerInstrumentation;
 import io.selendroid.server.model.AndroidRElement;
 import io.selendroid.server.model.Session;
 
+import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 /**
@@ -46,7 +47,7 @@ public class InvokeMenuAction implements NativeExecuteScript {
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      SelendroidLogger.error("Cannot invoke menu action", e);
       return "Must pass an AndroidRElement or integer to invokeMenuActionSync (check adb log for full stacktrace): " + e.getMessage();
     }
     serverInstrumentation.invokeMenuActionSync(serverInstrumentation.getCurrentActivity(), id, 0);

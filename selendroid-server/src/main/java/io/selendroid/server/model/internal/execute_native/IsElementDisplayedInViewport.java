@@ -52,7 +52,7 @@ public class IsElementDisplayedInViewport implements NativeExecuteScript {
       }
       return false;
     } catch (JSONException e) {
-      e.printStackTrace();
+      SelendroidLogger.error("Cannot check if element is displayed in viewport", e);
       return false;
     }
   }

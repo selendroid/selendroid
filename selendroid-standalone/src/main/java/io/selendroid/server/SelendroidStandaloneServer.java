@@ -20,6 +20,7 @@ import io.selendroid.server.grid.SelfRegisteringRemote;
 import io.selendroid.server.http.HttpServer;
 import io.selendroid.server.model.SelendroidStandaloneDriver;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,11 +69,10 @@ public class SelendroidStandaloneServer {
       try {
         new SelfRegisteringRemote(configuration, driver).performRegistration();
       } catch (Exception e) {
-        log.severe("An error occured while registering selendroid into grid hub.");
-        e.printStackTrace();
+        log.log(Level.SEVERE, "An error occurred while registering selendroid into grid hub.", e);
       }
     }
-    System.out.println("selendroid-standalone server has been started on port: " + configuration.getPort());
+    log.info("selendroid-standalone server has been started on port: " + configuration.getPort());
   }
 
   public void stop() {

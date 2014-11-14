@@ -23,10 +23,7 @@ import io.selendroid.log.LogLevelEnum;
 import io.selendroid.server.SelendroidStandaloneServer;
 import io.selendroid.server.util.HttpClientUtil;
 
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 
 public class SelendroidLauncher {
 
@@ -41,12 +38,12 @@ public class SelendroidLauncher {
 
   public static SelendroidConfiguration parseConfig(String[] args) {
     SelendroidConfiguration config = new SelendroidConfiguration();
-    JCommander jCommander = null;
+    JCommander jCommander;
     try {
       jCommander = new JCommander(config, args);
       jCommander.setProgramName("Selendroid Standalone Server");
     } catch (ParameterException e) {
-      log.severe("An error occurred while starting selendroid: " + e.getMessage());
+      log.log(Level.SEVERE, "An error occurred while starting selendroid");
       throw Throwables.propagate(e);
     }
 
@@ -71,7 +68,6 @@ public class SelendroidLauncher {
       throw Throwables.propagate(e);
     } catch (Exception e) {
       log.severe("Error occurred while building server: " + e.getMessage());
-      e.printStackTrace();
       throw Throwables.propagate(e);
     }
     Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -96,11 +92,11 @@ public class SelendroidLauncher {
       log.severe("Error occurred while registering logging file handler.");
     }
 
-    System.out.println("################# Selendroid #################");
+    log.info("################# Selendroid #################");
     SelendroidConfiguration config = parseConfig(args);
     // Log the loaded configuration
-    System.out.println("################# Configuration in use #################");
-    System.out.println(config.toString());
+    log.info("################# Configuration in use #################");
+    log.info(config.toString());
 
     //to be backward compatible
     if (LogLevelEnum.ERROR.equals(config.getLogLevel())) {

@@ -106,7 +106,7 @@ public class SelendroidServerBuilderTest {
   public void testShouldBeAbleToResignAnSignedAppWithCustomKeystore() throws Exception {
     SelendroidServerBuilder builder = getDefaultBuilderWithCustomKeystore();
     File androidApp = File.createTempFile("testapp", ".apk");
-    System.out.println("Kamesh:" + androidApp.getName());
+    System.out.println("App name: " + androidApp.getName());
     FileUtils.copyFile(new File(APK_FILE), androidApp);
     AndroidApp app = builder.resignApp(androidApp);
     Assert.assertEquals("resigned-" + androidApp.getName(),

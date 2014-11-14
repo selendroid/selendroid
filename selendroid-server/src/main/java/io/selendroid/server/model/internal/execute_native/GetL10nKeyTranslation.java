@@ -13,6 +13,7 @@
  */
 package io.selendroid.server.model.internal.execute_native;
 
+import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import io.selendroid.ServerInstrumentation;
@@ -33,7 +34,7 @@ public class GetL10nKeyTranslation implements NativeExecuteScript {
     try {
       return getLocalizedString(args.getString(0));
     } catch (JSONException e) {
-      e.printStackTrace();
+      SelendroidLogger.error("Cannot get key translation", e);
       return "";
     }
   }

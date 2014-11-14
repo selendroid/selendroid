@@ -136,7 +136,7 @@ public class SelfRegisteringRemote {
     try {
       registrationUrl = new URL(config.getRegistrationUrl());
     } catch (MalformedURLException e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, "Grid hub url cannot be parsed", e);
       throw new SelendroidException("Grid hub url cannot be parsed: " + e.getMessage());
     }
     configuration.put("hubHost", registrationUrl.getHost());

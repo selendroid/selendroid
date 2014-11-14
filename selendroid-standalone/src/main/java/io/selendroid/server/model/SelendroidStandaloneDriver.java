@@ -405,11 +405,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         AndroidApp selendroidServer = selendroidApkBuilder.createSelendroidServer(aut);
         selendroidServers.put(aut.getAppId(), selendroidServer);
       } catch (Exception e) {
-        e.printStackTrace();
+        log.log(Level.SEVERE, "Cannot build the Selendroid server APK", e);
         throw new SessionNotCreatedException(
-            "An error occurred while building the selendroid-server.apk for aut '" + aut + "': "
-                + e.getMessage()
-        );
+            "Cannot build the Selendroid server APK for application '" + aut + "': " + e.getMessage());
       }
     }
     return selendroidServers.get(aut.getAppId());
@@ -477,8 +475,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         try {
           stopSession(sessionId);
         } catch (AndroidDeviceException e) {
-          log.severe("Error occured while stopping session: " + e.getMessage());
-          e.printStackTrace();
+          log.log(Level.SEVERE, "Error occurred while stopping session", e);
         }
       }
     }

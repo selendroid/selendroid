@@ -58,12 +58,11 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
     try {
       AndroidDebugBridge.init(false);
     } catch (IllegalStateException e) {
-      // When we keep the adb connection alive the AndroidDebugBridge may have been already
-      // initialized at this point and it generates an exception. Do not print it.
       if (!shouldKeepAdbAlive) {
-        e.printStackTrace();
-        Log.e("The IllegalStateException is not a show "
-            + "stopper. It has been handled. This is just debug spew. Please proceed.", e);
+        log.log(
+            Level.WARNING,
+            "AndroidDebugBridge may have been already initialized at this point. It is OK to proceed.",
+            e);
       }
     }
 

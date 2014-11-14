@@ -20,6 +20,7 @@ import io.selendroid.android.ViewHierarchyAnalyzer;
 import io.selendroid.server.model.AndroidNativeElement;
 import io.selendroid.server.model.KnownElements;
 import io.selendroid.util.Preconditions;
+import io.selendroid.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +55,7 @@ public class FindElementByAndroidTag implements NativeExecuteScript {
 
   @Override
   public Object executeScript(JSONArray args) {
-	  String tagName = null;
+	  String tagName;
 	  JSONObject result = new JSONObject();
 	  try {
 		  tagName = args.getString(0);
@@ -67,7 +68,7 @@ public class FindElementByAndroidTag implements NativeExecuteScript {
 			  }
 		  }
 	    } catch (JSONException e) {
-	      e.printStackTrace();
+        SelendroidLogger.error("Cannot execute script", e);
 	    }
 	  return result;
   }

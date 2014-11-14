@@ -21,6 +21,7 @@ import io.selendroid.server.model.ActiveSession;
 import org.json.JSONException;
 import io.selendroid.server.http.HttpRequest;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
@@ -47,16 +48,12 @@ public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
             "Selendroid inspector can only be used if there is an active test session running. "
                 + "To start a test session, add a break point into your test code and run the test in debug mode.");
       }
-    } else {
-      // TODO: This doesn't appear to do anything. Delete it?
-      session = getSelendroidDriver(request).getActiveSession(sessionId);
     }
     byte[] screenshot = null;
     try {
       screenshot = getSelendroidDriver(request).takeScreenshot(sessionId);
     } catch (AndroidDeviceException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.log(Level.SEVERE, "Cannot take screenshot for inspector", e);
     }
     return new UiResponse(sessionId != null ? sessionId : "", screenshot);
   }

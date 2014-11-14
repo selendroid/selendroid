@@ -28,6 +28,7 @@ import org.json.JSONException;
 import io.selendroid.server.http.HttpRequest;
 
 import java.nio.charset.Charset;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class InspectorTreeHandler extends BaseSelendroidServerHandler {
@@ -64,7 +65,7 @@ public class InspectorTreeHandler extends BaseSelendroidServerHandler {
               + "/inspector/tree", HttpMethod.GET);
       return new JsResult(EntityUtils.toString(r.getEntity(),Charset.forName("UTF-8")));
     } catch (Exception e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, "Cannot get element tree for inspector", e);
       throw new SelendroidException(e);
     }
   }

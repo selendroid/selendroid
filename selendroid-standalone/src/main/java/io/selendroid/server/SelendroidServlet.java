@@ -36,6 +36,7 @@ import io.selendroid.server.model.SelendroidStandaloneDriver;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.selendroid.server.http.HttpRequest;
@@ -142,8 +143,7 @@ public class SelendroidServlet extends BaseServlet {
     try {
       result = handler.handle(request);
     } catch (Exception e) {
-      e.printStackTrace();
-      log.severe("Error occurred while handling request: " + e.fillInStackTrace());
+      log.log(Level.SEVERE, "Error occurred while handling request", e.fillInStackTrace());
       replyWithServerError(response);
       return;
     }

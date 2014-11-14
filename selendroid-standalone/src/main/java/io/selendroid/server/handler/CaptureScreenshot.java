@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.openqa.selenium.internal.Base64Encoder;
 import io.selendroid.server.http.HttpRequest;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CaptureScreenshot extends BaseSelendroidServerHandler {
@@ -38,7 +39,7 @@ public class CaptureScreenshot extends BaseSelendroidServerHandler {
     try {
       rawPng = getSelendroidDriver(request).takeScreenshot(getSessionId(request));
     } catch (AndroidDeviceException e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, "Cannot take screenshot", e);
       return new SelendroidResponse(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
     }
     String base64Png = new Base64Encoder().encode(rawPng);

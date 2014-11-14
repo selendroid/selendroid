@@ -13,7 +13,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import io.selendroid.server.http.HttpRequest;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class NetworkConnectionHandler extends BaseSelendroidServerHandler {
+  private static final Logger log = Logger.getLogger(NetworkConnectionHandler.class.getName());
+
   public NetworkConnectionHandler(String mappedUri) {
     super(mappedUri);
   }
@@ -38,7 +43,7 @@ public class NetworkConnectionHandler extends BaseSelendroidServerHandler {
         return new SelendroidResponse(sessionId, null);
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, "Cannot change network connection", e);
       return new SelendroidResponse(sessionId, null);
     }
 

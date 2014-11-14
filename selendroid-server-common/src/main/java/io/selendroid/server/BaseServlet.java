@@ -96,7 +96,6 @@ public abstract class BaseServlet implements HttpServlet {
   }
 
   protected void replyWithServerError(HttpResponse response) {
-    System.out.println("replyWithServerError 500");
     response.setStatus(INTERNAL_SERVER_ERROR);
     response.end();
   }

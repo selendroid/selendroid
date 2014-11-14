@@ -16,6 +16,7 @@ package io.selendroid.android.impl;
 import io.selendroid.device.DeviceTargetPlatform;
 
 import java.util.Locale;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.android.ddmlib.IDevice;
@@ -63,9 +64,7 @@ public class DefaultHardwareDevice extends AbstractDevice {
         RawImage screenshot = device.getScreenshot();
         this.screenSize = new Dimension(screenshot.width, screenshot.height);
       } catch (Exception e) {
-        log.warning("was not able to determine screensize: " + e.getMessage());
-        // can happen
-        e.printStackTrace();
+        log.log(Level.WARNING, "Unable to determine screen size", e);
       }
     }
 

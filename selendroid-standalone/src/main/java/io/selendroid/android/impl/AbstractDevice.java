@@ -375,7 +375,7 @@ public abstract class AbstractDevice implements AndroidDevice {
       logcatWatchdog = new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT);
       exec.setWatchdog(logcatWatchdog);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
     }
   }
 
@@ -417,7 +417,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     if (parameter == null || parameter.isEmpty()) {
       return null;
     }
-    System.out.println("running command: adb " + parameter);
+    log.fine("running command: adb " + parameter);
     CommandLine command = adbCommand();
 
     String[] params = parameter.split(" ");
@@ -439,10 +439,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     } catch (IOException ioe) {
       throw new AndroidDeviceException("Unable to get frame buffer: " + ioe.getMessage());
     } catch (TimeoutException e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
       throw new AndroidDeviceException(e.getMessage());
     } catch (AdbCommandRejectedException e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
       throw new AndroidDeviceException(e.getMessage());
     }
 
@@ -468,7 +468,7 @@ public abstract class AbstractDevice implements AndroidDevice {
         throw new IOException("Failed to find png writer");
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      log.log(Level.SEVERE, "Cannot take screenshot", e);
       throw new AndroidDeviceException(e.getMessage());
     }
     byte[] raw = null;
@@ -500,30 +500,18 @@ public abstract class AbstractDevice implements AndroidDevice {
   public void inputKeyevent(int value) {
     executeCommandQuietly(adbCommand("shell", "input", "keyevent", "" + value));
     // need to wait a beat for the UI to respond
-    try {
-      Thread.sleep(500);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    sleep(500);
   }
 
   public void invokeActivity(String activity) {
     executeCommandQuietly(adbCommand("shell", "am", "start", "-a", activity));
     // need to wait a beat for the UI to respond
-    try {
-      Thread.sleep(500);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    sleep(500);
   }
 
   public void restartADB() {
     executeCommandQuietly(adbCommand("kill-server"));
-    try {
-      Thread.sleep(500);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    sleep(500);
     // make sure it's backup again
     executeCommandQuietly(adbCommand("devices"));
   }
@@ -580,6 +568,15 @@ public abstract class AbstractDevice implements AndroidDevice {
       isFirstHeaderLine = false;
     }
     return sb.toString();
+  }
+
+  private void sleep(int millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      log.log(Level.SEVERE, e.getMessage(), e);
+    }
   }
 
   @Override
