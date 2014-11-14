@@ -102,7 +102,7 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
           new SelendroidException("Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
     } catch (Exception e) {
       SelendroidLogger.error("Error while handling action in: " + this.getClass().getName(), e);
-      return new SelendroidResponse(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
+      return SelendroidResponse.forCatchAllError(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
     }
   }
 

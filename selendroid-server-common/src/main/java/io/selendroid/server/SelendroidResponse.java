@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class SelendroidResponse implements Response {
+  private static final String CATCH_ALL_ERROR_MESSAGE = "CATCH_ALL: ";
   private String sessionId;
   private int status;
   private Object value;
@@ -33,10 +34,21 @@ public class SelendroidResponse implements Response {
     this.status = status;
   }
 
+  private SelendroidResponse(String sessionId, int status, Exception e, String messagePrefix) throws JSONException {
+    this.value = buildErrorValue(e, messagePrefix);
+    this.sessionId = sessionId;
+    this.status = status;
+  }
+
   private SelendroidResponse(String sessionId, int status, Object value) {
     this.sessionId = sessionId;
     this.status = status;
     this.value = value;
+  }
+
+  private SelendroidResponse(String sessionId, int status) {
+    this.sessionId = sessionId;
+    this.status = status;
   }
 
   public SelendroidResponse(String sessionId, Object value) {
@@ -53,6 +65,20 @@ public class SelendroidResponse implements Response {
 
   public SelendroidResponse(String sessionId, StatusCode status, Exception e) throws JSONException {
     this(sessionId, status.getCode(), e);
+  }
+
+  /**
+   * It is currently hard to detect whether a test failed because of a legitimate
+   * error by a developer or because something is going wrong in selendroid
+   * internals. This response marks error responses from the server that indicate
+   * something has gone wrong in the internals of selendroid.
+   */
+  public static SelendroidResponse forCatchAllError(String sessionId, StatusCode status, Exception e) {
+    try {
+      return new SelendroidResponse(sessionId, status.getCode(), e, CATCH_ALL_ERROR_MESSAGE);
+    } catch(JSONException err) {
+      return new SelendroidResponse(sessionId, status);
+    }
   }
 
   /*
@@ -96,6 +122,10 @@ public class SelendroidResponse implements Response {
   }
 
   private JSONObject buildErrorValue(Throwable t) throws JSONException {
+    return buildErrorValue(t, null);
+  }
+
+  private JSONObject buildErrorValue(Throwable t, String messagePrefix) throws JSONException {
     JSONObject errorValue = new JSONObject();
     errorValue.put("class", t.getClass().getCanonicalName());
 
@@ -103,8 +133,21 @@ public class SelendroidResponse implements Response {
     StringWriter stringWriter = new StringWriter();
     PrintWriter printWriter = new PrintWriter(stringWriter);
     t.printStackTrace(printWriter);
-    errorValue.put("message", t.getMessage() + "\n" + stringWriter.toString());
 
+    StringBuilder messageBuilder = new StringBuilder();
+
+    if (messagePrefix != null) {
+      messageBuilder.append(messagePrefix);
+    }
+
+    if (t.getMessage() != null) {
+      messageBuilder.append(t.getMessage());
+      messageBuilder.append("\n");
+    }
+
+    messageBuilder.append(stringWriter.toString());
+
+    errorValue.put("message", messageBuilder.toString());
         /*
          * There is no easy way to attach exception 'cause' clauses here.
          * See workaround above which is used instead.
