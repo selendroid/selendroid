@@ -89,6 +89,12 @@ public class SelendroidConfiguration {
              description = "If true, adb will not be terminated on server shutdown.")
   private boolean keepAdbAlive = false;
 
+  @Parameter(names = "-maxSession", description = "Maximum number of sessions that a grid hub can assign at a time.")
+  private int maxSession = 5;
+
+  @Parameter(names = "-maxInstances", description = "Maximum number of instances that a grid hub can use at a time.")
+  private int maxInstances = 5;
+
   @Parameter(names = "-noWebviewApp",
              description = "If you don't want selendroid to auto-extract and have 'AndroidDriver' (webview only app) available.")
   private boolean noWebViewApp = false;
@@ -329,4 +335,21 @@ public class SelendroidConfiguration {
   public String toString() {
     return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
   }
+
+  public int getMaxSession() {
+    return maxSession;
+  }
+
+  public void setMaxSession(int maxSession) {
+    this.maxSession = maxSession;
+  }
+
+  public int getMaxInstances() {
+    return maxInstances;
+  }
+
+  public void setMaxInstances(int maxInstances) {
+    this.maxInstances = maxInstances;
+  }
+
 }

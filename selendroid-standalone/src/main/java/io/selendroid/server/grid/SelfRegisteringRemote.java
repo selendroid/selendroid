@@ -129,7 +129,8 @@ public class SelfRegisteringRemote {
     }
     configuration.put("role", "node");
     configuration.put("registerCycle", 5000);
-    configuration.put("maxInstances", 5);
+    configuration.put("maxInstances", config.getMaxInstances());
+    configuration.put("maxSession", config.getMaxSession());
 
     // adding hub details
     URL registrationUrl;

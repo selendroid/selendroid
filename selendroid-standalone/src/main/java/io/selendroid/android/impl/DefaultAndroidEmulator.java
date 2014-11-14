@@ -54,6 +54,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       .put("WVGA800", new Dimension(480, 800))
       .put("WVGA854", new Dimension(480, 854))
       .put("WXGA", new Dimension(1280, 800))
+      .put("WXGA800", new Dimension(1280, 800))
       .build();
 
   private Dimension screenSize;
@@ -149,8 +150,8 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       int width = Integer.parseInt(matcher.group(1));
       int height = Integer.parseInt(matcher.group(2));
       return new Dimension(width, height);
-    } else if (SKIN_NAME_DIMENSIONS.containsKey(skinName)) {
-      return SKIN_NAME_DIMENSIONS.get(skinName);
+    } else if (SKIN_NAME_DIMENSIONS.containsKey(skinName.toUpperCase())) {
+      return SKIN_NAME_DIMENSIONS.get(skinName.toUpperCase());
     } else {
       log.warning("Failed to get dimensions for skin: " + skinName);
       return null;
