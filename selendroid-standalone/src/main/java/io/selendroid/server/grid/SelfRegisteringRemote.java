@@ -100,6 +100,7 @@ public class SelfRegisteringRemote {
 
         capa.put(CapabilityType.PLATFORM, "ANDROID");
         capa.put(CapabilityType.VERSION, version);
+        capa.put("maxInstances", config.getMaxInstances());
         caps.put(capa);
       }
       res.put("capabilities", caps);
@@ -129,7 +130,6 @@ public class SelfRegisteringRemote {
     }
     configuration.put("role", "node");
     configuration.put("registerCycle", 5000);
-    configuration.put("maxInstances", config.getMaxInstances());
     configuration.put("maxSession", config.getMaxSession());
 
     // adding hub details
@@ -144,6 +144,8 @@ public class SelfRegisteringRemote {
     configuration.put("hubPort", registrationUrl.getPort());
 
     // adding driver details
+    configuration.put("seleniumProtocol", "WebDriver");
+    configuration.put("host", config.getServerHost());
     configuration.put("remoteHost", "http://" + config.getServerHost() + ":" + config.getPort());
     return configuration;
   }
