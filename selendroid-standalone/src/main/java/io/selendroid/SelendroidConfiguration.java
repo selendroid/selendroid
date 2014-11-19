@@ -20,6 +20,7 @@ import io.selendroid.log.LogLevelEnum;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,6 +132,9 @@ public class SelendroidConfiguration {
   @Parameter(names="-serverStartRetries",
              description="Maximum amount of times the starting of the selendroid-server on the device will be retried")
   private int serverStartRetries = 5;
+
+  @Parameter(names = "-folder", description = "The folder which contains Android applications under test. This folder will monitor and add new apps to the apps store during the lifetime of the selendroid node.")
+  private String folder = null;
 
   public void setKeystore(String keystore) {
     this.keystore = keystore;
@@ -350,6 +354,10 @@ public class SelendroidConfiguration {
 
   public void setMaxInstances(int maxInstances) {
     this.maxInstances = maxInstances;
+  }
+
+  public String getAppFolderToMonitor() {
+    return folder;
   }
 
 }

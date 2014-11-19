@@ -35,9 +35,11 @@ import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.exceptions.SessionNotCreatedException;
 import io.selendroid.exceptions.ShellCommandException;
 import io.selendroid.server.ServerDetails;
+import io.selendroid.server.util.FolderMonitor;
 import io.selendroid.server.util.HttpClientUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
@@ -70,6 +72,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private AndroidDriverAPKBuilder androidDriverAPKBuilder = null;
   private SelendroidConfiguration serverConfiguration = null;
   private DeviceManager deviceManager;
+  private FolderMonitor folderMonitor = null;
   private SelendroidStandaloneDriverEventListener eventListener
       = new DummySelendroidStandaloneDriverEventListener();
 
@@ -82,6 +85,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
     selendroidServerPort = serverConfiguration.getSelendroidServerPort();
 
+    if (serverConfiguration.getAppFolderToMonitor() != null) {
+      startFolderMonitor();
+    }
     initApplicationsUnderTest(serverConfiguration);
     initAndroidDevices();
     deviceStore.setClearData(!serverConfiguration.isNoClearData());
@@ -98,6 +104,39 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     this.androidDriverAPKBuilder = androidDriverAPKBuilder;
   }
 
+  /**
+   * This function will sign an android app and add it to the App Store. The function is made public because it also be
+   * invoked by the Folder Monitor each time a new application dropped into this folder.
+   *
+   * @param file
+   *          - The file to be added to the app store
+   * @throws AndroidSdkException
+   */
+  public void addToAppsStore(File file) throws AndroidSdkException {
+    AndroidApp app = null;
+    try {
+      app = selendroidApkBuilder.resignApp(file);
+    } catch (ShellCommandException e) {
+      throw new SessionNotCreatedException(
+          "An error occurred while resigning the app '" + file.getName()
+              + "'. ", e);
+    }
+    String appId = null;
+    try {
+      appId = app.getAppId();
+    } catch (AndroidSdkException e) {
+      log.info("Ignoring app because an error occurred reading the app details: "
+          + file.getAbsolutePath());
+      log.info(e.getMessage());
+    }
+    if (appId != null && !appsStore.containsKey(appId)) {
+      appsStore.put(appId, app);
+
+      log.info("App " + appId
+          + " has been added to selendroid standalone server.");
+    }
+  }
+
   /* package */void initApplicationsUnderTest(SelendroidConfiguration serverConfiguration)
       throws AndroidSdkException {
     if (serverConfiguration == null) {
@@ -110,26 +149,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     for (String appPath : serverConfiguration.getSupportedApps()) {
       File file = new File(appPath);
       if (file.exists()) {
-
-        AndroidApp app = null;
-        try {
-          app = selendroidApkBuilder.resignApp(file);
-        } catch (ShellCommandException e1) {
-          throw new SessionNotCreatedException("An error occurred while resigning the app '"
-              + file.getName() + "'. ", e1);
-        }
-        String appId = null;
-        try {
-          appId = app.getAppId();
-        } catch (SelendroidException e) {
-          log.info("Ignoring app because an error occurred reading the app details: "
-              + file.getAbsolutePath());
-          log.info(e.getMessage());
-        }
-        if (appId != null && !appsStore.containsKey(appId)) {
-          appsStore.put(appId, app);
-          log.info("App " + appId + " has been added to selendroid standalone server.");
-        }
+        addToAppsStore(file);
       } else {
         log.severe("Ignoring app because it was not found: " + file.getAbsolutePath());
       }
@@ -420,6 +440,20 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     String[] localeStr = capa.getLocale().split("_");
 
     return new Locale(localeStr[0], localeStr[1]);
+  }
+
+  // This function will start a separate thread to monitor the
+  // Applications folder.
+  private void startFolderMonitor() {
+    if (serverConfiguration.getAppFolderToMonitor() != null) {
+      try {
+        folderMonitor = new FolderMonitor(this, serverConfiguration);
+        folderMonitor.start();
+      } catch (IOException e) {
+        log.warning("Could not monitor the given folder: "
+            + serverConfiguration.getAppFolderToMonitor());
+      }
+    }
   }
 
   /**
