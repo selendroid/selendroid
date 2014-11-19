@@ -13,7 +13,7 @@
  */
 package io.selendroid.server.handler;
 
-import com.google.common.base.Splitter;
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.android.AndroidDevice;
@@ -23,6 +23,7 @@ import io.selendroid.server.BaseSelendroidServerHandler;
 import io.selendroid.server.Response;
 import io.selendroid.server.SelendroidResponse;
 import io.selendroid.server.StatusCode;
+import io.selendroid.server.http.HttpRequest;
 import io.selendroid.server.model.ActiveSession;
 import io.selendroid.server.util.HttpClientUtil;
 import org.apache.http.HttpResponse;
@@ -30,7 +31,6 @@ import org.apache.http.NoHttpResponseException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;
-import io.selendroid.server.http.HttpRequest;
 
 import java.net.SocketException;
 import java.util.logging.Logger;
@@ -46,6 +46,15 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
   public Response handle(HttpRequest request) throws JSONException {
     String sessionId = getSessionId(request);
     log.info("forward request command: for session " + sessionId);
+
+    if (sessionId == null) {
+      String dataKeys = Joiner.on(", ").join(request.data().keySet());
+
+      log.warning("Unable to retrieve session id from request with data: [" + dataKeys + "]");
+
+      return respondWithRedirectFailure(sessionId,
+              new SelendroidException("No session id passed to the request."));
+    }
 
     ActiveSession session = getSelendroidDriver(request).getActiveSession(sessionId);
     if (session == null) {
