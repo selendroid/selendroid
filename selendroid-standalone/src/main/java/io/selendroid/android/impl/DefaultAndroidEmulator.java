@@ -278,8 +278,18 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     }
     setSerial(emulatorPort);
     Boolean adbKillServerAttempted = false;
-    while (!isDeviceReady()) {
 
+    // Without this one seconds, the call to "isDeviceReady" is
+    // too quickly sent while the emulator is still starting and
+    // not ready to receive any commands. Because of this the
+    // while loops failed and sometimes hung in isDeviceReady function.
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+
+    while (!isDeviceReady()) {
       if (!adbKillServerAttempted && System.currentTimeMillis() - start > 10000) {
         CommandLine adbDevicesCmd = new CommandLine(AndroidSdk.adb());
         adbDevicesCmd.addArgument("devices", false);
