@@ -64,12 +64,12 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   private ExtensionLoader extensionLoader;
 
   public void startMainActivity() {
-    finishAllActivities();
+    doFinishAllActivities();
     startActivity(mainActivityName);
   }
 
   public void startActivity(String activityClassName) {
-    finishAllActivities();
+    doFinishAllActivities();
 
     Context context = getTargetContext();
     // Start the new activity
@@ -77,8 +77,8 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     context.startActivity(intent);
   }
 
-  public void finishAllActivities() {
-    Set<Activity> activities = getActivities();
+  private void doFinishAllActivities() {
+    Set<Activity> activities = activitiesReporter.getActivities();
     if (activities != null && !activities.isEmpty()) {
       for (Activity activity : activities) {
         activity.finish();
@@ -86,10 +86,22 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     }
   }
 
+  /**
+   * Finishes all activities on the main thread.
+   */
+  public void finishAllActivities() {
+    runOnMainSync(new Runnable() {
+      @Override
+      public void run() {
+        ServerInstrumentation.this.doFinishAllActivities();
+      }
+    });
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public void onCreate(Bundle arguments) {
-    Handler handler = new Handler();
+    Handler mainThreadHandler = new Handler();
     this.args = new InstrumentationArguments(arguments);
 
     mainActivityName = arguments.getString("main_activity");
@@ -125,7 +137,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     }
 
     // Queue bootstrapping and starting of the main activity on the main thread.
-    handler.post(new Runnable() {
+    this.mainThreadHandler.post(new Runnable() {
       @Override
       public void run() {
         UncaughtExceptionHandling.clearCrashLogFile();
@@ -185,10 +197,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public Activity getCurrentActivity() {
     return activitiesReporter.getCurrentActivity();
-  }
-
-  private Set<Activity> getActivities() {
-    return activitiesReporter.getActivities();
   }
 
   public View getRootView() {

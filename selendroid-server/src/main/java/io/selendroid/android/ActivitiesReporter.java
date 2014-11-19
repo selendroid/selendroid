@@ -13,10 +13,7 @@
  */
 package io.selendroid.android;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import android.app.Activity;
 
@@ -27,31 +24,8 @@ public class ActivitiesReporter {
   private final Map<Activity, Integer> liveActivities = new HashMap<Activity, Integer>();
   private int lastAssignedId;
 
-  public class ActivitiesImpl {
-    public Activity current() {
-      return currentActivity;
-    }
-
-    public void finishAll() {
-      Set<Activity> activities = Collections.unmodifiableSet(liveActivities.keySet());
-
-      for (Activity activity : activities) {
-        if (liveActivities.containsKey(activity)) {
-          activity.finish();
-        }
-      }
-    }
-
-    public int idOf(Activity activity) {
-      Integer boxedId = liveActivities.get(activity);
-
-      return (boxedId == null) ? -1 : boxedId;
-    }
-
-  }
-
   public Set<Activity> getActivities() {
-    return liveActivities.keySet();
+    return new HashSet<Activity>(liveActivities.keySet());
   }
 
   public Activity getCurrentActivity() {
