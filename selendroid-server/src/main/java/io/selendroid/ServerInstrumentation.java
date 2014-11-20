@@ -137,7 +137,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     }
 
     // Queue bootstrapping and starting of the main activity on the main thread.
-    this.mainThreadHandler.post(new Runnable() {
+    mainThreadHandler.post(new Runnable() {
       @Override
       public void run() {
         UncaughtExceptionHandling.clearCrashLogFile();
