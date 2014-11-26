@@ -16,7 +16,6 @@ package io.selendroid.extension;
 import android.app.Instrumentation;
 import android.content.Context;
 import dalvik.system.DexClassLoader;
-import io.selendroid.InstrumentationArguments;
 import io.selendroid.exceptions.SelendroidException;
 import io.selendroid.server.BaseRequestHandler;
 import io.selendroid.util.SelendroidLogger;
@@ -30,31 +29,28 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ExtensionLoader {
   private ClassLoader classLoader;
-  private boolean isExtensionLoaded = false;
+  private boolean isWithExtension = false;
 
   public ExtensionLoader(Context context) {
     this.classLoader = context.getClassLoader();
-    SelendroidLogger.info("No extension dex provided. Not loading an extension.");
+    SelendroidLogger.info("No extension dex path provided. Not loading an extension.");
   }
 
   public ExtensionLoader(Context context, String extensionDexPath) {
-    SelendroidLogger.info("Loading extension: " + extensionDexPath);
+    if (!new File(extensionDexPath).exists()) {
+      throw new SelendroidException(
+          "Extension dex file not found, have you pushed it to the device? " + extensionDexPath);
+    }
 
-    File dexables = context.getDir("dexables", 0);
-    String optimizedDexPath = dexables.getAbsolutePath();
+    String optimizedDexPath = context.getDir("dexables", 0).getAbsolutePath();
 
     this.classLoader = new DexClassLoader(
         extensionDexPath,
         optimizedDexPath,
         null,  // libraryPath
         context.getClassLoader());
-    this.isExtensionLoaded = true;
-
-    SelendroidLogger.info("Loaded extension: " + extensionDexPath);
-  }
-
-  public boolean isExtensionLoaded() {
-    return isExtensionLoaded;
+    this.isWithExtension = true;
+    SelendroidLogger.info("Extension path: " + extensionDexPath);
   }
 
   /**
@@ -62,9 +58,8 @@ public class ExtensionLoader {
    */
   public void runBeforeApplicationCreateBootstrap(
       Instrumentation instrumentation, String[] bootstrapClasses) {
-    if (!isExtensionLoaded) {
-      SelendroidLogger.error(
-          "Cannot run bootstrap. Must load an extension first.");
+    if (!isWithExtension) {
+      SelendroidLogger.error("Cannot run bootstrap. Must load an extension first.");
       return;
     }
 
@@ -74,8 +69,7 @@ public class ExtensionLoader {
         loadBootstrap(bootstrapClassName).runBeforeApplicationCreate(instrumentation);
         SelendroidLogger.info("\"Running beforeApplicationCreate bootstrap: " + bootstrapClassName);
       } catch (Exception e) {
-        throw new SelendroidException(
-            "Cannot run bootstrap " + bootstrapClassName, e);
+        throw new SelendroidException("Cannot run bootstrap " + bootstrapClassName, e);
       }
     }
   }
@@ -85,9 +79,8 @@ public class ExtensionLoader {
    */
   public void runAfterApplicationCreateBootstrap(
       Instrumentation instrumentation, String[] bootstrapClasses) {
-    if (!isExtensionLoaded) {
-      SelendroidLogger.error(
-          "Cannot run bootstrap. Must load an extension first.");
+    if (!isWithExtension) {
+      SelendroidLogger.error("Cannot run bootstrap. Must load an extension first.");
       return;
     }
 
@@ -108,18 +101,18 @@ public class ExtensionLoader {
    */
   private BootstrapHandler loadBootstrap(String bootstrapClassName)
       throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-    return (BootstrapHandler) (classLoader.loadClass(bootstrapClassName).newInstance());
+    return classLoader.loadClass(bootstrapClassName).asSubclass(BootstrapHandler.class).newInstance();
   }
 
   /**
    * Loads a {@link BaseRequestHandler} class from the extension dex.
    */
   public BaseRequestHandler loadHandler(String handlerClassName, String uri)
-      throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+      throws
+      ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
       InvocationTargetException, InstantiationException {
     Class<? extends BaseRequestHandler> handlerClass =
         classLoader.loadClass(handlerClassName).asSubclass(BaseRequestHandler.class);
-
     Constructor<? extends BaseRequestHandler> constructor =
         handlerClass.getConstructor(String.class);
     return constructor.newInstance(uri);
