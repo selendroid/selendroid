@@ -13,14 +13,15 @@
  */
 package io.selendroid.nativetests;
 
-import io.selendroid.SelendroidKeys;
+import io.selendroid.client.SelendroidKeys;
+import io.selendroid.client.waiter.WaitingConditions;
 import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.waiter.WaitingConditions;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
+import static io.selendroid.client.waiter.TestWaiter.waitFor;
 
 
 public class SendKeyAndNativeKeyTest extends BaseAndroidTest {

@@ -13,10 +13,10 @@
  */
 package io.selendroid.webviewdrivertests;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
-import static io.selendroid.waiter.WaitingConditions.pageTitleToBe;
+import static io.selendroid.client.waiter.TestWaiter.waitFor;
+import static io.selendroid.client.waiter.WaitingConditions.pageTitleToBe;
+import io.selendroid.client.waiter.TestWaiter;
 import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.waiter.TestWaiter;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

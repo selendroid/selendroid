@@ -3,8 +3,8 @@
 
     <uses-sdk android:minSdkVersion="10"/>
 
-    <instrumentation android:name="io.selendroid.ServerInstrumentation" android:targetPackage="io.selendroid.testapp"/>
-    <instrumentation android:name="io.selendroid.LightweightInstrumentation" android:targetPackage="io.selendroid.testapp"/>
+    <instrumentation android:name="io.selendroid.server.ServerInstrumentation" android:targetPackage="io.selendroid.testapp"/>
+    <instrumentation android:name="io.selendroid.server.LightweightInstrumentation" android:targetPackage="io.selendroid.testapp"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>

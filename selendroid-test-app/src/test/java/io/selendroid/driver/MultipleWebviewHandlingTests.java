@@ -13,13 +13,12 @@
  */
 package io.selendroid.driver;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
-
+import static io.selendroid.client.waiter.TestWaiter.waitFor;
 import io.netty.handler.codec.http.HttpMethod;
-import io.selendroid.SelendroidDriver;
-import io.selendroid.server.util.HttpClientUtil;
+import io.selendroid.client.SelendroidDriver;
+import io.selendroid.client.waiter.WaitingConditions;
+import io.selendroid.standalone.server.util.HttpClientUtil;
 import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.waiter.WaitingConditions;
 
 import java.util.Set;
 

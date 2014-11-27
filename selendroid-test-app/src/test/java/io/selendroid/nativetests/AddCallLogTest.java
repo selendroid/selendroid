@@ -13,8 +13,8 @@
  */
 package io.selendroid.nativetests;
 
-import io.selendroid.server.utils.CallLogEntry;
-import io.selendroid.server.utils.CallLogUtil;
+import io.selendroid.server.common.utils.CallLogEntry;
+import io.selendroid.server.common.utils.CallLogUtil;
 import io.selendroid.support.BaseAndroidTest;
 
 import java.util.Date;

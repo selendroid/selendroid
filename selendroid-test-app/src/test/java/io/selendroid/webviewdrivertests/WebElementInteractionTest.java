@@ -13,8 +13,8 @@
  */
 package io.selendroid.webviewdrivertests;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
-import static io.selendroid.waiter.WaitingConditions.pageTitleToBe;
+import static io.selendroid.client.waiter.TestWaiter.waitFor;
+import static io.selendroid.client.waiter.WaitingConditions.pageTitleToBe;
 import io.selendroid.support.BaseAndroidTest;
 
 import java.util.concurrent.TimeUnit;

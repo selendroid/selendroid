@@ -26,12 +26,12 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import io.selendroid.SelendroidCapabilities;
-import io.selendroid.SelendroidConfiguration;
-import io.selendroid.SelendroidDriver;
-import io.selendroid.SelendroidLauncher;
-import io.selendroid.waiter.WaitingConditions;
-import static io.selendroid.waiter.TestWaiter.waitFor;
+import io.selendroid.client.SelendroidDriver;
+import io.selendroid.client.waiter.WaitingConditions;
+import io.selendroid.common.SelendroidCapabilities;
+import io.selendroid.standalone.SelendroidConfiguration;
+import io.selendroid.standalone.SelendroidLauncher;
+import static io.selendroid.client.waiter.TestWaiter.waitFor;
 
 public class BaseAndroidTest {
   protected static final String HOMESCREEN_ACTIVITY = "and-activity://io.selendroid.testapp.HomeScreenActivity";

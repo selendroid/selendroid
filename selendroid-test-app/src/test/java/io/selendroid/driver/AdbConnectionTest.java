@@ -13,10 +13,10 @@
  */
 package io.selendroid.driver;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
-import static io.selendroid.waiter.WaitingConditions.driverUrlToBe;
-import static io.selendroid.waiter.WaitingConditions.elementTextToContain;
-import io.selendroid.SelendroidKeys;
+import static io.selendroid.client.waiter.TestWaiter.waitFor;
+import static io.selendroid.client.waiter.WaitingConditions.driverUrlToBe;
+import static io.selendroid.client.waiter.WaitingConditions.elementTextToContain;
+import io.selendroid.client.SelendroidKeys;
 import io.selendroid.support.BaseAndroidTest;
 
 import java.util.concurrent.TimeUnit;
