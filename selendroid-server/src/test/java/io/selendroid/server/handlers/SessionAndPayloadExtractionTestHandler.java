@@ -13,12 +13,13 @@
  */
 package io.selendroid.server.handlers;
 
-import io.selendroid.server.SafeRequestHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.selendroid.server.Response;
-import io.selendroid.server.SelendroidResponse;
-import io.selendroid.server.http.HttpRequest;
+
+import io.selendroid.server.common.Response;
+import io.selendroid.server.common.SelendroidResponse;
+import io.selendroid.server.common.http.HttpRequest;
+import io.selendroid.server.server.SafeRequestHandler;
 
 public class SessionAndPayloadExtractionTestHandler extends SafeRequestHandler {
 

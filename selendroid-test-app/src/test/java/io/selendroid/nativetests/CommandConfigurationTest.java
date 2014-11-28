@@ -13,8 +13,8 @@
  */
 package io.selendroid.nativetests;
 
-import io.selendroid.Configuration;
-import io.selendroid.DriverCommand;
+import io.selendroid.client.Configuration;
+import io.selendroid.client.DriverCommand;
 import io.selendroid.support.BaseAndroidTest;
 import io.selendroid.webviewdrivertests.HtmlTestData;
 

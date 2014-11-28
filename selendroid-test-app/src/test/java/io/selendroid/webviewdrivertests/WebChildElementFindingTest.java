@@ -13,9 +13,9 @@
  */
 package io.selendroid.webviewdrivertests;
 
+import io.selendroid.client.waiter.TestWaiter;
+import io.selendroid.client.waiter.WaitingConditions;
 import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.waiter.TestWaiter;
-import io.selendroid.waiter.WaitingConditions;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

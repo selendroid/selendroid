@@ -14,11 +14,14 @@
 package io.selendroid.server;
 
 import io.netty.handler.codec.http.HttpMethod;
-import io.selendroid.ServerInstrumentation;
-import io.selendroid.exceptions.SelendroidException;
+import io.selendroid.server.ServerInstrumentation;
+import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
 import io.selendroid.server.handlers.SessionAndPayloadExtractionTestHandler;
 import io.selendroid.server.internal.Capabilities;
+import io.selendroid.server.server.AndroidServer;
+import io.selendroid.server.server.AndroidServlet;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;

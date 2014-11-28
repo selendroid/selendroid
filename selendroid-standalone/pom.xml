@@ -142,7 +142,7 @@
 
 					<archive>
 						<manifest>
-							<mainClass>io.selendroid.SelendroidLauncher</mainClass>
+							<mainClass>io.selendroid.standalone.SelendroidLauncher</mainClass>
 						</manifest>
 						<manifestEntries>
 							<url>${project.parent.url}</url>
@@ -164,7 +164,7 @@
 					</descriptors>
 					<archive>
 						<manifest>
-							<mainClass>io.selendroid.SelendroidLauncher</mainClass>
+							<mainClass>io.selendroid.standalone.SelendroidLauncher</mainClass>
 							<UseUniqueVersions>true</UseUniqueVersions>
 						</manifest>
 						<manifestEntries>

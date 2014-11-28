@@ -16,9 +16,15 @@ package io.selendroid.server.model;
 
 import android.view.View;
 import android.webkit.WebView;
-import io.selendroid.ServerInstrumentation;
-import io.selendroid.android.InstrumentedKeySender;
-import io.selendroid.android.KeySender;
+import io.selendroid.server.ServerInstrumentation;
+import io.selendroid.server.android.InstrumentedKeySender;
+import io.selendroid.server.android.KeySender;
+import io.selendroid.server.server.model.AndroidElement;
+import io.selendroid.server.server.model.AndroidNativeElement;
+import io.selendroid.server.server.model.AndroidWebElement;
+import io.selendroid.server.server.model.KnownElements;
+import io.selendroid.server.server.model.SelendroidWebDriver;
+
 import org.junit.Assert;
 import org.junit.Test;
 

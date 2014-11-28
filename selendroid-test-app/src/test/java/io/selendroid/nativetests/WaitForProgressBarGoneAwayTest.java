@@ -13,10 +13,10 @@
  */
 package io.selendroid.nativetests;
 
-import static io.selendroid.waiter.TestWaiter.waitFor;
-import static io.selendroid.waiter.TestWaiter.waitForElement;
+import static io.selendroid.client.waiter.TestWaiter.waitFor;
+import static io.selendroid.client.waiter.TestWaiter.waitForElement;
+import io.selendroid.client.waiter.WaitingConditions;
 import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.waiter.WaitingConditions;
 
 import java.util.concurrent.TimeUnit;
 

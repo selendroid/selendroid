@@ -15,8 +15,8 @@
 package io.selendroid.webviewdrivertests.touch;
 
 import static org.junit.Assert.assertTrue;
-import io.selendroid.waiter.TestWaiter;
-import io.selendroid.waiter.WaitingConditions;
+import io.selendroid.client.waiter.TestWaiter;
+import io.selendroid.client.waiter.WaitingConditions;
 import io.selendroid.webviewdrivertests.HtmlTestData;
 
 import org.junit.Test;

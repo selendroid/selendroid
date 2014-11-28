@@ -14,9 +14,8 @@
 package io.selendroid.server;
 
 import io.netty.handler.codec.http.HttpMethod;
-import io.selendroid.server.http.HttpServer;
+import io.selendroid.server.common.http.HttpServer;
 import io.selendroid.server.internal.SelendroidAssert;
-
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;

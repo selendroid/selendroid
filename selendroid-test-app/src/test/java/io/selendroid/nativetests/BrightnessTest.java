@@ -14,7 +14,7 @@
 package io.selendroid.nativetests;
 
 import static org.junit.Assert.assertEquals;
-import io.selendroid.ScreenBrightness;
+import io.selendroid.client.ScreenBrightness;
 import io.selendroid.support.BaseAndroidTest;
 
 import org.junit.Before;

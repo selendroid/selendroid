@@ -13,8 +13,8 @@
  */
 package io.selendroid.tests;
 
+import io.selendroid.client.waiter.WaitingConditions;
 import io.selendroid.support.BaseAndroidTest;
-import io.selendroid.waiter.WaitingConditions;
 
 import org.junit.Assert;
 import org.junit.Test;
