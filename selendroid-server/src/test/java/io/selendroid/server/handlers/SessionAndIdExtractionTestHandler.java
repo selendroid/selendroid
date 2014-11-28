@@ -16,7 +16,7 @@ package io.selendroid.server.handlers;
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.server.server.SafeRequestHandler;
+import io.selendroid.server.handler.SafeRequestHandler;
 
 public class SessionAndIdExtractionTestHandler extends SafeRequestHandler {
 

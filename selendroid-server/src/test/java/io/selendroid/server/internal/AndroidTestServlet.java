@@ -13,9 +13,9 @@
  */
 package io.selendroid.server.internal;
 
+import io.selendroid.server.AndroidServlet;
 import io.selendroid.server.handlers.SessionAndIdExtractionTestHandler;
 import io.selendroid.server.handlers.SessionAndPayloadExtractionTestHandler;
-import io.selendroid.server.server.AndroidServlet;
 
 public class AndroidTestServlet extends AndroidServlet {
   public AndroidTestServlet() {

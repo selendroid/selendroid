@@ -37,8 +37,7 @@ import io.selendroid.server.common.exceptions.PermissionDeniedException;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.utils.CallLogEntry;
 import io.selendroid.server.extension.ExtensionLoader;
-import io.selendroid.server.server.AndroidServer;
-import io.selendroid.server.server.model.ExternalStorage;
+import io.selendroid.server.model.ExternalStorage;
 import io.selendroid.server.util.Intents;
 import io.selendroid.server.util.SelendroidLogger;
 

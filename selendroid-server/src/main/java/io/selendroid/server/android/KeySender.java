@@ -14,7 +14,7 @@
 
 package io.selendroid.server.android;
 
-import io.selendroid.server.server.model.Keyboard;
+import io.selendroid.server.model.Keyboard;
 
 public interface KeySender {
 

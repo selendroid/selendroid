@@ -15,7 +15,7 @@
 package io.selendroid.server.android;
 
 import io.selendroid.server.common.exceptions.SelendroidException;
-import io.selendroid.server.server.model.Keyboard;
+import io.selendroid.server.model.Keyboard;
 import android.app.Instrumentation;
 import android.view.KeyEvent;
 

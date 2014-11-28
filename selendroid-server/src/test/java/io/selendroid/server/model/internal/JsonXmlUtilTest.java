@@ -9,7 +9,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import io.selendroid.server.server.model.internal.JsonXmlUtil;
+import io.selendroid.server.model.internal.JsonXmlUtil;
 import io.selendroid.server.util.SelendroidLogger;
 
 import org.apache.commons.io.FileUtils;

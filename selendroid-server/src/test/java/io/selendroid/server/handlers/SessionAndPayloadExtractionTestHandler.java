@@ -19,7 +19,7 @@ import org.json.JSONObject;
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.server.server.SafeRequestHandler;
+import io.selendroid.server.handler.SafeRequestHandler;
 
 public class SessionAndPayloadExtractionTestHandler extends SafeRequestHandler {
 

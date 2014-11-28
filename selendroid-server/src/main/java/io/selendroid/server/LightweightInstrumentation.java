@@ -19,7 +19,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import io.selendroid.server.extension.ExtensionLoader;
-import io.selendroid.server.server.model.ExternalStorage;
+import io.selendroid.server.model.ExternalStorage;
 import io.selendroid.server.util.Intents;
 import io.selendroid.server.util.SelendroidLogger;
 

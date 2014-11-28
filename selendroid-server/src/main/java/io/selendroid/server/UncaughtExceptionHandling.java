@@ -16,7 +16,7 @@ package io.selendroid.server;
 import java.io.File;
 import java.io.PrintWriter;
 
-import io.selendroid.server.server.model.ExternalStorage;
+import io.selendroid.server.model.ExternalStorage;
 import io.selendroid.server.util.SelendroidLogger;
 
 /**
