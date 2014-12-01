@@ -54,7 +54,7 @@ public class SelendroidDeviceServerStub extends NanoHTTPD {
       e.printStackTrace();
     }
 
-    return new Response(HTTP_INTERNALERROR, MIME_PLAINTEXT, "ERROR OCCURED");
+    return new Response(HTTP_INTERNALERROR, MIME_PLAINTEXT, "ERROR OCCURRED");
   }
 
   private boolean isGet(String method) {

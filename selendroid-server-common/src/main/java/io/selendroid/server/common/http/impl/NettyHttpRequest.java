@@ -24,8 +24,8 @@ public class NettyHttpRequest implements HttpRequest {
   private FullHttpRequest request;
   private Map<String, Object> data;
 
-  public NettyHttpRequest(FullHttpRequest reuqest) {
-    this.request = reuqest;
+  public NettyHttpRequest(FullHttpRequest request) {
+    this.request = request;
     this.data = new HashMap<String, Object>();
   }
 

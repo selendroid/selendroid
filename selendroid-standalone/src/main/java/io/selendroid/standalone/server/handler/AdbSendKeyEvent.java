@@ -13,31 +13,24 @@
  */
 package io.selendroid.standalone.server.handler;
 
-import java.util.logging.Logger;
-
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
 
-public class AdbSendKeyEvent extends BaseSelendroidServerHandler {
-  private static final Logger log = Logger.getLogger(AdbSendKeyEvent.class.getName());
-
+public class AdbSendKeyEvent extends BaseSelendroidStandaloneHandler {
   public AdbSendKeyEvent(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-    JSONObject payload = getPayload(request);
-    log.info("Send Key Event via adb: " + payload.toString(2));
-    ActiveSession session = getSelendroidDriver(request).getActiveSession(getSessionId(request));
-
-   session.getDevice().runAdbCommand("shell input keyevent "+payload.getString("keyCode"));
-   return new SelendroidResponse(getSessionId(request), "");
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
+    ActiveSession session = getActiveSession(request);
+    session.getDevice().runAdbCommand("shell input keyevent " + payload.getString("keyCode"));
+    return new SelendroidResponse(getSessionId(request), "");
   }
 }

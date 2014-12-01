@@ -14,7 +14,6 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.ServerInstrumentation;
-import io.selendroid.server.common.BaseRequestHandler;
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
@@ -22,14 +21,14 @@ import io.selendroid.server.util.SelendroidLogger;
 
 import org.json.JSONException;
 
-public class ForceGcExplicitly extends BaseRequestHandler {
+public class ForceGcExplicitly extends SafeRequestHandler {
 
   public ForceGcExplicitly(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("force GC explicitly");
 
     ServerInstrumentation instrumentation = ServerInstrumentation.getInstance();

@@ -210,7 +210,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       }
       return decorView;
     } catch (Exception e) {
-      SelendroidLogger.error("Error occured while searching for root view: ", e);
+      SelendroidLogger.error("Error searching for root view: ", e);
     }
 
     throw new SelendroidException("Could not find any views");
@@ -225,7 +225,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       }
       stopServer();
     } catch (Exception e) {
-      SelendroidLogger.error("Error occured while shutting down: ", e);
+      SelendroidLogger.error("Error shutting down: ", e);
     }
     instance = null;
   }

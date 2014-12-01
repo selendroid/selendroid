@@ -13,7 +13,6 @@
  */
 package io.selendroid.server.handler;
 
-import io.selendroid.server.common.BaseRequestHandler;
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
@@ -22,20 +21,18 @@ import io.selendroid.server.util.SelendroidLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SetSystemProperty extends BaseRequestHandler {
+public class SetSystemProperty extends SafeRequestHandler {
 
   public SetSystemProperty(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response safeHandle(HttpRequest request) throws JSONException {
     JSONObject payload = getPayload(request);
     String propertyName = payload.getString("propertyName");
     String value = payload.getString("value");
-    String logMessage = String.format("Set Android OS property %s to %s", propertyName, value);
-    SelendroidLogger.info(logMessage);
-
+    SelendroidLogger.info(String.format("Set Android OS property %s to %s", propertyName, value));
     System.setProperty(propertyName, value);
     return new SelendroidResponse(getSessionId(request), "");
   }

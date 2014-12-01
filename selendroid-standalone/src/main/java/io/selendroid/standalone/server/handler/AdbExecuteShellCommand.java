@@ -13,29 +13,23 @@
  */
 package io.selendroid.standalone.server.handler;
 
-import java.util.logging.Logger;
-
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
 
-public class AdbExecuteShellCommand extends BaseSelendroidServerHandler {
-  private static final Logger log = Logger.getLogger(AdbExecuteShellCommand.class.getName());
-
+public class AdbExecuteShellCommand extends BaseSelendroidStandaloneHandler {
   public AdbExecuteShellCommand(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-    JSONObject payload = getPayload(request);
-    log.info("execute shell command via adb");
-    ActiveSession session = getSelendroidDriver(request).getActiveSession(getSessionId(request));
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
+    ActiveSession session = getActiveSession(request);
     String command = "shell " + payload.getString("command");
     String result = session.getDevice().runAdbCommand(command);
     return new SelendroidResponse(getSessionId(request), result);

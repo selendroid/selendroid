@@ -13,27 +13,26 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;
 
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
 
-public class GetLogs extends BaseSelendroidServerHandler {
+public class GetLogs extends BaseSelendroidStandaloneHandler {
 
   public GetLogs(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-    // TODO probably should look at the payload for what type of logs ('driver')
-    // but really we only support getting the adb logcat
-    ActiveSession session = getSelendroidDriver(request).getActiveSession(getSessionId(request));
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
+    ActiveSession session = getActiveSession(request);
     JSONArray logs = new JSONArray();
     for (LogEntry l : session.getDevice().getLogs()) {
       logs.put(l.toString());

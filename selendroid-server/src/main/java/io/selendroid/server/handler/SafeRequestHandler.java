@@ -30,7 +30,6 @@ import io.selendroid.server.util.SelendroidLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-
 public abstract class SafeRequestHandler extends BaseRequestHandler {
 
   public SafeRequestHandler(String mappedUri) {
@@ -110,5 +109,4 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
       return SelendroidResponse.forCatchAllError(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
     }
   }
-
 }

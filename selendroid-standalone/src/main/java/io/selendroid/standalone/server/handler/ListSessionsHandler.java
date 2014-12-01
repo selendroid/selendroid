@@ -13,6 +13,7 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,35 +21,29 @@ import org.json.JSONObject;
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
 
 import java.util.List;
-import java.util.logging.Logger;
 
-public class ListSessionsHandler extends BaseSelendroidServerHandler {
-  private static final Logger log = Logger.getLogger(ListSessionsHandler.class.getName());
-
+public class ListSessionsHandler extends BaseSelendroidStandaloneHandler {
   public ListSessionsHandler(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-    log.info("list sessions command");
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     JSONArray sessions = new JSONArray();
     List<ActiveSession> activeSessions = getSelendroidDriver(request).getActiveSessions();
     if (activeSessions != null && !activeSessions.isEmpty()) {
       for (ActiveSession session : activeSessions) {
         JSONObject sessionResponse = new JSONObject();
-        sessionResponse.put("id", session.getSessionKey());
+        sessionResponse.put("id", session.getSessionId());
         sessionResponse.put("capabilities",
             new JSONObject(session.getDesiredCapabilities().asMap()));
         sessions.put(sessionResponse);
       }
     }
     return new SelendroidResponse(null, sessions);
-
   }
 
 }

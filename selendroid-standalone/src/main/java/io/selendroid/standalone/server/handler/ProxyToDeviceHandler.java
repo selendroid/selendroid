@@ -24,7 +24,7 @@ import io.selendroid.server.common.exceptions.AppCrashedException;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.standalone.android.AndroidDevice;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
 import io.selendroid.standalone.server.util.HttpClientUtil;
 
@@ -35,40 +35,43 @@ import org.json.JSONObject;
 import org.openqa.selenium.logging.LogEntry;
 
 import java.net.SocketException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class RequestRedirectHandler extends BaseSelendroidServerHandler {
-  private static final Logger log = Logger.getLogger(RequestRedirectHandler.class.getName());
+/**
+ * Proxies the request as-is to the device.
+ */
+public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
+  private static final Logger log = Logger.getLogger(ProxyToDeviceHandler.class.getName());
 
-  public RequestRedirectHandler(String mappedUri) {
+  public ProxyToDeviceHandler(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     String sessionId = getSessionId(request);
-    log.info("forward request command: for session " + sessionId);
 
-    if (sessionId == null) {
+    if (sessionId == null || sessionId.isEmpty()) {
       String dataKeys = Joiner.on(", ").join(request.data().keySet());
 
       log.warning("Unable to retrieve session id from request with data: [" + dataKeys + "]");
 
-      return respondWithRedirectFailure(sessionId,
-              new SelendroidException("No session id passed to the request."));
+      return respondWithFailure(
+          sessionId, new SelendroidException("No session id passed to the request."));
     }
 
-    ActiveSession session = getSelendroidDriver(request).getActiveSession(sessionId);
+    ActiveSession session = getActiveSession(request);
     if (session == null) {
-      return respondWithRedirectFailure(sessionId,
-          new SelendroidException("No session found for given sessionId: " + sessionId));
+      return respondWithFailure(sessionId,
+          new SelendroidException("No session found for sessionId: " + sessionId));
     }
     if (session.isInvalid()) {
-      return respondWithRedirectFailure(sessionId,
+      return respondWithFailure(sessionId,
           new SelendroidException(
               "The test session has been marked as invalid. " +
-              "This happens if a hardware device was disconnected but a " +
-              "test session was still active on the device."));
+                  "This happens if a hardware device was disconnected but a " +
+                  "test session was still active on the device."));
     }
     String url = "http://localhost:" + session.getSelendroidServerPort() + request.uri();
 
@@ -79,7 +82,7 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     int retries = 3;
     while (retries-- > 0) {
       try {
-        response = redirectRequest(request, session, url, method);
+        response = proxyRequestToDevice(request, session, url, method);
         break;
       } catch (Exception e) {
         if (retries == 0) {
@@ -87,11 +90,11 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
 
           String crashMessage = device.getCrashLog();
           if (!crashMessage.isEmpty()) {
-            return respondWithRedirectFailure(sessionId, new AppCrashedException(crashMessage));
+            return respondWithFailure(sessionId, new AppCrashedException(crashMessage));
           }
 
           if (device.isLoggingEnabled()) {
-            log.info("getting logs");
+            log.info("Failed to proxy request to the device, dumping logcat");
             device.setVerbose();
             for (LogEntry le : device.getLogs()) {
               System.out.println(le.getMessage());
@@ -99,43 +102,35 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
           }
 
           if (e instanceof SocketException) {
-            return respondWithSelendroidServerUnreachable(sessionId, session.getDevice());
+            return respondWithServerOnDeviceUnreachable(sessionId, session.getDevice());
           } else if (e instanceof NoHttpResponseException) {
-            return respondWithSelendroidServerUnreachable(sessionId, session.getDevice());
+            return respondWithServerOnDeviceUnreachable(sessionId, session.getDevice());
           } else {
-            return respondWithRedirectFailure(sessionId, new SelendroidException(
+            return respondWithFailure(sessionId, new SelendroidException(
                 "Unexpected error communicating with selendroid server on the device", e));
           }
         } else {
-          log.severe("failed to forward request to Selendroid Server: " + e.getMessage());
+          log.log(Level.SEVERE, "Failed to proxy request to Selendroid Server, retrying.", e);
         }
       }
     }
     if (response == null) {
-      return respondWithRedirectFailure(sessionId, new SelendroidException(
+      return respondWithFailure(sessionId, new SelendroidException(
           "Selendroid server on the device became unreachable"));
     }
+
     Object value = response.opt("value");
-    if (value != null) {
-      String displayed = String.valueOf(value);
-      // 2 lines of an 80 column display
-      if (displayed.length() > 160) {
-        displayed = displayed.substring(0, 157) + "...";
-      }
-      log.info("return value from selendroid android server: " + displayed);
-    }
-    int status = response.getInt("status");
+    int statusCode = response.getInt("status");
+    log.fine(String.format("Response from selendroid-server, status %d:\n%s", statusCode, value));
+    log.fine("return status from selendroid android server: " + statusCode);
 
-    log.fine("return value from selendroid android server: " + value);
-    log.fine("return status from selendroid android server: " + status);
-
-    return new SelendroidResponse(sessionId, StatusCode.fromInteger(status), value);
+    return new SelendroidResponse(sessionId, StatusCode.fromInteger(statusCode), value);
   }
 
   /**
    * selendroid-server can't be reached and there is no crash log file.
    */
-  private SelendroidResponse respondWithSelendroidServerUnreachable(String sessionId, AndroidDevice device)
+  private SelendroidResponse respondWithServerOnDeviceUnreachable(String sessionId, AndroidDevice device)
       throws JSONException {
     String message =
         "The selendroid server on the device became unreachable and there is no crash log from Android's " +
@@ -151,29 +146,27 @@ public class RequestRedirectHandler extends BaseSelendroidServerHandler {
     } catch (Exception e) {
       message += "\nCould not get list of running processes: " + e.getMessage();
     }
-    return respondWithRedirectFailure(sessionId, new SelendroidException(message));
+    return respondWithFailure(sessionId, new SelendroidException(message));
   }
 
 
-  private SelendroidResponse respondWithRedirectFailure(String sessionId, Exception e) throws JSONException {
+  private SelendroidResponse respondWithFailure(String sessionId, Exception e) throws JSONException {
     return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, e);
   }
 
-  private JSONObject redirectRequest(HttpRequest request, ActiveSession session, String url, String method)
+  private JSONObject proxyRequestToDevice(HttpRequest request, ActiveSession session, String url, String method)
       throws Exception {
-
     HttpResponse r;
     if ("get".equalsIgnoreCase(method)) {
-      log.info("GET redirect to: " + url);
+      log.fine("Proxy GET to the device: " + url);
       r = HttpClientUtil.executeRequest(url, HttpMethod.GET);
     } else if ("post".equalsIgnoreCase(method)) {
-      log.info("POST redirect to: " + url);
       JSONObject payload = getPayload(request);
-      log.info("Payload? " + payload);
+      log.fine("Proxy POST to the device: " + url + ", payload:\n" + payload);
       r = HttpClientUtil.executeRequestWithPayload(
           url, session.getSelendroidServerPort(), HttpMethod.POST, payload.toString());
     } else if ("delete".equalsIgnoreCase(method)) {
-      log.info("DELETE redirect to: " + url);
+      log.fine("Proxy DELETE to the device: " + url);
       r = HttpClientUtil.executeRequest(url, HttpMethod.DELETE);
     } else {
       throw new SelendroidException("HTTP method not supported: " + method);

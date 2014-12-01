@@ -490,14 +490,13 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       ActiveSession session = sessions.get(sessionId);
       session.stopSessionTimer();
       try {
-        HttpClientUtil.executeRequest("http://localhost:" + session.getSelendroidServerPort()
-            + "/wd/hub/session/" + sessionId, HttpMethod.DELETE);
+        HttpClientUtil.executeRequest(
+            "http://localhost:" + session.getSelendroidServerPort() + "/wd/hub/session/" + sessionId,
+            HttpMethod.DELETE);
       } catch (Exception e) {
-        // can happen, ignore
+        log.log(Level.WARNING, "Error stopping session, safe to ignore", e);
       }
       deviceStore.release(session.getDevice(), session.getAut());
-
-      // remove session
       sessions.remove(sessionId);
     }
   }

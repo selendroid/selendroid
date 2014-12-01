@@ -13,19 +13,21 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
+import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
 import org.json.JSONException;
 
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.UiResponse;
 import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
+import org.json.JSONObject;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
+public class InspectorScreenshotHandler extends BaseSelendroidStandaloneHandler {
   private static final Logger log = Logger.getLogger(InspectorScreenshotHandler.class.getName());
 
   public InspectorScreenshotHandler(String mappedUri) {
@@ -33,21 +35,20 @@ public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     String sessionId = getSessionId(request);
     log.info("inspector screenshot handler, sessionId: " + sessionId);
 
-    ActiveSession session;
     if (sessionId == null || sessionId.isEmpty()) {
-      if (getSelendroidDriver(request).getActiveSessions() != null
-          && getSelendroidDriver(request).getActiveSessions().size() >= 1) {
-        session = getSelendroidDriver(request).getActiveSessions().get(0);
-        log.info("Selected sessionId: " + session.getSessionKey());
+      ActiveSession firstActiveSession = getFirstActiveSession(getSelendroidDriver(request));
+      if (firstActiveSession != null) {
+        sessionId = firstActiveSession.getSessionId();
+        log.info("Selected first session, id: " + firstActiveSession.getSessionId());
       } else {
         return new UiResponse(
             "",
-            "Selendroid inspector can only be used if there is an active test session running. "
-                + "To start a test session, add a break point into your test code and run the test in debug mode.");
+            "Selendroid inspector can only be used if there is an active test session running. " +
+             "To start a test session, add a break point into your test code and run the test in debug mode.");
       }
     }
     byte[] screenshot = null;
@@ -57,5 +58,12 @@ public class InspectorScreenshotHandler extends BaseSelendroidServerHandler {
       log.log(Level.SEVERE, "Cannot take screenshot for inspector", e);
     }
     return new UiResponse(sessionId != null ? sessionId : "", screenshot);
+  }
+
+  private ActiveSession getFirstActiveSession(SelendroidStandaloneDriver driver) {
+    if (driver.getActiveSessions() != null && driver.getActiveSessions().size() >= 1) {
+      return driver.getActiveSessions().get(0);
+    }
+    return null;
   }
 }

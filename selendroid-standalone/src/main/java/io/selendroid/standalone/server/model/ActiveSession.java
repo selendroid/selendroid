@@ -20,7 +20,7 @@ import io.selendroid.standalone.android.AndroidDevice;
 import java.util.Timer;
 
 public class ActiveSession {
-  private final String sessionKey;
+  private final String sessionId;
   private AndroidApp aut;
   private AndroidDevice device;
   private SelendroidCapabilities desiredCapabilities;
@@ -28,14 +28,14 @@ public class ActiveSession {
   private boolean invalid = false;
   private final Timer stopSessionTimer = new Timer(true);
 
-  ActiveSession(String sessionKey, SelendroidCapabilities desiredCapabilities, AndroidApp aut,
+  ActiveSession(String sessionId, SelendroidCapabilities desiredCapabilities, AndroidApp aut,
       AndroidDevice device, int selendroidPort, SelendroidStandaloneDriver driver) {
     this.selendroidServerPort = selendroidPort;
-    this.sessionKey = sessionKey;
+    this.sessionId = sessionId;
     this.aut = aut;
     this.device = device;
     this.desiredCapabilities = desiredCapabilities;
-    stopSessionTimer.schedule(new SessionTimeoutTask(driver, sessionKey), driver
+    stopSessionTimer.schedule(new SessionTimeoutTask(driver, sessionId), driver
         .getSelendroidConfiguration().getSessionTimeoutMillis());
   }
 
@@ -45,9 +45,9 @@ public class ActiveSession {
     if (obj == null) return false;
     if (getClass() != obj.getClass()) return false;
     ActiveSession other = (ActiveSession) obj;
-    if (sessionKey == null) {
-      if (other.sessionKey != null) return false;
-    } else if (!sessionKey.equals(other.sessionKey)) return false;
+    if (sessionId == null) {
+      if (other.sessionId != null) return false;
+    } else if (!sessionId.equals(other.sessionId)) return false;
     return true;
   }
 
@@ -67,15 +67,15 @@ public class ActiveSession {
     return device;
   }
 
-  public String getSessionKey() {
-    return sessionKey;
+  public String getSessionId() {
+    return sessionId;
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((sessionKey == null) ? 0 : sessionKey.hashCode());
+    result = prime * result + ((sessionId == null) ? 0 : sessionId.hashCode());
     return result;
   }
 
@@ -96,6 +96,6 @@ public class ActiveSession {
 
   @Override
   public String toString() {
-    return "ActiveSession [sessionKey=" + sessionKey + ", aut=" + aut + ", device=" + device + "]";
+    return "ActiveSession [sessionId=" + sessionId + ", aut=" + aut + ", device=" + device + "]";
   }
 }

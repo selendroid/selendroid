@@ -13,6 +13,7 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
@@ -24,16 +25,16 @@ import io.selendroid.server.common.Response;
 import io.selendroid.server.common.UiResponse;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 import io.selendroid.standalone.server.JsResult;
 import io.selendroid.standalone.server.model.ActiveSession;
 import io.selendroid.standalone.server.util.HttpClientUtil;
+import org.json.JSONObject;
 
 import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class InspectorTreeHandler extends BaseSelendroidServerHandler {
+public class InspectorTreeHandler extends BaseSelendroidStandaloneHandler {
   private static final Logger log = Logger.getLogger(InspectorTreeHandler.class.getName());
 
   public InspectorTreeHandler(String mappedUri) {
@@ -41,7 +42,7 @@ public class InspectorTreeHandler extends BaseSelendroidServerHandler {
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     String sessionId = getSessionId(request);
     log.info("inspector tree handler, sessionId: " + sessionId);
 
@@ -50,7 +51,7 @@ public class InspectorTreeHandler extends BaseSelendroidServerHandler {
       if (getSelendroidDriver(request).getActiveSessions() != null
           && getSelendroidDriver(request).getActiveSessions().size() >= 1) {
         session = getSelendroidDriver(request).getActiveSessions().get(0);
-        log.info("Selected sessionId: " + session.getSessionKey());
+        log.info("Selected sessionId: " + session.getSessionId());
       } else {
         return new UiResponse(
             "",
@@ -58,13 +59,13 @@ public class InspectorTreeHandler extends BaseSelendroidServerHandler {
                 + "To start a test session, add a break point into your test code and run the test in debug mode.");
       }
     } else {
-      session = getSelendroidDriver(request).getActiveSession(sessionId);
+      session = getActiveSession(request);
     }
 
     try {
       HttpResponse r =
-          HttpClientUtil.executeRequest("http://localhost:" + session.getSelendroidServerPort()
-              + "/inspector/tree", HttpMethod.GET);
+          HttpClientUtil.executeRequest(
+              "http://localhost:" + session.getSelendroidServerPort() + "/inspector/tree", HttpMethod.GET);
       return new JsResult(EntityUtils.toString(r.getEntity(),Charset.forName("UTF-8")));
     } catch (Exception e) {
       log.log(Level.SEVERE, "Cannot get element tree for inspector", e);

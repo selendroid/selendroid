@@ -13,18 +13,19 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONException;
 
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.UiResponse;
 import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.server.common.inspector.BaseInspectorViewRenderer;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
+import org.json.JSONObject;
 
 import java.util.logging.Logger;
 
-public class InspectorUiHandler extends BaseSelendroidServerHandler {
+public class InspectorUiHandler extends BaseSelendroidStandaloneHandler {
   private static final Logger log = Logger.getLogger(InspectorUiHandler.class.getName());
 
   public InspectorUiHandler(String mappedUri) {
@@ -32,15 +33,14 @@ public class InspectorUiHandler extends BaseSelendroidServerHandler {
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     String sessionId = getSessionId(request);
-    log.info("inspector command, sessionId: " + sessionId);
     ActiveSession session;
     if (sessionId == null || sessionId.isEmpty()) {
       if (getSelendroidDriver(request).getActiveSessions() != null
           && getSelendroidDriver(request).getActiveSessions().size() >= 1) {
         session = getSelendroidDriver(request).getActiveSessions().get(0);
-        log.info("Selected sessionId: " + session.getSessionKey());
+        log.info("Selected sessionId: " + session.getSessionId());
       } else {
         return new UiResponse(
             "",
@@ -73,7 +73,7 @@ public class InspectorUiHandler extends BaseSelendroidServerHandler {
     }
 
     public String getScreen(HttpRequest request) {
-      return "http://" + request.header("Host") + "/inspector/session/" + session.getSessionKey()
+      return "http://" + request.header("Host") + "/inspector/session/" + session.getSessionId()
           + "/screenshot";
     }
   }

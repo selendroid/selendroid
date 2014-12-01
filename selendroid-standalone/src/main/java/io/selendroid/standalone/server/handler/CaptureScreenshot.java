@@ -13,7 +13,9 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selenium.internal.Base64Encoder;
 
 import io.selendroid.server.common.Response;
@@ -21,12 +23,11 @@ import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.StatusCode;
 import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CaptureScreenshot extends BaseSelendroidServerHandler {
+public class CaptureScreenshot extends BaseSelendroidStandaloneHandler {
   private static final Logger log = Logger.getLogger(CaptureScreenshot.class.getName());
 
   public CaptureScreenshot(String mappedUri) {
@@ -34,8 +35,7 @@ public class CaptureScreenshot extends BaseSelendroidServerHandler {
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-    log.info("take device screenshot command");
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     byte[] rawPng;
     try {
       rawPng = getSelendroidDriver(request).takeScreenshot(getSessionId(request));

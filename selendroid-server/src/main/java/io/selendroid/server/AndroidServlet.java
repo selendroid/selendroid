@@ -306,7 +306,7 @@ public class AndroidServlet extends BaseServlet {
       response.setStatus(404).end();
       return;
     }
-    Response result = null;
+    Response result;
     try {
       addHandlerAttributesToRequest(request, handler.getMappedUri());
       if (!handler.commandAllowedWithAlertPresentInWebViewMode()) {

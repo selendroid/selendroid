@@ -16,6 +16,7 @@ package io.selendroid.standalone.server.handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,9 +25,8 @@ import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.StatusCode;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 
-public class CreateSessionHandler extends BaseSelendroidServerHandler {
+public class CreateSessionHandler extends BaseSelendroidStandaloneHandler {
   private static final Logger log = Logger.getLogger(CreateSessionHandler.class.getName());
 
   public CreateSessionHandler(String mappedUri) {
@@ -34,12 +34,8 @@ public class CreateSessionHandler extends BaseSelendroidServerHandler {
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-    JSONObject payload = getPayload(request);
-    log.info("new session command with capabilities: " + payload.toString(2));
-
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     JSONObject desiredCapabilities = payload.getJSONObject("desiredCapabilities");
-
     try {
       String sessionID = getSelendroidDriver(request).createNewTestSession(desiredCapabilities);
       SelendroidCapabilities caps = getSelendroidDriver(request).getSessionCapabilities(sessionID);

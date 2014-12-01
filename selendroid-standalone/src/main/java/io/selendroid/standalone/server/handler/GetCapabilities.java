@@ -13,6 +13,7 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,25 +23,19 @@ import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.StatusCode;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 
-import java.util.logging.Logger;
-
-public class GetCapabilities extends BaseSelendroidServerHandler {
-  private static final Logger log = Logger.getLogger(GetCapabilities.class.getName());
-
+public class GetCapabilities extends BaseSelendroidStandaloneHandler {
   public GetCapabilities(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-    log.info("get capabilities command");
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     String sessionId = getSessionId(request);
-
     SelendroidCapabilities caps = getSelendroidDriver(request).getSessionCapabilities(sessionId);
     if (caps == null) {
-      return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR, new SelendroidException("Session was not found"));
+      return new SelendroidResponse(
+          sessionId, StatusCode.UNKNOWN_ERROR, new SelendroidException("Session was not found"));
     }
     return new SelendroidResponse(sessionId, new JSONObject(caps.asMap()));
   }

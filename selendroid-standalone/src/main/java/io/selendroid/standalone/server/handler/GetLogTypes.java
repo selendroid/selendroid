@@ -13,22 +13,23 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
+import org.json.JSONObject;
 
-public class GetLogTypes extends BaseSelendroidServerHandler {
+public class GetLogTypes extends BaseSelendroidStandaloneHandler {
 
   public GetLogTypes(String mappedUri) {
     super(mappedUri);
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     return new SelendroidResponse(getSessionId(request), new JSONArray("logcat"));
   }
 }

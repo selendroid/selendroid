@@ -4,7 +4,6 @@ import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.StatusCode;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.standalone.server.handler.RequestRedirectHandler;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -17,13 +16,13 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RequestRedirectHandlerTest
+public class ProxyToDeviceHandlerTest
 {
-    private RequestRedirectHandler handler;
+    private ProxyToDeviceHandler handler;
 
     @Before
     public void setUp() {
-        handler = new RequestRedirectHandler("/some/uri");
+        handler = new ProxyToDeviceHandler("/some/uri");
     }
 
     @Test

@@ -2,6 +2,7 @@ package io.selendroid.standalone.server.handler;
 
 import io.netty.handler.codec.http.HttpMethod;
 
+import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,14 +12,13 @@ import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.KeyEvent;
 import io.selendroid.standalone.android.impl.DefaultAndroidEmulator;
-import io.selendroid.standalone.server.BaseSelendroidServerHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
 import io.selendroid.standalone.server.util.HttpClientUtil;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class NetworkConnectionHandler extends BaseSelendroidServerHandler {
+public class NetworkConnectionHandler extends BaseSelendroidStandaloneHandler {
   private static final Logger log = Logger.getLogger(NetworkConnectionHandler.class.getName());
 
   public NetworkConnectionHandler(String mappedUri) {
@@ -26,14 +26,13 @@ public class NetworkConnectionHandler extends BaseSelendroidServerHandler {
   }
 
   @Override
-  public Response handle(HttpRequest request) throws JSONException {
-
+  public Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
     // Currently we only support changing the Airplane Mode setting
-    // So, we're going to only look at that bit of the ConnectionType
+    // so we're going to only look at that bit of the ConnectionType.
 
     // check that we actually want to toggle the setting by getting the current airplane mode setting
     String sessionId = getSessionId(request);
-    ActiveSession session = getSelendroidDriver(request).getActiveSession(sessionId);
+    ActiveSession session = getActiveSession(request);
     // the URL happens to be the same, except we need to use GET instead of POST
     String url = "http://localhost:" + session.getSelendroidServerPort() + request.uri();
     Integer connectionType = getPayload(request).getJSONObject("parameters").getInt("type");

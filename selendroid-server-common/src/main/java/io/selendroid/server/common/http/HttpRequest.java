@@ -16,13 +16,28 @@ package io.selendroid.server.common.http;
 import java.util.Map;
 
 public interface HttpRequest {
+  /**
+   * Returns "GET", "POST", "PUT" or "DELETE".
+   */
   String method();
 
+  /**
+   * Returns the request URI.
+   */
   String uri();
 
+  /**
+   * Returns the full request body.
+   */
   String body();
 
+  /**
+   * Gets the value of a given header.
+   */
   String header(String name);
-  
+
+  /**
+   * Returns additional data appended to the request by Selendroid itself.
+   */
   Map<String, Object> data();
 }

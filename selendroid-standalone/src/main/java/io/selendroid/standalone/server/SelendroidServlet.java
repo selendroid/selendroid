@@ -20,6 +20,9 @@ import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.UiResponse;
 import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.server.common.http.HttpResponse;
+import io.selendroid.standalone.SelendroidConfiguration;
+import io.selendroid.standalone.server.handler.*;
+import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
 
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -27,29 +30,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import io.selendroid.standalone.SelendroidConfiguration;
-import io.selendroid.standalone.server.handler.AdbExecuteShellCommand;
-import io.selendroid.standalone.server.handler.AdbSendKeyEvent;
-import io.selendroid.standalone.server.handler.AdbSendText;
-import io.selendroid.standalone.server.handler.AdbTap;
-import io.selendroid.standalone.server.handler.CaptureScreenshot;
-import io.selendroid.standalone.server.handler.CreateSessionHandler;
-import io.selendroid.standalone.server.handler.DeleteSessionHandler;
-import io.selendroid.standalone.server.handler.GetCapabilities;
-import io.selendroid.standalone.server.handler.GetLogTypes;
-import io.selendroid.standalone.server.handler.GetLogs;
-import io.selendroid.standalone.server.handler.InspectorScreenshotHandler;
-import io.selendroid.standalone.server.handler.InspectorTreeHandler;
-import io.selendroid.standalone.server.handler.InspectorUiHandler;
-import io.selendroid.standalone.server.handler.ListSessionsHandler;
-import io.selendroid.standalone.server.handler.NetworkConnectionHandler;
-import io.selendroid.standalone.server.handler.RequestRedirectHandler;
-import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
-
 public class SelendroidServlet extends BaseServlet {
   private static final Logger log = Logger.getLogger(SelendroidServlet.class.getName());
-  protected Map<String, BaseRequestHandler> redirectHandler =
-      new HashMap<String, BaseRequestHandler>();
+  protected Map<String, BaseRequestHandler> redirectHandler = new HashMap<String, BaseRequestHandler>();
   private SelendroidStandaloneDriver driver;
   private SelendroidConfiguration conf;
 
@@ -70,12 +53,11 @@ public class SelendroidServlet extends BaseServlet {
       register(getHandler, new CaptureScreenshot("/wd/hub/session/:sessionId/screenshot"));
     } // otherwise the request will be automatically forwarded to the device
 
-
     register(getHandler, new InspectorTreeHandler("/inspector/session/:sessionId/tree"));
     register(getHandler, new InspectorScreenshotHandler("/inspector/session/:sessionId/screenshot"));
     register(getHandler, new InspectorUiHandler("/inspector/session/:sessionId"));
     register(deleteHandler, new DeleteSessionHandler("/wd/hub/session/:sessionId"));
-    register(redirectHandler, new RequestRedirectHandler("/wd/hub/session/"));
+    register(redirectHandler, new ProxyToDeviceHandler("/wd/hub/session/"));
 
     register(postHandler, new GetLogs("/wd/hub/session/:sessionId/log"));
     register(postHandler, new AdbSendKeyEvent("/wd/hub/session/:sessionId/selendroid/adb/sendKeyEvent"));
@@ -105,7 +87,7 @@ public class SelendroidServlet extends BaseServlet {
         return;
       } else {
         // response.setStatus(302);
-        String session = driver.getActiveSessions().get(0).getSessionKey();
+        String session = driver.getActiveSessions().get(0).getSessionId();
 
         String newSessionUri =
             "http://" + request.header("Host") + "/inspector/session/" + session + "/";
@@ -148,7 +130,7 @@ public class SelendroidServlet extends BaseServlet {
     try {
       result = handler.handle(request);
     } catch (Exception e) {
-      log.log(Level.SEVERE, "Error occurred while handling request", e.fillInStackTrace());
+      log.log(Level.SEVERE, "Error handling request", e);
       replyWithServerError(response);
       return;
     }
@@ -160,11 +142,9 @@ public class SelendroidServlet extends BaseServlet {
       response.setEncoding(Charset.forName("UTF-8"));
       response.setContent(js.render());
       response.end();
-    } else {
+    } else if (result instanceof UiResponse) {
       UiResponse uiResponse = (UiResponse) result;
-
       response.setEncoding(Charset.forName("UTF-8"));
-
       response.setStatus(200);
 
       if (uiResponse != null) {
@@ -179,6 +159,9 @@ public class SelendroidServlet extends BaseServlet {
         }
       }
       response.end();
+    } else {
+      log.log(Level.SEVERE, "Unknown response type: " + result.getClass().getSimpleName());
+      replyWithServerError(response);
     }
   }
 }

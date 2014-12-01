@@ -37,8 +37,8 @@ public class ShellCommand {
 
   public static String exec(CommandLine commandline, long timeoutInMillies)
       throws ShellCommandException {
-    log.info("executing command: " + commandline);
-    PritingLogOutputStream outputStream = new PritingLogOutputStream();
+    log.info("Executing shell command: " + commandline);
+    PrintingLogOutputStream outputStream = new PrintingLogOutputStream();
     DefaultExecutor exec = new DefaultExecutor();
     exec.setWatchdog(new ExecuteWatchdog(timeoutInMillies));
     PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
@@ -46,13 +46,11 @@ public class ShellCommand {
     try {
       exec.execute(commandline);
     } catch (Exception e) {
-      throw new ShellCommandException("An error occured while executing shell command: "
-                                      + commandline,
-                                      new ShellCommandException(outputStream.getOutput())
-      );
+      throw new ShellCommandException(
+          "Error executing shell command: " + commandline, new ShellCommandException(outputStream.getOutput()));
     }
     String result = outputStream.getOutput().trim();
-    log.info("execution output\n-->\n" + result + "\n<--");
+    log.info("Shell command output\n-->\n" + result + "\n<--");
     return result;
   }
 
@@ -66,7 +64,7 @@ public class ShellCommand {
     DefaultExecutor exec = new DefaultExecutor();
 
     ExecuteResultHandler handler = new DefaultExecuteResultHandler();
-    PumpStreamHandler streamHandler = new PumpStreamHandler(new PritingLogOutputStream());
+    PumpStreamHandler streamHandler = new PumpStreamHandler(new PrintingLogOutputStream());
     exec.setStreamHandler(streamHandler);
     try {
       if (display == null || display.isEmpty()) {
@@ -78,12 +76,11 @@ public class ShellCommand {
         exec.execute(commandline, env, handler);
       }
     } catch (Exception e) {
-      throw new ShellCommandException("An error occured while executing shell command: "
-                                      + commandline, e);
+      throw new ShellCommandException("Error executing shell command: " + commandline, e);
     }
   }
 
-  private static class PritingLogOutputStream extends LogOutputStream {
+  private static class PrintingLogOutputStream extends LogOutputStream {
 
     private StringBuilder output = new StringBuilder();
 

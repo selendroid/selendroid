@@ -351,7 +351,7 @@ public class SelendroidWebDriver {
           settings.setGeolocationEnabled(true);
           settings.setGeolocationDatabasePath("/data/data/selendroid");
         } catch (Exception e) {
-          SelendroidLogger.error("An error occured while configuring the web view", e);
+          SelendroidLogger.error("Error configuring web view", e);
         }
       }
     });
