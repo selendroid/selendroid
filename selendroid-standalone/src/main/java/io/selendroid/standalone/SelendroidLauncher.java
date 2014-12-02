@@ -22,6 +22,7 @@ import io.selendroid.standalone.log.LogLevelEnum;
 import io.selendroid.standalone.server.SelendroidStandaloneServer;
 import io.selendroid.standalone.server.util.HttpClientUtil;
 
+import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
 public class SelendroidLauncher {
@@ -54,34 +55,45 @@ public class SelendroidLauncher {
     return config;
   }
 
+  /**
+   * Starts the Selendroid standalone server and exits immediately.
+   * This method might return before the server is ready to receive requests.
+   */
   private void launchServer() {
     try {
-      log.info("Starting selendroid-server port " + config.getPort());
+      log.info("Starting Selendroid standalone on port " + config.getPort());
       server = new SelendroidStandaloneServer(config);
       server.start();
     } catch (AndroidSdkException e) {
-      log.severe("Selendroid was not able to interact with the Android SDK: " + e.getMessage());
+      log.severe("Selendroid standalone was not able to interact with the Android SDK: " + e.getMessage());
       log.severe(
           "Please make sure you have the latest version with the latest updates installed: ");
       log.severe("http://developer.android.com/sdk/index.html");
       throw Throwables.propagate(e);
     } catch (Exception e) {
-      log.severe("Error occurred while building server: " + e.getMessage());
+      log.severe("Error building server: " + e.getMessage());
       throw Throwables.propagate(e);
     }
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
         log.info("Shutting down Selendroid standalone");
-        if (server != null) {
-          server.stop();
-        }
+        stopSelendroid();
       }
     });
   }
 
+  /**
+   * Starts the Selendroid standalone server and waits until it's ready to accept requests.
+   * @throws io.selendroid.server.common.exceptions.SelendroidException if the server didn't come up
+   */
   public void launchSelendroid() {
     launchServer();
-    HttpClientUtil.waitForServer(config.getPort());
+    if (config.isGrid()) {
+      // Longer timeout to allow for grid registration
+      HttpClientUtil.waitForServer(config.getPort(), 3, TimeUnit.MINUTES);
+    } else {
+      HttpClientUtil.waitForServer(config.getPort(), 20, TimeUnit.SECONDS);
+    }
   }
 
   public static void main(String[] args) {
@@ -90,7 +102,6 @@ public class SelendroidLauncher {
     } catch (Exception e1) {
       log.severe("Error occurred while registering logging file handler.");
     }
-
     log.info("################# Selendroid #################");
     SelendroidConfiguration config = parseConfig(args);
     // Log the loaded configuration
@@ -103,7 +114,6 @@ public class SelendroidLauncher {
     } else {
       Logger.getLogger(LOGGER_NAME).setLevel(config.getLogLevel().level);
     }
-
     new SelendroidLauncher(config).launchServer();
   }
 

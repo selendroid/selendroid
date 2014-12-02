@@ -21,15 +21,17 @@ import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.server.grid.SelfRegisteringRemote;
 import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
 
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.selendroid.standalone.server.util.HttpClientUtil;
 import org.apache.commons.lang3.StringUtils;
 
 public class SelendroidStandaloneServer {
   private static final Logger log = Logger.getLogger(SelendroidStandaloneServer.class.getName());
   private HttpServer webServer;
-  private SelendroidConfiguration configuration;
+  private SelendroidConfiguration config;
   private SelendroidStandaloneDriver driver = null;
 
   /**
@@ -37,47 +39,46 @@ public class SelendroidStandaloneServer {
    *
    * @throws AndroidSdkException
    */
-  protected SelendroidStandaloneServer(SelendroidConfiguration configuration,
+  protected SelendroidStandaloneServer(SelendroidConfiguration config,
                                        SelendroidStandaloneDriver driver) throws AndroidSdkException {
-    this.configuration = configuration;
+    this.config = config;
     this.driver = driver;
-    webServer = new HttpServer(configuration.getPort());
+    webServer = new HttpServer(config.getPort());
     init();
   }
 
-  public SelendroidStandaloneServer(SelendroidConfiguration configuration)
+  public SelendroidStandaloneServer(SelendroidConfiguration config)
       throws AndroidSdkException, AndroidDeviceException {
-    this.configuration = configuration;
-    webServer = new HttpServer(configuration.getPort());
+    this.config = config;
+    webServer = new HttpServer(config.getPort());
     driver = initializeSelendroidServer();
     init();
   }
 
   protected void init() throws AndroidSdkException {
     webServer.addHandler(new StatusServlet(driver));
-    webServer.addHandler(new SelendroidServlet(driver, configuration));
+    webServer.addHandler(new SelendroidServlet(driver, config));
   }
 
   protected SelendroidStandaloneDriver initializeSelendroidServer() throws AndroidSdkException,
       AndroidDeviceException {
-    return new SelendroidStandaloneDriver(configuration);
+    return new SelendroidStandaloneDriver(config);
   }
 
   public void start() {
     webServer.start();
-    if (!StringUtils.isBlank(configuration.getRegistrationUrl())
-        && !StringUtils.isBlank(configuration.getServerHost())) {
+    if (config.isGrid()) {
       try {
-        new SelfRegisteringRemote(configuration, driver).performRegistration();
+        new SelfRegisteringRemote(config, driver).performRegistration();
       } catch (Exception e) {
-        log.log(Level.SEVERE, "An error occurred while registering selendroid into grid hub.", e);
+        log.log(Level.SEVERE, "Error registering selendroid into grid hub.", e);
       }
     }
-    log.info("selendroid-standalone server has been started on port: " + configuration.getPort());
+    log.info("Selendroid standalone server has been started on port: " + config.getPort());
   }
 
   public void stop() {
-    log.info("About to stop selendroid-standalone server");
+    log.info("Stopping selendroid-standalone server");
     driver.quitSelendroid();
     webServer.stop();
   }

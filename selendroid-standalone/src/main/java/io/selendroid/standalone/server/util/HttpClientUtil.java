@@ -13,12 +13,12 @@
  */
 package io.selendroid.standalone.server.util;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
 import io.netty.handler.codec.http.HttpMethod;
-import io.selendroid.common.SelendroidCapabilities;
 
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import io.selendroid.server.common.exceptions.SelendroidException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -32,8 +32,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.google.common.base.Throwables;
 
 public class HttpClientUtil {
   private static final Logger log = Logger.getLogger(HttpClientUtil.class.getName());
@@ -62,7 +60,7 @@ public class HttpClientUtil {
   }
 
   public static HttpResponse executeRequest(String url, HttpMethod method) throws Exception {
-    HttpRequestBase request = null;
+    HttpRequestBase request;
     if (HttpMethod.GET.equals(method)) {
       request = new HttpGet(url);
     } else if (HttpMethod.POST.equals(method)) {
@@ -70,24 +68,13 @@ public class HttpClientUtil {
     } else if (HttpMethod.DELETE.equals(method)) {
       request = new HttpDelete(url);
     } else {
-      throw new RuntimeException("Provided HttpMethod not supported");
+      throw new RuntimeException("Provided HttpMethod not supported: " + method);
     }
     return getHttpClient().execute(request);
   }
 
-  public static HttpResponse executeCreateSessionRequest(int port,
-      SelendroidCapabilities desiredCapabilities) throws Exception {
-    String url = "http://localhost:" + port + "/wd/hub/session";
-    log.info("creating session by using url: " + url);
-    JSONObject payload = new JSONObject();
-    payload.put("desiredCapabilities", new JSONObject(desiredCapabilities.asMap()));
-    HttpResponse response =
-        executeRequestWithPayload(url, port, HttpMethod.POST, payload.toString());
-    return response;
-  }
-
   public static boolean isServerStarted(int port) {
-    HttpResponse response = null;
+    HttpResponse response;
     try {
       response = executeRequest("http://localhost:" + port + "/wd/hub/sessions", HttpMethod.GET);
     } catch (Exception e) {
@@ -101,14 +88,17 @@ public class HttpClientUtil {
     }
   }
 
-  public static void waitForServer(int port) {
-    long end = System.currentTimeMillis() + MINUTES.toMillis(3);
-
-    while (!isServerStarted(port) && System.currentTimeMillis() < end) {
+  public static void waitForServer(int port, long timeout, TimeUnit timeoutUnit) {
+    long end = System.currentTimeMillis() + timeoutUnit.toMillis(timeout);
+    while (!isServerStarted(port)) {
+      if (System.currentTimeMillis() > end) {
+        throw new SelendroidException(
+            String.format("Selendroid standalone server failed to start within %d %s", timeout, timeoutUnit));
+      }
       try {
         Thread.sleep(500);
       } catch (InterruptedException e) {
-        throw Throwables.propagate(e);
+        Thread.currentThread().interrupt();
       }
     }
   }

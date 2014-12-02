@@ -23,8 +23,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class HttpServer {
   private final int port;
   private Thread serverThread;

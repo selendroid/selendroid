@@ -19,6 +19,7 @@ import com.beust.jcommander.Parameter;
 import io.selendroid.standalone.log.LogLevelConverter;
 import io.selendroid.standalone.log.LogLevelEnum;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -362,4 +363,10 @@ public class SelendroidConfiguration {
     return folder;
   }
 
+  /**
+   * @return {@code true} if Selendroid standalone should run in grid mode.
+   */
+  public boolean isGrid() {
+    return !StringUtils.isBlank(getRegistrationUrl()) && !StringUtils.isBlank(getServerHost());
+  }
 }
