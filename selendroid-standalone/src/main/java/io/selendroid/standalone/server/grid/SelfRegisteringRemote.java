@@ -18,12 +18,6 @@ import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.standalone.SelendroidConfiguration;
 import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
 import io.selendroid.standalone.server.util.HttpClientUtil;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -34,7 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.remote.CapabilityType;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static io.selendroid.standalone.server.model.SelendroidStandaloneDriver.APP_BASE_PACKAGE;
+import static io.selendroid.standalone.server.model.SelendroidStandaloneDriver.APP_ID;
 
 public class SelfRegisteringRemote {
   private static final Logger log = Logger.getLogger(SelfRegisteringRemote.class.getName());
@@ -72,6 +72,12 @@ public class SelfRegisteringRemote {
     }
   }
 
+  /**
+   * Get the node configuration and capabilities for Grid registration
+   *
+   * @return The configuration
+   * @throws JSONException On JSON errors.
+   */
   private JSONObject getNodeConfig() {
     JSONObject res = new JSONObject();
     try {
@@ -81,35 +87,36 @@ public class SelfRegisteringRemote {
       JSONArray devices = driver.getSupportedDevices();
       for (int i = 0; i < devices.length(); i++) {
         JSONObject device = (JSONObject) devices.get(i);
-        JSONObject capa = new JSONObject();
-        capa.put(SelendroidCapabilities.SCREEN_SIZE,
-            device.getString(SelendroidCapabilities.SCREEN_SIZE));
-        String version = device.getString(SelendroidCapabilities.PLATFORM_VERSION);
-        capa.put(SelendroidCapabilities.PLATFORM_VERSION, version);
-        capa.put(SelendroidCapabilities.EMULATOR, device.getString(SelendroidCapabilities.EMULATOR));
-
-        // if no AUT and embedded AndroidDriver app is available, then register at hub as android browser
-        JSONObject app;
-        if (!config.isNoWebViewApp() && driver.getSupportedApps().length() == 1
-                && (app = driver.getSupportedApps().getJSONObject(0)) != null
-                && ANDROIDDRIVER_APP.equals(app.get(APP_BASE_PACKAGE))) {
-          capa.put(CapabilityType.BROWSER_NAME, "android");
-        } else {
-          capa.put(CapabilityType.BROWSER_NAME, "selendroid");
+        for (int x = 0; x < driver.getSupportedApps().length(); x++) {
+          JSONObject capa = new JSONObject();
+          capa.put(SelendroidCapabilities.SCREEN_SIZE,
+                  device.getString(SelendroidCapabilities.SCREEN_SIZE));
+          String version = device.getString(SelendroidCapabilities.PLATFORM_VERSION);
+          capa.put(SelendroidCapabilities.PLATFORM_VERSION, version);
+          capa.put(SelendroidCapabilities.EMULATOR, device.getString(SelendroidCapabilities.EMULATOR));
+          // For each device, register as "android" for WebView tests and also selendroid if an aut is specified
+          if (ANDROIDDRIVER_APP.equals(driver.getSupportedApps().getJSONObject(x).get(APP_BASE_PACKAGE))) {
+            //it's possible the user does not want to register the device as capable to recieve webview tests
+            if (!config.isNoWebViewApp()) {
+              capa.put(CapabilityType.BROWSER_NAME, "android");
+            }
+          } else {
+            capa.put(CapabilityType.BROWSER_NAME, "selendroid");
+            capa.put(SelendroidCapabilities.AUT, driver.getSupportedApps().getJSONObject(x).get(APP_ID));
+          }
+          capa.put(CapabilityType.PLATFORM, "ANDROID");
+          capa.put(CapabilityType.VERSION, version);
+          capa.put("maxInstances", config.getMaxInstances());
+          caps.put(capa);
         }
-
-        capa.put(CapabilityType.PLATFORM, "ANDROID");
-        capa.put(CapabilityType.VERSION, version);
-        capa.put("maxInstances", config.getMaxInstances());
-        caps.put(capa);
       }
       res.put("capabilities", caps);
     } catch (JSONException e) {
       throw new SelendroidException(e.getMessage(), e);
     }
-
     return res;
   }
+
 
   /**
    * Extracts the configuration.
