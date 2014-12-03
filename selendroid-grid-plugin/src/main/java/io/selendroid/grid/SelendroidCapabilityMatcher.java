@@ -13,11 +13,11 @@
  */
 package io.selendroid.grid;
 
+import org.openqa.grid.internal.utils.CapabilityMatcher;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.openqa.grid.internal.utils.CapabilityMatcher;
 
 public class SelendroidCapabilityMatcher implements CapabilityMatcher {
   public static final String AUT = "aut";
@@ -25,6 +25,7 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
   public static final String SCREEN_SIZE = "screenSize";
   public static final String BROWSER_NAME = "browserName";
   public static final String PLATFORM_VERSION = "platformVersion";
+  public static final String EMULATOR = "emulator";
   private final List<String> toConsider = new ArrayList<String>();
 
   public SelendroidCapabilityMatcher() {
@@ -33,6 +34,7 @@ public class SelendroidCapabilityMatcher implements CapabilityMatcher {
     toConsider.add(PLATFORM_NAME);
     toConsider.add(SCREEN_SIZE);
     toConsider.add(PLATFORM_VERSION);
+    toConsider.add(EMULATOR);
   }
 
   @Override
