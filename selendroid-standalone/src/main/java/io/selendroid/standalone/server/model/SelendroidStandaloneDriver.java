@@ -13,6 +13,7 @@
  */
 package io.selendroid.standalone.server.model;
 
+import com.beust.jcommander.internal.Lists;
 import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.server.common.ServerDetails;
@@ -33,18 +34,9 @@ import io.selendroid.standalone.builder.AndroidDriverAPKBuilder;
 import io.selendroid.standalone.builder.SelendroidServerBuilder;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
-import io.selendroid.standalone.exceptions.DeviceStoreException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
 import io.selendroid.standalone.server.util.FolderMonitor;
 import io.selendroid.standalone.server.util.HttpClientUtil;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +46,17 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.beust.jcommander.internal.Lists;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SelendroidStandaloneDriver implements ServerDetails {
 
@@ -62,6 +64,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   public static final String WD_RESP_KEY_STATUS = "status";
   public static final String WD_RESP_KEY_SESSION_ID = "sessionId";
   public static final String APP_BASE_PACKAGE = "basePackage";
+  public static final String APP_ID = "appId";
   private static int selendroidServerPort = 38080;
   private static final Logger log = Logger.getLogger(SelendroidStandaloneDriver.class.getName());
   private Map<String, AndroidApp> appsStore = new HashMap<String, AndroidApp>();
@@ -536,7 +539,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     for (AndroidApp app : appsStore.values()) {
       JSONObject appInfo = new JSONObject();
       try {
-        appInfo.put("appId", app.getAppId());
+        appInfo.put(APP_ID, app.getAppId());
         appInfo.put(APP_BASE_PACKAGE, app.getBasePackage());
         appInfo.put("mainActivity", app.getMainActivity());
         list.put(appInfo);
