@@ -104,8 +104,16 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
       //TODO update error code when w3c spec gets updated
       return new SelendroidResponse(getSessionId(request), StatusCode.NO_SUCH_WINDOW,
           new SelendroidException("Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
+    } catch (NoClassDefFoundError e) {
+      // This is a potentially interesting class path problem which should be returned to client.
+      return new SelendroidResponse(getSessionId(request), StatusCode.UNKNOWN_COMMAND, e);
     } catch (Exception e) {
-      SelendroidLogger.error("Error while handling action in: " + this.getClass().getName(), e);
+      SelendroidLogger.error("Exception while handling action in: " + this.getClass().getName(), e);
+      return SelendroidResponse.forCatchAllError(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
+    } catch (Error e) {
+      // Catching Errors seems like a bad idea in general but if we don't catch this, Netty will catch it anyway.
+      // The advantage of catching it here is that we can propagate the Error to clients.
+      SelendroidLogger.error("Fatal error while handling action in: " + this.getClass().getName(), e);
       return SelendroidResponse.forCatchAllError(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
     }
   }
