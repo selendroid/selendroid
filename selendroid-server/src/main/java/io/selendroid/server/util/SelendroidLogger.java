@@ -40,7 +40,7 @@ public class SelendroidLogger {
     }
   }
 
-  public static void error(String message, Exception e) {
+  public static void error(String message, Throwable e) {
     if (isLoggable(Log.ERROR)) {
       Log.e(LOG_TAG, formatMessage(message), e);
     }

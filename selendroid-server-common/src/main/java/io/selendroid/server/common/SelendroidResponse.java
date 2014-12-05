@@ -20,6 +20,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class SelendroidResponse implements Response {
+  /**
+   * This is prepended to messages for failures caused by:
+   * <ul>
+   * <li>Selendroid itself (usually this is bug that must be fixed)
+   * <li>Unexpected conditions in the environment we're running in
+   * </ul>
+   * If a client sees this they know the error is not their fault.
+   */
   private static final String CATCH_ALL_ERROR_MESSAGE = "CATCH_ALL: ";
   private String sessionId;
   private int status;
@@ -28,13 +36,13 @@ public class SelendroidResponse implements Response {
   protected SelendroidResponse() {
   }
 
-  private SelendroidResponse(String sessionId, int status, Exception e) throws JSONException {
+  private SelendroidResponse(String sessionId, int status, Throwable e) throws JSONException {
     this.value = buildErrorValue(e);
     this.sessionId = sessionId;
     this.status = status;
   }
 
-  private SelendroidResponse(String sessionId, int status, Exception e, String messagePrefix) throws JSONException {
+  private SelendroidResponse(String sessionId, int status, Throwable e, String messagePrefix) throws JSONException {
     this.value = buildErrorValue(e, messagePrefix);
     this.sessionId = sessionId;
     this.status = status;
@@ -63,7 +71,7 @@ public class SelendroidResponse implements Response {
     this(sessionId, status.getCode(), value);
   }
 
-  public SelendroidResponse(String sessionId, StatusCode status, Exception e) throws JSONException {
+  public SelendroidResponse(String sessionId, StatusCode status, Throwable e) throws JSONException {
     this(sessionId, status.getCode(), e);
   }
 
@@ -73,7 +81,7 @@ public class SelendroidResponse implements Response {
    * internals. This response marks error responses from the server that indicate
    * something has gone wrong in the internals of selendroid.
    */
-  public static SelendroidResponse forCatchAllError(String sessionId, StatusCode status, Exception e) {
+  public static SelendroidResponse forCatchAllError(String sessionId, StatusCode status, Throwable e) {
     try {
       return new SelendroidResponse(sessionId, status.getCode(), e, CATCH_ALL_ERROR_MESSAGE);
     } catch(JSONException err) {
