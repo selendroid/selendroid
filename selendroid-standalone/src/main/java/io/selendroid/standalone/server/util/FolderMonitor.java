@@ -164,6 +164,9 @@ public class FolderMonitor implements Runnable {
   public void start() {
     thread = new Thread(this);
     thread.start();
+    log.info("The Folder Monitor has been started with '"
+        + selendroidConfiguration.getAppFolderToMonitor()
+        + "'. New apps in this folder will be avalilable for testing immediately.");
   }
 
   public void stop() {
