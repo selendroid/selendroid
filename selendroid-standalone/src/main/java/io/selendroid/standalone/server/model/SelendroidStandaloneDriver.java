@@ -33,7 +33,6 @@ import io.selendroid.standalone.builder.AndroidDriverAPKBuilder;
 import io.selendroid.standalone.builder.SelendroidServerBuilder;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
-import io.selendroid.standalone.exceptions.DeviceStoreException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
 import io.selendroid.standalone.server.util.FolderMonitor;
 import io.selendroid.standalone.server.util.HttpClientUtil;
@@ -215,7 +214,16 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       try {
         SelendroidCapabilities desiredCapabilities = getSelendroidCapabilities(caps);
 
-        app = getAndroidApp(desiredCapabilities, desiredCapabilities.getAut());
+        String desiredAut = desiredCapabilities.getAut();
+        String desiredAutVersion = desiredCapabilities.getAutVersion();
+        // For backward compatibility with "appName:appVersion"
+        if (!desiredAut.contains(":") && !desiredAutVersion.isEmpty()) {
+          desiredAut = desiredAut + ":" + desiredCapabilities.getAutVersion();
+        }
+        if (desiredAutVersion.isEmpty()) {
+          desiredAut = getDefaultAut(desiredAut);
+        }
+        app = getAndroidApp(desiredCapabilities, desiredAut);
         device = deviceStore.findAndroidDevice(desiredCapabilities);
 
         // If we are using an emulator need to start it up
@@ -454,6 +462,25 @@ public class SelendroidStandaloneDriver implements ServerDetails {
             + serverConfiguration.getAppFolderToMonitor());
       }
     }
+  }
+
+  // This function will go through the apps store to return the
+  // latest version of the app.
+  private String getDefaultAut(String appName) {
+    String aut = null;
+    SortedSet<String> listOfApps = new TreeSet<String>();
+    if (appsStore.size() > 0) {
+      for (String key : appsStore.keySet()) {
+        if (key.split(":")[0].contentEquals(appName)) {
+          listOfApps.add(key);
+        }
+      }
+    }
+    if (listOfApps.size()>0) {
+      aut = listOfApps.last();
+      log.info("The app version is not specified. " + aut + "will be used.");
+    }
+    return aut;
   }
 
   /**

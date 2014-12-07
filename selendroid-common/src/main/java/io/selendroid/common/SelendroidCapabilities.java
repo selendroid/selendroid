@@ -38,6 +38,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   private static final long serialVersionUID = -7061568919298342362L;
   private static final String SELENDROID = "selendroid";
   public static final String AUT = "aut";
+  public static final String AUT_VERSION = "autVersion";
   public static final String EMULATOR = "emulator";
   public static final String DISPLAY = "display";
   public static final String LOCALE = "locale";
@@ -80,6 +81,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public String getAut() {
     return (String) getRawCapabilities().get(AUT);
+  }
+  
+  public String getAutVersion() {
+    return (String) getRawCapabilities().get(AUT_VERSION);
   }
   
   public String getLaunchActivity() {
