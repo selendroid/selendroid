@@ -217,8 +217,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     while (retries >= 0) {
       try {
         SelendroidCapabilities desiredCapabilities = getSelendroidCapabilities(caps);
-
-        app = getAndroidApp(desiredCapabilities, desiredCapabilities.getAut());
+        String desiredAut = desiredCapabilities.getDefaultApp(appsStore.keySet());
+        app = getAndroidApp(desiredCapabilities, desiredAut);
+        log.info("'" + desiredAut + "' will be used as app under test.");
         device = deviceStore.findAndroidDevice(desiredCapabilities);
 
         // If we are using an emulator need to start it up
