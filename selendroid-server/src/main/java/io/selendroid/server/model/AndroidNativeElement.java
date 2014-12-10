@@ -93,7 +93,6 @@ public class AndroidNativeElement implements AndroidElement {
   public boolean isDisplayed() {
     View view = getView();
     boolean hasWindowFocus = view.hasWindowFocus();
-    boolean isEnabled = view.isEnabled();
     int width = view.getWidth();
     int height = view.getHeight();
     int visibility = view.getVisibility();
@@ -104,7 +103,7 @@ public class AndroidNativeElement implements AndroidElement {
     boolean isShown = view.isShown();
 
     boolean isDisplayed =
-        hasWindowFocus && isEnabled && isVisible && isShown && (width > 0) && (height > 0);
+        hasWindowFocus && isVisible && isShown && (width > 0) && (height > 0);
 
     if (!isDisplayed) {
       Activity activity = instrumentation.getCurrentActivity();
@@ -114,8 +113,8 @@ public class AndroidNativeElement implements AndroidElement {
               "Display check failed\n" +
                   "for view: %s\n" +
                   "isVisible: %b\nvisibility: %d\nisShown: %b\nhasWindowFocus: %b\n" +
-                  "isEnabled: %b\nwidth: %d\nheight: %d\ncurrent activity: %s\nfocused view: %s",
-              view, isVisible, visibility, isShown, hasWindowFocus, isEnabled,
+                  "width: %d\nheight: %d\ncurrent activity: %s\nfocused view: %s",
+              view, isVisible, visibility, isShown, hasWindowFocus,
               width, height, activity, focusedView);
       SelendroidLogger.debug(displayCheckFailureMessage);
       if (!isShown) {
