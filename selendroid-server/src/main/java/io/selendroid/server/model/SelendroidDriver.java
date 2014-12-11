@@ -99,4 +99,6 @@ public interface SelendroidDriver {
   public void setAsyncTimeout(long timeout);
 
   public boolean isAirplaneMode();
+
+  public TrackBall getTrackBall();
 }

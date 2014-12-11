@@ -14,6 +14,7 @@
 package io.selendroid.server.model;
 
 import io.selendroid.server.ServerInstrumentation;
+import io.selendroid.server.android.AndroidTrackBall;
 import io.selendroid.server.android.AndroidWait;
 import io.selendroid.server.android.InstrumentedKeySender;
 import io.selendroid.server.android.KeySender;
@@ -87,6 +88,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   private KeySender keySender = null;
   private SelendroidNativeDriver selendroidNativeDriver = null;
   private SelendroidWebDriver selendroidWebDriver = null;
+  private TrackBall trackBall = null;
   private String activeWindowType = null;
   private long scriptTimeout = 0L;
 
@@ -403,6 +405,15 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   @Override
   public Keyboard getKeyboard() {
     return keySender.getKeyboard();
+  }
+
+  @Override
+  public TrackBall getTrackBall() {
+    if (trackBall == null) {
+      //lazy init
+      trackBall = new AndroidTrackBall(serverInstrumentation);
+    }
+    return trackBall;
   }
 
   @Override
