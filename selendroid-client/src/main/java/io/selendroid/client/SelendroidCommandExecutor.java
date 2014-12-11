@@ -45,6 +45,7 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
           put("selendroid-adb-sendKeyEvent",newVendorCommand("adb/sendKeyEvent", HttpMethod.POST));
           put("selendroid-adb-sendText", newVendorCommand("adb/sendText", HttpMethod.POST));
           put("selendroid-adb-tap", newVendorCommand("adb/tap", HttpMethod.POST));
+          put("selendroid-adb-roll", newVendorCommand("adb/roll", HttpMethod.POST));
           put("selendroid-adb-executeShellCommand",
                   newVendorCommand("adb/executeShellCommand", HttpMethod.POST));
 
