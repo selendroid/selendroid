@@ -75,6 +75,7 @@ import io.selendroid.server.handler.OpenUrl;
 import io.selendroid.server.handler.ReadCallLog;
 import io.selendroid.server.handler.Refresh;
 import io.selendroid.server.handler.ResumeApp;
+import io.selendroid.server.handler.Roll;
 import io.selendroid.server.handler.RotateScreen;
 import io.selendroid.server.handler.Scroll;
 import io.selendroid.server.handler.SendKeyToActiveElement;
@@ -180,6 +181,8 @@ public class AndroidServlet extends BaseServlet {
     register(postHandler, new DoubleTapOnElement("/wd/hub/session/:sessionId/touch/doubleclick"));
     register(postHandler, new LongPressOnElement("/wd/hub/session/:sessionId/touch/longclick"));
     register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
+    // Track-ball functionality
+    register(postHandler, new Roll("wd/hub/session/:sessionId/trackball/roll"));
     
     // The new endpoints for context switching coming with Selenium 3.0 & mobile spec
     register(getHandler, new GetNetworkConnectionType("/wd/hub/session/:sessionId/network_connection"));
