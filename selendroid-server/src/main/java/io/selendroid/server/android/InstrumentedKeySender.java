@@ -18,6 +18,7 @@ import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.model.Keyboard;
 import android.app.Instrumentation;
 import android.view.KeyEvent;
+import io.selendroid.server.util.SelendroidLogger;
 
 /**
  * Provides a method to send a string to an application under test. Keys are sent using an
@@ -62,21 +63,6 @@ public class InstrumentedKeySender implements KeySender {
   }
 
   /**
-   * Sends a single key event to the {@code Instrumentation} for a given character.
-   * 
-   * @param action {@code KeyEvent.ACTION_*} code representing key action
-   * @param keyCode character representing key to press, release, etc.
-   */
-  private void sendKeyEvent(int action, char keyCode) {
-    instrumentation.waitForIdleSync();
-    try {
-      instrumentation.sendKeySync(new KeyEvent(action, AndroidKeys.keyCodeFor(keyCode)));
-    } catch (SecurityException exception) {
-      throw new SelendroidException(exception);
-    }
-  }
-
-  /**
    * Sends key events to the {@code Instrumentation}. This method will send a portion of the given
    * {@code CharSequence} as a single {@code String} if the portion does not contain any special
    * keys.
@@ -85,19 +71,17 @@ public class InstrumentedKeySender implements KeySender {
    */
   public void send(CharSequence text) {
     int currentIndex = 0;
-
-    instrumentation.waitForIdleSync();
-
     while (currentIndex < text.length()) {
       char currentCharacter = text.charAt(currentIndex);
       if (AndroidKeys.hasAndroidKeyEvent(currentCharacter)) {
         // The next character is special and must be sent individually
         int keyCode = AndroidKeys.keyCodeFor(currentCharacter);
         if (keyCode == KeyEvent.KEYCODE_HOME) {
-          throw new RuntimeException("" +
-              "It is not possible to simulate the HOME key on Android using instrumentation. Please use adb, " +
-              "for example 'adb shell input keyevent 3'.");
+          throw new RuntimeException(
+              "It is not possible to simulate the HOME key using instrumentation. " +
+              "Please use adb, e.g. 'adb shell input keyevent 3'.");
         }
+        SelendroidLogger.debug("Send keys, sending special key code");
         instrumentation.sendKeyDownUpSync(keyCode);
         currentIndex++;
       } else {
@@ -106,22 +90,15 @@ public class InstrumentedKeySender implements KeySender {
         // sendStringSync. So send as many such consecutive normal characters
         // as possible in a single String.
         int nextSpecialKey = indexOfSpecialKey(text, currentIndex);
-        instrumentation.sendStringSync(text.subSequence(currentIndex, nextSpecialKey).toString());
+        String textToSend = text.subSequence(currentIndex, nextSpecialKey).toString();
+        SelendroidLogger.debug("Send keys, sending string");
+        instrumentation.sendStringSync(textToSend);
         currentIndex = nextSpecialKey;
       }
     }
   }
 
   private class KeyboardImpl implements Keyboard {
-    @Override
-    public void pressKey(Keys keyToPress) {
-      sendKeyEvent(KeyEvent.ACTION_DOWN, keyToPress.charAt(0));
-    }
-
-    @Override
-    public void releaseKey(Keys keyToRelease) {
-      sendKeyEvent(KeyEvent.ACTION_UP, keyToRelease.charAt(0));
-    }
 
     @Override
     public void sendKeys(CharSequence... keysToSend) {

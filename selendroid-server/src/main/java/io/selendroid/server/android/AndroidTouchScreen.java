@@ -124,18 +124,12 @@ public class AndroidTouchScreen implements TouchScreen {
     long downTime = SystemClock.uptimeMillis();
     long eventTime = SystemClock.uptimeMillis();
     Point point = where.getLocationOnScreen();
-    // List<MotionEvent> motionEvents = new ArrayList<MotionEvent>();
-    //
-    // motionEvents.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_DOWN, point));
-    // motionEvents.add(getMotionEvent(downTime, (downTime + 3000), MotionEvent.ACTION_UP, point));
-    // sendMotionEvents(motionEvents);
     Instrumentation inst = instrumentation;
 
-
     MotionEvent event = null;
-    boolean successfull = false;
+    boolean isSuccess = false;
     int retry = 0;
-    while (!successfull && retry < 10) {
+    while (!isSuccess && retry < 10) {
       try {
         if (event == null) {
           event =
@@ -143,14 +137,13 @@ public class AndroidTouchScreen implements TouchScreen {
         }
         SelendroidLogger.debug("trying to send pointer");
         inst.sendPointerSync(event);
-        successfull = true;
+        isSuccess = true;
       } catch (SecurityException e) {
         SelendroidLogger.error("failed: " + retry);
-        // activityUtils.hideSoftKeyboard(null, false, true);
         retry++;
       }
     }
-    if (!successfull) {
+    if (!isSuccess) {
       throw new SelendroidException("Click can not be completed!");
     }
     inst.sendPointerSync(event);
