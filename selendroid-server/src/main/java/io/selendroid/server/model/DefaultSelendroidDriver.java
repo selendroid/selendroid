@@ -562,6 +562,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
         activity.setRequestedOrientation(screenOrientation);
       }
     });
+    serverInstrumentation.waitForIdleSync();
   }
 
   private int getAndroidScreenOrientation(ScreenOrientation orientation) {
