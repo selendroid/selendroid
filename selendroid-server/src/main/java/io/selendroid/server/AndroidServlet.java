@@ -25,7 +25,6 @@ import io.selendroid.server.common.http.HttpResponse;
 import io.selendroid.server.common.http.TrafficCounter;
 import io.selendroid.server.extension.ExtensionLoader;
 import io.selendroid.server.handler.*;
-import io.selendroid.server.handler.SendKeysToElement;
 import io.selendroid.server.handler.alert.Alert;
 import io.selendroid.server.handler.alert.AlertAccept;
 import io.selendroid.server.handler.alert.AlertDismiss;
