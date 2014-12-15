@@ -90,9 +90,8 @@ public class InstrumentedKeySender implements KeySender {
         // sendStringSync. So send as many such consecutive normal characters
         // as possible in a single String.
         int nextSpecialKey = indexOfSpecialKey(text, currentIndex);
-        String textToSend = text.subSequence(currentIndex, nextSpecialKey).toString();
         SelendroidLogger.debug("Send keys, sending string");
-        instrumentation.sendStringSync(textToSend);
+        instrumentation.sendStringSync(text.subSequence(currentIndex, nextSpecialKey).toString());
         currentIndex = nextSpecialKey;
       }
     }
