@@ -95,8 +95,8 @@ public class SelendroidDriver extends RemoteWebDriver
     return touchScreen;
   }
   
-  public TrackBall getTrackBall() {
-	  return trackBall;
+  public void roll(int dimensionX, int dimensionY) {
+	  trackBall.roll(dimensionX, dimensionY);
   }
 
   public MultiTouchScreen getMultiTouchScreen() { return multiTouchScreen; }

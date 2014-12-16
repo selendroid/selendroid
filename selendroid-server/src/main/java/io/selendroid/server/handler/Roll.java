@@ -16,7 +16,6 @@ package io.selendroid.server.handler;
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.server.model.TrackBall;
 import io.selendroid.server.util.SelendroidLogger;
 
 import org.json.JSONException;
@@ -33,10 +32,10 @@ public class Roll extends SafeRequestHandler {
 		SelendroidLogger.info("roll event");
 
 		JSONObject payload = getPayload(request);
-		TrackBall trackBall = getSelendroidDriver(request).getTrackBall();
+		SelendroidLogger.info("payload: " + payload.toString());
 		int dx = payload.getInt("dx");
 		int dy = payload.getInt("dy");
-		trackBall.roll(dx, dy);
+		getSelendroidDriver(request).roll(dx, dy);
 
 		return new SelendroidResponse(getSessionId(request), "");
 	}

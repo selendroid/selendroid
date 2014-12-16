@@ -408,15 +408,6 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   @Override
-  public TrackBall getTrackBall() {
-    if (trackBall == null) {
-      //lazy init
-      trackBall = new AndroidTrackBall(serverInstrumentation);
-    }
-    return trackBall;
-  }
-
-  @Override
   public TouchScreen getTouch() {
     if (isNativeWindowMode()) {
       return selendroidNativeDriver.getTouch();
@@ -803,6 +794,18 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   
   public List<CallLogEntry> readCallLog() {
     return serverInstrumentation.readCallLog();
+  }
+  
+  private TrackBall getTrackBall() {
+	  if (trackBall == null) {
+		  trackBall = new AndroidTrackBall(serverInstrumentation);
+	  }
+	  return trackBall;
+  }
+
+  @Override
+  public void roll(int dimensionX, int dimensionY) {
+    getTrackBall().roll(dimensionX, dimensionY);
   }
 
 }

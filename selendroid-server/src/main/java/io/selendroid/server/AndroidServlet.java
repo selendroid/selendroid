@@ -182,7 +182,7 @@ public class AndroidServlet extends BaseServlet {
     register(postHandler, new LongPressOnElement("/wd/hub/session/:sessionId/touch/longclick"));
     register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
     // Track-ball functionality
-    register(postHandler, new Roll("wd/hub/session/:sessionId/trackball/roll"));
+    register(postHandler, new Roll("/wd/hub/session/:sessionId/trackball/roll"));
     
     // The new endpoints for context switching coming with Selenium 3.0 & mobile spec
     register(getHandler, new GetNetworkConnectionType("/wd/hub/session/:sessionId/network_connection"));

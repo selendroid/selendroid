@@ -34,6 +34,6 @@ public class TrackBall {
 	      Map<String, Object> parameters = new HashMap<String, Object>();
 	      parameters.put("dx", dimensionX);
 	      parameters.put("dy", dimensionY);
-	      mExecuteMethod.execute("selendroid-adb-roll", parameters);
+	      mExecuteMethod.execute("roll", parameters);
 	}
 }
