@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
+ * Copyright 2012-2015 eBay Software Foundation and selendroid committers.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -15,15 +15,12 @@ package io.selendroid.standalone;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-
 import io.selendroid.standalone.log.LogLevelConverter;
 import io.selendroid.standalone.log.LogLevelEnum;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,6 +95,10 @@ public class SelendroidConfiguration {
 
   @Parameter(names = "-maxInstances", description = "Maximum number of instances that a grid hub can use at a time.")
   private int maxInstances = 5;
+
+  @Parameter(names = "-registerCycle", description = "How often in ms the node will try to register itself again" +
+          ".Allow to restart the hub without having to restart the nodes. 0 to disable auto register. Default 0.")
+  private long registerCycle = 0;
 
   @Parameter(names = "-noWebviewApp",
              description = "If you don't want selendroid to auto-extract and have 'AndroidDriver' (webview only app) available.")
@@ -369,4 +370,13 @@ public class SelendroidConfiguration {
   public boolean isGrid() {
     return !StringUtils.isBlank(getRegistrationUrl()) && !StringUtils.isBlank(getServerHost());
   }
+
+  public long getRegisterCycle() {
+    return registerCycle;
+  }
+
+  public void setRegisterCycle(long registerCycle) {
+    this.registerCycle = registerCycle;
+  }
+
 }
