@@ -99,4 +99,6 @@ public interface SelendroidDriver {
   public void setAsyncTimeout(long timeout);
 
   public boolean isAirplaneMode();
+  
+  public void roll(int dimensionX, int dimensionY);
 }

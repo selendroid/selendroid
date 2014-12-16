@@ -68,6 +68,7 @@ public class SelendroidDriver extends RemoteWebDriver
   private RemoteTouchScreen touchScreen;
   private MultiTouchScreen multiTouchScreen;
   private RemoteAdbConnection adbConnection;
+  private TrackBall trackBall;
 
   private SelendroidDriver(CommandExecutor executor, Capabilities caps) throws Exception {
     super(executor, caps);
@@ -75,6 +76,7 @@ public class SelendroidDriver extends RemoteWebDriver
     touchScreen = new RemoteTouchScreen(executeMethod);
     multiTouchScreen = new MultiTouchScreen(executeMethod);
     adbConnection = new RemoteAdbConnection(executeMethod);
+    trackBall = new TrackBall(executeMethod);
   }
 
   public SelendroidDriver(URL url, Capabilities caps) throws Exception {
@@ -91,6 +93,10 @@ public class SelendroidDriver extends RemoteWebDriver
   @Override
   public TouchScreen getTouch() {
     return touchScreen;
+  }
+  
+  public void roll(int dimensionX, int dimensionY) {
+	  trackBall.roll(dimensionX, dimensionY);
   }
 
   public MultiTouchScreen getMultiTouchScreen() { return multiTouchScreen; }

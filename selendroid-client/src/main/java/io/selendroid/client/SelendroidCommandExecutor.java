@@ -33,6 +33,9 @@ public class SelendroidCommandExecutor extends HttpCommandExecutor {
           put("setNetworkConnection", new CommandInfo("/session/:sessionId/network_connection",
                   HttpMethod.POST));
           put("actions", new CommandInfo("/session/:sessionId/actions", HttpMethod.POST));
+          // trackball command, should be part of Selenium mouse API, but is not implemented as of now.
+          put("roll", new CommandInfo("/session/:sessionId/trackball/roll", HttpMethod.POST));
+
 
           put("selendroid-getBrightness", newVendorCommand("screen/brightness", HttpMethod.GET));
           put("selendroid-setBrightness", newVendorCommand("screen/brightness", HttpMethod.POST));
