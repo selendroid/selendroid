@@ -16,14 +16,10 @@ limitations under the License.
 */
 package io.selendroid.server.model;
 
-import io.selendroid.server.android.Keys;
-
 /**
  * Interface representing basic keyboard operations.
  *
  */
 public interface Keyboard {
   void sendKeys(CharSequence... keysToSend);
-  void pressKey(Keys keyToPress);
-  void releaseKey(Keys keyToRelease);
 }

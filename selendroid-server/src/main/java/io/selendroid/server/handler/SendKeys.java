@@ -13,16 +13,16 @@
  */
 package io.selendroid.server.handler;
 
+import org.json.JSONException;
+
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
-import io.selendroid.server.model.AndroidElement;
-import io.selendroid.server.model.Session;
 import io.selendroid.server.util.SelendroidLogger;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+/**
+ * Send keys to the OS regardless of the focused element.
+ */
 public class SendKeys extends SafeRequestHandler {
 
   public SendKeys(String mappedUri) {
@@ -32,30 +32,9 @@ public class SendKeys extends SafeRequestHandler {
   @Override
   public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("send keys command");
-    String id = getElementId(request);
-
-    AndroidElement element = getElementFromCache(request, id);
     String[] keysToSend = extractKeysToSendFromPayload(request);
+    getSelendroidDriver(request).getKeyboard().sendKeys(keysToSend);
 
-    if (isNativeEvents(request)) {
-      element.enterText(keysToSend);
-    }else{
-      element.setText(keysToSend);
-    }
     return new SelendroidResponse(getSessionId(request), "");
   }
-
-  boolean isNativeEvents(HttpRequest request) {
-    JSONObject config =
-        getSelendroidDriver(request).getSession().getCommandConfiguration(
-            Session.SEND_KEYS_TO_ELEMENT);
-    if (config != null && config.has(Session.NATIVE_EVENTS_PROPERTY)) {
-      try {
-        return config.getBoolean(Session.NATIVE_EVENTS_PROPERTY);
-      } catch (JSONException e) {}
-    }
-    // default is native events
-    return true;
-  }
-
 }
