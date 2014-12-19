@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 import static org.openqa.selenium.remote.CapabilityType.PLATFORM;
@@ -327,4 +330,40 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     }
     return copy;
   }
+
+  /**
+   * Returns the application under test in the format of "appName:appVersion", or "appName" if the supported application
+   * does not have any version associated with it, or returns null if the requested app is not in the apps store. If the
+   * launch activity is also specified with requested application then just return the requested application as app under
+   * test so it can be later installed to the device by SelendroidStandaloneDriver.
+   *
+   * @param supportedApps The list of supported apps in the apps store.
+   * @return The application under test in "appName" or "appName:appVersion" format, or null if the application is not
+   *         in the list of supported apps and the launch activity is not specified.
+   */
+  public String getDefaultApp(Set<String> supportedApps) {
+    String defaultApp = getAut();
+    // if the launch activity is specified, just return.
+    if (getLaunchActivity() != null) {
+      return defaultApp;
+    }
+    // App version is not specified. Get the latest version from the apps store.
+    if (!defaultApp.contains(":")) {
+      return getDefaultVersion(supportedApps, defaultApp);
+    }
+    return supportedApps.contains(defaultApp) ? defaultApp : null;
+  }
+
+  // Go through the supported apps in the apps store to return the
+  // the latest version of the app.
+  private String getDefaultVersion(Set<String> keys, String appName) {
+    SortedSet<String> listOfApps = new TreeSet<String>();
+    for (String key : keys) {
+      if (key.split(":")[0].contentEquals(appName)) {
+        listOfApps.add(key);
+      }
+    }
+    return listOfApps.size() > 0 ? listOfApps.last() : null;
+  }
+
 }
