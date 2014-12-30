@@ -95,5 +95,4 @@ public class DefaultHardwareDevice extends AbstractDevice {
 	  return serial;
   }
 
-
 }

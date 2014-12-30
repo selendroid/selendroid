@@ -63,6 +63,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
   public static final String WD_STATUS_ENDPOINT = "http://localhost:8080/wd/hub/status";
   protected String serial = null;
+  protected String model = null;
   protected Integer port = null;
   protected IDevice device;
   private ByteArrayOutputStream logoutput;
@@ -600,5 +601,9 @@ public abstract class AbstractDevice implements AndroidDevice {
   @Override
   public int hashCode() {
     return device.hashCode();
+  }
+
+  public String getModel() {
+    return model;
   }
 }

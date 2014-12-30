@@ -334,7 +334,8 @@ public class DeviceStore {
             candidate.screenSizeMatches(capabilities.getScreenSize()),
             capabilities.getEmulator() == null ? true : capabilities.getEmulator() ?
                 candidate instanceof DefaultAndroidEmulator : candidate instanceof DefaultHardwareDevice,
-            StringUtils.isNotBlank(capabilities.getSerial()) ? capabilities.getSerial().equals(candidate.getSerial()) : true
+            StringUtils.isNotBlank(capabilities.getSerial()) ? capabilities.getSerial().equals(candidate.getSerial()) : true,
+            StringUtils.isNotBlank(capabilities.getModel()) ? candidate.getModel().contains(capabilities.getModel()) : true
         );
 
         return Iterables.all(booleanExpressions, Predicates.equalTo(true));

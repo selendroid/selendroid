@@ -71,8 +71,9 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   }
 
   public DefaultAndroidEmulator(String avdName, String abi, Dimension screenSize, String target,
-                                File avdFilePath) {
+                                String model, File avdFilePath) {
     this.avdName = avdName;
+    this.model = model;
     this.screenSize = screenSize;
     this.avdRootFolder = avdFilePath;
     this.targetPlatform = DeviceTargetPlatform.fromInt(target);
@@ -134,8 +135,9 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         Dimension screenSize = getScreenSizeFromSkin(extractValue("Skin: (.*?)$", element));
         String target = extractValue("\\(API level (.*?)\\)", element);
         File avdFilePath = new File(extractValue("Path: (.*?)$", element));
+        String model = extractValue("Device: (.*?)$", element);
         DefaultAndroidEmulator emulator =
-            new DefaultAndroidEmulator(avdName, abi, screenSize, target, avdFilePath);
+            new DefaultAndroidEmulator(avdName, abi, screenSize, target, model, avdFilePath);
         if (startedDevices.containsKey(avdName)) {
           emulator.setSerial(startedDevices.get(avdName));
         }
@@ -208,7 +210,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   @Override
   public String toString() {
     return "AndroidEmulator [screenSize=" + screenSize + ", targetPlatform=" + targetPlatform
-        + ", serial=" + serial + ", avdName=" + avdName + "]";
+        + ", serial=" + serial + ", avdName=" + avdName + ", model=" + model + "]";
   }
 
   public void setSerial(int port) {
@@ -493,4 +495,5 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   public void setWasStartedBySelendroid(boolean wasStartedBySelendroid) {
     this.wasStartedBySelendroid = wasStartedBySelendroid;
   }
+
 }

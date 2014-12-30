@@ -17,10 +17,12 @@ import com.android.ddmlib.IDevice;
 
 import java.util.Map;
 
+import static io.selendroid.standalone.server.model.DeviceStoreFixture.withDefaultCapabilities;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.common.device.DeviceTargetPlatform;
+import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.DeviceManager;
 import io.selendroid.standalone.android.impl.DefaultAndroidEmulator;
 import io.selendroid.standalone.android.impl.DefaultHardwareDevice;
@@ -46,11 +48,11 @@ public class DeviceStoreFixture {
     return new FakeHardwareDevice(device, prop);
   }
 
-
   protected static DefaultAndroidEmulator anEmulator(String name, DeviceTargetPlatform platform,
       boolean isEmulatorStarted) throws AndroidDeviceException {
     DefaultAndroidEmulator emulator = mock(DefaultAndroidEmulator.class);
     when(emulator.getAvdName()).thenReturn(name);
+    when(emulator.getModel()).thenReturn("Nexus 5");
     when(emulator.getTargetPlatform()).thenReturn(platform);
     when(emulator.isEmulatorStarted()).thenReturn(isEmulatorStarted);
     when(emulator.isDeviceReady()).thenReturn(false);
@@ -58,14 +60,30 @@ public class DeviceStoreFixture {
 
     return emulator;
   }
-  
+
   protected static SelendroidCapabilities withDefaultCapabilities() {
     SelendroidCapabilities capabilities = new SelendroidCapabilities();
     capabilities.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
     capabilities.setScreenSize("320x480");
     return capabilities;
   }
-  
+
+  protected static SelendroidCapabilities withModelCapabilities() {
+    SelendroidCapabilities capabilities = new SelendroidCapabilities();
+    capabilities.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
+    capabilities.setModel("Nexus 5");
+    capabilities.setScreenSize("320x480");
+    return capabilities;
+  }
+
+  protected static SelendroidCapabilities withWrongModelCapabilities() {
+    SelendroidCapabilities capabilities = new SelendroidCapabilities();
+    capabilities.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
+    capabilities.setModel("Nexus 7");
+    capabilities.setScreenSize("320x480");
+    return capabilities;
+  }
+
   protected static DeviceManager anDeviceManager() throws AndroidDeviceException {
     DeviceManager finder = mock(DeviceManager.class);
     when(finder.getVirtualDevice("emulator-5554")).thenReturn(null);

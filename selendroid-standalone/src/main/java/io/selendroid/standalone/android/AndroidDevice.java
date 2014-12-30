@@ -21,6 +21,8 @@ import io.selendroid.standalone.exceptions.AndroidSdkException;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.logging.LogEntry;
 
+import com.google.common.base.Predicates;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -90,4 +92,6 @@ public interface AndroidDevice {
    * Returns the output of running 'adb shell ps', filtering out system processes.
    */
   public String listRunningThirdPartyProcesses();
+
+  public String getModel();
 }

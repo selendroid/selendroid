@@ -57,4 +57,6 @@ public interface AndroidEmulator {
   public void unlockEmulatorScreen() throws AndroidDeviceException;
 
   public void setWasStartedBySelendroid(boolean wasStartedBySelendroid);
+
+  public String getModel();
 }

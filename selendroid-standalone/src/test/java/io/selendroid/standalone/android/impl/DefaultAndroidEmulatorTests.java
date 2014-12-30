@@ -35,7 +35,7 @@ public class DefaultAndroidEmulatorTests {
   @Test
   public void testShouldBeAbleToStartEmulator() throws Exception {
     AndroidEmulator emulator =
-        new DefaultAndroidEmulator("l10n", "X86", new Dimension(320, 480), "16", new File(
+        new DefaultAndroidEmulator("l10n", "X86", new Dimension(320, 480), "16", "Nexus 5", new File(
             FileUtils.getUserDirectory(), ".android" + File.separator + "avd" + File.separator
                 + "l10n.avd"));
 

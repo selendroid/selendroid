@@ -47,6 +47,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String SCREEN_SIZE = "screenSize";
   public static final String PRE_SESSION_ADB_COMMANDS = "preSessionAdbCommands";
   public static final String SERIAL = "serial";
+  public static final String MODEL = "model";
 
   public static final String PLATFORM_VERSION = "platformVersion";
   public static final String PLATFORM_NAME = "platformName";
@@ -84,7 +85,11 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public String getAut() {
     return (String) getRawCapabilities().get(AUT);
   }
-  
+
+  public String getModel() {
+    return (String) getRawCapabilities().get(MODEL);
+  }
+
   public String getLaunchActivity() {
 	return (String) getRawCapabilities().get(LAUNCH_ACTIVITY);
   }
@@ -94,15 +99,15 @@ public class SelendroidCapabilities extends DesiredCapabilities {
         || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL)) return null;
     return (Boolean) getRawCapabilities().get(EMULATOR);
   }
-  
+
   public String getPlatformName() {
     return (String) getRawCapabilities().get(PLATFORM_NAME);
   }
-  
+
   public String getAutomationName() {
     return (String) getRawCapabilities().get(AUTOMATION_NAME);
   }
-  
+
   public String getLocale() {
     return (String) getRawCapabilities().get(LOCALE);
   }
@@ -133,6 +138,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public void setSerial(String serial) {
     setCapability(SERIAL, serial);
+  }
+
+  public void setModel(String model) {
+    setCapability(MODEL, model);
   }
 
   public void setPlatformVersion(DeviceTargetPlatform androidTarget) {

@@ -17,6 +17,8 @@ import static io.selendroid.standalone.server.model.DeviceStoreFixture.anDevice;
 import static io.selendroid.standalone.server.model.DeviceStoreFixture.anDeviceManager;
 import static io.selendroid.standalone.server.model.DeviceStoreFixture.anEmulator;
 import static io.selendroid.standalone.server.model.DeviceStoreFixture.withDefaultCapabilities;
+import static io.selendroid.standalone.server.model.DeviceStoreFixture.withModelCapabilities;
+import static io.selendroid.standalone.server.model.DeviceStoreFixture.withWrongModelCapabilities;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
@@ -494,5 +496,64 @@ public class DeviceStoreTest {
     assertThat(device, equalTo((AndroidDevice) deEmulator16));
     // the device is in use when found
     assertThat(deviceStore.getDevicesInUse(), contains((AndroidDevice) deEmulator16));
+  }
+
+  @Test
+  public void shouldFindAnEmulatorWithSpecifiedModel() throws Exception {
+    // adding Nexus 5 to device store
+    DefaultAndroidEmulator emulator = anEmulator("emulator", DeviceTargetPlatform.ANDROID16, true);
+    DeviceStore deviceStore = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+    deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {emulator}));
+
+    // find by Capabilities
+    AndroidDevice foundEmulator = deviceStore.findAndroidDevice(withModelCapabilities());
+    // the right device is found
+    assertThat(foundEmulator, equalTo((AndroidDevice) emulator));
+  }
+
+  @Test
+  public void shouldFindARealDeviceWithSpecifiedModel() throws Exception {
+    // adding Nexus 5 to device store
+    DefaultHardwareDevice device = anDevice("Nexus 5", DeviceTargetPlatform.ANDROID16);
+    DeviceStore deviceStore = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+    deviceStore.addDevice(device);
+
+ // find by Capabilities
+    AndroidDevice foundDevice = deviceStore.findAndroidDevice(withModelCapabilities());
+ // the right device is found
+    assertThat(foundDevice, equalTo((AndroidDevice) device));
+  }
+
+  @Test
+  public void shouldNotFindAnEmulatorWithWrongModel() throws Exception {
+    // adding Nexus 5 to device store
+    DefaultAndroidEmulator emulator = anEmulator("emulator", DeviceTargetPlatform.ANDROID16, true);
+    DeviceStore deviceStore = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+    deviceStore.addEmulators(Arrays.asList(new AndroidEmulator[] {emulator}));
+
+    try {
+      deviceStore.findAndroidDevice(withWrongModelCapabilities());
+      Assert.fail();
+    } catch (DeviceStoreException e) {
+      assertThat(
+          e.getMessage(),
+          equalTo("No devices are found. This can happen if the devices are in use or no device screen matches the required capabilities."));
+    }
+  }
+  @Test
+  public void shouldNotFindARealDeviceWithWrongModel() throws Exception {
+    // adding Nexus 5 to device store
+    AndroidDevice device = anDevice("Nexus 5", DeviceTargetPlatform.ANDROID16);
+    DeviceStore deviceStore = new DeviceStore(EMULATOR_PORT, anDeviceManager());
+    deviceStore.addDevice(device);
+
+    try {
+      deviceStore.findAndroidDevice(withWrongModelCapabilities());
+      Assert.fail();
+    } catch (DeviceStoreException e) {
+      assertThat(
+          e.getMessage(),
+          equalTo("No devices are found. This can happen if the devices are in use or no device screen matches the required capabilities."));
+    }
   }
 }
