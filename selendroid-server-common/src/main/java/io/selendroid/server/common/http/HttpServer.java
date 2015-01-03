@@ -58,6 +58,7 @@ public class HttpServer {
         } finally {
           bossGroup.shutdownGracefully();
           workerGroup.shutdownGracefully();
+          TrafficCounter.shutdown();
         }
       }
     };
