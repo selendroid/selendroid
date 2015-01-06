@@ -20,12 +20,15 @@ import io.selendroid.client.adb.AdbConnection;
 import io.selendroid.server.common.utils.CallLogEntry;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.ContextAware;
 import org.openqa.selenium.JavascriptExecutor;
@@ -45,8 +48,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.Response;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * {@inheritDoc}
@@ -243,12 +244,25 @@ public class SelendroidDriver extends RemoteWebDriver
   }
 
   public void addCallLog(CallLogEntry log) {
-	Map<String, String> info = ImmutableMap.of("calllogjson", new Gson().toJson(log));
+	Map<String, String> info = ImmutableMap.of("calllogjson", log.toJSON());
 	execute("addCallLog", ImmutableMap.of("parameters",info));
   }
 
   public List<CallLogEntry> readCallLog() {
-    return new Gson().fromJson((String)execute("readCallLog").getValue(), new TypeToken<List<CallLogEntry>>(){}.getType());
+        
+    String callLogString = null;  
+    try {
+        callLogString = (String)execute("readCallLog").getValue();
+        JSONArray json = new JSONArray(callLogString);
+        List<CallLogEntry> logEntries = new ArrayList<CallLogEntry>(json.length());
+        for(int i=0; i < json.length(); i++) {
+            logEntries.add(CallLogEntry.fromJson(json.getString(i)));
+        }
+        return logEntries;
+    }
+    catch(JSONException e) {
+        throw new IllegalStateException("Unable to parse CallLogEntry from json " + callLogString);
+    }
   }
 
   public Object callExtension(String extensionMethod) {
