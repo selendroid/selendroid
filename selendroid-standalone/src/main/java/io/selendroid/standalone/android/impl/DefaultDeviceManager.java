@@ -13,11 +13,10 @@
  */
 package io.selendroid.standalone.android.impl;
 
-import io.selendroid.standalone.android.AndroidDevice;
-import io.selendroid.standalone.android.AndroidEmulatorPowerStateListener;
-import io.selendroid.standalone.android.DeviceManager;
-import io.selendroid.standalone.android.HardwareDeviceListener;
-import io.selendroid.standalone.android.TelnetClient;
+import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.IDevice;
+import io.selendroid.standalone.android.*;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
 
 import java.util.ArrayList;
@@ -26,11 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.android.ddmlib.AndroidDebugBridge;
-import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.Log;
 
 public class DefaultDeviceManager extends Thread implements IDeviceChangeListener, DeviceManager {
   private static final Logger log = Logger.getLogger(DefaultDeviceManager.class.getName());
@@ -114,8 +108,8 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
     AndroidDebugBridge.removeDeviceChangeListener(this);
     if (!shouldKeepAdbAlive) {
       AndroidDebugBridge.disconnectBridge();
-      AndroidDebugBridge.terminate();
     }
+    AndroidDebugBridge.terminate();
     log.info("stopping Device Manager");
     // TODO add thread interrupt and join handling
   }
