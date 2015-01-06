@@ -34,7 +34,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
     ChannelPipeline pipeline = ch.pipeline();
     pipeline.addLast("codec", new HttpServerCodec());
     pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-    pipeline.addLast("shaper", TrafficCounter.shaper);
+    pipeline.addLast("shaper", TrafficCounter.getShaper());
     pipeline.addLast("handler", new ServerHandler(handlers));
   }
 }

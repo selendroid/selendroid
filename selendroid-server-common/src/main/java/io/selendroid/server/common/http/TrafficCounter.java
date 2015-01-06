@@ -13,19 +13,45 @@
  */
 package io.selendroid.server.common.http;
 
-import java.util.concurrent.Executors;
-
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 public class TrafficCounter {
-  public static final GlobalTrafficShapingHandler shaper
-      = new GlobalTrafficShapingHandler(Executors.newScheduledThreadPool(1), 500);
+  private static ScheduledExecutorService executorService;
+  private static GlobalTrafficShapingHandler shaper;
+
+  private static void initIfNecessary() {
+    if (executorService == null || executorService.isShutdown()) {
+      executorService = Executors.newScheduledThreadPool(1);
+    }
+    if (shaper == null) {
+      shaper = new GlobalTrafficShapingHandler(executorService, 500);
+    }
+  }
+
+  public static void shutdown() {
+    if (shaper != null) {
+      shaper.release();
+      shaper = null;
+    }
+    if (executorService != null) {
+      executorService.shutdownNow();
+      executorService = null;
+    }
+  }
+
+  public static GlobalTrafficShapingHandler getShaper() {
+    initIfNecessary();
+    return shaper;
+  }
 
   public static long readBytes() {
-    return shaper.trafficCounter().cumulativeReadBytes();
+    return getShaper().trafficCounter().cumulativeReadBytes();
   }
 
   public static long writtenBytes() {
-    return shaper.trafficCounter().cumulativeWrittenBytes();
+    return getShaper().trafficCounter().cumulativeWrittenBytes();
   }
 }
