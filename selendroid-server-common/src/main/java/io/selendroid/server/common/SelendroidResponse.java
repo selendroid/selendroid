@@ -28,35 +28,27 @@ public class SelendroidResponse implements Response {
    * </ul>
    * If a client sees this they know the error is not their fault.
    */
-  private static final String CATCH_ALL_ERROR_MESSAGE = "CATCH_ALL: ";
+  private static final String CATCH_ALL_ERROR_MESSAGE_PREFIX = "CATCH_ALL: ";
   private String sessionId;
   private int status;
   private Object value;
 
-  protected SelendroidResponse() {
-  }
-
   private SelendroidResponse(String sessionId, int status, Throwable e) throws JSONException {
-    this.value = buildErrorValue(e);
     this.sessionId = sessionId;
     this.status = status;
+    this.value = buildErrorValue(e, status);
   }
 
   private SelendroidResponse(String sessionId, int status, Throwable e, String messagePrefix) throws JSONException {
-    this.value = buildErrorValue(e, messagePrefix);
     this.sessionId = sessionId;
     this.status = status;
+    this.value = buildErrorValue(e, status, messagePrefix);
   }
 
   private SelendroidResponse(String sessionId, int status, Object value) {
     this.sessionId = sessionId;
     this.status = status;
     this.value = value;
-  }
-
-  private SelendroidResponse(String sessionId, int status) {
-    this.sessionId = sessionId;
-    this.status = status;
   }
 
   public SelendroidResponse(String sessionId, Object value) {
@@ -81,19 +73,14 @@ public class SelendroidResponse implements Response {
    * internals. This response marks error responses from the server that indicate
    * something has gone wrong in the internals of selendroid.
    */
-  public static SelendroidResponse forCatchAllError(String sessionId, StatusCode status, Throwable e) {
+  public static SelendroidResponse forCatchAllError(String sessionId, Throwable e) {
     try {
-      return new SelendroidResponse(sessionId, status.getCode(), e, CATCH_ALL_ERROR_MESSAGE);
-    } catch(JSONException err) {
-      return new SelendroidResponse(sessionId, status);
+      return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR.getCode(), e, CATCH_ALL_ERROR_MESSAGE_PREFIX);
+    } catch (JSONException err) {
+      return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_ERROR.getCode());
     }
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see io.selendroid.server.Response#getSessionId()
-   */
   @Override
   public String getSessionId() {
     return sessionId;
@@ -107,11 +94,6 @@ public class SelendroidResponse implements Response {
     return value;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see io.selendroid.server.Response#render()
-   */
   @Override
   public String render() {
     JSONObject o = new JSONObject();
@@ -129,48 +111,47 @@ public class SelendroidResponse implements Response {
     return o.toString();
   }
 
-  private JSONObject buildErrorValue(Throwable t) throws JSONException {
-    return buildErrorValue(t, null);
+  private JSONObject buildErrorValue(Throwable e, int status) throws JSONException {
+    return buildErrorValue(e, status, null);
   }
 
-  private JSONObject buildErrorValue(Throwable t, String messagePrefix) throws JSONException {
+  private JSONObject buildErrorValue(Throwable e, int status, String messagePrefix) throws JSONException {
     JSONObject errorValue = new JSONObject();
-    errorValue.put("class", t.getClass().getCanonicalName());
+    errorValue.put("class", e.getClass().getCanonicalName());
 
-    // TODO: Form exception in a way that will be unpacked nicely on the local end.
     StringWriter stringWriter = new StringWriter();
     PrintWriter printWriter = new PrintWriter(stringWriter);
-    t.printStackTrace(printWriter);
-
-    StringBuilder messageBuilder = new StringBuilder();
 
     if (messagePrefix != null) {
-      messageBuilder.append(messagePrefix);
+      printWriter.append(messagePrefix);
     }
 
-    if (t.getMessage() != null) {
-      messageBuilder.append(t.getMessage());
-      messageBuilder.append("\n");
+    // Also include the Selendroid stack trace. Only do this in case of unknown errors for easier debugging.
+    // In case of an expected error the stack trace is unnecessary and users often find it confusing.
+    if (status == StatusCode.UNKNOWN_ERROR.getCode()) {
+      e.printStackTrace(printWriter);
+    } else {
+      printWriter.append(e.getMessage());
     }
 
-    messageBuilder.append(stringWriter.toString());
+    errorValue.put("message", stringWriter.toString());
 
-    errorValue.put("message", messageBuilder.toString());
-        /*
-         * There is no easy way to attach exception 'cause' clauses here.
-         * See workaround above which is used instead.
-         */
-//      JSONArray stackTrace = new JSONArray();
-//      for (StackTraceElement el : t.getStackTrace()) {
-//          JSONObject frame = new JSONObject();
-//          frame.put("lineNumber", el.getLineNumber());
-//          frame.put("className", el.getClassName());
-//          frame.put("methodName", el.getMethodName());
-//          frame.put("fileName", el.getFileName());
-//          stackTrace.put(frame);
-//      }
-//      errorValue.put("stackTrace", stackTrace);
+    /*
+      The WebDriver protocol does not define a way to add exception stack traces to responses.
+      The workaround above puts the stack trace in the response message.
+      Apparently Selenium's BeanToJsonConverter would also work.
 
+      JSONArray stackTrace = new JSONArray();
+      for (StackTraceElement el : t.getStackTrace()) {
+          JSONObject frame = new JSONObject();
+          frame.put("lineNumber", el.getLineNumber());
+          frame.put("className", el.getClassName());
+          frame.put("methodName", el.getMethodName());
+          frame.put("fileName", el.getFileName());
+          stackTrace.put(frame);
+      }
+      errorValue.put("stackTrace", stackTrace);
+    */
     return errorValue;
   }
 }

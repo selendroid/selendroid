@@ -13,7 +13,6 @@
  */
 package io.selendroid.common;
 
-import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.common.device.DeviceTargetPlatform;
 
 import org.json.JSONObject;
@@ -23,7 +22,7 @@ import org.junit.Test;
 public class SelendroidCapabilitiesTest {
 
   @Test
-  public void testInstanstiateFromJSON() throws Exception {
+  public void testInstantiateFromJSON() throws Exception {
     JSONObject jsonSource = new JSONObject();
     jsonSource.put("browserName", "selendroid");
     jsonSource.put("platformVersion", DeviceTargetPlatform.ANDROID16.getApi());
