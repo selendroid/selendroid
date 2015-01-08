@@ -109,12 +109,12 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
       return new SelendroidResponse(getSessionId(request), StatusCode.UNKNOWN_COMMAND, e);
     } catch (Exception e) {
       SelendroidLogger.error("Exception while handling action in: " + this.getClass().getName(), e);
-      return SelendroidResponse.forCatchAllError(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
+      return SelendroidResponse.forCatchAllError(getSessionId(request), e);
     } catch (Error e) {
       // Catching Errors seems like a bad idea in general but if we don't catch this, Netty will catch it anyway.
       // The advantage of catching it here is that we can propagate the Error to clients.
       SelendroidLogger.error("Fatal error while handling action in: " + this.getClass().getName(), e);
-      return SelendroidResponse.forCatchAllError(getSessionId(request), StatusCode.UNKNOWN_ERROR, e);
+      return SelendroidResponse.forCatchAllError(getSessionId(request), e);
     }
   }
 }
