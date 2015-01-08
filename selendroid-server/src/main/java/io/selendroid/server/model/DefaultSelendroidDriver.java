@@ -13,49 +13,6 @@
  */
 package io.selendroid.server.model;
 
-import io.selendroid.server.ServerInstrumentation;
-import io.selendroid.server.android.AndroidTrackBall;
-import io.selendroid.server.android.AndroidWait;
-import io.selendroid.server.android.InstrumentedKeySender;
-import io.selendroid.server.android.KeySender;
-import io.selendroid.server.android.ViewHierarchyAnalyzer;
-import io.selendroid.server.android.WindowType;
-import io.selendroid.server.android.internal.Dimension;
-import io.selendroid.server.common.exceptions.NoSuchElementException;
-import io.selendroid.server.common.exceptions.SelendroidException;
-import io.selendroid.server.common.utils.CallLogEntry;
-import io.selendroid.server.inspector.TreeUtil;
-import io.selendroid.server.model.internal.AbstractNativeElementContext;
-import io.selendroid.server.model.internal.AbstractWebElementContext;
-import io.selendroid.server.model.internal.WebViewHandleMapper;
-import io.selendroid.server.model.internal.execute_native.FindElementByAndroidTag;
-import io.selendroid.server.model.internal.execute_native.FindRId;
-import io.selendroid.server.model.internal.execute_native.GetL10nKeyTranslation;
-import io.selendroid.server.model.internal.execute_native.InvokeMenuAction;
-import io.selendroid.server.model.internal.execute_native.IsElementDisplayedInViewport;
-import io.selendroid.server.model.internal.execute_native.NativeExecuteScript;
-import io.selendroid.server.model.js.AndroidAtoms;
-import io.selendroid.server.util.Preconditions;
-import io.selendroid.server.util.SelendroidLogger;
-
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.res.Resources.Theme;
 import android.content.res.TypedArray;
@@ -67,6 +24,28 @@ import android.provider.Settings;
 import android.view.Display;
 import android.view.View;
 import android.webkit.WebView;
+import io.selendroid.server.ServerInstrumentation;
+import io.selendroid.server.android.*;
+import io.selendroid.server.android.internal.Dimension;
+import io.selendroid.server.common.exceptions.NoSuchElementException;
+import io.selendroid.server.common.exceptions.SelendroidException;
+import io.selendroid.server.common.utils.CallLogEntry;
+import io.selendroid.server.inspector.TreeUtil;
+import io.selendroid.server.model.internal.AbstractNativeElementContext;
+import io.selendroid.server.model.internal.AbstractWebElementContext;
+import io.selendroid.server.model.internal.WebViewHandleMapper;
+import io.selendroid.server.model.internal.execute_native.*;
+import io.selendroid.server.model.js.AndroidAtoms;
+import io.selendroid.server.util.Preconditions;
+import io.selendroid.server.util.SelendroidLogger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.*;
 
 
 public class DefaultSelendroidDriver implements SelendroidDriver {
@@ -674,6 +653,9 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
   }
 
   public void setFrameContext(Object obj) throws JSONException {
+    if (selendroidWebDriver == null) {
+      return;
+    }
     SelendroidLogger.info("setting frame context: " + obj);
     if (obj.equals(null)) {
       selendroidWebDriver.switchToDefaultContent();
