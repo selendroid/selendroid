@@ -24,10 +24,9 @@ import io.selendroid.server.util.SelendroidLogger;
 
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import org.json.JSONObject;
 
 public class ReadCallLog extends SafeRequestHandler {
 
@@ -38,11 +37,14 @@ public class ReadCallLog extends SafeRequestHandler {
   @Override
   public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("reading call log");
-    try {
+    try {        
         List<CallLogEntry> response = ((DefaultSelendroidDriver)getSelendroidDriver(request)).readCallLog();
         SelendroidLogger.info("Succesfully read call log.");
-        return new SelendroidResponse(getSessionId(request),
-                    new Gson().toJson(response, new TypeToken<List<CallLogEntry>>() {}.getType()));
+        JSONArray json = new JSONArray();
+        for(CallLogEntry logEntry: response) {
+            json.put(logEntry.toJSON());
+        }
+        return new SelendroidResponse(getSessionId(request), json);
     }
     catch(PermissionDeniedException e) {
         throw new SelendroidException("READ_CALL_LOG permission must be in a.u.t. to read call logs.");

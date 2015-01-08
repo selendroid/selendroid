@@ -24,8 +24,6 @@ import io.selendroid.server.util.SelendroidLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.gson.Gson;
-
 public class AddCallLog extends SafeRequestHandler {
 
   public AddCallLog(String mappedUri) {
@@ -37,7 +35,7 @@ public class AddCallLog extends SafeRequestHandler {
     SelendroidLogger.info("add call log");
     JSONObject parameters = getPayload(request).getJSONObject("parameters");
     String callLogJson = parameters.getString("calllogjson");
-    CallLogEntry log = new Gson().fromJson(callLogJson, CallLogEntry.class);
+    CallLogEntry log = CallLogEntry.fromJson(callLogJson);
     try {
         ((DefaultSelendroidDriver) getSelendroidDriver(request)).addCallLog(log);
         String response = "Added the number "+log.getNumber()+" with duration of "+ log.getDuration()+" to call log.";
