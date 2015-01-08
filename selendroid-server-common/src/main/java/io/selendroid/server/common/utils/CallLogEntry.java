@@ -56,12 +56,10 @@ public class CallLogEntry {
             entry.direction = json.optInt("direction", INCOMING_TYPE);
             entry.time = dateFormat.parse(json.optString("time"));
             return entry;
-        }
-        catch(ParseException e) {
+        } catch(ParseException e) {
             throw new IllegalArgumentException("Unable to parse CallLogEntry from string " + jsonString, e);
             
-        }
-        catch(JSONException e) {
+        } catch(JSONException e) {
             throw new IllegalArgumentException("Unable to parse CallLogEntry from string " + jsonString, e);
         }        
     }
@@ -74,8 +72,7 @@ public class CallLogEntry {
             json.put("direction", direction);
             json.put("time", dateFormat.format(time));
             return json.toString();
-        }
-        catch(JSONException e) {
+        } catch(JSONException e) {
             throw new IllegalStateException("CallLogEntry cannot be converted to JSONObject", e);
         }
     }
