@@ -1,4 +1,7 @@
-0.13.0-SNAPSHOT (under current development)
+0.14.0-SNAPSHOT (under current development)
+
+0.13.0
+---
 - In case of an shutting down selendroid-standalone (using an already started emulator) this fix is fixing the NPE. 
 - Read adb output. [#695](../../issues/695) 
 - Selendroid-standalone argument -emulatorOptions to handle multiple options for emulator [#697](../../issues/697)
@@ -6,6 +9,17 @@
 - Corrections to JSON to register at Grid hub. [#713](../../issues/713)
 - Added folder monitoring capability and fixed emulator launching problem. [#712](../../issues/712)
 - Introduced package per component. E.g. client bindings are located in ```io.selendroid.client```  [#725](../../issues/725)
+- Correctly wait for Selendroid standalone server to come up 
+- Consider 'emulator' capability when matching
+- For each device, register as "android" for WebView tests and also selendroid if an aut is specified
+- Elements don't need to be enabled to be visible. 
+- Removed the adb command implementation, now done via automation
+- Automatically selects the latest version of the app to test if it is not specified by users.
+- terminate must be called on AndroidDebugBridge on shutdown. 
+- Removed Gson dependency from server and client
+- fixes #767 stop internal ExecutorService of TrafficCounter on shutdown
+- Only return stack traces for unknown errors
+- Adding "model" as a configurable parameter option.
 
 0.12.0
 ---
