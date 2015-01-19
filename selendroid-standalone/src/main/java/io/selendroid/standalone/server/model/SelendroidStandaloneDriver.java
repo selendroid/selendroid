@@ -325,6 +325,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private void waitForServerStart(AndroidDevice device) {
     long startTimeout = serverConfiguration.getServerStartTimeout();
     long timeoutEnd = System.currentTimeMillis() + startTimeout;
+    log.info("Waiting for the Selendroid server to start.");
     while (!device.isSelendroidRunning()) {
       if (timeoutEnd >= System.currentTimeMillis()) {
         try {
@@ -341,6 +342,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
                 + startTimeout / 1000 + "sec:");
       }
     }
+    log.info("Selendroid server has started.");
   }
 
   private void pushExtensionsToDevice(AndroidDevice device, String extensionFile) {
