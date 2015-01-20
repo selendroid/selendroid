@@ -307,14 +307,13 @@ public abstract class AbstractDevice implements AndroidDevice {
   public boolean isSelendroidRunning() {
     HttpClient httpClient = HttpClientBuilder.create().build();
     String url = WD_STATUS_ENDPOINT.replace("8080", String.valueOf(port));
-    log.info("Using url: " + url);
+    log.info("Checking if the Selendroid server is running: " + url);
     HttpRequestBase request = new HttpGet(url);
     HttpResponse response;
     try {
       response = httpClient.execute(request);
     } catch (Exception e) {
-      log.log(Level.INFO, "Error checking if selendroid-server has started.", e);
-      log.info("Assuming server has not started");
+      log.info("Can't connect to Selendroid server, assuming it is not running.");
       return false;
     }
 
