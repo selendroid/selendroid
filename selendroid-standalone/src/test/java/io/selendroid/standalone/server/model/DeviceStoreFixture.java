@@ -49,10 +49,11 @@ public class DeviceStoreFixture {
   }
 
   protected static DefaultAndroidEmulator anEmulator(String name, DeviceTargetPlatform platform,
-      boolean isEmulatorStarted) throws AndroidDeviceException {
+      String apiType, boolean isEmulatorStarted) throws AndroidDeviceException {
     DefaultAndroidEmulator emulator = mock(DefaultAndroidEmulator.class);
     when(emulator.getAvdName()).thenReturn(name);
     when(emulator.getModel()).thenReturn("Nexus 5");
+    when(emulator.getAPIType()).thenReturn(apiType);
     when(emulator.getTargetPlatform()).thenReturn(platform);
     when(emulator.isEmulatorStarted()).thenReturn(isEmulatorStarted);
     when(emulator.isDeviceReady()).thenReturn(false);
@@ -75,11 +76,18 @@ public class DeviceStoreFixture {
     capabilities.setScreenSize("320x480");
     return capabilities;
   }
-
   protected static SelendroidCapabilities withWrongModelCapabilities() {
     SelendroidCapabilities capabilities = new SelendroidCapabilities();
     capabilities.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
     capabilities.setModel("Nexus 7");
+    capabilities.setScreenSize("320x480");
+    return capabilities;
+  }
+
+  protected static SelendroidCapabilities withGoogleAPITypeCapabilities() {
+    SelendroidCapabilities capabilities = new SelendroidCapabilities();
+    capabilities.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
+    capabilities.setAPIType("Google");
     capabilities.setScreenSize("320x480");
     return capabilities;
   }

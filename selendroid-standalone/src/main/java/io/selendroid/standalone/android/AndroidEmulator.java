@@ -59,4 +59,6 @@ public interface AndroidEmulator {
   public void setWasStartedBySelendroid(boolean wasStartedBySelendroid);
 
   public String getModel();
+
+  public String getAPIType();
 }
