@@ -17,7 +17,6 @@ import io.selendroid.server.ServerInstrumentation;
 import io.selendroid.server.android.AndroidTouchScreen;
 import io.selendroid.server.android.KeySender;
 import io.selendroid.server.android.MotionSender;
-import io.selendroid.server.android.ViewHierarchyAnalyzer;
 import io.selendroid.server.android.WebViewKeySender;
 import io.selendroid.server.android.WebViewMotionSender;
 import io.selendroid.server.android.internal.DomWindow;
@@ -33,6 +32,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.cordova.CordovaChromeClient;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +62,7 @@ public class SelendroidWebDriver {
   private boolean done = false;
   private ServerInstrumentation serverInstrumentation = null;
   private SessionCookieManager sm = new SessionCookieManager();
-  private SelendroidWebChromeClient chromeClient = null;
+  private WebChromeClient chromeClient = null;
   private DomWindow currentWindowOrFrame;
   private Queue<String> currentAlertMessage = new LinkedList<String>();
   private TouchScreen touch;
@@ -157,17 +159,18 @@ public class SelendroidWebDriver {
         toReturn.append(obj.toString());
       }
     } else {
-      SelendroidLogger.info("failed to figure out what this is to convert to execute script:" + obj);
+      SelendroidLogger
+          .info("failed to figure out what this is to convert to execute script:" + obj);
     }
     SelendroidLogger.info("convertToJsArgs: " + toReturn.toString());
     return toReturn.toString();
   }
 
-    public String getContextHandle() {
-        return contextHandle;
-    }
+  public String getContextHandle() {
+    return contextHandle;
+  }
 
-    public Object executeAtom(AndroidAtoms atom, KnownElements ke, Object... args) {
+  public Object executeAtom(AndroidAtoms atom, KnownElements ke, Object... args) {
     JSONArray array = new JSONArray();
     for (int i = 0; i < args.length; i++) {
       array.put(args[i]);
@@ -186,7 +189,9 @@ public class SelendroidWebDriver {
     String scriptInWindow =
         "(function(){ " + " var win; try{win=" + getWindowString() + "}catch(e){win=window;}"
             + "with(win){return (" + myScript + ")(" + convertToJsArgs(args, ke) + ")}})()";
-    String jsResult = executeJavascriptInWebView("alert('selendroid<' + document.charset + '>:'+" + scriptInWindow + ")");
+    String jsResult =
+        executeJavascriptInWebView("alert('selendroid<' + document.charset + '>:'+"
+            + scriptInWindow + ")");
 
 
     SelendroidLogger.info("jsResult: " + jsResult);
@@ -327,7 +332,14 @@ public class SelendroidWebDriver {
           view.setFocusable(true);
           view.setFocusableInTouchMode(true);
           view.setNetworkAvailable(true);
-          chromeClient = new SelendroidWebChromeClient();
+          //chromeClient = new SelendroidWebChromeClient();
+          if (view instanceof CordovaWebView) {
+            CordovaWebView webview=(CordovaWebView)view;
+            CordovaInterface ci=null;
+            chromeClient = new ExtendedCordovaChromeClient(null,webview);
+          } else {
+            chromeClient = new SelendroidWebChromeClient();
+          }
           view.setWebChromeClient(chromeClient);
 
           WebSettings settings = view.getSettings();
@@ -384,16 +396,29 @@ public class SelendroidWebDriver {
   }
 
   Object injectAtomJavascript(String toExecute, Object args, KnownElements ke) throws JSONException {
-    return executeJavascriptInWebView("alert('selendroid<' + document.charset +'>:'+ ("
-        + toExecute + ")(" + convertToJsArgs(args, ke) + "))");
+    return executeJavascriptInWebView("alert('selendroid<' + document.charset +'>:'+ (" + toExecute
+        + ")(" + convertToJsArgs(args, ke) + "))");
   }
 
   public Object executeAsyncJavascript(String toExecute, JSONArray args, KnownElements ke) {
     try {
-      String callbackFunction = "function(result){alert('selendroid<' + document.charset + '>:'+result);}";
-      String script = "try {(" + AndroidAtoms.EXECUTE_ASYNC_SCRIPT.getValue() + ")(" + escapeAndQuote(toExecute) + ", ["
-          + convertToJsArgs(args, ke) + "], " + asyncScriptTimeout + ", " + callbackFunction + ","
-          + "true, " + getWindowString() + ")}catch(e){alert('selendroid<' + document.charset + '>:{\"status\":13,\"value\":\"' + e + '\"}')}";
+      String callbackFunction =
+          "function(result){alert('selendroid<' + document.charset + '>:'+result);}";
+      String script =
+          "try {("
+              + AndroidAtoms.EXECUTE_ASYNC_SCRIPT.getValue()
+              + ")("
+              + escapeAndQuote(toExecute)
+              + ", ["
+              + convertToJsArgs(args, ke)
+              + "], "
+              + asyncScriptTimeout
+              + ", "
+              + callbackFunction
+              + ","
+              + "true, "
+              + getWindowString()
+              + ")}catch(e){alert('selendroid<' + document.charset + '>:{\"status\":13,\"value\":\"' + e + '\"}')}";
       return executeJavascriptInWebView(script);
     } catch (JSONException je) {
       SelendroidLogger.error("Failed convert JSONArray to jsArgs", je);
@@ -447,6 +472,52 @@ public class SelendroidWebDriver {
     }
   }
 
+  public class ExtendedCordovaChromeClient extends CordovaChromeClient {
+
+
+    public ExtendedCordovaChromeClient(CordovaInterface ctx, CordovaWebView app) {
+      super(ctx, app);
+    }
+
+    /**
+     * Unconventional way of adding a Javascript interface but the main reason why I took this way
+     * is that it is working stable compared to the webview.addJavascriptInterface way.
+     */
+    @Override
+    public boolean onJsAlert(WebView view, String url, String message, JsResult jsResult) {
+      if (message != null && message.startsWith("selendroid<")) {
+        jsResult.confirm();
+
+        synchronized (syncObject) {
+          String res = message.replaceFirst("selendroid<", "");
+          int i = res.indexOf(">:");
+          String enc = res.substring(0, i);
+          res = res.substring(i + 2);
+          /*
+           * Workaround for Japanese character encodings: Replace U+00A5 with backslash so that we
+           * can properly parse JSON strings contains backslash escapes, since WebKit maps 0x5C
+           * (used for character escaping in all of the Japanses character encodings) to U+00A5 (YEN
+           * SIGN) and breaks escape characters.
+           */
+          if (("EUC-JP".equals(enc) || "Shift_JIS".equals(enc) || "ISO-2022-JP".equals(enc))
+              && res.contains("\u00a5")) {
+            SelendroidLogger.info("Perform workaround for japanese character encodings");
+            SelendroidLogger.debug("Original String: " + res);
+            res = res.replace("\u00a5", "\\");
+            SelendroidLogger.debug("Replaced result: " + res);
+          }
+          result = res;
+          syncObject.notify();
+        }
+
+        return true;
+      } else {
+        currentAlertMessage.add(message == null ? "null" : message);
+        SelendroidLogger.info("new alert message: " + message);
+        return super.onJsAlert(view, url, message, jsResult);
+      }
+    }
+  }
 
   public class SelendroidWebChromeClient extends WebChromeClient {
 
@@ -465,11 +536,10 @@ public class SelendroidWebDriver {
           String enc = res.substring(0, i);
           res = res.substring(i + 2);
           /*
-           * Workaround for Japanese character encodings:
-           * Replace U+00A5 with backslash so that we can properly parse JSON strings
-           * contains backslash escapes, since WebKit maps 0x5C (used for character escaping
-           * in all of the Japanses character encodings) to U+00A5 (YEN SIGN) and breaks
-           * escape characters.
+           * Workaround for Japanese character encodings: Replace U+00A5 with backslash so that we
+           * can properly parse JSON strings contains backslash escapes, since WebKit maps 0x5C
+           * (used for character escaping in all of the Japanses character encodings) to U+00A5 (YEN
+           * SIGN) and breaks escape characters.
            */
           if (("EUC-JP".equals(enc) || "Shift_JIS".equals(enc) || "ISO-2022-JP".equals(enc))
               && res.contains("\u00a5")) {
