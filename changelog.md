@@ -1,4 +1,6 @@
 0.14.0-SNAPSHOT (under current development)
+---
+- fixed support for Cordova 3.6.x apps
 
 0.13.0
 ---
