@@ -33,11 +33,27 @@ public class DefaultAndroidEmulatorTests {
   }
 
   @Test
-  public void testShouldBeAbleToStartEmulator() throws Exception {
+  public void testShouldBeAbleToStartGoogleEmulator() throws Exception {
     AndroidEmulator emulator =
         new DefaultAndroidEmulator("l10n", "X86", new Dimension(320, 480), "16", "Nexus 5", new File(
             FileUtils.getUserDirectory(), ".android" + File.separator + "avd" + File.separator
-                + "l10n.avd"));
+                + "l10n.avd"), "Google");
+
+    Assert.assertTrue("expecting emulators exists: ", emulator.isEmulatorAlreadyExistent());
+    Assert.assertFalse("expecting emulator is not yet started: ", emulator.isEmulatorStarted());
+
+    emulator.start(new Locale("en_GB"), 5554, null);
+    Assert.assertTrue(emulator.isEmulatorStarted());
+    emulator.stop();
+    Assert.assertFalse(emulator.isEmulatorStarted());
+  }
+
+  @Test
+  public void testShouldBeAbleToStartAndroidEmulator() throws Exception {
+    AndroidEmulator emulator =
+        new DefaultAndroidEmulator("l10n", "X86", new Dimension(320, 480), "16", "Nexus 5", new File(
+            FileUtils.getUserDirectory(), ".android" + File.separator + "avd" + File.separator
+                + "l10n.avd"), "Android");
 
     Assert.assertTrue("expecting emulators exists: ", emulator.isEmulatorAlreadyExistent());
     Assert.assertFalse("expecting emulator is not yet started: ", emulator.isEmulatorStarted());

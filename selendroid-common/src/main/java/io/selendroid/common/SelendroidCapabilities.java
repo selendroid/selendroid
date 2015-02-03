@@ -48,6 +48,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String PRE_SESSION_ADB_COMMANDS = "preSessionAdbCommands";
   public static final String SERIAL = "serial";
   public static final String MODEL = "model";
+  public static final String API_TYPE = "apiType";
 
   public static final String PLATFORM_VERSION = "platformVersion";
   public static final String PLATFORM_NAME = "platformName";
@@ -120,6 +121,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return (String) getRawCapabilities().get(SCREEN_SIZE);
   }
 
+  public String getAPIType() {
+    return (String) getRawCapabilities().get(API_TYPE);
+  }
+
   /**
    * Full path of the dex file (on the host machine) containing Selendroid extensions to be loaded at run time
    * Example: /home/user/extension.dex
@@ -142,6 +147,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public void setModel(String model) {
     setCapability(MODEL, model);
+  }
+
+  public void setAPIType(String apiType) {
+    setCapability(API_TYPE, apiType);
   }
 
   public void setPlatformVersion(DeviceTargetPlatform androidTarget) {

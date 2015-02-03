@@ -335,7 +335,9 @@ public class DeviceStore {
             capabilities.getEmulator() == null ? true : capabilities.getEmulator() ?
                 candidate instanceof DefaultAndroidEmulator : candidate instanceof DefaultHardwareDevice,
             StringUtils.isNotBlank(capabilities.getSerial()) ? capabilities.getSerial().equals(candidate.getSerial()) : true,
-            StringUtils.isNotBlank(capabilities.getModel()) ? candidate.getModel().contains(capabilities.getModel()) : true
+            StringUtils.isNotBlank(capabilities.getModel()) ? candidate.getModel().contains(capabilities.getModel()) : true,
+            StringUtils.isNotBlank(capabilities.getAPIType()) ? 
+                candidate.getAPIType() != null && candidate.getAPIType().contains(capabilities.getAPIType()) : true
         );
 
         return Iterables.all(booleanExpressions, Predicates.equalTo(true));

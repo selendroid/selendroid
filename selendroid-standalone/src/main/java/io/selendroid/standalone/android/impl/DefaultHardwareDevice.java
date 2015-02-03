@@ -95,4 +95,8 @@ public class DefaultHardwareDevice extends AbstractDevice {
 	  return serial;
   }
 
+  @Override
+  public String getAPIType() {
+    return null;
+  }
 }
