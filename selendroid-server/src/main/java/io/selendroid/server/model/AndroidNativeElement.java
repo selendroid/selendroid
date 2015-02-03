@@ -270,6 +270,7 @@ public class AndroidNativeElement implements AndroidElement {
   }
 
   private void clickOnScreen(float x, float y) {
+    SelendroidLogger.debug(String.format("Clicking at position [%f, %f]", x, y));
     final ServerInstrumentation inst = ServerInstrumentation.getInstance();
     long downTime = SystemClock.uptimeMillis();
     long eventTime = SystemClock.uptimeMillis();
