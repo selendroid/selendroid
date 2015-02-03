@@ -1,5 +1,10 @@
-0.14.0-SNAPSHOT (under current development)
+0.15.0-SNAPSHOT (under current development)
 ---
+
+
+0.14.0
+---
+- Don't log exception when waiting for the Selendroid server to start
 - fixed support for Cordova 3.6.x apps
 
 0.13.0
