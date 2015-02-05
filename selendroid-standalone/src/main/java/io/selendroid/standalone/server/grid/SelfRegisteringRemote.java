@@ -105,6 +105,7 @@ public class SelfRegisteringRemote {
             capa.put(SelendroidCapabilities.AUT, driver.getSupportedApps().getJSONObject(x).get(APP_ID));
           }
           capa.put(CapabilityType.PLATFORM, "ANDROID");
+          capa.put(SelendroidCapabilities.PLATFORM_NAME, "android");
           capa.put(CapabilityType.VERSION, version);
           capa.put("maxInstances", config.getMaxInstances());
           caps.put(capa);
