@@ -84,11 +84,9 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
           throw new RuntimeException(e);
         }
       }
-      if (devices.length > 0) {
-        for (int i = 0; i < devices.length; i++) {
-          deviceConnected(devices[i]);
-          log.info("my devices: " + devices[i].getAvdName());
-        }
+      for (IDevice device : devices) {
+        deviceConnected(device);
+        log.info("my devices: " + device.getAvdName());
       }
     }
 
@@ -108,8 +106,8 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
     AndroidDebugBridge.removeDeviceChangeListener(this);
     if (!shouldKeepAdbAlive) {
       AndroidDebugBridge.disconnectBridge();
+      AndroidDebugBridge.terminate();
     }
-    AndroidDebugBridge.terminate();
     log.info("stopping Device Manager");
     // TODO add thread interrupt and join handling
   }
