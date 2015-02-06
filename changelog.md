@@ -4,6 +4,7 @@
 - Reverted the 'adb.terminate()' call (back into if condition). [#803](../../issues/803) 
 - Log click position [#801](../../issues/801)
 - fix registration of selendroid server into a selenium grid [#802](../../issues/802) 
+- fix NPE on native apps driver.switchTo().defaultContent() [#776](../../issues/776) 
 
 0.14.0
 ---
