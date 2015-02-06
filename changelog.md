@@ -1,6 +1,6 @@
 0.15.0-SNAPSHOT (under current development)
 ---
-
+-  Fix native view search with multiple top level views [#799](../../issues/799) 
 
 0.14.0
 ---
