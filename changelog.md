@@ -5,6 +5,7 @@
 - Log click position [#801](../../issues/801)
 - fix registration of selendroid server into a selenium grid [#802](../../issues/802) 
 - fix NPE on native apps driver.switchTo().defaultContent() [#776](../../issues/776) 
+- Fixing maven issues by using latest maven-android-plugin. [#804](../../issues/804)  
 
 0.14.0
 ---
