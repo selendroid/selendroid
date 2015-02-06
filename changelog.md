@@ -3,6 +3,7 @@
 - Fix native view search with multiple top level views [#799](../../issues/799) 
 - Reverted the 'adb.terminate()' call (back into if condition). [#803](../../issues/803) 
 - Log click position [#801](../../issues/801)
+- fix registration of selendroid server into a selenium grid [#802](../../issues/802) 
 
 0.14.0
 ---
