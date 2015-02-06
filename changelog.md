@@ -1,6 +1,7 @@
 0.15.0-SNAPSHOT (under current development)
 ---
--  Fix native view search with multiple top level views [#799](../../issues/799) 
+- Fix native view search with multiple top level views [#799](../../issues/799) 
+- Reverted the 'adb.terminate()' call (back into if condition). [#803](../../issues/803) 
 
 0.14.0
 ---
