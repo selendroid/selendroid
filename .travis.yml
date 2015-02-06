@@ -23,6 +23,7 @@ branches:
 
 before_install: 
   - "git clone -b travis `git config --get remote.origin.url` target/travis"
+  - "mvn --version"
   - "cd third-party/cordova-3.7.0"
   - "./mvnInstall.sh"
   - "cd ../../"
