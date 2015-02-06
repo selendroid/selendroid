@@ -2,6 +2,7 @@
 ---
 - Fix native view search with multiple top level views [#799](../../issues/799) 
 - Reverted the 'adb.terminate()' call (back into if condition). [#803](../../issues/803) 
+- Log click position [#801](../../issues/801)
 
 0.14.0
 ---
