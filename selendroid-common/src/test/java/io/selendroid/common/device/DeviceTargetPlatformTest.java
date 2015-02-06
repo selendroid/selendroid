@@ -16,4 +16,14 @@ public class DeviceTargetPlatformTest {
     DeviceTargetPlatform platform = DeviceTargetPlatform.fromPlatformVersion("ANDROID17");
     Assert.assertEquals(DeviceTargetPlatform.ANDROID17, platform);
   }
+  @Test
+  public void shouldLoadFromMaxSupportedNumberValue() {
+    DeviceTargetPlatform platform = DeviceTargetPlatform.fromPlatformVersion("21");
+    Assert.assertEquals(DeviceTargetPlatform.ANDROID21, platform);
+  }
+  @Test
+  public void shouldLoadFromMaxSupportedStringAndNumberValue() {
+    DeviceTargetPlatform platform = DeviceTargetPlatform.fromPlatformVersion("ANDROID21");
+    Assert.assertEquals(DeviceTargetPlatform.ANDROID21, platform);
+  }  
 }
