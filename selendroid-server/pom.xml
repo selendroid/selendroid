@@ -72,13 +72,14 @@
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
 			<plugin>
-				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+			  <groupId>com.simpligility.maven.plugins</groupId>
 				<artifactId>android-maven-plugin</artifactId>
 				<configuration>
 					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
 					<resourceDirectory>${project.basedir}/res</resourceDirectory>
 					<outputDirectory>bin/classes</outputDirectory>
 					<testOutputDirectory>bin/test-classes</testOutputDirectory>
+					<failOnNonStandardStructure>false</failOnNonStandardStructure>
 					<sdk>
 						<platform>16</platform>
 					</sdk>

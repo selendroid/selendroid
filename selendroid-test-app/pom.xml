@@ -14,6 +14,17 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<version>${platform.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.1.2</version>
@@ -50,33 +61,22 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.google.android</groupId>
-			<artifactId>android</artifactId>
-			<version>${platform.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
 			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-standalone</artifactId>
 			<version>${project.version}</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-client</artifactId>
 			<version>${project.version}</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.selendroid</groupId>
 			<artifactId>selendroid-server-common</artifactId>
 			<version>${project.version}</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -101,13 +101,14 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<groupId>com.simpligility.maven.plugins</groupId>
 				<artifactId>android-maven-plugin</artifactId>
 				<configuration>
 					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
 					<assetsDirectory>${project.basedir}/assets</assetsDirectory>
 					<resourceDirectory>${project.basedir}/res</resourceDirectory>
 					<nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
+					<failOnNonStandardStructure>false</failOnNonStandardStructure>
 					<sdk>
 						<platform>16</platform>
 					</sdk>
