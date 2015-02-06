@@ -268,28 +268,31 @@ public abstract class AbstractNativeElementContext
   }
 
 
-  public List<AndroidElement> searchViews(List<View> roots,
+  /** visible for testing */
+  protected static List<AndroidElement> searchViews(AbstractNativeElementContext context, List<View> roots,
       Predicate predicate, boolean findJustOne) {
     List<AndroidElement> elements = new ArrayList<AndroidElement>();
     if (roots == null || roots.isEmpty()) {
       return elements;
     }
     ArrayDeque<View> queue = new ArrayDeque<View>();
-    queue.addAll(roots);
 
-    while (!queue.isEmpty()) {
-      View view = queue.pop();
-      if (predicate.apply(view)) {
-        elements.add(newAndroidElement(view));
-        if (findJustOne) {
-          break;
+    for (View root : roots) {
+      queue.add(root);
+      while (!queue.isEmpty()) {
+        View view = queue.pop();
+        if (predicate.apply(view)) {
+          elements.add(context.newAndroidElement(view));
+          if (findJustOne) {
+            break;
+          }
         }
-      }
-      if (view instanceof ViewGroup) {
-        ViewGroup group = (ViewGroup)view;
-        int childrenCount = group.getChildCount();
-        for (int index = 0; index < childrenCount; index++) {
-          queue.add(group.getChildAt(index));
+        if (view instanceof ViewGroup) {
+          ViewGroup group = (ViewGroup) view;
+          int childrenCount = group.getChildCount();
+          for (int index = 0; index < childrenCount; index++) {
+            queue.add(group.getChildAt(index));
+          }
         }
       }
     }
@@ -297,11 +300,11 @@ public abstract class AbstractNativeElementContext
   }
 
   private List<AndroidElement> findAllByPredicate(Predicate predicate) {
-     return searchViews(getTopLevelViews(), predicate, false);
+     return searchViews(this, getTopLevelViews(), predicate, false);
   }
 
   private AndroidElement findFirstByPredicate(Predicate predicate) {
-    List<AndroidElement> list = searchViews(getTopLevelViews(), predicate, true);
+    List<AndroidElement> list = searchViews(this, getTopLevelViews(), predicate, true);
     if (list != null && !list.isEmpty()) {
       return list.get(0);
     }
