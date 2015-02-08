@@ -332,8 +332,10 @@ public class SelendroidWebDriver {
           view.setFocusable(true);
           view.setFocusableInTouchMode(true);
           view.setNetworkAvailable(true);
-          //chromeClient = new SelendroidWebChromeClient();
-          if (view instanceof CordovaWebView) {
+          // need to check the class name rather than checking instanceof
+          // since when it is not an instanceof, it likely means the app under test
+          // does not contain the Cordova project and this will cause a RuntimeException
+          if (view.getClass().getSimpleName().equalsIgnoreCase("CordovaWebView")) {
             CordovaWebView webview=(CordovaWebView)view;
             CordovaInterface ci=null;
             chromeClient = new ExtendedCordovaChromeClient(null,webview);
