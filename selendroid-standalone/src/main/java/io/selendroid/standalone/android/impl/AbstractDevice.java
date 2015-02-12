@@ -568,10 +568,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     String psOutput = runAdbCommand("shell ps");
     StringBuilder sb = new StringBuilder();
     boolean isFirstHeaderLine = true;
-    for (String line: Splitter.on("\n").split(psOutput)) {
+    for (String line: Splitter.on(System.getProperty("line.separator")).split(psOutput)) {
       boolean isThirdPartyProcess = line.contains(".") && !line.contains("com.android");
       if (isFirstHeaderLine || isThirdPartyProcess) {
-        sb.append(line + "\n");
+        sb.append(line + System.getProperty("line.separator"));
       }
       isFirstHeaderLine = false;
     }
