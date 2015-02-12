@@ -44,7 +44,7 @@ public class SelendroidResponseTest {
     assertEquals(StatusCode.UNKNOWN_ERROR.getCode(), rendered.getLong("status"));
     assertEquals("java.lang.RuntimeException", rendered.getJSONObject("value").getString("class"));
     Assert.assertTrue(rendered.getJSONObject("value").getString("message").startsWith(
-        "java.lang.RuntimeException\n\tat io.selendroid.server.common.SelendroidResponseTest"));
+        String.format("java.lang.RuntimeException%n\tat io.selendroid.server.common.SelendroidResponseTest")));
   }
 
   @Test
@@ -56,6 +56,6 @@ public class SelendroidResponseTest {
     assertEquals(StatusCode.UNKNOWN_ERROR.getCode(), rendered.getLong("status"));
     assertEquals("java.lang.RuntimeException", rendered.getJSONObject("value").getString("class"));
     Assert.assertTrue(rendered.getJSONObject("value").getString("message").startsWith(
-        "CATCH_ALL: java.lang.RuntimeException\n\tat io.selendroid.server.common.SelendroidResponseTest"));
+            String.format("CATCH_ALL: java.lang.RuntimeException%n\tat io.selendroid.server.common.SelendroidResponseTest")));
   }
 }
