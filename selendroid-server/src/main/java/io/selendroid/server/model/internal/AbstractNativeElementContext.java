@@ -13,51 +13,34 @@
  */
 package io.selendroid.server.model.internal;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
 import com.android.internal.util.Predicate;
-
 import io.selendroid.server.ServerInstrumentation;
 import io.selendroid.server.android.KeySender;
 import io.selendroid.server.android.ViewHierarchyAnalyzer;
-import io.selendroid.server.common.exceptions.NoSuchElementException;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.exceptions.UnsupportedOperationException;
-import io.selendroid.server.model.AndroidElement;
-import io.selendroid.server.model.AndroidNativeElement;
-import io.selendroid.server.model.AndroidRElement;
-import io.selendroid.server.model.By;
-import io.selendroid.server.model.KnownElements;
-import io.selendroid.server.model.SearchContext;
-import io.selendroid.server.model.By.ByClass;
-import io.selendroid.server.model.By.ById;
-import io.selendroid.server.model.By.ByLinkText;
-import io.selendroid.server.model.By.ByName;
-import io.selendroid.server.model.By.ByTagName;
-import io.selendroid.server.model.By.ByXPath;
-import io.selendroid.server.util.InstanceOfPredicate;
+import io.selendroid.server.model.*;
+import io.selendroid.server.model.By.*;
 import io.selendroid.server.util.ListUtil;
 import io.selendroid.server.util.Preconditions;
 import io.selendroid.server.util.SelendroidLogger;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 public abstract class AbstractNativeElementContext
@@ -259,14 +242,13 @@ public abstract class AbstractNativeElementContext
 
   @Override
   public AndroidElement findElementById(String using) {
-    return findFirstByPredicate(new ViewIdPredicate(using));
+    return findFirstByPredicate(Factories.getPredicatesFactory().createIdPredicate(using));
   }
 
   @Override
   public List<AndroidElement> findElementsById(String using) {
-    return findAllByPredicate(new ViewIdPredicate(using));
+    return findAllByPredicate(Factories.getPredicatesFactory().createIdPredicate(using));
   }
-
 
   /** visible for testing */
   protected static List<AndroidElement> searchViews(AbstractNativeElementContext context, List<View> roots,
@@ -313,147 +295,55 @@ public abstract class AbstractNativeElementContext
   
   @Override
   public AndroidElement findElementByName(String using) {
-    return findFirstByPredicate(new ViewContentDescriptionPredicate(using));
+    return findFirstByPredicate(Factories.getPredicatesFactory().createContentDescriptionPredicate(using));
   }
 
   @Override
   public List<AndroidElement> findElementsByName(String using) {
-    return findAllByPredicate(new ViewContentDescriptionPredicate(using));
-  }
-
-  class ViewContentDescriptionPredicate implements Predicate<View> {
-    private String contentDescription = null;
-
-    ViewContentDescriptionPredicate(String contentDescription) {
-      this.contentDescription = contentDescription;
-    }
-
-    public boolean apply(View view) {
-      return charSequenceEquals(contentDescription, view.getContentDescription());
-    }
-
-    private boolean charSequenceEquals(String s, CharSequence cs) {
-      if (s == null) {
-        return cs == null;
-      } else {
-        return cs != null && s.contentEquals(cs);
-      }
-    }
-  }
-
-  class ViewIdPredicate implements Predicate<View> {
-
-    private String id;
-
-    public ViewIdPredicate(String id) {
-      this.id = "id/" + id;
-    }
-
-    @Override
-    public boolean apply(View view) {
-      return ViewHierarchyAnalyzer.getNativeId(view).equalsIgnoreCase(id);
-    }
-  }
-
-  class ViewTextPredicate implements Predicate<View> {
-    private String text = null;
-
-    ViewTextPredicate(String text) {
-      this.text = text;
-    }
-
-    public boolean apply(View view) {
-      if (view instanceof TextView) {
-        String textFieldText = String.valueOf(((TextView) view).getText());
-        boolean textEqual = text.equals(textFieldText);
-        return textEqual;
-      }
-      return false;
-    }
-  }
-
-  class ViewPartialTextPredicate implements Predicate<View> {
-    private String text = null;
-
-    ViewPartialTextPredicate(String text) {
-      this.text = text;
-      SelendroidLogger.info("Finding by partial text: " + text);
-    }
-
-    public boolean apply(View view) {
-      if (view instanceof TextView) {
-        String viewText = ((TextView) view).getText().toString();
-
-        return viewText.indexOf(text) >= 0;
-      }
-      return false;
-    }
-  }
-
-  class ViewTagNamePredicate implements Predicate<View> {
-    private String tag;
-
-    ViewTagNamePredicate(String tag) {
-      this.tag = tag;
-    }
-
-    public boolean apply(View view) {
-      return view.getClass().getSimpleName().equals(tag);
-    }
+    return findAllByPredicate(Factories.getPredicatesFactory().createContentDescriptionPredicate(using));
   }
 
   @Override
   public AndroidElement findElementByTagName(String using) {
-    return findFirstByPredicate(new ViewTagNamePredicate(using));
+    return findFirstByPredicate(Factories.getPredicatesFactory().createTagNamePredicate(using));
   }
 
   @Override
   public List<AndroidElement> findElementsByTagName(String using) {
-    return findAllByPredicate(new ViewTagNamePredicate(using));
+    return findAllByPredicate(Factories.getPredicatesFactory().createTagNamePredicate(using));
   }
 
   @Override
   public AndroidElement findElementByText(String using) {
-    return findFirstByPredicate(new ViewTextPredicate(using));
+    return findFirstByPredicate(Factories.getPredicatesFactory().createTextPredicate(using));
   }
 
   @Override
   public List<AndroidElement> findElementsByText(String using) {
-    return findAllByPredicate(new ViewTextPredicate(using));
+    return findAllByPredicate(Factories.getPredicatesFactory().createTextPredicate(using));
   }
 
   @Override
   public AndroidElement findElementByPartialText(String using) {
-    return findFirstByPredicate(new ViewPartialTextPredicate(using));
+    return findFirstByPredicate(Factories.getPredicatesFactory().createPartialTextPredicate(using));
   }
 
   @Override
   public List<AndroidElement> findElementsByPartialText(String using) {
-    return findAllByPredicate(new ViewPartialTextPredicate(using));
+    return findAllByPredicate(Factories.getPredicatesFactory().createPartialTextPredicate(using));
   }
 
   @Override
   public AndroidElement findElementByClass(String using) {
-    Class viewClass = null;
-    try {
-      viewClass = Class.forName(using);
-    } catch (ClassNotFoundException e) {
-      throw new NoSuchElementException("The view class '" + using + "' was not found.");
-    }
-    return findFirstByPredicate(new InstanceOfPredicate(viewClass));
+    return findFirstByPredicate(Factories.getPredicatesFactory().createClassPredicate(using));
   }
 
   @Override
   public List<AndroidElement> findElementsByClass(String using) {
-    Class viewClass = null;
-    try {
-      viewClass = Class.forName(using);
-    } catch (ClassNotFoundException e) {
-      return new ArrayList<AndroidElement>();
-    }
-    return findAllByPredicate(new InstanceOfPredicate(viewClass));
+    return findAllByPredicate(Factories.getPredicatesFactory().createClassPredicate(using));
   }
 
+  // TODO: Remove unused method
   private List<AndroidElement> filterAndTransformElements(Collection<View> currentViews,
       Predicate predicate) {
     Collection<?> filteredViews = ListUtil.filter(currentViews, predicate);
