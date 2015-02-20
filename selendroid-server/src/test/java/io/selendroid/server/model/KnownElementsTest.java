@@ -19,11 +19,6 @@ import android.webkit.WebView;
 import io.selendroid.server.ServerInstrumentation;
 import io.selendroid.server.android.InstrumentedKeySender;
 import io.selendroid.server.android.KeySender;
-import io.selendroid.server.model.AndroidElement;
-import io.selendroid.server.model.AndroidNativeElement;
-import io.selendroid.server.model.AndroidWebElement;
-import io.selendroid.server.model.KnownElements;
-import io.selendroid.server.model.SelendroidWebDriver;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -143,7 +138,7 @@ public class KnownElementsTest {
 
     ServerInstrumentation instrumentation = mock(ServerInstrumentation.class);
     KeySender keys = new InstrumentedKeySender(instrumentation);
-    return new AndroidNativeElement(view, instrumentation, keys, ke);
+    return Factories.getAndroidNativeElementFactory().createAndroidNativeElement(view, instrumentation, keys, ke);
   }
 
   private AndroidElement createWebElement(String id, KnownElements ke) {
