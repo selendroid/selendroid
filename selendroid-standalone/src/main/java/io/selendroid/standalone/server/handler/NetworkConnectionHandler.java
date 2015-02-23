@@ -78,7 +78,7 @@ public class NetworkConnectionHandler extends BaseSelendroidStandaloneHandler {
 
 
     // nice and magical, this will 'close' the settings view and reopen the last application, the one under test! :)
-    if (deviceAPILevel == 21) {
+    if (deviceAPILevel >= 21) {
         device.inputKeyevent(KeyEvent.KEYCODE_BACK);
         device.inputKeyevent(KeyEvent.KEYCODE_BACK);
         device.inputKeyevent(KeyEvent.KEYCODE_BACK);
