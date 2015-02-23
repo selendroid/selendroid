@@ -508,7 +508,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   public void inputKeyevent(int value) {
     executeCommandQuietly(adbCommand("shell", "input", "keyevent", "" + value));
     // need to wait a beat for the UI to respond
-    sleep(500);
+    sleep(600);
   }
 
   public void invokeActivity(String activity) {

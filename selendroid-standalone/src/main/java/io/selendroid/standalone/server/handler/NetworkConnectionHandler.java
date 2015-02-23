@@ -78,9 +78,14 @@ public class NetworkConnectionHandler extends BaseSelendroidStandaloneHandler {
 
 
     // nice and magical, this will 'close' the settings view and reopen the last application, the one under test! :)
-    device.inputKeyevent(KeyEvent.KEYCODE_DPAD_UP);
-    device.inputKeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
-
+    if (deviceAPILevel == 21) {
+        device.inputKeyevent(KeyEvent.KEYCODE_BACK);
+        device.inputKeyevent(KeyEvent.KEYCODE_BACK);
+        device.inputKeyevent(KeyEvent.KEYCODE_BACK);
+    } else {
+        device.inputKeyevent(KeyEvent.KEYCODE_DPAD_UP);
+        device.inputKeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
+    }
     // airplane mode is 1, Data + WIFI is 6
     return new SelendroidResponse(sessionId, airplaneMode ? 1 : 6);
   }
