@@ -68,7 +68,7 @@ public class SelendroidServlet extends BaseServlet {
         "/wd/hub/session/:sessionId/selendroid/adb/executeShellCommand"));
     register(postHandler, new NetworkConnectionHandler("/wd/hub/session/:sessionId/network_connection"));
 
-    register(postHandler, new ContextSwitchingHandler("/wd/hub/session/:sessionId/context"));
+    register(postHandler, new ContextSwitchingHandler("/wd/hub/session/:sessionId/context", proxyHandler));
     register(getHandler, new CurrentContextHandler("/wd/hub/session/:sessionId/context", proxyHandler));
   }
 

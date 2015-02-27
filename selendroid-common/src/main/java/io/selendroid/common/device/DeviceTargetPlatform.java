@@ -13,6 +13,8 @@
  */
 package io.selendroid.common.device;
 
+import java.util.Comparator;
+
 public enum DeviceTargetPlatform {
 	  ANDROID10("2.3.3"), ANDROID11("3.0"), ANDROID12("3.1"), ANDROID13("3.2"), ANDROID14("4.0"), 
 	  ANDROID15("4.0.3"), ANDROID16("4.1.2"), ANDROID17("4.2.2"), ANDROID18("4.3"), ANDROID19("4.4"), 
@@ -65,5 +67,29 @@ public enum DeviceTargetPlatform {
    */
   public String getApi() {
     return api;
+  }
+  
+
+  public static class DeviceTargetPlatformComparator implements Comparator<DeviceTargetPlatform> {
+
+    public int compare(DeviceTargetPlatform o1, DeviceTargetPlatform o2) {
+      if(o1 == null || o2 == null)
+        return 0;
+      String[] o1Parts = o1.getApi().split("\\.");
+      String[] o2Parts = o2.getApi().split("\\.");
+      int length = Math.max(o1Parts.length, o2Parts.length);
+      for(int i = 0; i < length; i++) {
+        int thisPart = i < o1Parts.length ?
+            Integer.parseInt(o1Parts[i]) : 0;
+        int thatPart = i < o2Parts.length ?
+            Integer.parseInt(o2Parts[i]) : 0;
+        if(thisPart < thatPart)
+          return -1;
+        if(thisPart > thatPart)
+          return 1;
+      }
+      return 0;
+      
+    }
   }
 }

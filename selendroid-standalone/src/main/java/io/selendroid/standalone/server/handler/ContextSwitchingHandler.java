@@ -13,19 +13,31 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import io.selendroid.common.device.DeviceTargetPlatform;
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
+import io.selendroid.standalone.server.model.ActiveSession;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ContextSwitchingHandler extends BaseSelendroidStandaloneHandler {
-  public ContextSwitchingHandler(String mappedUri) {
+
+  private BaseSelendroidStandaloneHandler proxyHandler;
+
+  public ContextSwitchingHandler(String mappedUri, BaseSelendroidStandaloneHandler proxyHandler) {
     super(mappedUri);
+    this.proxyHandler = proxyHandler;
   }
 
   @Override
   protected Response handleRequest(HttpRequest request, JSONObject payload) throws JSONException {
-    return null;
+    ActiveSession session = getActiveSession(request);
+    if (new DeviceTargetPlatform.DeviceTargetPlatformComparator().compare(session.getDevice().getTargetPlatform(), 
+        DeviceTargetPlatform.ANDROID19) >= 0) {
+      return null;
+    } else {
+      return proxyHandler.handle(request);
+    }
   }
 }
