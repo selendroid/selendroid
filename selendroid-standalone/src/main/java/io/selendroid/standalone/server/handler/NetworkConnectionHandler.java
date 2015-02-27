@@ -84,7 +84,7 @@ public class NetworkConnectionHandler extends BaseSelendroidStandaloneHandler {
         device.inputKeyevent(KeyEvent.KEYCODE_BACK);
         device.inputKeyevent(KeyEvent.KEYCODE_BACK);
     } else {
-        //click back button at the dop of the Network Settings Activity
+        //click back button at the top of the Network Settings Activity
         device.inputKeyevent(KeyEvent.KEYCODE_DPAD_UP);
         device.inputKeyevent(KeyEvent.KEYCODE_DPAD_CENTER);
     }
