@@ -57,7 +57,8 @@ public class SelendroidServlet extends BaseServlet {
     register(getHandler, new InspectorScreenshotHandler("/inspector/session/:sessionId/screenshot"));
     register(getHandler, new InspectorUiHandler("/inspector/session/:sessionId"));
     register(deleteHandler, new DeleteSessionHandler("/wd/hub/session/:sessionId"));
-    register(redirectHandler, new ProxyToDeviceHandler("/wd/hub/session/"));
+    ProxyToDeviceHandler proxyHandler = new ProxyToDeviceHandler("/wd/hub/session/");
+    register(redirectHandler, proxyHandler);
 
     register(postHandler, new GetLogs("/wd/hub/session/:sessionId/log"));
     register(postHandler, new AdbSendKeyEvent("/wd/hub/session/:sessionId/selendroid/adb/sendKeyEvent"));
@@ -66,6 +67,9 @@ public class SelendroidServlet extends BaseServlet {
     register(postHandler, new AdbExecuteShellCommand(
         "/wd/hub/session/:sessionId/selendroid/adb/executeShellCommand"));
     register(postHandler, new NetworkConnectionHandler("/wd/hub/session/:sessionId/network_connection"));
+
+    register(postHandler, new ContextSwitchingHandler("/wd/hub/session/:sessionId/context"));
+    register(getHandler, new CurrentContextHandler("/wd/hub/session/:sessionId/context", proxyHandler));
   }
 
   @Override
