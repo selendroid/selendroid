@@ -19,6 +19,7 @@ import io.selendroid.server.android.KeySender;
 import io.selendroid.server.android.ViewHierarchyAnalyzer;
 import io.selendroid.server.model.AndroidNativeElement;
 import io.selendroid.server.model.KnownElements;
+import io.selendroid.server.model.Factories;
 import io.selendroid.server.util.Preconditions;
 import io.selendroid.server.util.SelendroidLogger;
 
@@ -85,7 +86,8 @@ private AndroidNativeElement newAndroidElement(View view) {
         return element;
       }
     }
-    AndroidNativeElement e = new AndroidNativeElement(view, serverInstrumentation, keys, knownElements);
+    AndroidNativeElement e = Factories.getAndroidNativeElementFactory()
+        .createAndroidNativeElement(view, serverInstrumentation, keys, knownElements);
     knownElements.add(e);
     return e;
   }

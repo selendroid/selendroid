@@ -6,6 +6,9 @@
 - fix registration of selendroid server into a selenium grid [#802](../../issues/802) 
 - fix NPE on native apps driver.switchTo().defaultContent() [#776](../../issues/776) 
 - Fixing maven issues by using latest maven-android-plugin. [#804](../../issues/804)  
+- Introduce Predicate and AndroidElement factories [#811](../../issues/811)  
+- Fixing setAirplaneMode(true) for Android API 21 [#816](../../issues/816)  
+- Using latest selenium release. [#818](../../issues/818) 
 
 0.14.0
 ---
