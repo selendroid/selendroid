@@ -77,6 +77,7 @@
 				<configuration>
 					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
 					<resourceDirectory>${project.basedir}/res</resourceDirectory>
+					<assetsDirectory>${project.basedir}/assets</assetsDirectory>
 					<outputDirectory>bin/classes</outputDirectory>
 					<testOutputDirectory>bin/test-classes</testOutputDirectory>
 					<failOnNonStandardStructure>false</failOnNonStandardStructure>
