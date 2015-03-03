@@ -18,7 +18,6 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.TimeoutException;
 import com.google.common.base.Splitter;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ObjectArrays;
 
@@ -64,6 +63,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   public static final String WD_STATUS_ENDPOINT = "http://localhost:8080/wd/hub/status";
   protected String serial = null;
   protected String model = null;
+  protected String apiTargetType = null;
   protected Integer port = null;
   protected IDevice device;
   private ByteArrayOutputStream logoutput;
@@ -92,7 +92,6 @@ public abstract class AbstractDevice implements AndroidDevice {
     this.device = device;
     this.serial = device.getSerialNumber();
   }
-
 
   protected AbstractDevice() {}
 
@@ -604,5 +603,9 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   public String getModel() {
     return model;
+  }
+  
+  public String getAPITargetType() {
+    return apiTargetType;
   }
 }

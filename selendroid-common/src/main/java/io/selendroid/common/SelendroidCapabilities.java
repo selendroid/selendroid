@@ -48,6 +48,8 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String PRE_SESSION_ADB_COMMANDS = "preSessionAdbCommands";
   public static final String SERIAL = "serial";
   public static final String MODEL = "model";
+  // possible values are google, android
+  public static final String API_TARGET_TYPE = "apiTargetType";
 
   public static final String PLATFORM_VERSION = "platformVersion";
   public static final String PLATFORM_NAME = "platformName";
@@ -90,8 +92,17 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return (String) getRawCapabilities().get(MODEL);
   }
 
+  /**
+   * Gets the API target type.
+   *
+   * @return the API target type
+   */
+  public String getAPITargetType() {
+    return (String) getRawCapabilities().get(API_TARGET_TYPE);
+  }
+
   public String getLaunchActivity() {
-	return (String) getRawCapabilities().get(LAUNCH_ACTIVITY);
+    return (String) getRawCapabilities().get(LAUNCH_ACTIVITY);
   }
 
   public Boolean getEmulator() {
@@ -142,6 +153,15 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public void setModel(String model) {
     setCapability(MODEL, model);
+  }
+
+  /**
+   * Sets the API target type. For example, set this to google if your application requires Google APIs.
+   *
+   * @param apiTargetType the new API target type
+   */
+  public void setAPITargetType(String apiTargetType) {
+    setCapability(API_TARGET_TYPE, apiTargetType);
   }
 
   public void setPlatformVersion(DeviceTargetPlatform androidTarget) {
