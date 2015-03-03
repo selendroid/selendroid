@@ -35,6 +35,12 @@ public class DefaultHardwareDevice extends AbstractDevice {
 
   public DefaultHardwareDevice(IDevice device) {
     super(device);
+    // today the only API we check for is Google APIs by looking for a maps jar which only exists if google apis are on
+    // the target
+    String output = runAdbCommand("shell ls /system/framework/*map*");
+    if (!output.contains("No such file")) {
+      this.apiTargetType = "google";
+    }
   }
 
   public String getModel() {
@@ -92,7 +98,6 @@ public class DefaultHardwareDevice extends AbstractDevice {
   }
   
   public String getSerial() {
-	  return serial;
+    return serial;
   }
-
 }
