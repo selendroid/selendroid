@@ -108,7 +108,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public Boolean getEmulator() {
     if (getRawCapabilities().get(EMULATOR) == null
         || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL)) return null;
-    return (Boolean) getRawCapabilities().get(EMULATOR);
+    return getBooleanCapability(EMULATOR);
   }
 
   public String getPlatformName() {
@@ -395,4 +395,17 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return listOfApps.size() > 0 ? listOfApps.last() : null;
   }
 
+  // throws exception if user didn't pass the capability as a boolean
+  private Boolean getBooleanCapability(String key) {
+    Object o = getRawCapabilities().get(key);
+    if (o == null) {
+      return null;
+    } else if (o instanceof Boolean) {
+      return (Boolean) o;
+    } else {
+      throw new ClassCastException(String.format(
+          "DesiredCapability %s's value should be boolean: found value %s of type %s", key, o.toString(), o.getClass()
+              .getName()));
+    }
+  }
 }
