@@ -547,16 +547,15 @@ public abstract class AbstractDevice implements AndroidDevice {
   /** {@inheritdoc} */
   public String getCrashLog() {
     String crashLogFileName = ExternalStorageFile.APP_CRASH_LOG.toString();
-    File crashLogFile = new File(getExternalStoragePath(), crashLogFileName);
 
     // The "test" utility doesn't exist on all devices so we'll check the output of ls.
-    String crashLogDirPath = crashLogFile.getParentFile().getAbsolutePath();
+    String crashLogDirPath = getExternalStoragePath();
     if (!crashLogDirPath.endsWith("/")) {
       crashLogDirPath += "/";  // Make sure it ends with '/' so we're listing directory contents.
     }
     String directoryList = executeCommandQuietly(adbCommand("shell", "ls", crashLogDirPath));
     if (directoryList.contains(crashLogFileName)) {
-      return executeCommandQuietly(adbCommand("shell", "cat", crashLogFile.getAbsolutePath()));
+      return executeCommandQuietly(adbCommand("shell", "cat", crashLogDirPath + crashLogFileName));
     }
 
     return "";
@@ -567,10 +566,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     String psOutput = runAdbCommand("shell ps");
     StringBuilder sb = new StringBuilder();
     boolean isFirstHeaderLine = true;
-    for (String line: Splitter.on("\n").split(psOutput)) {
+    for (String line: Splitter.on(System.getProperty("line.separator")).split(psOutput)) {
       boolean isThirdPartyProcess = line.contains(".") && !line.contains("com.android");
       if (isFirstHeaderLine || isThirdPartyProcess) {
-        sb.append(line + "\n");
+        sb.append(line + System.getProperty("line.separator"));
       }
       isFirstHeaderLine = false;
     }

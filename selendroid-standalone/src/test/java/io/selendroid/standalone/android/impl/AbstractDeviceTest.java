@@ -21,6 +21,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
+import java.util.regex.Pattern;
+
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -32,7 +34,7 @@ public class AbstractDeviceTest {
         if (!(cmdLine instanceof CommandLine)) {
           return false;
         }
-        return cmdLine.toString().endsWith(cmdString);
+        return Pattern.matches(cmdString, cmdLine.toString());
       }
 
       @Override
@@ -48,10 +50,10 @@ public class AbstractDeviceTest {
     when(device.getExternalStoragePath()).thenReturn("/storage");
     when(device.getCrashLog()).thenCallRealMethod();
     when(
-        device.executeCommandQuietly(argThat(matchesCmdLine("adb shell ls /storage/"))))  // The trailing '/' is key
-        .thenReturn("some_file\nappcrash.log\nanother_file");
+        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)? shell ls /storage/$"))))  // The trailing '/' is key
+        .thenReturn(String.format("some_file%nappcrash.log%nanother_file"));
     when(
-        device.executeCommandQuietly(argThat(matchesCmdLine("adb shell cat /storage/appcrash.log"))))
+        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)? shell cat /storage/appcrash\\.log$"))))
         .thenReturn("crash log contents");
 
     assertEquals("crash log contents", device.getCrashLog());
@@ -62,20 +64,20 @@ public class AbstractDeviceTest {
     AbstractDevice device = mock(AbstractDevice.class);
     when(device.listRunningThirdPartyProcesses()).thenCallRealMethod();
     when(device.runAdbCommand(anyString())).thenCallRealMethod();
-    String psOutput =
-        "PID NAME\n" +
-        "11 com.example.myapp\n" +
-        "123 com.android.calendar\n" +
-        "15 com.example.another\n" +
-        "1 zygote\n" +
-        "23 /system/bin/mediaserver";
+    String psOutput = String.format(
+        "PID NAME%n" +
+        "11 com.example.myapp%n" +
+        "123 com.android.calendar%n" +
+        "15 com.example.another%n" +
+        "1 zygote%n" +
+        "23 /system/bin/mediaserver");
     when(
-        device.executeCommandQuietly(argThat(matchesCmdLine("adb shell ps"))))
-        .thenReturn(psOutput);
-    String expected =
-        "PID NAME\n" +
-        "11 com.example.myapp\n" +
-        "15 com.example.another\n";
+        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)? shell ps$"))))
+            .thenReturn(psOutput);
+    String expected = String.format(
+        "PID NAME%n" +
+        "11 com.example.myapp%n" +
+        "15 com.example.another%n");
     assertEquals(expected, device.listRunningThirdPartyProcesses());
   }
 }
