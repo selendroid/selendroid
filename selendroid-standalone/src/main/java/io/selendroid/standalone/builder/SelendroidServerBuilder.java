@@ -24,13 +24,7 @@ import io.selendroid.standalone.exceptions.ShellCommandException;
 import io.selendroid.standalone.io.ShellCommand;
 import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
@@ -40,6 +34,8 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -364,20 +360,42 @@ public class SelendroidServerBuilder {
     Class clazz = SelendroidStandaloneDriver.class;
     String className = clazz.getSimpleName() + ".class";
     String classPath = clazz.getResource(className).toString();
+    String version = "";
+
     if (!classPath.startsWith("jar")) {
       // Class not from JAR
-      return "dev";
+      if(classPath.startsWith("file") && classPath.contains("target")) {
+        try {
+          version = getVersionFromPom(classPath.substring(5, classPath.lastIndexOf("target")));
+        } catch (Exception e) {
+          e.printStackTrace();
+          return "";
+        }
+      } else return "dev";
+    } else {
+        try {
+          version = getVersionFromManifest(classPath);
+        } catch (IOException e){
+          return "";
+        }
     }
-    String manifestPath =
-        classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
-    Manifest manifest;
-    try {
-      manifest = new Manifest(new URL(manifestPath).openStream());
-    } catch (Exception e) {
-      return "";
-    }
+    return version;
+  }
+
+  private static String getVersionFromManifest(String path) throws IOException {
+    String manifestPath = path.substring(0, path.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+    Manifest manifest = new Manifest(new URL(manifestPath).openStream());
     Attributes attr = manifest.getMainAttributes();
     return attr.getValue("version");
+  }
+
+  private static String getVersionFromPom(String path) throws Exception {
+    path += "pom.xml";
+    Pattern regex = Pattern.compile("<version>(.*?)</version>", Pattern.DOTALL);
+    Matcher matcher = regex.matcher(FileUtils.readFileToString(new File(path)));
+    if (matcher.find()) {
+      return matcher.group(1);
+    } else return "dev";
   }
 
   private String getSigAlg() {
