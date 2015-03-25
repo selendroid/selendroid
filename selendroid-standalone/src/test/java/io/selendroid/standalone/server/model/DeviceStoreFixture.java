@@ -17,12 +17,10 @@ import com.android.ddmlib.IDevice;
 
 import java.util.Map;
 
-import static io.selendroid.standalone.server.model.DeviceStoreFixture.withDefaultCapabilities;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.common.device.DeviceTargetPlatform;
-import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.DeviceManager;
 import io.selendroid.standalone.android.impl.DefaultAndroidEmulator;
 import io.selendroid.standalone.android.impl.DefaultHardwareDevice;
@@ -49,7 +47,7 @@ public class DeviceStoreFixture {
   }
 
   protected static DefaultAndroidEmulator anEmulator(String name, DeviceTargetPlatform platform,
-      boolean isEmulatorStarted) throws AndroidDeviceException {
+      boolean isEmulatorStarted, String apiTargetType) throws AndroidDeviceException {
     DefaultAndroidEmulator emulator = mock(DefaultAndroidEmulator.class);
     when(emulator.getAvdName()).thenReturn(name);
     when(emulator.getModel()).thenReturn("Nexus 5");
@@ -57,6 +55,7 @@ public class DeviceStoreFixture {
     when(emulator.isEmulatorStarted()).thenReturn(isEmulatorStarted);
     when(emulator.isDeviceReady()).thenReturn(false);
     when(emulator.screenSizeMatches("320x480")).thenReturn(true);
+    when(emulator.getAPITargetType()).thenReturn(apiTargetType);
 
     return emulator;
   }
@@ -80,6 +79,14 @@ public class DeviceStoreFixture {
     SelendroidCapabilities capabilities = new SelendroidCapabilities();
     capabilities.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
     capabilities.setModel("Nexus 7");
+    capabilities.setScreenSize("320x480");
+    return capabilities;
+  }
+  
+  protected static SelendroidCapabilities withGoogleAPITypeCapabilities() {
+    SelendroidCapabilities capabilities = new SelendroidCapabilities();
+    capabilities.setPlatformVersion(DeviceTargetPlatform.ANDROID16);
+    capabilities.setAPITargetType("google");
     capabilities.setScreenSize("320x480");
     return capabilities;
   }

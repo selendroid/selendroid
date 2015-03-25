@@ -69,15 +69,47 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   protected DefaultAndroidEmulator() {
     this.wasStartedBySelendroid = Boolean.FALSE;
   }
-
-  public DefaultAndroidEmulator(String avdName, String abi, Dimension screenSize, String target,
-                                String model, File avdFilePath) {
+  
+  // this contructor is used only for test purposes in setting the capabilities information. Change to public if there
+  // is ever a desire to construct one of these besides reading the avdOutput
+  DefaultAndroidEmulator(String avdName, String abi, Dimension screenSize, String target,
+                                String model, File avdFilePath, String apiTargetType) {
     this.avdName = avdName;
     this.model = model;
     this.screenSize = screenSize;
     this.avdRootFolder = avdFilePath;
     this.targetPlatform = DeviceTargetPlatform.fromInt(target);
     this.wasStartedBySelendroid = !isEmulatorStarted();
+    this.apiTargetType = apiTargetType;
+  }
+
+  // avdOutput is expected to look like the following
+    /*Name: Android_TV
+    Device: tv_720p (Google)
+    Path: /Users/antnguyen/.android/avd/Android_TV.avd
+    Target: Android 5.0.1 (API level 21)
+    Tag/ABI: android-tv/armeabi-v7a
+    Skin: tv_720p
+    Sdcard: 100M
+    Snapshot: no*/
+  public DefaultAndroidEmulator(String avdOutput) {
+    this.avdName = extractValue("Name: (.*?)$", avdOutput);
+    this.screenSize = getScreenSizeFromSkin(extractValue("Skin: (.*?)$", avdOutput));
+    this.targetPlatform = DeviceTargetPlatform.fromInt(extractValue("\\(API level (.*?)\\)", avdOutput));
+    this.avdRootFolder = new File(extractValue("Path: (.*?)$", avdOutput));
+    this.model = extractValue("Device: (.*?)$", avdOutput);
+    extractAPITargetType(avdOutput);
+  }
+
+  private void extractAPITargetType(String avdOutput) {
+    String target = extractValue("Target: (.*?)$", avdOutput);
+    // chose to compare against both of these strings because currently some targets say google_api [Google APIs] so
+    // perhaps the actual name which looks to be google_api will be the only string in the target in the future
+    if (StringUtils.containsIgnoreCase(target, "Google APIs") || StringUtils.containsIgnoreCase(target, "google_apis")) {
+      this.apiTargetType = "google";
+    } else {
+      this.apiTargetType = "android";
+    }
   }
 
   public File getAvdRootFolder() {
@@ -130,16 +162,9 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         if (!element.contains("Name:")) {
           continue;
         }
-        String avdName = extractValue("Name: (.*?)$", element);
-        String abi = extractValue("ABI: (.*?)$", element);
-        Dimension screenSize = getScreenSizeFromSkin(extractValue("Skin: (.*?)$", element));
-        String target = extractValue("\\(API level (.*?)\\)", element);
-        File avdFilePath = new File(extractValue("Path: (.*?)$", element));
-        String model = extractValue("Device: (.*?)$", element);
-        DefaultAndroidEmulator emulator =
-            new DefaultAndroidEmulator(avdName, abi, screenSize, target, model, avdFilePath);
-        if (startedDevices.containsKey(avdName)) {
-          emulator.setSerial(startedDevices.get(avdName));
+        DefaultAndroidEmulator emulator = new DefaultAndroidEmulator(element);
+        if (startedDevices.containsKey(emulator.getAvdName())) {
+          emulator.setSerial(startedDevices.get(emulator.getAvdName()));
         }
         avds.add(emulator);
       }
@@ -210,7 +235,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   @Override
   public String toString() {
     return "AndroidEmulator [screenSize=" + screenSize + ", targetPlatform=" + targetPlatform
-        + ", serial=" + serial + ", avdName=" + avdName + ", model=" + model + "]";
+        + ", serial=" + serial + ", avdName=" + avdName + ", model=" + model + ", apiTargetType=" + apiTargetType + "]";
   }
 
   public void setSerial(int port) {
@@ -495,5 +520,4 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   public void setWasStartedBySelendroid(boolean wasStartedBySelendroid) {
     this.wasStartedBySelendroid = wasStartedBySelendroid;
   }
-
 }

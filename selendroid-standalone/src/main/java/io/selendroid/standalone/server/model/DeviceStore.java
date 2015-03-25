@@ -335,7 +335,9 @@ public class DeviceStore {
             capabilities.getEmulator() == null ? true : capabilities.getEmulator() ?
                 candidate instanceof DefaultAndroidEmulator : candidate instanceof DefaultHardwareDevice,
             StringUtils.isNotBlank(capabilities.getSerial()) ? capabilities.getSerial().equals(candidate.getSerial()) : true,
-            StringUtils.isNotBlank(capabilities.getModel()) ? candidate.getModel().contains(capabilities.getModel()) : true
+            StringUtils.isNotBlank(capabilities.getModel()) ? candidate.getModel().contains(capabilities.getModel()) : true,
+            StringUtils.isNotBlank(capabilities.getAPITargetType()) ? candidate.getAPITargetType() != null
+                && candidate.getAPITargetType().contains(capabilities.getAPITargetType()) : true
         );
 
         return Iterables.all(booleanExpressions, Predicates.equalTo(true));
@@ -380,6 +382,5 @@ public class DeviceStore {
     public void onDeviceStopped(String avdName) {
       // do nothing
     }
-
   }
 }

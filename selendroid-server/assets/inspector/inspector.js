@@ -146,25 +146,29 @@ Inspector.prototype.onNodeMouseOver = function (e, data) {
  * @param data
  */
 Inspector.prototype.onTreeLoaded = function (event, data) {
-    this.root = this.jstree.jstree('get_json')[0];
-    this.xml = this.root.metadata.xml;
+    try {
+        this.root = this.jstree.jstree('get_json')[0];
+        this.xml = this.root.metadata.xml;
 
-    var webView = this.extractWebView(this.getRootNode());
-    if (webView != null) {
-        setHTMLSource(webView.metadata.source);
-    } else {
-        setHTMLSource(null);
-    }
-    this.expandTree();
-    this.loadXpathContext();
+        var webView = this.extractWebView(this.getRootNode());
+        if (webView != null) {
+            setHTMLSource(webView.metadata.source);
+        } else {
+            setHTMLSource(null);
+        }
+        this.expandTree();
+        this.loadXpathContext();
 
-    if (this.recorder.on) {
-        d = new Date();
-        $("#screenshot").attr("src",
-            this.screenshotPath + "?timestamp=" + d.getTime());
+        if (this.recorder.on) {
+            d = new Date();
+            $("#screenshot").attr("src",
+                this.screenshotPath + "?timestamp=" + d.getTime());
+        }
+        this.busy = false;
+        resize();
+    } catch (err) {
+        console.log("Initialization failed", err);
     }
-    this.busy = false;
-    resize();
 }
 
 /**
@@ -441,32 +445,38 @@ Inspector.prototype.onMouseClick = function (event) {
     console.log("Is busy " + this.busy);
     if (this.recorder.on && !this.busy) {
         this.busy = true;
-        console.log("Record click");
-        var parentOffset = $("#mouseOver").offset();
-        var x = event.pageX - parentOffset.left;
-        var y = event.pageY - parentOffset.top;
-        x = x / scale_highlight;
-        y = y / scale_highlight;
-        var finder = new NodeFinder(this.root);
-        var node = finder.getNodeByPosition(x, y);
-        if (node) {
-            var xpath = this.findXpathExpression(x, y, node);
-            if (xpath===undefined){
-            	this.busy = false;
-            }
-            var confirm = this.findElementsByXpath2(xpath);
-            if (confirm.length === 1) {
-                this.recorder.recordClick(xpath);
-                this.recorder.forwardClick(x, y);
-                pause(800);
+        try {
+            console.log("Record click");
+            var parentOffset = $("#mouseOver").offset();
+            var x = event.pageX - parentOffset.left;
+            var y = event.pageY - parentOffset.top;
+            x = x / scale_highlight;
+            y = y / scale_highlight;
+            var finder = new NodeFinder(this.root);
+            var node = finder.getNodeByPosition(x, y);
+            if (node) {
+                var xpath = this.findXpathExpression(x, y, node);
+                if (xpath===undefined){
+                    this.busy = false;
+                }
+                var confirm = this.findElementsByXpath2(xpath);
+                if (confirm.length === 1) {
+                    this.recorder.recordClick(xpath);
+                    this.recorder.forwardClick(x, y);
+                    pause(800);
+                } else {
+                    this.busy = false;
+                    error(xpath + " should have a single result.It has "
+                        + confirm.length);
+                }
             } else {
                 this.busy = false;
-                error(xpath + " should have a single result.It has "
-                    + confirm.length);
+                warning("couldn't find an element for that click");
             }
-        } else {
+        } catch (err) {
+            console.log("couldn't find an element for that click", err);
+        } finally {
             this.busy = false;
-            warning("couldn't find an element for that click");
         }
     }
 

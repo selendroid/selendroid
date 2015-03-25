@@ -94,4 +94,6 @@ public interface AndroidDevice {
   public String listRunningThirdPartyProcesses();
 
   public String getModel();
+
+  public String getAPITargetType();
 }

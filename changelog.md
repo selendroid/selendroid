@@ -1,4 +1,8 @@
-0.15.0-SNAPSHOT (under current development)
+0.16.0-SNAPSHOT (under current development)
+---
+- 
+
+0.15.0
 ---
 - Fix native view search with multiple top level views [#799](../../issues/799) 
 - Reverted the 'adb.terminate()' call (back into if condition). [#803](../../issues/803) 
@@ -6,6 +10,11 @@
 - fix registration of selendroid server into a selenium grid [#802](../../issues/802) 
 - fix NPE on native apps driver.switchTo().defaultContent() [#776](../../issues/776) 
 - Fixing maven issues by using latest maven-android-plugin. [#804](../../issues/804)  
+- Introduce Predicate and AndroidElement factories [#811](../../issues/811)  
+- Fixing setAirplaneMode(true) for Android API 21 [#816](../../issues/816)  
+- Using latest selenium release. [#818](../../issues/818) 
+- Add assets for inspector [#820](../../issues/820)
+- Added apiTargetType as an option to SelendroidCapabilities [#823](../../issues/823)
 
 0.14.0
 ---
