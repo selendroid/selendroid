@@ -30,6 +30,8 @@
 
             <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
         </activity>
+        <activity android:name=".GesturesDemo"/>
+
 
         <meta-data android:name="android.app.default_searchable" android:value=".SearchUsersActivity"/>
 

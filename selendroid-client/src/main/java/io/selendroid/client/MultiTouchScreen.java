@@ -42,7 +42,7 @@ public class MultiTouchScreen {
     return actionChain;
   }
 
-  protected void executeAction(TouchAction touchAction) {
+  public void executeAction(TouchAction touchAction) {
     List<Map<String, Object>> payload = Lists.newArrayList();
     payload.add(createActionChain(touchAction));
 
@@ -52,7 +52,7 @@ public class MultiTouchScreen {
     mExecuteMethod.execute("actions", params);
   }
 
-  protected void executeAction(MultiTouchAction multiAction) {
+  public void executeAction(MultiTouchAction multiAction) {
     List<Map<String, Object>> payload = Lists.newArrayList();
     for (TouchAction touchAction : multiAction.getTouchActions()) {
       payload.add(createActionChain(touchAction));
