@@ -117,7 +117,7 @@ public class HomeScreenActivity extends Activity {
   }
 
     public void showTouchActionsDialog(View view) {
-        Intent nextScreen = new Intent(getApplicationContext(), GesturesDemo.class);
+        Intent nextScreen = new Intent(getApplicationContext(), TouchGesturesActivity.class);
         startActivity(nextScreen);
     }
 

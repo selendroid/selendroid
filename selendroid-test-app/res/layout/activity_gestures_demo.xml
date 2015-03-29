@@ -12,7 +12,7 @@
     tools:context=".GesturesDemo" >
 
     <TextView
-        android:id="@+id/last_gesture"
+        android:id="@+id/last_gesture_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -20,13 +20,12 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/gesture_type"
+        android:id="@+id/gesture_type_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:text="Gesture Type"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="18sp" />
 
     <TextView
@@ -35,7 +34,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="18sp" />
 
     <TextView
@@ -44,7 +42,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="18sp" />
 
     <TextView
@@ -53,16 +50,28 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/scale_factor_tv"
+        android:id="@+id/scale_factor_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:text="Scale Factor: 1.0"
         android:textSize="@dimen/scroll_text_view_text_size" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom">
+        <Button
+                android:id="@+id/canvas_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Canvas"
+                android:layout_alignParentBottom="true"
+                android:onClick="startCanvasActivity" />
+    </LinearLayout>
 
 </LinearLayout>

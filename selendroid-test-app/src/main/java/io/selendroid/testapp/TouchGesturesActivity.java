@@ -1,50 +1,69 @@
 package io.selendroid.testapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.View;
 import android.widget.TextView;
 
-public class GesturesDemo extends Activity 
+/**
+ * Activity for testing selendroid touch gestures.
+ *
+ * @author colindmurray
+ * @author chooper9
+ */
+public class TouchGesturesActivity extends Activity
         implements GestureDetector.OnGestureListener, 
         GestureDetector.OnDoubleTapListener {
 
     private TextView gestureTypeTV;
     private TextView scaleFactorTV;
+    private TextView textView3;
+    private TextView textView4;
+    private TextView textView5;
     private GestureDetectorCompat gestureDetect;
     private ScaleGestureDetector scaleDetector;
-    private float scaleFactor = 1.f;
-    private int textViewScaleFontSize;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gestures_demo);
-        gestureTypeTV = (TextView) findViewById(R.id.gesture_type);
-        scaleFactorTV = (TextView) findViewById(R.id.scale_factor_tv);
-        textViewScaleFontSize = (int) getResources().getDimension(R.dimen.scroll_text_view_text_size);
-        gestureDetect = new GestureDetectorCompat(this, this); // GACKY
+        gestureTypeTV = (TextView) findViewById(R.id.gesture_type_text_view);
+        scaleFactorTV = (TextView) findViewById(R.id.scale_factor_text_view);
+        textView3 = (TextView) findViewById(R.id.text_view3);
+        textView4 = (TextView) findViewById(R.id.text_view4);
+        textView5 = (TextView) findViewById(R.id.text_view5);
+        gestureDetect = new GestureDetectorCompat(this, this);
         gestureDetect.setIsLongpressEnabled(true);
         scaleDetector = new ScaleGestureDetector(this, new MyScaleListener());
     }
 
 
+    private void clearExtraInformationTextViews() {
+        textView3.setText("");
+        textView4.setText("");
+        textView5.setText("");
+    }
+
     @Override
-    public boolean onTouchEvent(MotionEvent event) { 
+    public boolean onTouchEvent(MotionEvent event) {
+        clearExtraInformationTextViews();
         scaleDetector.onTouchEvent(event);
+        // Check if multitouch action or single touch based on pointer count.
         if(event.getPointerCount() > 1) {
-            gestureTypeTV.setText("MULTI TOUCH\nEVENT");
-            gestureTypeTV.append("\nNum Pointers: " + event.getPointerCount());
-            int action = MotionEventCompat.getActionMasked(event); 
-            gestureTypeTV.append("\n" + actionToString(action));
+            clearExtraInformationTextViews();
+            gestureTypeTV.setText("MULTI TOUCH EVENT");
+            textView3.setText("Num Pointers: " + event.getPointerCount());
+            int action = MotionEventCompat.getActionMasked(event);
+            textView4.setText(actionToString(action));
             int index = MotionEventCompat.getActionIndex(event);
-            gestureTypeTV.append("\nPointer index: "+ index);
+            textView5.setText("Pointer index: " + index);
         }
         else
             gestureDetect.onTouchEvent(event);
@@ -63,8 +82,8 @@ public class GesturesDemo extends Activity
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
             float velocityY) {
         String display = "FLICK";
-        //display += "dx: " + velocityX + " pps\n";
-        //display += "dy: " + velocityY + " pps";
+        textView3.setText("vx: " + velocityX + " pps");
+        textView4.setText("vy: " + velocityY + " pps");
         gestureTypeTV.setText(display);
         return true;
     }
@@ -106,8 +125,13 @@ public class GesturesDemo extends Activity
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent arg0) {
-        gestureTypeTV.setText("SINGLE TAP\nCONFIRMED");
+        gestureTypeTV.setText("SINGLE TAP CONFIRMED");
         return true;
+    }
+
+    public void startCanvasActivity(View view) {
+      Intent intent = new Intent(getApplicationContext(), PaintCanvasActivity.class);
+      startActivity(intent);
     }
 
     // FROM http://developer.android.com/training/gestures/multi.html
@@ -131,31 +155,11 @@ public class GesturesDemo extends Activity
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            // Log.d("GESTURE DEMO", "Scale factor: " + detector.getScaleFactor());
-            scaleFactor *= detector.getScaleFactor();
-            Log.d("GESTURE DEMO", "scaleFactor: " + scaleFactor + " getScaleFactor(): " + detector.getScaleFactor());
-            // Log.d("GESTURE DEMO", "Scale factor calculated: " + scaleFactor);
-            scaleFactor = Math.max(0.001f, Math.min(scaleFactor, 10.0f));
-            // Log.d("GESTURE DEMO", "Scale factor clamped: " + scaleFactor);
-            double scaleFactorDisplay = ((int) (scaleFactor * 1000)) / 1000.0;
-
-            scaleFactorTV.setText("SCALE FACTOR: " + scaleFactorDisplay);
-            handleTextSize();
+            scaleFactorTV.setText("" + detector.getScaleFactor());
             return true;
         }
 
-        
-        private void handleTextSize() {
-            int newTextSize = Math.round(textViewScaleFontSize * scaleFactor);
-
-            if(newTextSize < 4)
-                newTextSize = 4;
-            else if(newTextSize > 36)
-                newTextSize = 36;
-            Log.d("GESTURE DEMO", "textViewScaleFontSize: " + textViewScaleFontSize);
-            Log.d("GESTURE DEMO", "newTextSize: " + newTextSize);
-            scaleFactorTV.setTextSize(newTextSize);
-        }
 
     }
+
 }
