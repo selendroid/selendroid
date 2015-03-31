@@ -31,11 +31,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.ContextAware;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rotatable;
 import org.openqa.selenium.ScreenOrientation;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.interactions.HasTouchScreen;
@@ -57,10 +55,8 @@ public class SelendroidDriver extends RemoteWebDriver
       HasTouchScreen,
       HasMultiTouchScreen,
       ScreenBrightness,
-      TakesScreenshot,
       Rotatable,
       Configuration,
-      JavascriptExecutor,
       AdbSupport,
       ContextAware,
       SetsSystemProperties,
@@ -101,16 +97,6 @@ public class SelendroidDriver extends RemoteWebDriver
   }
 
   public MultiTouchScreen getMultiTouchScreen() { return multiTouchScreen; }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException {
-    String base64 =
-        execute(org.openqa.selenium.remote.DriverCommand.SCREENSHOT).getValue().toString();
-    return target.convertFromBase64Png(base64);
-  }
 
   /**
    * {@inheritDoc}
