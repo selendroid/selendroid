@@ -756,6 +756,12 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     }
   }
 
+  public void setPageLoadTimeout(long timeout) {
+    if (selendroidWebDriver != null) {
+      selendroidWebDriver.setPageLoadTimeout(timeout);
+    }
+  }
+
   public boolean isAirplaneMode() {
     return Settings.System.getInt(
         ServerInstrumentation.getInstance().getCurrentActivity().getContentResolver(),

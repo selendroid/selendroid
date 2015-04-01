@@ -21,6 +21,8 @@ public class TimeoutsHandler extends SafeRequestHandler {
       getSelendroidDriver(request).setAsyncTimeout(timeout);
     } else if (type.equals("implicit")) {
       ServerInstrumentation.getInstance().setImplicitWait(timeout);
+    } else if (type.equals("page load")) {
+      getSelendroidDriver(request).setPageLoadTimeout(timeout);
     } else {
       return new SelendroidResponse(getSessionId(request),
           StatusCode.UNKNOWN_COMMAND,
