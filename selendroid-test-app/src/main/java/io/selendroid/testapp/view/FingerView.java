@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Paint canvas view for manual testing on touch gestures.
@@ -41,7 +42,7 @@ public class FingerView extends View {
         break;
       case MotionEvent.ACTION_MOVE:
         // Update all pointers since ACTION_MOVE events don't provide a pointer index
-        for(HashMap.Entry<Integer, Path> entry : pointerPathMap.entrySet()) {
+        for(Map.Entry<Integer, Path> entry : pointerPathMap.entrySet()) {
           idx = event.findPointerIndex(entry.getKey());
           entry.getValue().lineTo(event.getX(idx), event.getY(idx));
         }

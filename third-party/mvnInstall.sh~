@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+cd $(dirname "$0")
+for f in */mvnInstall.sh ; do
+    cd $(dirname "$f")
+        ./mvnInstall.sh
+    cd ..
+done

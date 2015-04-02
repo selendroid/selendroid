@@ -14,23 +14,6 @@
 	</properties>
 	<dependencies>
         <dependency>
-            <groupId>com.google.android</groupId>
-            <artifactId>support-v4</artifactId>
-            <version>r7</version>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.android.support</groupId>-->
-            <!--<artifactId>support-v4</artifactId>-->
-            <!--<version>21.0.3</version>-->
-            <!--<type>apklib</type>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>com.android.support</groupId>-->
-            <!--<artifactId>support-v4</artifactId>-->
-            <!--<version>21.0.3</version>-->
-            <!--<type>jar</type>-->
-        <!--</dependency>-->
-        <dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.2</version>
@@ -39,6 +22,13 @@
 			<groupId>com.google.android</groupId>
 			<artifactId>android</artifactId>
 			<version>${platform.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>android.support-v4</groupId>
+			<artifactId>support-v4</artifactId>
+			<classifier>android</classifier>
+			<version>r8</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
