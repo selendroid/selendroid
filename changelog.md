@@ -1,5 +1,6 @@
 0.16.0-SNAPSHOT (under current development)
 ---
+- Added support for DOM Storage and Web SQL Database. [#798](../../issues/798)
 - 
 
 0.15.0

@@ -18,9 +18,13 @@ import io.selendroid.testapp.server.HttpServer;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -42,6 +46,27 @@ public class WebViewActivity extends Activity {
     setContentView(io.selendroid.testapp.R.layout.webview);
 
     mainWebView = (WebView) findViewById(io.selendroid.testapp.R.id.mainWebView);
+    WebSettings settings = mainWebView.getSettings();
+    settings.setJavaScriptEnabled(true);
+    settings.setDomStorageEnabled(true); // LocalStorage, SessionStorage
+
+    // The following is required to enable WebSQL on pre-Kitkat, per
+    // http://pouchdb.com/errors.html#android_pre_kitkat
+    settings.setDatabaseEnabled(true);
+    // On Kitkat and above, the following will be ignored, and it will write 
+    // to the "database" directory anyway.
+    String databasePath = getDir("database", Context.MODE_PRIVATE).getPath();
+    settings.setDatabasePath(databasePath);
+    // On Kitkat and above, the following will be ignored.
+    mainWebView.setWebChromeClient(new WebChromeClient() {
+      @Override
+      public void onExceededDatabaseQuota(String url, String databaseIdentifier, 
+                                          long currentQuota, long estimatedSize,
+                                          long totalUsedQuota, WebStorage.QuotaUpdater quotaUpdater) {
+        quotaUpdater.updateQuota(estimatedSize * 2); // just double the size as needed
+      }
+    });
+
     mainWebView.setWebViewClient(new WebViewClient());
     testDataSpinner =
         (Spinner) findViewById(io.selendroid.testapp.R.id.spinner_webdriver_test_data);
