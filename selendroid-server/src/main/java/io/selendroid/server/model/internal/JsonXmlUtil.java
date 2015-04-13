@@ -77,6 +77,11 @@ public class JsonXmlUtil {
     node.setAttribute("id", from.optString("id"));
     node.setAttribute("shown", from.optString("shown"));
 
+    String error = from.optString("error");
+    if(error != null){
+      node.setAttribute("error", error);
+    };
+
     JSONObject rect = from.optJSONObject("rect");
     if (rect != null) {
       Element rectNode = document.createElement("rect");
