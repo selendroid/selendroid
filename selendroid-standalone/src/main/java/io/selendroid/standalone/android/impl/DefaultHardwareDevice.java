@@ -35,6 +35,7 @@ public class DefaultHardwareDevice extends AbstractDevice {
 
   public DefaultHardwareDevice(IDevice device) {
     super(device);
+    this.apiTargetType = "android"; // default
     // today the only API we check for is Google APIs by looking for a maps jar which only exists if google apis are on
     // the target
     String output = runAdbCommand("shell ls /system/framework/*map*");

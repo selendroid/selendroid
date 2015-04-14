@@ -102,13 +102,12 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   }
 
   private void extractAPITargetType(String avdOutput) {
+    this.apiTargetType = "android"; // default
     String target = extractValue("Target: (.*?)$", avdOutput);
     // chose to compare against both of these strings because currently some targets say google_api [Google APIs] so
     // perhaps the actual name which looks to be google_api will be the only string in the target in the future
     if (StringUtils.containsIgnoreCase(target, "Google APIs") || StringUtils.containsIgnoreCase(target, "google_apis")) {
       this.apiTargetType = "google";
-    } else {
-      this.apiTargetType = "android";
     }
   }
 
