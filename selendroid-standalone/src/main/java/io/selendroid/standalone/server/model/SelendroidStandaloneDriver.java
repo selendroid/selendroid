@@ -570,6 +570,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           deviceInfo.put("model", ((DefaultHardwareDevice) device).getModel());
           deviceInfo.put(SelendroidCapabilities.SERIAL,((DefaultHardwareDevice) device).getSerial());
         }
+        deviceInfo.put(SelendroidCapabilities.API_TARGET_TYPE,
+            device.getAPITargetType());
         deviceInfo
             .put(SelendroidCapabilities.PLATFORM_VERSION, device.getTargetPlatform().getApi());
         deviceInfo.put(SelendroidCapabilities.SCREEN_SIZE, device.getScreenSize());
