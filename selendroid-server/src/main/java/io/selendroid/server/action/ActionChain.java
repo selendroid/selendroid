@@ -1,3 +1,5 @@
+package io.selendroid.server.action;
+
 import io.selendroid.server.action.ActionContext;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -6,20 +8,20 @@ import org.json.JSONArray;
 
 import java.lang.String;
 
-public class ActionChains {
+public class ActionChain {
     private JSONArray actionChain;
     private ActionContext context;
     private int pauseTime = 0;
     private int index = 0;
 
-    public ActionChains(JSONObject actionChain) throws JSONException {
-        this.actionChain = actionChain.getJSONArray("action");
+    public ActionChain(JSONObject actionChain) throws JSONException {
+        this.actionChain = actionChain.getJSONArray("actions");
         this.context = new ActionContext();
     }
     public int length(){
         return actionChain.length();
     }
-
+    public ActionContext getContext() { return context; }
     public int getPauseTime(){
         return pauseTime;
     }
@@ -33,7 +35,7 @@ public class ActionChains {
         }
     }
     public boolean hasNext(){
-        return index < length() -1;
+        return index < length();
     }
     public JSONObject next() throws JSONException {
         JSONObject action = actionChain.getJSONObject(index++);
