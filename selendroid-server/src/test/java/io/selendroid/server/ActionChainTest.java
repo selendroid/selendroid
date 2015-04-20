@@ -21,14 +21,13 @@ public class ActionChainTest {
         obj1.put("name", TouchActionName.POINTER_DOWN);
         jsonArray.put(obj1);
         actionJSON.put("actions", jsonArray);
+        actionJSON.put("inputDevice", "TestDevice");
         ActionChain actionChain = new ActionChain(actionJSON);
         // Should not be paused, should have 1 item next
-        Assert.assertFalse(actionChain.isPaused());
         Assert.assertTrue(actionChain.hasNext());
         JSONObject nextItem = actionChain.next();
 
         // Should not be paused, should not have next.
-        Assert.assertFalse(actionChain.isPaused());
         Assert.assertEquals(nextItem.get("name"), TouchActionName.POINTER_DOWN);
         Assert.assertEquals(nextItem, obj1);
         Assert.assertFalse(actionChain.hasNext());
@@ -43,14 +42,13 @@ public class ActionChainTest {
         obj1.put("ms", 500);
         jsonArray.put(obj1);
         actionJSON.put("actions", jsonArray);
+        actionJSON.put("inputDevice", "TestDevice");
         ActionChain actionChain = new ActionChain(actionJSON);
         // Should not be paused, should have 1 item next
-        Assert.assertFalse(actionChain.isPaused());
         Assert.assertTrue(actionChain.hasNext());
         JSONObject nextItem = actionChain.next();
 
-        // Should not be paused, should not have next.
-        Assert.assertTrue(actionChain.isPaused());
+        // Should be paused, should not have next.
         Assert.assertEquals(nextItem.get("name"), TouchActionName.PAUSE);
         Assert.assertEquals(actionChain.getPauseTime(), 500);
         Assert.assertEquals(nextItem, obj1);

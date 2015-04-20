@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.selendroid.server.action.ActionContext;
 import io.selendroid.server.action.ActionHandler;
+import io.selendroid.server.action.ActionChain;
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.action.touch.TouchActionName;
@@ -15,94 +16,58 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+/**
+ *   Executes action chains in parallel according to selenium specification found here:
+ *   https://w3c.github.io/webdriver/webdriver-spec.html#parallel-actions-1
+ */
 public class Actions extends SafeRequestHandler {
 
   public Actions(String mappedUri) {
     super(mappedUri);
   }
 
-  private int longestActionChain(JSONArray actionChainList) throws JSONException {
-    int longestActionChain = 0;
-    for (int i = 0; i < actionChainList.length(); i++) {
-      JSONObject actionChain = actionChainList.getJSONObject(i);
-      JSONArray actions = actionChain.getJSONArray("actions");
-
-      int actionCount = actions.length();
-      if (actionCount > longestActionChain) {
-        longestActionChain = actionCount;
-      }
-    }
-
-    return longestActionChain;
-  }
-
-  private int longestPause(int currentAction, JSONArray payload) throws JSONException {
-    int longestPause = 0;
-
-    int actionChainCount = payload.length();
-    for (int i = 0; i < actionChainCount; i++) {
-      JSONObject actionChain = payload.getJSONObject(i);
-      JSONArray actions = actionChain.getJSONArray("actions");
-      if (actions.length() > currentAction) {
-        JSONObject action = actions.getJSONObject(currentAction);
-        String actionName = action.getString("name");
-
-        if (actionName.equals(TouchActionName.PAUSE)) {
-          int duration = action.getInt("ms");
-          if (duration > longestPause) {
-            longestPause = duration;
-          }
-        }
-      }
-    }
-
-    return longestPause;
-  }
 
   @Override
   public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("Got actions request");
     JSONArray payload = getPayload(request).getJSONArray("payload");
     int actionChainCount = payload.length();
-    int longestActionChain = longestActionChain(payload);
+    boolean stillRunning = true;
+    int longestPause;
 
-    // Create contexts for all chains of actions
-    List<ActionContext> chainContexts = new ArrayList<ActionContext>();
+    List<ActionChain> actionChains = new ArrayList<ActionChain>();
     for (int i = 0; i < actionChainCount; i++) {
-      chainContexts.add(new ActionContext());
+      actionChains.add(new ActionChain(payload.getJSONObject(i)));
     }
 
-    /*
-       Action chains are a sequence of actions for a single finger on the touch screen device
-       These chains are executed in parallel when only one finger wont suffice,
-       chains can be of different lengths so we iterate over the longest one -
-       padding out shorter chains with wait commands once they are done.
-    */
-    for (int i = 0; i < longestActionChain; i++) {
-      for (int j = 0; j < actionChainCount; j++) {
-        JSONObject actionChain = payload.getJSONObject(j);
-        String inputDevice = actionChain.getString("inputDevice");
-
-        JSONArray actions = actionChain.getJSONArray("actions");
-        if (actions.length() > i) {
-          ActionContext context = chainContexts.get(j);
-          JSONObject action = actions.getJSONObject(i);
+    while (stillRunning) {
+      longestPause = 0;
+      stillRunning = false;
+      for (ActionChain chain : actionChains) {
+        if (chain.hasNext()) {
+          stillRunning = true;
+          JSONObject action = chain.next();
           String actionName = action.getString("name");
 
-          SelendroidLogger.info("Performing action " + inputDevice + "/" + actionName);
+          SelendroidLogger.info("Performing action " + chain.getInputDevice() + "/" + actionName);
 
-          // Pauses are now handled separately as we only wait for the longest pause.
-          if (!actionName.equals(TouchActionName.PAUSE)) {
-            ActionHandler handler = ActionHandler.getHandlerForInputDevice(inputDevice);
-            handler.handle(actionName, getSelendroidDriver(request), action, context);
+          if (actionName.equals(TouchActionName.PAUSE)) {
+            if (chain.getPauseTime() > longestPause) {
+              longestPause = chain.getPauseTime();
+            }
+          }
+          else {
+            ActionHandler handler = ActionHandler.getHandlerForInputDevice(chain.getInputDevice());
+            handler.handle(actionName, getSelendroidDriver(request), action, chain.getContext());
           }
         }
       }
 
-      int pauseTime = longestPause(i, payload);
-      if (pauseTime > 0) {
+      // Sleep for the longest pause for this tick
+      if (longestPause > 0) {
         try {
-          Thread.sleep(pauseTime);
+          Thread.sleep(longestPause);
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
         }
@@ -111,4 +76,5 @@ public class Actions extends SafeRequestHandler {
 
     return new SelendroidResponse(getSessionId(request), "");
   }
+
 }

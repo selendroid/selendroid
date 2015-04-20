@@ -8,42 +8,52 @@ import org.json.JSONArray;
 
 import java.lang.String;
 
+/**
+ * Class to iterate over JSON action chains
+ */
 public class ActionChain {
-    private JSONArray actionChain;
-    private ActionContext context;
-    private int pauseTime = 0;
-    private int index = 0;
+  private JSONArray actionChain;
+  private ActionContext context;
+  private String inputDevice;
+  private int pauseTime = 0;
+  private int index = 0;
 
-    public ActionChain(JSONObject actionChain) throws JSONException {
-        this.actionChain = actionChain.getJSONArray("actions");
-        this.context = new ActionContext();
+  public ActionChain(JSONObject actionChain) throws JSONException {
+    this.inputDevice = actionChain.getString("inputDevice");
+    this.actionChain = actionChain.getJSONArray("actions");
+    this.context = new ActionContext();
+  }
+
+  public int length() {
+    return actionChain.length();
+  }
+
+  public ActionContext getContext() {
+    return context;
+  }
+
+  public String getInputDevice() {
+    return inputDevice;
+  }
+
+  public int getPauseTime() {
+    return pauseTime;
+  }
+
+  public boolean hasNext() {
+    return index < length();
+  }
+
+  public JSONObject next() throws JSONException {
+    JSONObject action = actionChain.getJSONObject(index++);
+    String actionName = action.getString("name");
+    if (actionName.equals(TouchActionName.PAUSE)) {
+      pauseTime = action.getInt("ms");
     }
-    public int length(){
-        return actionChain.length();
+    else {
+      pauseTime = 0;
     }
-    public ActionContext getContext() { return context; }
-    public int getPauseTime(){
-        return pauseTime;
-    }
-    public boolean isPaused(){
-        return pauseTime > 0;
-    }
-    public void updatePause(int time){
-        this.pauseTime -= time;
-        if(pauseTime < 0){
-            pauseTime = 0;
-        }
-    }
-    public boolean hasNext(){
-        return index < length();
-    }
-    public JSONObject next() throws JSONException {
-        JSONObject action = actionChain.getJSONObject(index++);
-        String actionName = action.getString("name");
-        if (actionName.equals(TouchActionName.PAUSE)) {
-            pauseTime = action.getInt("ms");
-        }
-        return action;
-    }
+    return action;
+  }
 
 }
