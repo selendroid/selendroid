@@ -1,6 +1,6 @@
 0.16.0-SNAPSHOT (under current development)
 ---
-- 
+- Trigger DOM event of type 'INPUT' after changing value of INPUT element [#746](../../issues/746)
 
 0.15.0
 ---
