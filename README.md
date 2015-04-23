@@ -23,6 +23,13 @@ Maven Artifacts
 
 You can find the current version in Maven central and the latest snapshot version here: [https://oss.sonatype.org/content/repositories/snapshots/](https://oss.sonatype.org/content/repositories/snapshots/)
 
+Building
+--------
+1. Install Cordova framework artifact to local .m2 repo by executing:
+```
+$ third-party/cordova-3.7.0/mvnInstall.sh
+```
+2. Run ```mvn clean compile package```
 
 License
 -----------

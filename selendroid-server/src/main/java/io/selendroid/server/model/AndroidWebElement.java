@@ -335,7 +335,11 @@ public class AndroidWebElement implements AndroidElement {
     parameter.put(this);
     parameter.put(getText() + sb.toString());
 
-    driver.executeScript("arguments[0].value = arguments[1]", parameter, ke);
+    driver.executeScript("arguments[0].value = arguments[1];" +
+            "var inputEvent = document.createEvent('Event');" +
+            "inputEvent.initEvent('input', true, true);" +
+            "arguments[0].dispatchEvent(inputEvent);"
+            , parameter, ke);
   }
 
   @Override

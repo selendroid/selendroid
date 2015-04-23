@@ -13,6 +13,11 @@
  */
 package io.selendroid.support;
 
+import io.selendroid.client.SelendroidDriver;
+import io.selendroid.client.waiter.WaitingConditions;
+import io.selendroid.common.SelendroidCapabilities;
+import io.selendroid.standalone.SelendroidConfiguration;
+import io.selendroid.standalone.SelendroidLauncher;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,14 +28,8 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import io.selendroid.client.SelendroidDriver;
-import io.selendroid.client.waiter.WaitingConditions;
-import io.selendroid.common.SelendroidCapabilities;
-import io.selendroid.standalone.SelendroidConfiguration;
-import io.selendroid.standalone.SelendroidLauncher;
 import static io.selendroid.client.waiter.TestWaiter.waitFor;
 
 public class BaseAndroidTest {
@@ -49,12 +48,20 @@ public class BaseAndroidTest {
 
   @Before
   public void setup() throws Exception {
-    driver = new SelendroidDriver(getDefaultCapabilities());
-    driver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+    createDriver(getDefaultCapabilities());
   }
 
   @After
   public void teardown() {
+    closeDriver();
+  }
+
+  protected void createDriver(final DesiredCapabilities caps) throws Exception {
+    driver = new SelendroidDriver(caps);
+    driver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+  }
+
+  protected void closeDriver() {
     if (driver() != null) {
       driver().quit();
     }
