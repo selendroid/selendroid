@@ -1,5 +1,8 @@
 0.16.0-SNAPSHOT (under current development)
 ---
+- gets app version from pom.xml if class path doesn't start with jar [#835](../../issues/835)
+- Clear data before app launch [#844](../../issues/844) 
+- Drop explicit 'implements TakesScreenshot, JavascriptExecutor' declarations [#846](../../issues/746) 
 - Trigger DOM event of type 'INPUT' after changing value of INPUT element [#746](../../issues/746)
 - Grid auto re-register [#756](../../issues/756)
 
