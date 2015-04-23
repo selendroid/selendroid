@@ -21,12 +21,10 @@ import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.server.grid.SelfRegisteringRemote;
 import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import io.selendroid.standalone.server.util.HttpClientUtil;
-import org.apache.commons.lang3.StringUtils;
 
 public class SelendroidStandaloneServer {
   private static final Logger log = Logger.getLogger(SelendroidStandaloneServer.class.getName());
@@ -67,14 +65,32 @@ public class SelendroidStandaloneServer {
 
   public void start() {
     webServer.start();
+
     if (config.isGrid()) {
+      selfRegisterInGrid();
+    }
+
+    log.info("Selendroid standalone server has been started on port: " + config.getPort());
+  }
+
+  private void selfRegisterInGrid() {
+    final SelfRegisteringRemote selfRegisteringRemote = new SelfRegisteringRemote(config, driver);
+
+    if (config.getRegisterCycle() > 0) {
+      log.info("Scheduling periodic task for self registration in GRID.");
+      new Timer().schedule(new TimerTask() {
+        @Override
+        public void run() {
+          selfRegisteringRemote.performRegistrationIfNotRegistered();
+        }
+      }, 0, config.getRegisterCycle());
+    } else {
       try {
-        new SelfRegisteringRemote(config, driver).performRegistration();
+        selfRegisteringRemote.performRegistration();
       } catch (Exception e) {
         log.log(Level.SEVERE, "Error registering selendroid into grid hub.", e);
       }
     }
-    log.info("Selendroid standalone server has been started on port: " + config.getPort());
   }
 
   public void stop() {
