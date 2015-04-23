@@ -6,6 +6,7 @@
 - Trigger DOM event of type 'INPUT' after changing value of INPUT element [#746](../../issues/746)
 - Grid auto re-register [#756](../../issues/756)
 - Added activities to test touch gestures in the selendroid-test app [#848](../../issues/848) 
+- implemented driver.manage().timeouts().PageLoadTimeout() [#849](../../issues/849)
 
 0.15.0
 ---
