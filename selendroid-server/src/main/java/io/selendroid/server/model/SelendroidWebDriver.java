@@ -22,6 +22,7 @@ import io.selendroid.server.android.WebViewMotionSender;
 import io.selendroid.server.android.internal.DomWindow;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.exceptions.StaleElementReferenceException;
+import io.selendroid.server.common.exceptions.TimeoutException;
 import io.selendroid.server.model.internal.WebViewHandleMapper;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.server.util.SelendroidLogger;
@@ -39,16 +40,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SelendroidWebDriver {
   private static final String ELEMENT_KEY = "ELEMENT";
   private static final long FOCUS_TIMEOUT = 1000L;
-  private static final long LOADING_TIMEOUT = 30000L;
   private static final long POLLING_INTERVAL = 50L;
   private static final long START_LOADING_TIMEOUT = 700L;
   static final long UI_TIMEOUT = 3000L;
@@ -70,6 +75,7 @@ public class SelendroidWebDriver {
   private MotionSender motionSender;
   private long scriptTimeout = 60000L;
   private long asyncScriptTimeout = 0L;
+  private long pageLoadTimeout = 30000L;
   private final String contextHandle;
 
   public SelendroidWebDriver(ServerInstrumentation serverInstrumentation, String handle) {
@@ -279,6 +285,7 @@ public class SelendroidWebDriver {
 
 
   public void get(final String url) {
+    resetPageIsLoading();
     serverInstrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
       public void run() {
         webview.loadUrl(url);
@@ -343,6 +350,23 @@ public class SelendroidWebDriver {
             chromeClient = new SelendroidWebChromeClient();
           }
           view.setWebChromeClient(chromeClient);
+          // set handlers to indicate whether a page has started/done loading
+          view.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+              synchronized (syncObject) {
+                pageStartedLoading = true;
+                syncObject.notify();
+              }
+            }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+              synchronized (syncObject) {
+                pageDoneLoading = true;
+                syncObject.notify();
+              }
+            }
+          });
 
           WebSettings settings = view.getSettings();
           settings.setJavaScriptCanOpenWindowsAutomatically(true);
@@ -451,14 +475,17 @@ public class SelendroidWebDriver {
           throw new RuntimeException();
         }
       }
-
-      long end = System.currentTimeMillis() + LOADING_TIMEOUT;
+      long end = System.currentTimeMillis() + pageLoadTimeout;
       while (!pageDoneLoading && pageStartedLoading && (System.currentTimeMillis() < end)) {
         try {
-          syncObject.wait(LOADING_TIMEOUT);
+          syncObject.wait(POLLING_INTERVAL);
         } catch (InterruptedException e) {
           throw new RuntimeException(e);
         }
+      }
+      if (!pageDoneLoading) {
+        throw new TimeoutException(String.format("Timed out after %d seconds",
+          SECONDS.convert(pageLoadTimeout, MILLISECONDS)));
       }
     }
   }
@@ -686,7 +713,7 @@ public class SelendroidWebDriver {
   }
 
   public void back() {
-    pageDoneLoading = false;
+    resetPageIsLoading();
     runSynchronously(new Runnable() {
       public void run() {
         webview.goBack();
@@ -696,7 +723,7 @@ public class SelendroidWebDriver {
   }
 
   public void forward() {
-    pageDoneLoading = false;
+    resetPageIsLoading();
     runSynchronously(new Runnable() {
       public void run() {
         webview.goForward();
@@ -706,7 +733,7 @@ public class SelendroidWebDriver {
   }
 
   public void refresh() {
-    pageDoneLoading = false;
+    resetPageIsLoading();
     runSynchronously(new Runnable() {
       public void run() {
         webview.reload();
@@ -731,5 +758,9 @@ public class SelendroidWebDriver {
 
   public void setAsyncScriptTimeout(long timeout) {
     asyncScriptTimeout = timeout;
+  }
+
+  public void setPageLoadTimeout(long timeout) {
+    pageLoadTimeout = timeout;
   }
 }
