@@ -25,9 +25,9 @@ You can find the current version in Maven central and the latest snapshot versio
 
 Building
 --------
-1. Install Cordova framework artifact to local .m2 repo by executing:
+1. Install third party artifacts to local .m2 repo by executing:
 ```
-$ third-party/cordova-3.7.0/mvnInstall.sh
+$ third-party/mvnInstall.sh
 ```
 2. Run ```mvn clean compile package```
 
