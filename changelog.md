@@ -5,6 +5,7 @@
 - Drop explicit 'implements TakesScreenshot, JavascriptExecutor' declarations [#846](../../issues/746) 
 - Trigger DOM event of type 'INPUT' after changing value of INPUT element [#746](../../issues/746)
 - Grid auto re-register [#756](../../issues/756)
+- Added activities to test touch gestures in the selendroid-test app [#848](../../issues/848) 
 
 0.15.0
 ---
