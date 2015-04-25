@@ -36,6 +36,9 @@ import java.util.Set;
 import org.apache.cordova.CordovaChromeClient;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.engine.SystemWebChromeClient;
+import org.apache.cordova.engine.SystemWebView;
+import org.apache.cordova.engine.SystemWebViewEngine;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -346,6 +349,10 @@ public class SelendroidWebDriver {
             CordovaWebView webview=(CordovaWebView)view;
             CordovaInterface ci=null;
             chromeClient = new ExtendedCordovaChromeClient(null,webview);
+          } else if (view.getClass().getSimpleName().equalsIgnoreCase("SystemWebView")) {
+            SystemWebView webview=(SystemWebView)view;
+            SystemWebViewEngine webEngine= new SystemWebViewEngine(webview);
+            chromeClient = new ExtendedSystemWebChromeClient(webEngine);
           } else {
             chromeClient = new SelendroidWebChromeClient();
           }
@@ -524,6 +531,55 @@ public class SelendroidWebDriver {
           res = res.substring(i + 2);
           /*
            * Workaround for Japanese character encodings: Replace U+00A5 with backslash so that we
+           * can properly parse JSON strings contains backslash escapes, since WebKit maps 0x5C
+           * (used for character escaping in all of the Japanses character encodings) to U+00A5 (YEN
+           * SIGN) and breaks escape characters.
+           */
+          if (("EUC-JP".equals(enc) || "Shift_JIS".equals(enc) || "ISO-2022-JP".equals(enc))
+              && res.contains("\u00a5")) {
+            SelendroidLogger.info("Perform workaround for japanese character encodings");
+            SelendroidLogger.debug("Original String: " + res);
+            res = res.replace("\u00a5", "\\");
+            SelendroidLogger.debug("Replaced result: " + res);
+          }
+          result = res;
+          syncObject.notify();
+        }
+
+        return true;
+      } else {
+        currentAlertMessage.add(message == null ? "null" : message);
+        SelendroidLogger.info("new alert message: " + message);
+        return super.onJsAlert(view, url, message, jsResult);
+      }
+    }
+  }
+
+
+  //Like ExtendedCordovaClient, but for Cordova 4.0.0
+  public class ExtendedSystemWebChromeClient extends SystemWebChromeClient {
+
+
+    public  ExtendedSystemWebChromeClient(SystemWebViewEngine parentEngine) {
+      super(parentEngine);
+    }
+
+    /**
+     * Unconventional way of adding a Javascript interface but the main reason why I took this way
+     * is that it is working stable compared to the webview.addJavascriptInterface way.
+     **/
+   @Override
+    public boolean onJsAlert(WebView view, String url, String message, JsResult jsResult) {
+      if (message != null && message.startsWith("selendroid<")) {
+        jsResult.confirm();
+
+        synchronized (syncObject) {
+          String res = message.replaceFirst("selendroid<", "");
+          int i = res.indexOf(">:");
+          String enc = res.substring(0, i);
+          res = res.substring(i + 2);
+
+          /* Workaround for Japanese character encodings: Replace U+00A5 with backslash so that we
            * can properly parse JSON strings contains backslash escapes, since WebKit maps 0x5C
            * (used for character escaping in all of the Japanses character encodings) to U+00A5 (YEN
            * SIGN) and breaks escape characters.

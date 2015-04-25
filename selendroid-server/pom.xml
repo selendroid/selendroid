@@ -44,6 +44,13 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.cordova-android</groupId>
+			<artifactId>cordova</artifactId>
+			<classifier>android</classifier>
+			<version>4.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>1.9.5</version>
