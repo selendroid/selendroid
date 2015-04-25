@@ -7,6 +7,7 @@
 - Grid auto re-register [#756](../../issues/756)
 - Added activities to test touch gestures in the selendroid-test app [#848](../../issues/848) 
 - implemented driver.manage().timeouts().PageLoadTimeout() [#849](../../issues/849)
+- Added cordova-android 4.0.0 support [859](../../issues/859)
 
 0.15.0
 ---
