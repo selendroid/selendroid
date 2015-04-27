@@ -361,7 +361,14 @@ public class AndroidNativeElement implements AndroidElement {
     object.put("type", getView().getClass().getSimpleName());
     String value = "";
     if (getView() instanceof TextView) {
-      value = String.valueOf(((TextView) getView()).getText());
+      TextView textView = (TextView) getView();
+      value = String.valueOf(textView.getText());
+
+      CharSequence error = textView.getError();
+      if(error != null && error.length() > 0){
+        SelendroidLogger.info("error: " + error);
+        object.put("error", error);
+      }
     }
     object.put("value", value);
     object.put("shown", getView().isShown());
