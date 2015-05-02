@@ -35,5 +35,5 @@ public class CallLogUtil {
         }
         return false;
 	}
-}
 
+}
