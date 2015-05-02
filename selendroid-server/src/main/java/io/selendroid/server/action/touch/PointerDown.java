@@ -20,10 +20,12 @@ public class PointerDown extends Action {
     Point actionPosition = getActionPosition(properties);
     int x = actionPosition.getX();
     int y = actionPosition.getY();
+    int id = context.getId();
 
     TouchScreen touchScreen = driver.getTouch();
 
-    touchScreen.down(x, y);
+    //touchScreen.down(x, y);
+    touchScreen.multiTouchDown(x, y, id);
     context.press(x, y);
   }
 }

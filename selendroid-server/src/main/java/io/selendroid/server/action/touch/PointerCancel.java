@@ -19,9 +19,6 @@ public class PointerCancel extends Action {
       JSONObject properties, ActionContext context) throws JSONException {
     TouchScreen touchScreen = driver.getTouch();
 
-    if (context.getIsPressed()) {
-      touchScreen.up(context.getCurrentX(), context.getCurrentY());
-      context.release();
-    }
+    touchScreen.cancel();
   }
 }

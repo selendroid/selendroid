@@ -21,6 +21,7 @@ public class PointerMove extends Action {
     int y = actionPosition.getY();
 
     context.setPosition(x, y);
-    driver.getTouch().move(x, y);
+    driver.getTouch().multiTouchMove(x, y, context.getId());
+    //driver.getTouch().move(x, y);
   }
 }

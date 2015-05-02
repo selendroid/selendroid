@@ -39,6 +39,8 @@ public interface TouchScreen {
    */
   void down(int x, int y);
 
+  void multiTouchDown(int x, int y, int id);
+
   /**
    * Allows the execution of the gesture 'up' on the screen. It is typically the last of a sequence
    * of touch gestures.
@@ -48,6 +50,7 @@ public interface TouchScreen {
    */
   void up(int x, int y);
 
+  void multiTouchUp(int x, int y, int id);
   /**
    * Allows the execution of the gesture 'move' on the screen.
    * 
@@ -55,6 +58,13 @@ public interface TouchScreen {
    * @param y The y coordinate relative to the viewport
    */
   void move(int x, int y);
+
+  void multiTouchMove(int x, int y, int id);
+
+  /**
+   * Calls 'up' on all current pointers, cancelling the gesture.
+   */
+  void cancel();
 
   /**
    * Creates a scroll gesture that starts on a particular screen location.
