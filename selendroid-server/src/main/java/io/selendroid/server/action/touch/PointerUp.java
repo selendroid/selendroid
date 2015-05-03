@@ -19,8 +19,7 @@ public class PointerUp extends Action {
   public void perform(JSONObject properties, ActionContext context) throws JSONException {
     TouchScreen touchScreen = driver.getTouch();
 
-//    touchScreen.up(context.getCurrentX(), context.getCurrentY());
-    touchScreen.multiTouchUp(context.getCurrentX(), context.getCurrentY(), context.getId());
+    touchScreen.up(context.getCurrentX(), context.getCurrentY(), context.getId());
     context.release();
   }
 }

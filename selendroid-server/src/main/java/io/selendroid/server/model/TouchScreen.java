@@ -33,33 +33,57 @@ public interface TouchScreen {
   /**
    * Allows the execution of the gesture 'down' on the screen. It is typically the first of a
    * sequence of touch gestures.
-   * 
+   *
    * @param x The x coordinate relative to the viewport
    * @param y The y coordinate relative to the viewport
    */
   void down(int x, int y);
 
-  void multiTouchDown(int x, int y, int id);
+  /**
+   * Allows the execution of the gesture 'down' on the screen. It is typically the first of a
+   * sequence of touch gestures.  Supports multitouch.
+   * 
+   * @param x The x coordinate relative to the viewport
+   * @param y The y coordinate relative to the viewport
+   * @param id The id of the pointer performing the action.  0 for single touch.
+   */
+  void down(int x, int y, int id);
 
   /**
    * Allows the execution of the gesture 'up' on the screen. It is typically the last of a sequence
    * of touch gestures.
-   * 
+   *
    * @param x The x coordinate relative to the viewport
    * @param y The y coordinate relative to the viewport
    */
   void up(int x, int y);
 
-  void multiTouchUp(int x, int y, int id);
+  /**
+   * Allows the execution of the gesture 'up' on the screen. It is typically the last of a sequence
+   * of touch gestures.  Supports multitouch.
+   * 
+   * @param x The x coordinate relative to the viewport
+   * @param y The y coordinate relative to the viewport
+   * @param id The id of the pointer performing the action.  0 for single touch.
+   */
+  void up(int x, int y, int id);
+
   /**
    * Allows the execution of the gesture 'move' on the screen.
-   * 
+   *
    * @param x The x coordinate relative to the viewport
    * @param y The y coordinate relative to the viewport
    */
   void move(int x, int y);
 
-  void multiTouchMove(int x, int y, int id);
+  /**
+   * Allows the execution of the gesture 'move' on the screen.  Supports multitouch.
+   * 
+   * @param x The x coordinate relative to the viewport
+   * @param y The y coordinate relative to the viewport
+   * @param id The id of the pointer performing the action.  0 for single touch.
+   */
+  void move(int x, int y, int id);
 
   /**
    * Calls 'up' on all current pointers, cancelling the gesture.

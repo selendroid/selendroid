@@ -37,7 +37,7 @@ public class Actions extends SafeRequestHandler {
 
     List<ActionChain> actionChains = new ArrayList<ActionChain>();
     for (int i = 0; i < actionChainCount; i++) {
-      actionChains.add(new ActionChain(payload.getJSONObject(i), i));
+      actionChains.add(new ActionChain(payload.getJSONObject(i)));
     }
 
     while (stillRunning) {
@@ -58,6 +58,7 @@ public class Actions extends SafeRequestHandler {
           } else {
             ActionHandler handler = ActionHandler.getHandlerForInputDevice(chain.getInputDevice());
             handler.handle(actionName, getSelendroidDriver(request), action, chain.getContext());
+            // POINTER_CANCEL cancels all actions, so all contexts must be released.
             if (actionName.equals(TouchActionName.POINTER_CANCEL)) {
               for (ActionChain c : actionChains) {
                 if(c.getContext().getIsPressed())

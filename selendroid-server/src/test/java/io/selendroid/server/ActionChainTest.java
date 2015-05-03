@@ -22,7 +22,7 @@ public class ActionChainTest {
         jsonArray.put(obj1);
         actionJSON.put("actions", jsonArray);
         actionJSON.put("inputDevice", "TestDevice");
-        ActionChain actionChain = new ActionChain(actionJSON, 0);
+        ActionChain actionChain = new ActionChain(actionJSON);
         // Should not be paused, should have 1 item next
         Assert.assertTrue(actionChain.hasNext());
         JSONObject nextItem = actionChain.next();
@@ -43,7 +43,7 @@ public class ActionChainTest {
         jsonArray.put(obj1);
         actionJSON.put("actions", jsonArray);
         actionJSON.put("inputDevice", "TestDevice");
-        ActionChain actionChain = new ActionChain(actionJSON, 0);
+        ActionChain actionChain = new ActionChain(actionJSON);
         // Should not be paused, should have 1 item next
         Assert.assertTrue(actionChain.hasNext());
         JSONObject nextItem = actionChain.next();

@@ -81,7 +81,7 @@ public class AndroidTouchScreen implements TouchScreen {
     motions.send(event);
   }
 
-  public void multiTouchDown(int x, int y, int id) {
+  public void down(int x, int y, int id) {
     List<MotionEvent> event = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
     int action;
@@ -105,7 +105,7 @@ public class AndroidTouchScreen implements TouchScreen {
     motions.send(event);
   }
 
-  public void multiTouchUp(int x, int y, int id) {
+  public void up(int x, int y, int id) {
     List<MotionEvent> event = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
     int action;
@@ -138,7 +138,7 @@ public class AndroidTouchScreen implements TouchScreen {
     motions.send(event);
   }
 
-  public void multiTouchMove(int x, int y, int id) {
+  public void move(int x, int y, int id) {
     List<MotionEvent> event = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
     for(Pointer p : pointers) {
@@ -152,7 +152,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
   public void cancel() {
     for(Pointer p : pointers) {
-      multiTouchUp((int)p.getCoords().x, (int)p.getCoords().y, p.getId());
+      up((int)p.getCoords().x, (int)p.getCoords().y, p.getId());
     }
   }
 
