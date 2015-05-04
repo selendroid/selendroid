@@ -96,7 +96,9 @@ public class SelendroidServerBuilder {
   /* package */void init(AndroidApp aut) throws IOException, ShellCommandException {
     applicationUnderTest = aut;
     File customizedServer = File.createTempFile("selendroid-server", ".apk");
-
+    if(serverConfiguration != null && serverConfiguration.isDeleteTmpFiles()) {
+      customizedServer.deleteOnExit(); //Deletes temporary files created
+    }
     log.info("Creating customized Selendroid-server: " + customizedServer.getAbsolutePath());
     InputStream is = getResourceAsStream(selendroidPrebuildServerPath);
 
@@ -113,10 +115,12 @@ public class SelendroidServerBuilder {
     cleanUpPrebuildServer();
     File selendroidServer = createAndAddCustomizedAndroidManifestToSelendroidServer();
     File outputFile =
-        new File(FileUtils.getTempDirectory(), String.format("selendroid-server-%s-%s.apk",
+      new File(FileUtils.getTempDirectory(), String.format("selendroid-server-%s-%s.apk",
                                                              applicationUnderTest.getBasePackage(),
                                                              getJarVersionNumber()));
-
+    if(serverConfiguration != null && serverConfiguration.isDeleteTmpFiles()) {
+      outputFile.deleteOnExit(); //Deletes file when done
+    }
     return signTestServer(selendroidServer, outputFile);
   }
 
@@ -146,6 +150,9 @@ public class SelendroidServerBuilder {
     deleteFileFromAppSilently(app, "META-INF/NDKEYSTO.RSA");
 
     File outputFile = new File(appFile.getParentFile(), "resigned-" + appFile.getName());
+    if(serverConfiguration != null && serverConfiguration.isDeleteTmpFiles()) {
+      outputFile.deleteOnExit();
+    }
     return signTestServer(appFile, outputFile);
   }
 
@@ -215,6 +222,7 @@ public class SelendroidServerBuilder {
     ZipArchiveEntry binaryManifestXml = manifestApk.getEntry("AndroidManifest.xml");
 
     File finalSelendroidServerFile = new File(tempdir.getAbsolutePath() + "selendroid-server.apk");
+
     ZipArchiveOutputStream finalSelendroidServer =
         new ZipArchiveOutputStream(finalSelendroidServerFile);
     finalSelendroidServer.putArchiveEntry(binaryManifestXml);

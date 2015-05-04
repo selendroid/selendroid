@@ -140,6 +140,9 @@ public class SelendroidConfiguration {
   @Parameter(names = "-folder", description = "The folder which contains Android applications under test. This folder will monitor and add new apps to the apps store during the lifetime of the selendroid node.")
   private String folder = null;
 
+  @Parameter(names = "-deleteTmpFiles", description = "Deletes temporary files created by the Selendroid Server.")
+  private boolean deleteTmpFiles = true;
+
   public void setKeystore(String keystore) {
     this.keystore = keystore;
   }
@@ -362,6 +365,14 @@ public class SelendroidConfiguration {
 
   public String getAppFolderToMonitor() {
     return folder;
+  }
+
+  public boolean isDeleteTmpFiles() {
+    return deleteTmpFiles;
+  }
+
+  public void setDeleteTmpFiles(boolean deleteTmpFiles){
+    this.deleteTmpFiles = deleteTmpFiles;
   }
 
   /**

@@ -164,8 +164,12 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         // using "android" as the app name, because that is the desired capability default in
         // selenium for
         // DesiredCapabilities.ANDROID
+        File androidAPK = androidDriverAPKBuilder.extractAndroidDriverAPK();
+        if(serverConfiguration != null && serverConfiguration.isDeleteTmpFiles()) {
+          androidAPK.deleteOnExit(); //Deletes temporary files if flag set
+        }
         AndroidApp app =
-            selendroidApkBuilder.resignApp(androidDriverAPKBuilder.extractAndroidDriverAPK());
+            selendroidApkBuilder.resignApp(androidAPK);
         appsStore.put(BrowserType.ANDROID, app);
       } catch (Exception e) {
         throw new RuntimeException(e);
