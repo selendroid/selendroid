@@ -1,16 +1,15 @@
 package io.selendroid.server.common.utils;
 
-import junit.framework.Test;
+import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
-public class CallLogUtilTest {
+public class CallLogUtilTest extends TestCase {
     private CallLogUtil callLogUtil = new CallLogUtil();
 
-    @Test
     public void testGetAllLogsOfDurationGreaterThan() {
         List<CallLogEntry> logs = new ArrayList<CallLogEntry>();
         CallLogEntry callLogEntry10 = new CallLogEntry("0000000000", 10);
@@ -33,7 +32,6 @@ public class CallLogUtilTest {
         assertArrayEquals(result.toArray(), expectedResult.toArray());
     }
 
-    @Test
     public void testGetAllLogsOfDurationLessThan() {
         List<CallLogEntry> logs = new ArrayList<CallLogEntry>();
         CallLogEntry callLogEntry10 = new CallLogEntry("0000000000", 10);
@@ -56,7 +54,6 @@ public class CallLogUtilTest {
         assertArrayEquals(result.toArray(), expectedResult.toArray());
     }
 
-    @Test
     public void getContainsLogFromNumber() {
         List<CallLogEntry> logs = new ArrayList<CallLogEntry>();
         logs.add(new CallLogEntry("0000000000", 10));

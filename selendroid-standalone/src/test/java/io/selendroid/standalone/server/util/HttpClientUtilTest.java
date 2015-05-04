@@ -19,7 +19,6 @@ public class HttpClientUtilTest extends TestCase {
 
     private HttpClientUtil httpClientUtil = Mockito.spy(new HttpClientUtil());
 
-    @Test
     public void testParseJsonResponse() throws Exception {
         InputStream inputStream = IOUtils.toInputStream("{ 'id' : 5, 'name' : 'kitkat' }");
 
@@ -38,7 +37,6 @@ public class HttpClientUtilTest extends TestCase {
         assertEquals(result.toString(), expectedResult.toString());
     }
 
-    @Test
     public void testParseJsonResponseThrowsException() throws Exception {
         InputStream inputStream = IOUtils.toInputStream("{{{ 'id' :;; 5, 'name' ? 'kitkat' }");
 
@@ -58,7 +56,6 @@ public class HttpClientUtilTest extends TestCase {
         assertTrue(e instanceof JSONException);
     }
 
-    @Test
     public void testExecuteThrowsException() throws Exception {
         HttpMethod httpMethod = new HttpMethod("DOESNOTEXIST");
         String url = "http://localhost:50/wd/hub/sessions";
