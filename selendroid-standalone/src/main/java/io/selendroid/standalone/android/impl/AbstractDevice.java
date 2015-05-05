@@ -63,7 +63,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   public static final String WD_STATUS_ENDPOINT = "http://localhost:8080/wd/hub/status";
   protected String serial = null;
   protected String model = null;
-  protected String apiTargetType = null;
+  protected String apiTargetType = "android";
   protected Integer port = null;
   protected IDevice device;
   private ByteArrayOutputStream logoutput;
