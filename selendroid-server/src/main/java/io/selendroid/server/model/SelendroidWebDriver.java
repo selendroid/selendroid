@@ -490,8 +490,8 @@ public class SelendroidWebDriver {
           throw new RuntimeException(e);
         }
       }
-      if (!pageDoneLoading) {
-        throw new TimeoutException(String.format("Timed out after %d seconds",
+      if (!pageDoneLoading && pageStartedLoading) {
+        throw new TimeoutException(String.format("Timed out after %d seconds waiting for page to load",
           SECONDS.convert(pageLoadTimeout, MILLISECONDS)));
       }
     }
