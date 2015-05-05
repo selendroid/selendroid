@@ -229,6 +229,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         // If we are using an emulator need to start it up
         if (device instanceof AndroidEmulator) {
           startAndroidEmulator(desiredCapabilities, (AndroidEmulator) device);
+          // If we are using an android device
+        } else {
+          device.unlockScreen();
         }
 
         boolean appInstalledOnDevice = device.isInstalled(app) || app instanceof InstalledAndroidApp;
@@ -284,12 +287,12 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
         // create the new session on the device server
         RemoteWebDriver driver =
-                new RemoteWebDriver(new URL("http://localhost:" + port + "/wd/hub"), desiredCapabilities);
+          new RemoteWebDriver(new URL("http://localhost:" + port + "/wd/hub"), desiredCapabilities);
         String sessionId = driver.getSessionId().toString();
         SelendroidCapabilities requiredCapabilities =
-                new SelendroidCapabilities(driver.getCapabilities().asMap());
+          new SelendroidCapabilities(driver.getCapabilities().asMap());
         ActiveSession session =
-                new ActiveSession(sessionId, requiredCapabilities, app, device, port, this);
+          new ActiveSession(sessionId, requiredCapabilities, app, device, port, this);
 
         this.sessions.put(sessionId, session);
 
@@ -347,7 +350,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
       } else {
         throw new SelendroidException("Selendroid server on the device didn't come up after "
-                + startTimeout / 1000 + "sec:");
+            + startTimeout / 1000 + "sec:");
       }
     }
     log.info("Selendroid server has started.");
@@ -374,7 +377,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private void startAndroidEmulator(SelendroidCapabilities desiredCapabilities, AndroidEmulator device) throws AndroidDeviceException {
     AndroidEmulator emulator = device;
     if (emulator.isEmulatorStarted()) {
-      emulator.unlockEmulatorScreen();
+      emulator.unlockScreen();
     } else {
       Map<String, Object> config = new HashMap<String, Object>();
       if (serverConfiguration.getEmulatorOptions() != null) {
@@ -577,7 +580,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         deviceInfo.put(SelendroidCapabilities.API_TARGET_TYPE,
             device.getAPITargetType());
         deviceInfo
-            .put(SelendroidCapabilities.PLATFORM_VERSION, device.getTargetPlatform().getApi());
+          .put(SelendroidCapabilities.PLATFORM_VERSION, device.getTargetPlatform().getApi());
         deviceInfo.put(SelendroidCapabilities.SCREEN_SIZE, device.getScreenSize());
 
         list.put(deviceInfo);

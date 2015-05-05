@@ -54,7 +54,7 @@ public interface AndroidEmulator {
 
   public void setSerial(int port);
 
-  public void unlockEmulatorScreen() throws AndroidDeviceException;
+  public void unlockScreen() throws AndroidDeviceException;
 
   public void setWasStartedBySelendroid(boolean wasStartedBySelendroid);
 

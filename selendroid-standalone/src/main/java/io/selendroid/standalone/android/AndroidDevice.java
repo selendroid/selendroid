@@ -96,4 +96,6 @@ public interface AndroidDevice {
   public String getModel();
 
   public String getAPITargetType();
+
+  public void unlockScreen() throws AndroidDeviceException;
 }
