@@ -10,6 +10,7 @@
 - Added cordova-android 4.0.0 support [#859](../../issues/859)
 - Append error details to page source [#850](../../issues/850) 
 - Delete temporary created by Selendroid Server [#862](../../issues/862) 
+- Refactored SafeHandle (Action chain) for future multitouch implementation. [#860](../../issues/860) 
 
 0.15.0
 ---
