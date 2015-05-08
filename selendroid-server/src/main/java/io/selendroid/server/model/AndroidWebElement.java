@@ -230,8 +230,9 @@ public class AndroidWebElement implements AndroidElement {
       throw new SelendroidException(e);
     }
 
-    return new Point(topLeft.x + Integer.parseInt(result[0]) / 2, topLeft.y
-        + Integer.parseInt(result[1]) / 2);
+    int xSize = (new Double(result[0])).intValue();
+    int ySize = (new Double(result[1])).intValue();
+    return new Point(topLeft.x + xSize / 2, topLeft.y+ ySize / 2);
   }
 
   @Override
