@@ -354,7 +354,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
     log.info("Emulator start took: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
     log.info("Please have in mind, starting an emulator takes usually about 45 seconds.");
-    unlockEmulatorScreen();
+    unlockScreen();
 
     waitForLauncherToComplete();
 
@@ -367,7 +367,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     setWasStartedBySelendroid(true);
   }
 
-  public void unlockEmulatorScreen() throws AndroidDeviceException {
+  public void unlockScreen() throws AndroidDeviceException {
     // Send menu key event
     CommandLine menuKeyCommand = getAdbCommand();
     menuKeyCommand.addArgument("shell", false);

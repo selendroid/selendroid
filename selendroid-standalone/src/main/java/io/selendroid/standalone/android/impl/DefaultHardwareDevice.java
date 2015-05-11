@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 
+import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import org.openqa.selenium.Dimension;
-
 
 public class DefaultHardwareDevice extends AbstractDevice {
   private static final Logger log = Logger.getLogger(DefaultHardwareDevice.class.getName());
@@ -99,5 +99,28 @@ public class DefaultHardwareDevice extends AbstractDevice {
   
   public String getSerial() {
     return serial;
+  }
+
+  public void unlockScreen() throws AndroidDeviceException {
+    // Get phone's android version and whether screen is off or not.
+    // Different ways to detect if screen is off depending on version.
+
+    String output = runAdbCommand("shell dumpsys power");
+
+    // Lollipop and up -- API >= 20
+    if (Integer.parseInt(this.targetPlatform.getApi()) >= 20) {
+      String value = extractValue("Display Power: state=(.*?)$", output);
+      if (value.equals("OFF")) {
+        // Wake screen
+        inputKeyevent(26);
+      }
+      // Kitkat and below -- API <= 19
+    } else {
+      String value = extractValue("mScreenOn=(.*?)$", output);
+      if (value.equals("false")) {
+        // Wake screen
+        inputKeyevent(26);
+      }
+    }
   }
 }
