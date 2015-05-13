@@ -77,7 +77,8 @@ public abstract class AbstractNativeElementContext
       }
     }
 
-    AndroidNativeElement e = new AndroidNativeElement(view, instrumentation, keys, knownElements);
+    AndroidNativeElement e = Factories.getAndroidNativeElementFactory()
+            .createAndroidNativeElement(view, instrumentation, keys, knownElements);
     knownElements.add(e);
     return e;
   }
