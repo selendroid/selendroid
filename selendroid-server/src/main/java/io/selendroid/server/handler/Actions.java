@@ -27,7 +27,6 @@ public class Actions extends SafeRequestHandler {
     super(mappedUri);
   }
 
-
   @Override
   public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("Got actions request");
@@ -56,10 +55,16 @@ public class Actions extends SafeRequestHandler {
             if (chain.getPauseTime() > longestPause) {
               longestPause = chain.getPauseTime();
             }
-          }
-          else {
+          } else {
             ActionHandler handler = ActionHandler.getHandlerForInputDevice(chain.getInputDevice());
             handler.handle(actionName, getSelendroidDriver(request), action, chain.getContext());
+            // POINTER_CANCEL cancels all actions, so all contexts must be released.
+            if (actionName.equals(TouchActionName.POINTER_CANCEL)) {
+              for (ActionChain c : actionChains) {
+                if(c.getContext().getIsPressed())
+                  c.getContext().release();
+              }
+            }
           }
         }
       }

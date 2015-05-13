@@ -6,11 +6,20 @@ public class ActionContext {
 
   int currentX;
   int currentY;
+  int id = 0;
   boolean isPressed = false;
 
   public void setPosition(int x, int y) {
     currentX = x;
     currentY = y;
+  }
+
+  public void setId(int i) {
+    id = i;
+  }
+
+  public int getId() {
+    return id;
   }
 
   public void press(int x, int y) {

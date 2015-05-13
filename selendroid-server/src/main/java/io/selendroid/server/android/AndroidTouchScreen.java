@@ -38,6 +38,7 @@ import io.selendroid.server.android.internal.Point;
 import io.selendroid.server.common.action.touch.FlickDirection;
 import io.selendroid.server.common.exceptions.SelendroidException;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,8 +48,16 @@ import java.util.List;
  */
 public class AndroidTouchScreen implements TouchScreen {
   private static final int MOTION_EVENT_INJECTION_DELAY_MILLIS = 5;
+  private static final int MOTION_EVENT_META_STATE = 0;
+  private static final float MOTION_EVENT_X_PRECISION = 1.0f;
+  private static final float MOTION_EVENT_Y_PRECISION = 1.0f;
+  private static final int MOTION_EVENT_DEVICE_ID = 0;
+  private static final int MOTION_EVENT_EDGE_FLAGS = 0;
+  private static final int MOTION_EVENT_SOURCE = 0;
+  private static final int MOTION_EVENT_FLAGS = 0;
   private final ServerInstrumentation instrumentation;
   private final MotionSender motions;
+  private ArrayDeque<Pointer> pointers = new ArrayDeque<Pointer>();
 
   public AndroidTouchScreen(ServerInstrumentation instrumentation, MotionSender motions) {
     this.instrumentation = instrumentation;
@@ -72,6 +81,22 @@ public class AndroidTouchScreen implements TouchScreen {
     motions.send(event);
   }
 
+  public void down(int x, int y, int id) {
+    List<MotionEvent> event = new ArrayList<MotionEvent>();
+    long downTime = SystemClock.uptimeMillis();
+    int action;
+    Pointer p = new Pointer(id, x, y);
+    if (pointers.isEmpty()) {
+      action = MotionEvent.ACTION_DOWN;
+      pointers.add(p);
+    } else {
+      action = MotionEvent.ACTION_POINTER_DOWN;
+      pointers.addFirst(p);
+    }
+    event.add(getMotionEvent(downTime, downTime, action));
+    motions.send(event);
+  }
+
   public void up(int x, int y) {
     List<MotionEvent> event = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
@@ -80,12 +105,55 @@ public class AndroidTouchScreen implements TouchScreen {
     motions.send(event);
   }
 
+  public void up(int x, int y, int id) {
+    List<MotionEvent> event = new ArrayList<MotionEvent>();
+    long downTime = SystemClock.uptimeMillis();
+    int action;
+    if (pointers.size() == 1) {
+      action = MotionEvent.ACTION_UP;
+    } else {
+      action = MotionEvent.ACTION_POINTER_UP;
+      movePointerToFront(id);
+    }
+    event.add(getMotionEvent(downTime, downTime, action));
+    motions.send(event);
+    pointers.removeFirst();
+  }
+
+  private void movePointerToFront(int id) {
+    for(Pointer p : pointers) {
+      if(p.getId() == id) {
+        pointers.remove(p);
+        pointers.addFirst(p);
+        break;
+      }
+    }
+  }
+
   public void move(int x, int y) {
     List<MotionEvent> event = new ArrayList<MotionEvent>();
     long downTime = SystemClock.uptimeMillis();
     Point coords = new Point(x, y);
     event.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_MOVE, coords));
     motions.send(event);
+  }
+
+  public void move(int x, int y, int id) {
+    List<MotionEvent> event = new ArrayList<MotionEvent>();
+    long downTime = SystemClock.uptimeMillis();
+    for(Pointer p : pointers) {
+      if (p.getId() == id) {
+        p.setCoords(x, y);
+      }
+    }
+    event.add(getMotionEvent(downTime, downTime, MotionEvent.ACTION_MOVE));
+    motions.send(event);
+  }
+
+  public void cancel() {
+    for(Pointer p : pointers) {
+      up((int)p.getCoords().x, (int)p.getCoords().y, p.getId());
+    }
   }
 
   public void scroll(Coordinates where, int xOffset, int yOffset) {
@@ -101,11 +169,11 @@ public class AndroidTouchScreen implements TouchScreen {
         Scroll.INITIAL_STEPS, Scroll.TIME_BETWEEN_EVENTS));
     // Deceleration phase from reference point to destination
     motionEvents.add(getBatchedMotionEvent(downTime, scroll.getEventTimeForReferencePoint(),
-        scroll.getDecelerationPoint(), destination, Scroll.DECELERATION_STEPS,
-        Scroll.TIME_BETWEEN_EVENTS));
+            scroll.getDecelerationPoint(), destination, Scroll.DECELERATION_STEPS,
+            Scroll.TIME_BETWEEN_EVENTS));
 
     motionEvents.add(getMotionEvent(downTime,
-        (downTime + scroll.getEventTimeForDestinationPoint()), MotionEvent.ACTION_UP, destination));
+            (downTime + scroll.getEventTimeForDestinationPoint()), MotionEvent.ACTION_UP, destination));
     motions.send(motionEvents);
   }
 
@@ -268,6 +336,30 @@ public class AndroidTouchScreen implements TouchScreen {
 
   private MotionEvent getMotionEvent(long start, long eventTime, int action, Point coords) {
     return MotionEvent.obtain(start, eventTime, action, coords.x, coords.y, 0);
+  }
+
+  private MotionEvent getMotionEvent(long start, long eventTime, int action) {
+    return MotionEvent.obtain(start, eventTime, action, pointers.size(), getPointerIds(), getPointerCoords(),
+            MOTION_EVENT_META_STATE, MOTION_EVENT_X_PRECISION, MOTION_EVENT_Y_PRECISION, MOTION_EVENT_DEVICE_ID,
+            MOTION_EVENT_EDGE_FLAGS, MOTION_EVENT_SOURCE, MOTION_EVENT_FLAGS);
+  }
+
+  private int[] getPointerIds () {
+    int[] pointerIds = new int[pointers.size()];
+    int i = 0;
+    for(Pointer p : pointers) {
+      pointerIds[i++] = p.getId();
+    }
+    return pointerIds;
+  }
+
+  private PointerCoords[] getPointerCoords () {
+    PointerCoords[] pointerCoords = new PointerCoords[pointers.size()];
+    int i = 0;
+    for(Pointer p : pointers) {
+      pointerCoords[i++] = p.getCoords();
+    }
+    return pointerCoords;
   }
 
   private MotionEvent getBatchedMotionEvent(long downTime, long startingEventTime, Point origin,
@@ -455,6 +547,32 @@ public class AndroidTouchScreen implements TouchScreen {
 
     public long getTimeForDestinationPoint(long downTime) {
       return downTime + time;
+    }
+  }
+
+  public class Pointer
+  {
+    private final int id;
+    private PointerCoords coords;
+
+    public Pointer(int id, int x, int y)
+    {
+      this.id   = id;
+      coords = new PointerCoords();
+      setCoords(x, y);
+    }
+
+    public int getId()   {
+      return id;
+    }
+
+    public PointerCoords getCoords() {
+      return coords;
+    }
+
+    public void setCoords(int x, int y) {
+      coords.x = x;
+      coords.y = y;
     }
   }
 }

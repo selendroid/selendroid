@@ -18,10 +18,13 @@ public class ActionChain {
   private int pauseTime = 0;
   private int index = 0;
 
+  private static int id_counter = 0;
+
   public ActionChain(JSONObject actionChain) throws JSONException {
     this.inputDevice = actionChain.getString("inputDevice");
     this.actionChain = actionChain.getJSONArray("actions");
     this.context = new ActionContext();
+    this.context.setId(id_counter++);
   }
 
   public int length() {

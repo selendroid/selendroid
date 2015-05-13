@@ -23,7 +23,7 @@ public class PointerDown extends Action {
 
     TouchScreen touchScreen = driver.getTouch();
 
-    touchScreen.down(x, y);
+    touchScreen.down(x, y, context.getId());
     context.press(x, y);
   }
 }
