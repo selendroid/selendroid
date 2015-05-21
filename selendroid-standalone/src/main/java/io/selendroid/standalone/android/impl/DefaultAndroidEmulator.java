@@ -464,15 +464,21 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   }
 
   private void stopEmulator() throws AndroidDeviceException {
+    boolean exceptionMustBeThrown = false;
+
     TelnetClient client = null;
     try {
       client = new TelnetClient(getPort());
       client.sendQuietly("kill");
     } catch (AndroidDeviceException e) {
-      // ignore
+      exceptionMustBeThrown = true;
     } finally {
       if (client != null) {
         client.close();
+      }
+
+      if (exceptionMustBeThrown) {
+        throw new AndroidDeviceException("Cannot connect to emulator through Telnet.");
       }
     }
   }
@@ -494,9 +500,21 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
           try {
             stopEmulator();
           } catch (AndroidDeviceException sce) {
+	    removeLockFiles();
+
             killed = true;
           }
         }
+      }
+    }
+  }
+
+  private void removeLockFiles() {
+    final File[] avdFolderFiles = avdRootFolder.listFiles();
+
+    for (final File avdFolderFile : avdFolderFiles) {
+      if (avdFolderFile.getName().endsWith(".lock")) {
+        avdFolderFile.delete();
       }
     }
   }
