@@ -16,7 +16,7 @@ package io.selendroid.common.device;
 public enum DeviceTargetPlatform {
 	  ANDROID10("2.3.3"), ANDROID11("3.0"), ANDROID12("3.1"), ANDROID13("3.2"), ANDROID14("4.0"), 
 	  ANDROID15("4.0.3"), ANDROID16("4.1.2"), ANDROID17("4.2.2"), ANDROID18("4.3"), ANDROID19("4.4"), 
-	  ANDROID20("4.4"), ANDROID21("5.0");
+	  ANDROID20("4.4"), ANDROID21("5.0"), ANDROID22("5.1");
   public static final String ANDROID = "ANDROID";
 
   private String versionNumber;
