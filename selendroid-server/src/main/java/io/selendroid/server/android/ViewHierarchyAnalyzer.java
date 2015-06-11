@@ -13,6 +13,7 @@
  */
 package io.selendroid.server.android;
 
+import io.selendroid.server.model.Factories;
 import io.selendroid.server.ServerInstrumentation;
 import io.selendroid.server.util.InstanceOfPredicate;
 import io.selendroid.server.util.ListUtil;
@@ -93,8 +94,11 @@ public class ViewHierarchyAnalyzer {
   }
 
   private View getRecentDecorView(Set<View> views) {
+    Predicate<Object> decorViewPredicate =
+      Factories.getPredicatesFactory().createDecorViewPredicate();
     Collection<View> decorViews =
-        (Collection<View>) ListUtil.filter(new ArrayList<View>(views), new DecorViewPredicate());
+      (Collection<View>) ListUtil.filter(new ArrayList<View>(views), decorViewPredicate);
+
     if (decorViews.isEmpty()) {
         SelendroidLogger.warning("In class ViewHierarchyAnalyzer, no top level decor views!");
         SelendroidLogger.warning("Top level views:");
@@ -102,6 +106,7 @@ public class ViewHierarchyAnalyzer {
             SelendroidLogger.warning(view.toString());
         }
     }
+
     View container = null;
     // candidate is to fall back to most recent 'shown' view if none have the 'window focus'
     // this seems to be able to happen with menus
@@ -123,17 +128,6 @@ public class ViewHierarchyAnalyzer {
       container = candidate;
     }
     return container;
-  }
-
-  private static class DecorViewPredicate<E> implements Predicate<E> {
-    @Override
-    public boolean apply(E view) {
-      // PopupViewContainer can be a top level menu shown
-      // MultiPhoneDecorView is for Samsung devices
-      return "DecorView".equals(view.getClass().getSimpleName())
-          || "PopupViewContainer".equals(view.getClass().getSimpleName())
-          || "MultiPhoneDecorView".equals(view.getClass().getSimpleName());
-    }
   }
 
   public Collection<View> getViews(List<View> rootViews) {
