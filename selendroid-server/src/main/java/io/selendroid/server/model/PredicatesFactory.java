@@ -42,4 +42,8 @@ public class PredicatesFactory {
   public Predicate<View> createClassPredicate(String using) {
     return new ClassPredicate(using);
   }
+
+  public Predicate<Object> createDecorViewPredicate() {
+    return new DecorViewPredicate();
+  }
 }
