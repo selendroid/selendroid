@@ -395,17 +395,13 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return listOfApps.size() > 0 ? listOfApps.last() : null;
   }
 
-  // throws exception if user didn't pass the capability as a boolean
+  // throws exception if user didn't pass the capability as a boolean or String parsable as boolean
   private Boolean getBooleanCapability(String key) {
     Object o = getRawCapabilities().get(key);
     if (o == null) {
       return null;
-    } else if (o instanceof Boolean) {
-      return (Boolean) o;
     } else {
-      throw new ClassCastException(String.format(
-          "DesiredCapability %s's value should be boolean: found value %s of type %s", key, o.toString(), o.getClass()
-              .getName()));
+      return is(key);
     }
   }
 }
