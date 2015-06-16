@@ -71,7 +71,6 @@ public class SelendroidCapabilitiesTest {
     map.put("emulator", "true");
 
     SelendroidCapabilities capa = new SelendroidCapabilities(map);
-    // it is not set by default
     Assert.assertEquals(true, capa.getEmulator());
     Assert.assertEquals("selendroid", capa.getBrowserName());
     Assert.assertEquals("16", capa.getPlatformVersion());
