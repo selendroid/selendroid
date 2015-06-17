@@ -19,6 +19,9 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SelendroidCapabilitiesTest {
 
   @Test
@@ -39,6 +42,61 @@ public class SelendroidCapabilitiesTest {
     Assert.assertEquals("io.selendroid.testapp:0.9.0", capa.getAut());
     Assert.assertEquals("320x480", capa.getScreenSize());
     Assert.assertEquals(5, capa.asMap().size());
+  }
+
+  @Test
+  public void testInstantiateFromJSONWithEmulator() throws Exception {
+    JSONObject jsonSource = new JSONObject();
+    jsonSource.put("browserName", "selendroid");
+    jsonSource.put("platformVersion", DeviceTargetPlatform.ANDROID16.getApi());
+    jsonSource.put("emulator", false);
+
+    SelendroidCapabilities capa = new SelendroidCapabilities(jsonSource);
+    // it is not set by default
+    Assert.assertEquals(false, capa.getEmulator());
+    Assert.assertEquals("selendroid", capa.getBrowserName());
+    Assert.assertEquals("16", capa.getPlatformVersion());
+    Assert.assertEquals("selendroid", capa.getAut());
+    Assert.assertEquals(capa.asMap().toString(), 4, capa.asMap().size());
+  }
+
+  @Test
+  public void testInstantiateFromMap() throws Exception {
+    Map<String,String> map = new HashMap<String, String>();
+    map.put("browserName", "selendroid");
+    map.put("platformVersion", DeviceTargetPlatform.ANDROID16.getApi());
+    map.put("locale", "de_DE");
+    map.put("aut", "io.selendroid.testapp:0.9.0");
+    map.put("screenSize", "320x480");
+    map.put("emulator", "true");
+
+    SelendroidCapabilities capa = new SelendroidCapabilities(map);
+    Assert.assertEquals(true, capa.getEmulator());
+    Assert.assertEquals("selendroid", capa.getBrowserName());
+    Assert.assertEquals("16", capa.getPlatformVersion());
+    Assert.assertEquals("de_DE", capa.getLocale());
+    Assert.assertEquals("io.selendroid.testapp:0.9.0", capa.getAut());
+    Assert.assertEquals("320x480", capa.getScreenSize());
+    Assert.assertEquals(6, capa.asMap().size());
+  }
+
+  @Test
+  public void testInstantiateFromMapWithBadBoolean() throws Exception {
+    Map<String,String> map = new HashMap<String, String>();
+    map.put("browserName", "selendroid");
+    map.put("platformVersion", DeviceTargetPlatform.ANDROID16.getApi());
+    map.put("emulator", "kitkat");
+
+    try {
+      SelendroidCapabilities capa = new SelendroidCapabilities(map);
+      boolean em = capa.getEmulator();
+      Assert.fail("Expected exception, got: " + em);
+    } catch (ClassCastException e) {
+      String msg = e.getMessage();
+      Assert.assertTrue("Expected key in message: " + msg, msg.contains("emulator"));
+      Assert.assertTrue("Expected value in message: " + msg, msg.contains("kitkat"));
+      Assert.assertTrue("Expected class in message: " + msg, msg.contains("String"));
+    }
   }
 
   @Test
