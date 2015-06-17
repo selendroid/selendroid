@@ -47,7 +47,8 @@ public class AndroidSdk {
     return new File(
         findLatestAndroidPlatformFolder(
             buildToolsFolder,
-            "Command 'aapt' was not found inside the Android SDK. Please update to the latest development tools and try again."),
+            String.format("Command 'aapt' was not found inside the Android SDK: %s. Please update to the latest development tools and try again.",
+                buildToolsFolder)),
         command.toString());
   }
 
