@@ -81,6 +81,25 @@ public class SelendroidCapabilitiesTest {
   }
 
   @Test
+  public void testInstantiateFromMapWithBadBoolean() throws Exception {
+    Map<String,String> map = new HashMap<String, String>();
+    map.put("browserName", "selendroid");
+    map.put("platformVersion", DeviceTargetPlatform.ANDROID16.getApi());
+    map.put("emulator", "kitkat");
+
+    try {
+      SelendroidCapabilities capa = new SelendroidCapabilities(map);
+      boolean em = capa.getEmulator();
+      Assert.fail("Expected exception, got: " + em);
+    } catch (ClassCastException e) {
+      String msg = e.getMessage();
+      Assert.assertTrue("Expected key in message: " + msg, msg.contains("emulator"));
+      Assert.assertTrue("Expected value in message: " + msg, msg.contains("kitkat"));
+      Assert.assertTrue("Expected class in message: " + msg, msg.contains("String"));
+    }
+  }
+
+  @Test
   public void testDefaultInitialize() {
     SelendroidCapabilities capa = new SelendroidCapabilities();
     Assert.assertEquals(null, capa.getEmulator());

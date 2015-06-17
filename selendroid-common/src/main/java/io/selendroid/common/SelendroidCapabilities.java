@@ -400,8 +400,16 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     Object o = getRawCapabilities().get(key);
     if (o == null) {
       return null;
+    } else if (o instanceof Boolean) {
+      return (Boolean) o;
+    } else if (o instanceof String
+            && ("true".equalsIgnoreCase((String) o)
+            || "false".equalsIgnoreCase((String) o))) {
+      return Boolean.valueOf((String) o);
     } else {
-      return is(key);
+      throw new ClassCastException(String.format(
+          "DesiredCapability %s's value should be boolean: found value %s of type %s",
+              key, o.toString(), o.getClass().getName()));
     }
   }
 }
