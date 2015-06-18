@@ -11,6 +11,7 @@
 - Append error details to page source [#850](../../issues/850) 
 - Delete temporary created by Selendroid Server [#862](../../issues/862) 
 - Refactored SafeHandle (Action chain) for future multitouch implementation. [#860](../../issues/860) 
+- Changed the implicit wait timeout from 5s to 0 as per webdriver spec [#895](../../pull/895)
 
 0.15.0
 ---
