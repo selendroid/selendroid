@@ -29,7 +29,7 @@ import io.selendroid.server.util.Function;
  */
 public class AndroidWait implements Wait<Void> {
   public static final long DEFAULT_SLEEP_INTERVAL = 200;
-  private static final long DEFAULT_TIMEOUT = 5000;
+  private static final long DEFAULT_TIMEOUT = 0;
 
   private final Clock clock;
   private final long sleepIntervalInMillis;
