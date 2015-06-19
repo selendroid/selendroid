@@ -13,6 +13,7 @@
  */
 package io.selendroid.standalone.io;
 
+import io.selendroid.standalone.exceptions.DeviceOfflineException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
 
 import java.util.Map;
@@ -46,6 +47,9 @@ public class ShellCommand {
     try {
       exec.execute(commandline);
     } catch (Exception e) {
+      if (e.getMessage().contains("device offline")) {
+        throw new DeviceOfflineException(e);
+      }
       throw new ShellCommandException(
           "Error executing shell command: " + commandline, new ShellCommandException(outputStream.getOutput()));
     }
