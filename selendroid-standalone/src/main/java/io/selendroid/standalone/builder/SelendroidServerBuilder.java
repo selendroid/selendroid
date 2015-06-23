@@ -23,8 +23,20 @@ import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
 import io.selendroid.standalone.io.ShellCommand;
 import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
@@ -36,13 +48,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 public class SelendroidServerBuilder {
 
@@ -58,8 +63,8 @@ public class SelendroidServerBuilder {
   private AndroidApp selendroidServer = null;
   private AndroidApp applicationUnderTest = null;
   private SelendroidConfiguration serverConfiguration = null;
-  private String storepass = null;
-  private String alias = null;
+  private String storepass = "android";
+  private String alias = "androiddebugkey";
   private X509Certificate cert509;
 
   /**
@@ -67,8 +72,7 @@ public class SelendroidServerBuilder {
    */
   /* package */SelendroidServerBuilder(String selendroidPrebuildServerPath,
                                        String selendroidApplicationXmlTemplate) {
-    this.selendroidPrebuildServerPath = selendroidPrebuildServerPath;
-    this.selendroidApplicationXmlTemplate = selendroidApplicationXmlTemplate;
+    this(selendroidPrebuildServerPath, selendroidApplicationXmlTemplate, null);
   }
 
   /**
@@ -82,15 +86,9 @@ public class SelendroidServerBuilder {
     this.serverConfiguration = selendroidConfiguration;
   }
 
-  public SelendroidServerBuilder() {
-    this(null);
-  }
-
-  public SelendroidServerBuilder(SelendroidConfiguration serverConfiguration) {
-    this.selendroidPrebuildServerPath =
-        PREBUILD_SELENDROID_SERVER_PATH_PREFIX + getJarVersionNumber() + ".apk";
-    this.selendroidApplicationXmlTemplate = ANDROID_APPLICATION_XML_TEMPLATE;
-    this.serverConfiguration = serverConfiguration;
+  public SelendroidServerBuilder(SelendroidConfiguration selendroidConfiguration) {
+    this(PREBUILD_SELENDROID_SERVER_PATH_PREFIX + getJarVersionNumber() + ".apk",
+            ANDROID_APPLICATION_XML_TEMPLATE, selendroidConfiguration);
   }
 
   /* package */void init(AndroidApp aut) throws IOException, ShellCommandException {
@@ -260,11 +258,11 @@ public class SelendroidServerBuilder {
       commandline.addArgument("-keystore", false);
       commandline.addArgument(androidKeyStore.toString(), false);
       commandline.addArgument("-storepass", false);
-      commandline.addArgument("android", false);
+      commandline.addArgument(storepass, false);
       commandline.addArgument("-alias", false);
-      commandline.addArgument("androiddebugkey", false);
+      commandline.addArgument(alias, false);
       commandline.addArgument("-keypass", false);
-      commandline.addArgument("android", false);
+      commandline.addArgument(storepass, false);
       commandline.addArgument("-dname", false);
       commandline.addArgument("CN=Android Debug,O=Android,C=US", false);
       commandline.addArgument("-storetype", false);
@@ -290,11 +288,11 @@ public class SelendroidServerBuilder {
     commandline.addArgument("-signedjar", false);
     commandline.addArgument(outputFileName.getAbsolutePath(), false);
     commandline.addArgument("-storepass", false);
-    commandline.addArgument(storepass != null ? storepass : "android", false);
+    commandline.addArgument(storepass, false);
     commandline.addArgument("-keystore", false);
     commandline.addArgument(androidKeyStore.toString(), false);
     commandline.addArgument(customSelendroidServer.getAbsolutePath(), false);
-    commandline.addArgument(alias != null ? alias : "androiddebugkey", false);
+    commandline.addArgument(alias, false);
     String output = ShellCommand.exec(commandline, 20000);
     if (log.isLoggable(Level.INFO)) {
       log.info("App signing output: " + output);
@@ -308,8 +306,12 @@ public class SelendroidServerBuilder {
       return new File(FileUtils.getUserDirectory(), File.separatorChar + ".android"
                                                     + File.separatorChar + "debug.keystore");
     } else {
-      storepass = serverConfiguration.getKeystorePassword();
-      alias = serverConfiguration.getKeystoreAlias();
+      if (serverConfiguration.getKeystorePassword() != null) {
+        storepass = serverConfiguration.getKeystorePassword();
+      }
+      if (serverConfiguration.getKeystoreAlias() != null) {
+        alias = serverConfiguration.getKeystoreAlias();
+      }
       // there is a possibility that keystore path may be invalid due to user typo. Should we add a try catch?
       return new File(serverConfiguration.getKeystore());
     }
