@@ -18,6 +18,8 @@ import io.selendroid.support.BaseAndroidTest;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
+
 
 public class BackgroundAppTest extends BaseAndroidTest {
 
@@ -37,7 +39,18 @@ public class BackgroundAppTest extends BaseAndroidTest {
   }
 
   private String adbCurrentActivity() throws Exception {
-    return execCmd(System.getenv("ANDROID_HOME")+"/platform-tools/"+"adb shell dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'");
+    String adbPath = System.getenv("ANDROID_HOME")+"/platform-tools/"+"adb";
+    String output = execCmd(adbPath + " shell dumpsys window windows");
+
+    String activityLines = "";
+    String[] lines = output.split("\n");
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i].contains("mCurrentFocus") || lines[i].contains("mFocusedApp")) {
+        activityLines += lines[i];
+      }
+    }
+
+    return activityLines;
   }
 
   public String execCmd(String cmd) throws java.io.IOException {
