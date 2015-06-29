@@ -33,7 +33,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
   public static final String ACTIVITY_CLASS = "io.testapp." + "HomeScreenActivity";
 
   private void assertListIsEmpty(List<WebElement> elements) {
-    Assert.assertTrue("Expecting empty list when no elements are found.",elements.isEmpty());
+    Assert.assertTrue("Expecting empty list when no elements are found.", elements.isEmpty());
   }
 
 
@@ -177,7 +177,7 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
     openStartActivity();
     WebElement rootElement = driver().findElement(By.id("l10n"));
     try {
-      rootElement.findElement(By.className("de.dary.MyView"));
+      rootElement.findElement(By.className("io.selendroid.testapp.view.FingerView"));
       Assert.fail("Should not have succeeded");
     } catch (NoSuchElementException e) {
       // this is expected
@@ -186,6 +186,25 @@ public class NativeChildElementFindingTest extends BaseAndroidTest {
 
   @Test()
   public void shouldNotFindChildElementsByClass() {
+    openStartActivity();
+    WebElement rootElement = driver().findElement(By.id("l10n"));
+    assertListIsEmpty(rootElement.findElements(By.className("io.selendroid.testapp.view.FingerView")));
+  }
+
+  @Test()
+  public void shouldNotFindChildElementByClassThatDoesNotExist() {
+    openStartActivity();
+    WebElement rootElement = driver().findElement(By.id("l10n"));
+    try {
+      rootElement.findElement(By.className("de.dary.MyView"));
+      Assert.fail("Should not have succeeded");
+    } catch (NoSuchElementException e) {
+      // this is expected
+    }
+  }
+
+  @Test()
+  public void shouldNotFindChildElementsByClassThatDoesNotExist() {
     openStartActivity();
     WebElement rootElement = driver().findElement(By.id("l10n"));
     assertListIsEmpty(rootElement.findElements(By.className("de.dary.MyView")));

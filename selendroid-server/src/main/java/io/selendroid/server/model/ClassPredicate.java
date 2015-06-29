@@ -16,6 +16,7 @@ package io.selendroid.server.model;
 import android.view.View;
 import com.android.internal.util.Predicate;
 import io.selendroid.server.common.exceptions.NoSuchElementException;
+import io.selendroid.server.util.SelendroidLogger;
 
 public class ClassPredicate implements Predicate<View> {
 
@@ -30,7 +31,8 @@ public class ClassPredicate implements Predicate<View> {
     try {
       return Class.forName(using).isInstance(to);
     } catch (ClassNotFoundException e) {
-      throw new NoSuchElementException("The view class '" + using + "' was not found.");
+      SelendroidLogger.warning("Finding by unknown class " + using);
+      return false;
     }
   }
 }
