@@ -235,19 +235,18 @@ public class SelendroidDriver extends RemoteWebDriver
   }
 
   public List<CallLogEntry> readCallLog() {
-        
-    String callLogString = null;  
+    Response response = execute("readCallLog");
+    Object value = response.getValue();
     try {
-        callLogString = (String)execute("readCallLog").getValue();
-        JSONArray json = new JSONArray(callLogString);
-        List<CallLogEntry> logEntries = new ArrayList<CallLogEntry>(json.length());
-        for(int i=0; i < json.length(); i++) {
-            logEntries.add(CallLogEntry.fromJson(json.getString(i)));
-        }
-        return logEntries;
-    }
-    catch(JSONException e) {
-        throw new IllegalStateException("Unable to parse CallLogEntry from json " + callLogString);
+      List<String> returnedLogs = (List<String>) value;
+      List<CallLogEntry> logEntries = new ArrayList<CallLogEntry>(returnedLogs.size());
+      for (String jsonLogEntry : returnedLogs) {
+          logEntries.add(CallLogEntry.fromJson(jsonLogEntry));
+      }
+      return logEntries;
+    } catch (ClassCastException ex) {
+      throw new WebDriverException("Returned value cannot be converted to List<String>: " + value,
+              ex);
     }
   }
 
