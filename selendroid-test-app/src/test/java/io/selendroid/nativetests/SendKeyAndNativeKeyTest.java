@@ -18,6 +18,7 @@ import io.selendroid.client.waiter.WaitingConditions;
 import io.selendroid.support.BaseAndroidTest;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
@@ -26,6 +27,7 @@ import static io.selendroid.client.waiter.TestWaiter.waitFor;
 
 public class SendKeyAndNativeKeyTest extends BaseAndroidTest {
   @Test
+  @Ignore("Test is flaky. Ends up sending keys too early, etc.")
   public void shouldTriggerNativeSearch() throws Exception {
     openStartActivity();
 
