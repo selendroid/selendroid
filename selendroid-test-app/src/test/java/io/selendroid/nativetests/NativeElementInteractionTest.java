@@ -18,6 +18,7 @@ import io.selendroid.client.waiter.WaitingConditions;
 import io.selendroid.support.BaseAndroidTest;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -193,6 +194,7 @@ public class NativeElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test
+  @Ignore("Test is flaky. It sends the .click() while the app is still animating opening the registration screen")
   public void shouldScrollAndEnterText() {
     openStartActivity();
 
