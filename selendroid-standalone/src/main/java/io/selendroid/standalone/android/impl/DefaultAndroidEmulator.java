@@ -56,6 +56,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       .put("WVGA800", new Dimension(480, 800))
       .put("WVGA854", new Dimension(480, 854))
       .put("WXGA", new Dimension(1280, 800))
+      .put("WXGA720", new Dimension(1280, 720))
       .put("WXGA800", new Dimension(1280, 800))
       .build();
 

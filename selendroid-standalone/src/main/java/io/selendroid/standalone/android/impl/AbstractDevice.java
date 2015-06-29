@@ -20,7 +20,6 @@ import com.android.ddmlib.TimeoutException;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ObjectArrays;
-
 import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.model.ExternalStorageFile;
@@ -31,7 +30,6 @@ import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
 import io.selendroid.standalone.io.ShellCommand;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
@@ -47,10 +45,8 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.logging.LogEntry;
 
 import javax.imageio.ImageIO;
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -457,15 +453,14 @@ public abstract class AbstractDevice implements AndroidDevice {
     if (rawImage == null) return null;
 
     BufferedImage image =
-        new BufferedImage(rawImage.width, rawImage.height, BufferedImage.TYPE_INT_ARGB);
+        new BufferedImage(rawImage.width, rawImage.height, BufferedImage.TYPE_3BYTE_BGR);
 
     int index = 0;
     int IndexInc = rawImage.bpp >> 3;
     for (int y = 0; y < rawImage.height; y++) {
       for (int x = 0; x < rawImage.width; x++) {
-        int value = rawImage.getARGB(index);
+        image.setRGB(x, y, rawImage.getARGB(index));
         index += IndexInc;
-        image.setRGB(x, y, value);
       }
     }
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
