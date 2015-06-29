@@ -18,6 +18,7 @@ import io.selendroid.support.BaseAndroidTest;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -181,7 +182,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void shouldFindButtonByClass() throws Exception {
     openStartActivity();
-    String buttonText = "Display and focus on layout";
+    String buttonText = "EN Button";
     WebElement clickMe = driver().findElement(By.className("android.widget.Button"));
     Assert.assertEquals(buttonText, clickMe.getText());
   }
@@ -189,10 +190,10 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void shouldFindButtonsByClass() throws Exception {
     openStartActivity();
-    String buttonText = "Show Progress Bar for a while";
+    String buttonText = "Display text view";
     List<WebElement> elements = driver().findElements(By.className("android.widget.Button"));
-    Assert.assertEquals(8, elements.size());
-    Assert.assertEquals(buttonText, elements.get(2).getText());
+    Assert.assertEquals(9, elements.size());
+    Assert.assertEquals(buttonText, elements.get(3).getText());
   }
 
   @Test()
@@ -219,7 +220,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void shouldFindButtonByTagName() throws Exception {
     openStartActivity();
-    String buttonText = "Display and focus on layout";
+    String buttonText = "EN Button";
     WebElement clickMe = driver().findElement(By.tagName("Button"));
 
     Assert.assertEquals(buttonText, clickMe.getText());
@@ -228,9 +229,9 @@ public class NativeElementFindingTest extends BaseAndroidTest {
   @Test
   public void shouldFindButtonsByTagName() throws Exception {
     openStartActivity();
-    String buttonText = "EN Button";
+    String buttonText = "Show Progress Bar for a while";
     List<WebElement> elements = driver().findElements(By.tagName("Button"));
-    Assert.assertEquals(7, elements.size());
+    Assert.assertEquals(8, elements.size());
     Assert.assertEquals(buttonText, elements.get(1).getText());
   }
 
@@ -289,6 +290,7 @@ public class NativeElementFindingTest extends BaseAndroidTest {
 
 
   @Test()
+  @Ignore("This is currently broken. See https://github.com/selendroid/selendroid/issues/800")
   public void shouldNotFindElementByIdFromPreviousActivity() {
     openStartActivity();
     driver().findElement(By.id("startUserRegistration")).click();
