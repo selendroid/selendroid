@@ -25,6 +25,7 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.NoSuchWindowException;
 
@@ -64,7 +65,9 @@ public class MultipleWebviewHandlingTests extends BaseAndroidTest {
   public void shouldGetContexts() throws Exception {
     openMultipleWebViewActivity();
     SelendroidDriver driver = driver();
-    String uri = "http://localhost:8080/wd/hub/session/" + driver.getSessionId() + "/contexts";
+
+    // TODO: do not hardcode the client port
+    String uri = "http://localhost:4444/wd/hub/session/" + driver.getSessionId() + "/contexts";
 
     JSONObject response =
         HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequest(uri, HttpMethod.GET));
@@ -86,10 +89,11 @@ public class MultipleWebviewHandlingTests extends BaseAndroidTest {
     SelendroidDriver driver = driver();
     String uri = "/wd/hub/session/" + driver.getSessionId() + "/context";
 
-    HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequestWithPayload(uri, 8080,
+    // TODO: do not hardcode the client port
+    HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequestWithPayload(uri, 4444,
         HttpMethod.POST, "{'name':'WEBVIEW_0'}"));
     String getContextUri =
-        "http://localhost:8080/wd/hub/session/" + driver.getSessionId() + "/context";
+        "http://localhost:4444/wd/hub/session/" + driver.getSessionId() + "/context";
 
     JSONObject response =
         HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequest(getContextUri,
