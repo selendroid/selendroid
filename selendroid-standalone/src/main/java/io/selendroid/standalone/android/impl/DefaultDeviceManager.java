@@ -18,6 +18,7 @@ import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import io.selendroid.standalone.android.*;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
+import io.selendroid.standalone.exceptions.DeviceOfflineException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -150,9 +151,14 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
         listener.onDeviceStarted(avdName, device.getSerialNumber());
       }
     } else {
-      connectedDevices.put(device, new DefaultHardwareDevice(device));
-      for (HardwareDeviceListener listener : deviceListeners) {
-        listener.onDeviceConnected(connectedDevices.get(device));
+      try {
+        connectedDevices.put(device, new DefaultHardwareDevice(device));
+        for (HardwareDeviceListener listener : deviceListeners) {
+          listener.onDeviceConnected(connectedDevices.get(device));
+        }
+      } catch (DeviceOfflineException doe) {
+        // skip devices that are currently "offline"
+        log.warning("Skipping adding 'offline' hardware device");
       }
     }
   }
