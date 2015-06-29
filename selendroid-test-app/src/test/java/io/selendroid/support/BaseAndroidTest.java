@@ -82,11 +82,10 @@ public class BaseAndroidTest {
     driver().get(HOMESCREEN_ACTIVITY);
   }
 
-  protected DesiredCapabilities getDefaultCapabilities() {
+  protected SelendroidCapabilities getDefaultCapabilities() {
     SelendroidCapabilities caps = new SelendroidCapabilities();
     caps.setAut("io.selendroid.testapp:0.12.0-SNAPSHOT");
     caps.setLaunchActivity("io.selendroid.testapp.HomeScreenActivity");
-    caps.setSelendroidExtensions("extension.dex");
 
     return caps;
   }
