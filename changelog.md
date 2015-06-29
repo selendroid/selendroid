@@ -12,6 +12,9 @@
 - Delete temporary created by Selendroid Server [#862](../../issues/862) 
 - Refactored SafeHandle (Action chain) for future multitouch implementation. [#860](../../issues/860) 
 - Changed the implicit wait timeout from 5s to 0 as per webdriver spec [#895](../../pull/895)
+- Add WXGA720 skin for detection of screen resolution [#904](../../pull/904)
+- Optimize screenshots from standalone server  [#904](../../pull/904)
+- Fix bug SelendroidServerBuilder when executing tests and using default keystore alias and passwords and androidKeyStore file exists [#904](../../pull/904)
 
 0.15.0
 ---
