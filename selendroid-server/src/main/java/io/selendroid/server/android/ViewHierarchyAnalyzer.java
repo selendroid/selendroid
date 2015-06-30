@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,12 +164,20 @@ public class ViewHierarchyAnalyzer {
     }
     String id = "";
     try {
+      Activity currentActivity = ServerInstrumentation.getInstance().getCurrentActivity();
 
-      id =
-          ServerInstrumentation.getInstance().getCurrentActivity().getResources()
-              .getResourceName(view.getId());
-      // remove the package name
-      id = id.substring(id.indexOf(':') + 1);
+      Resources resources;
+      if (currentActivity != null) {
+        resources =  currentActivity.getResources();
+      } else {
+        resources = view.getResources();
+      }
+      if (resources != null) {
+        id = resources.getResourceName(view.getId());
+
+        // remove the package name
+        id = id.substring(id.indexOf(':') + 1);
+      }
     } catch (Resources.NotFoundException e) {
       // can happen
     }
