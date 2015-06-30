@@ -83,6 +83,9 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
     while (retries-- > 0) {
       try {
         response = proxyRequestToDevice(request, session, url, method);
+        if (response == null) { // Unknown command
+          return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_COMMAND);
+        }
         break;
       } catch (Exception e) {
         if (retries == 0) {
@@ -170,6 +173,9 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
       r = HttpClientUtil.executeRequest(url, HttpMethod.DELETE);
     } else {
       throw new SelendroidException("HTTP method not supported: " + method);
+    }
+    if (r.getStatusLine().getStatusCode() == 404) { // Unknown command
+      return null;
     }
     return HttpClientUtil.parseJsonResponse(r);
   }
