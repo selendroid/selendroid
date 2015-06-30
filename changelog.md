@@ -13,8 +13,17 @@
 - Refactored SafeHandle (Action chain) for future multitouch implementation. [#860](../../issues/860) 
 - Changed the implicit wait timeout from 5s to 0 as per webdriver spec [#895](../../pull/895)
 - Add WXGA720 skin for detection of screen resolution [#904](../../pull/904)
-- Optimize screenshots from standalone server  [#904](../../pull/904)
+- Optimize screenshots from standalone server [#904](../../pull/904)
 - Fix bug SelendroidServerBuilder when executing tests and using default keystore alias and passwords and androidKeyStore file exists [#904](../../pull/904)
+- Don't add "offline" hardware devices on startup [#900](../../pull/900)
+- [client] Fix SelendroidDriver#readCallLog() [#916](../../pull/916)
+- [server] Fix finding a collection of elements by class name for non existing classes [#918](../../pull/918)
+- [standalone] Fix `..session/log/types` endpoint [#927](../../pull/927)
+- [standalone] Fix HTTP response for unknown commands [#928](../../pull/928)
+- [server] Fix NPE in ViewHierarchyAnalyzer [#929](../../pull/929)
+- [server] Do not try to get the resource name if the view has no id [#930](../../pull/930)
+- [server] Do not search in multiple top level views [#931](../../pull/931)
+- Update AndroidAtoms [#925](../../issues/925)
 
 0.15.0
 ---
