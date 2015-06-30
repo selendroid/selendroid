@@ -438,6 +438,11 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     }
 
     @Override
+    protected View getSearchRoot() {
+      return viewAnalyzer.getRecentDecorView();
+    }
+
+    @Override
     protected List<View> getTopLevelViews() {
       List<View> views = new ArrayList<View>();
       views.addAll(viewAnalyzer.getTopLevelViews());

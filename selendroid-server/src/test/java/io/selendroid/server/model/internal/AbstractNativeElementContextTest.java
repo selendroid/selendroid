@@ -31,6 +31,7 @@ public class AbstractNativeElementContextTest {
      *   / \
      *  b   c
      */
+    @Test
     public void itFindsNothingIfNoNodeMatches() {
         ViewGroup b = ignore();
         ViewGroup c = ignore();
@@ -82,87 +83,6 @@ public class AbstractNativeElementContextTest {
         assertFoundViews(views, C, D, F);
     }
 
-    /**
-     * Currently selendroid searches all top levels views, ordered by the one
-     * that was last painted first. If this happens we should first return
-     * all the matching children from the first (visible?) tree, then from the
-     * second one, and so on.
-     *
-     *           a                       g
-     *        /     \                 /     \
-     *       b       c              h        I (3)
-     *    /     \      \         /     \      \
-     *   D(1)    e      F (2)   J(4)    k      L (5)
-     */
-    @Test
-    public void itReturnsTheChildrenInTheOrderOfTheRoots() {
-        // Bottom 1
-        ViewGroup D = match();
-        ViewGroup e = ignore();
-        ViewGroup F = match();
-
-        // Middle 1
-        ViewGroup b = ignore(D, e);
-        ViewGroup c = ignore(F);
-
-        // Root 1
-        ViewGroup root1 = ignore(b, c);
-
-        // Bottom 2
-        ViewGroup J = match();
-        ViewGroup k = ignore();
-        ViewGroup L = match();
-
-        // Middle 2
-        ViewGroup h = ignore(J, k);
-        ViewGroup I = match(L);
-
-        // Root 2
-        ViewGroup root2 = ignore(h, I);
-
-        List<View> views = searchViews(root1, root2);
-        assertFoundViews(views, D, F, I, J, L);
-    }
-
-    /**
-     * The first hierarchy has no match, but the second one has.
-     *
-     *           a                       g
-     *        /     \                 /     \
-     *       b       c              h        I (1)
-     *    /     \      \         /     \      \
-     *   d       e      F       J(2)    k      L (3)
-     */
-    @Test
-    public void itReturnsChildrenFromTheSecondRoot() {
-        // Bottom 1
-        ViewGroup d = ignore();
-        ViewGroup e = ignore();
-        ViewGroup f = ignore();
-
-        // Middle 1
-        ViewGroup b = ignore(d, e);
-        ViewGroup c = ignore(f);
-
-        // Root 1
-        ViewGroup root1 = ignore(b, c);
-
-        // Bottom 2
-        ViewGroup J = match();
-        ViewGroup k = ignore();
-        ViewGroup L = match();
-
-        // Middle 2
-        ViewGroup h = ignore(J, k);
-        ViewGroup I = match(L);
-
-        // Root 2
-        ViewGroup root2 = ignore(h, I);
-
-        List<View> views = searchViews(root1, root2);
-        assertFoundViews(views, I, J, L);
-    }
-
     private static void assertFoundViews(List<View> foundViews, View ...expectedViewsInOrder) {
         assertEquals(expectedViewsInOrder.length, foundViews.size());
 
@@ -188,14 +108,12 @@ public class AbstractNativeElementContextTest {
     /**
      * Helper to do the actual searching.
      */
-    private static List<View> searchViews(View ...roots) {
-        List<View> rootViews = new ArrayList<View>(Arrays.asList(roots));
+    private static List<View> searchViews(View root) {
         List<AndroidElement> elements = AbstractNativeElementContext.searchViews(
-                mockContext(),
-                rootViews,
-                FIND_MATCH,
-                false);
-
+                    mockContext(),
+                    root,
+                    FIND_MATCH,
+                    false);
         List<View> foundViews = new ArrayList<View>();
         for (AndroidElement element : elements) {
             foundViews.add(((AndroidNativeElement) element).getView());
