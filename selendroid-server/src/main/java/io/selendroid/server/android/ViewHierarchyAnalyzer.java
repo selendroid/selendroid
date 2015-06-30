@@ -158,6 +158,9 @@ public class ViewHierarchyAnalyzer {
   }
 
   public static String getNativeId(View view) {
+    if (view == null || view.getId() == View.NO_ID) {
+        return "";
+    }
     String id = "";
     try {
 
