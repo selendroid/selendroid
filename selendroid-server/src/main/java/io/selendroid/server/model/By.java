@@ -42,12 +42,12 @@ public abstract class By {
 
     @Override
     public AndroidElement findElement(SearchContext context) {
-      return context.findElement(By.cssSelector(selector));
+      return context.findElement(this);
     }
 
     @Override
     public List<AndroidElement> findElements(SearchContext context) {
-      return context.findElements(By.cssSelector(selector));
+      return context.findElements(this);
     }
 
     @Override
@@ -65,12 +65,12 @@ public abstract class By {
 
     @Override
     public AndroidElement findElement(SearchContext context) {
-      return context.findElement(By.id(id));
+      return context.findElement(this);
     }
 
     @Override
     public List<AndroidElement> findElements(SearchContext context) {
-      return context.findElements(By.id(id));
+      return context.findElements(this);
     }
 
     @Override
@@ -93,12 +93,12 @@ public abstract class By {
 
     @Override
     public AndroidElement findElement(SearchContext context) {
-      return context.findElement(By.className(clazz));
+      return context.findElement(this);
     }
 
     @Override
     public List<AndroidElement> findElements(SearchContext context) {
-      return context.findElements(By.className(clazz));
+      return context.findElements(this);
     }
 
     @Override
@@ -149,12 +149,12 @@ public abstract class By {
 
     @Override
     public AndroidElement findElement(SearchContext context) {
-      return context.findElement(By.linkText(text));
+      return context.findElement(this);
     }
 
     @Override
     public List<AndroidElement> findElements(SearchContext context) {
-      return context.findElements(By.linkText(text));
+      return context.findElements(this);
     }
 
     @Override
@@ -177,12 +177,12 @@ public abstract class By {
 
     @Override
     public AndroidElement findElement(SearchContext context) {
-      return context.findElement(By.partialLinkText(text));
+      return context.findElement(this);
     }
 
     @Override
     public List<AndroidElement> findElements(SearchContext context) {
-      return context.findElements(By.partialLinkText(text));
+      return context.findElements(this);
     }
 
     @Override
