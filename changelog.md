@@ -1,4 +1,7 @@
-0.16.0-SNAPSHOT (under current development)
+0.17.0-SNAPSHOT (under current development)
+---
+
+0.16.0
 ---
 - gets app version from pom.xml if class path doesn't start with jar [#835](../../issues/835)
 - Clear data before app launch [#844](../../issues/844) 
