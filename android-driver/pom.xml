@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.selendroid</groupId>
 		<artifactId>selendroid</artifactId>
-		<version>0.16.0-SNAPSHOT</version>
+		<version>0.16.0</version>
 	</parent>
 	<artifactId>android-driver-app</artifactId>
 	<packaging>apk</packaging>
