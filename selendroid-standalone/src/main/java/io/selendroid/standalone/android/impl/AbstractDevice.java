@@ -459,6 +459,10 @@ public abstract class AbstractDevice implements AndroidDevice {
         index += IndexInc;
       }
     }
+    return toByteArray(image);
+  }
+
+  protected byte[] toByteArray(BufferedImage image) throws AndroidDeviceException {
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
     try {
@@ -483,7 +487,6 @@ public abstract class AbstractDevice implements AndroidDevice {
         // ignore
       }
     }
-
     return raw;
   }
 
