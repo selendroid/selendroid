@@ -52,6 +52,8 @@ public interface AndroidEmulator {
 
   public String getSerial();
 
+  public void setSerial(String serial);
+
   public void setSerial(int port);
 
   public void unlockScreen() throws AndroidDeviceException;

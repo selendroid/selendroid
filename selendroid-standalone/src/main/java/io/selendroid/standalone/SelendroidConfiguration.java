@@ -143,6 +143,9 @@ public class SelendroidConfiguration {
   @Parameter(names = "-deleteTmpFiles", description = "Deletes temporary files created by the Selendroid Server.")
   private boolean deleteTmpFiles = true;
 
+  @Parameter(names = "-hostname", description = "The hostname that we should start the selendroid server")
+  private String hostname = "localhost";
+
   public void setKeystore(String keystore) {
     this.keystore = keystore;
   }
@@ -167,6 +170,9 @@ public class SelendroidConfiguration {
 	    return keystoreAlias;
 	  }
 
+  public void setHostname(String hostname) { this.hostname = hostname; }
+
+  public String getHostname() { return hostname; }
 
   public void setSelendroidServerPort(int selendroidServerPort) {
     this.selendroidServerPort = selendroidServerPort;

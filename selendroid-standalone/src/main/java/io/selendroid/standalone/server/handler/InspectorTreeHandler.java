@@ -65,7 +65,7 @@ public class InspectorTreeHandler extends BaseSelendroidStandaloneHandler {
     try {
       HttpResponse r =
           HttpClientUtil.executeRequest(
-              "http://localhost:" + session.getSelendroidServerPort() + "/inspector/tree", HttpMethod.GET);
+              "http://" + session.getHostname() + ":" + session.getSelendroidServerPort() + "/inspector/tree", HttpMethod.GET);
       return new JsResult(EntityUtils.toString(r.getEntity(),Charset.forName("UTF-8")));
     } catch (Exception e) {
       log.log(Level.SEVERE, "Cannot get element tree for inspector", e);

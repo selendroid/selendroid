@@ -19,6 +19,7 @@ import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.standalone.SelendroidConfiguration;
 import io.selendroid.standalone.SelendroidLauncher;
 import io.selendroid.standalone.log.LogLevelEnum;
+import io.selendroid.standalone.server.model.impl.DefaultInitAndroidDevicesStrategy;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -116,7 +117,7 @@ public class BaseAndroidTest {
   @BeforeClass
   public static void startSelendroidServer() throws Exception {
     conf.setLogLevel(LogLevelEnum.DEBUG);
-    launcher.launchSelendroid();
+    launcher.launchSelendroid(new DefaultInitAndroidDevicesStrategy());
   }
 
   @AfterClass

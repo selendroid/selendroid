@@ -20,6 +20,8 @@ import com.google.common.base.Throwables;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.log.LogLevelEnum;
 import io.selendroid.standalone.server.SelendroidStandaloneServer;
+import io.selendroid.standalone.server.model.impl.DefaultInitAndroidDevicesStrategy;
+import io.selendroid.standalone.server.model.impl.InitAndroidDevicesStrategy;
 import io.selendroid.standalone.server.util.HttpClientUtil;
 
 import java.util.concurrent.TimeUnit;
@@ -59,10 +61,10 @@ public class SelendroidLauncher {
    * Starts the Selendroid standalone server and exits immediately.
    * This method might return before the server is ready to receive requests.
    */
-  private void launchServer() {
+  private void launchServer(InitAndroidDevicesStrategy initAndroidDevicesStrategy) {
     try {
       log.info("Starting Selendroid standalone on port " + config.getPort());
-      server = new SelendroidStandaloneServer(config);
+      server = new SelendroidStandaloneServer(config, initAndroidDevicesStrategy);
       server.start();
     } catch (AndroidSdkException e) {
       log.severe("Selendroid standalone was not able to interact with the Android SDK: " + e.getMessage());
@@ -86,8 +88,8 @@ public class SelendroidLauncher {
    * Starts the Selendroid standalone server and waits until it's ready to accept requests.
    * @throws io.selendroid.server.common.exceptions.SelendroidException if the server didn't come up
    */
-  public void launchSelendroid() {
-    launchServer();
+  public void launchSelendroid(InitAndroidDevicesStrategy initAndroidDevicesStrategy) {
+    launchServer(initAndroidDevicesStrategy);
     if (config.isGrid()) {
       // Longer timeout to allow for grid registration
       HttpClientUtil.waitForServer(config.getPort(), 3, TimeUnit.MINUTES);
@@ -114,7 +116,7 @@ public class SelendroidLauncher {
     } else {
       Logger.getLogger(LOGGER_NAME).setLevel(config.getLogLevel().level);
     }
-    new SelendroidLauncher(config).launchServer();
+    new SelendroidLauncher(config).launchServer(new DefaultInitAndroidDevicesStrategy());
   }
 
   private static void configureLogging() throws Exception {
