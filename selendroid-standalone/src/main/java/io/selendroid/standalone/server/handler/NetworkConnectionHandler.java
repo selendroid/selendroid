@@ -2,6 +2,7 @@ package io.selendroid.standalone.server.handler;
 
 import io.netty.handler.codec.http.HttpMethod;
 
+import io.selendroid.standalone.android.impl.AbstractAndroidDeviceEmulator;
 import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +35,7 @@ public class NetworkConnectionHandler extends BaseSelendroidStandaloneHandler {
     String sessionId = getSessionId(request);
     ActiveSession session = getActiveSession(request);
     // the URL happens to be the same, except we need to use GET instead of POST
-    String url = "http://localhost:" + session.getSelendroidServerPort() + request.uri();
+    String url = "http://" + session.getHostname() + ":" + session.getSelendroidServerPort() + request.uri();
     Integer connectionType = getPayload(request).getJSONObject("parameters").getInt("type");
     try {
       JSONObject r = HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequest(url, HttpMethod.GET));
@@ -70,7 +71,7 @@ public class NetworkConnectionHandler extends BaseSelendroidStandaloneHandler {
       for (ActiveSession activeSession : getSelendroidDriver(request).getActiveSessions()) {
         device.forwardPort(activeSession.getSelendroidServerPort(), activeSession.getSelendroidServerPort());
       }
-    } else if (deviceAPILevel == 17 && device instanceof DefaultAndroidEmulator) {
+    } else if (deviceAPILevel == 17 && device instanceof AbstractAndroidDeviceEmulator) {
       // data doesn't automatically get re-enabled when toggling it back on
       device.runAdbCommand("shell svc data disable");
       device.runAdbCommand("shell svc data enable");
