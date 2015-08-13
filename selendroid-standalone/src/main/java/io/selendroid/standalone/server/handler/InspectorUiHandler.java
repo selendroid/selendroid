@@ -68,7 +68,7 @@ public class InspectorUiHandler extends BaseSelendroidStandaloneHandler {
     }
 
     public String getResource(String name) {
-      return "http://localhost:" + session.getSelendroidServerPort() + "/inspector/resources/"
+      return "http://" + session.getHostname() + ":" + session.getSelendroidServerPort() + "/inspector/resources/"
           + name;
     }
 

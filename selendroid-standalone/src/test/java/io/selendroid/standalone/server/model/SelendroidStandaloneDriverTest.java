@@ -28,8 +28,6 @@ import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.standalone.SelendroidConfiguration;
 import io.selendroid.standalone.android.AndroidApp;
 import io.selendroid.standalone.exceptions.DeviceStoreException;
-import io.selendroid.standalone.server.model.DeviceStore;
-import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
 import io.selendroid.standalone.server.support.DeviceForTest;
 import io.selendroid.standalone.server.support.TestSessionListener;
 
@@ -126,7 +124,7 @@ public class SelendroidStandaloneDriverTest {
     // Setting up driver with test app and device stub
     SelendroidStandaloneDriver driver = getSelendroidStandaloneDriver();
     driver.initApplicationsUnderTest(conf);
-    DeviceStore store = new DeviceStore(EMULATOR_PORT, getDeviceManager());
+    DefaultDeviceStore store = new DefaultDeviceStore(EMULATOR_PORT, getDeviceManager());
 
     DeviceForTest emulator = new DeviceForTest(DeviceTargetPlatform.ANDROID16);
     Random random = new Random();
@@ -172,7 +170,7 @@ public class SelendroidStandaloneDriverTest {
     conf.setServerStartRetries(configuredRetries);
     driver.initApplicationsUnderTest(conf);
 
-    DeviceStore deviceStore = swapWithFailingDeviceDriver(driver);
+    DefaultDeviceStore deviceStore = swapWithFailingDeviceDriver(driver);
 
     try {
         driver.createNewTestSession(createCapabilities());
@@ -192,7 +190,7 @@ public class SelendroidStandaloneDriverTest {
     conf.setServerStartRetries(0);
     driver.initApplicationsUnderTest(conf);
 
-    DeviceStore deviceStore = swapWithFailingDeviceDriver(driver);
+    DefaultDeviceStore deviceStore = swapWithFailingDeviceDriver(driver);
 
     try {
         driver.createNewTestSession(createCapabilities());
@@ -203,9 +201,9 @@ public class SelendroidStandaloneDriverTest {
       .findAndroidDevice(any(SelendroidCapabilities.class));
   }
 
-  private DeviceStore swapWithFailingDeviceDriver(SelendroidStandaloneDriver driver) throws Exception {
-    //count the amount of calls to DeviceStore to check how many times it was retried
-    DeviceStore deviceStore = mock(DeviceStore.class);
+  private DefaultDeviceStore swapWithFailingDeviceDriver(SelendroidStandaloneDriver driver) throws Exception {
+    //count the amount of calls to DefaultDeviceStore to check how many times it was retried
+    DefaultDeviceStore deviceStore = mock(DefaultDeviceStore.class);
 
     // throw to simulate failure, triggering a retry
     when(deviceStore.findAndroidDevice(any(SelendroidCapabilities.class)))

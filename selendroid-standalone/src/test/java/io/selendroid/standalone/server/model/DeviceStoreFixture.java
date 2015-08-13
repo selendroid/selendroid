@@ -21,7 +21,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.common.device.DeviceTargetPlatform;
+import io.selendroid.standalone.android.AndroidEmulator;
 import io.selendroid.standalone.android.DeviceManager;
+import io.selendroid.standalone.android.impl.AbstractAndroidDeviceEmulator;
 import io.selendroid.standalone.android.impl.DefaultAndroidEmulator;
 import io.selendroid.standalone.android.impl.DefaultHardwareDevice;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
@@ -46,9 +48,9 @@ public class DeviceStoreFixture {
     return new FakeHardwareDevice(device, prop);
   }
 
-  protected static DefaultAndroidEmulator anEmulator(String name, DeviceTargetPlatform platform,
+  protected static AbstractAndroidDeviceEmulator anEmulator(String name, DeviceTargetPlatform platform,
       boolean isEmulatorStarted, String apiTargetType) throws AndroidDeviceException {
-    DefaultAndroidEmulator emulator = mock(DefaultAndroidEmulator.class);
+    AbstractAndroidDeviceEmulator emulator = mock(AbstractAndroidDeviceEmulator.class);
     when(emulator.getAvdName()).thenReturn(name);
     when(emulator.getModel()).thenReturn("Nexus 5");
     when(emulator.getTargetPlatform()).thenReturn(platform);

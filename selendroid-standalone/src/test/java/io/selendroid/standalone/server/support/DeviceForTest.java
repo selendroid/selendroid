@@ -84,8 +84,7 @@ public class DeviceForTest extends DefaultAndroidEmulator {
     }
   }
 
-  @Override
-  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities caps) throws AndroidSdkException {
+  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities caps, String hostname) throws AndroidSdkException {
     try {
       selendroidDeviceServerStub = new SelendroidDeviceServerStub(port, testSessionListener);
     } catch (IOException e) {
