@@ -131,21 +131,7 @@ public class DefaultDeviceManager extends Thread implements IDeviceChangeListene
       return;
     }
     if (device.isEmulator()) {
-      String serial = device.getSerialNumber();
-      Integer port = Integer.parseInt(serial.replace("emulator-", ""));
-      String avdName = null;
-      TelnetClient client = null;
-      try {
-        client = new TelnetClient(port);
-        avdName = client.sendCommand("avd name");
-      } catch (AndroidDeviceException e) {
-        String logMessage = "Could not get avdName for device " + serial;
-        log.log(Level.WARNING, logMessage, e);
-      } finally {
-        if (client != null) {
-          client.close();
-        }
-      }
+      String avdName = device.getAvdName();
       virtualDevices.put(avdName, device);
       for (AndroidEmulatorPowerStateListener listener : emulatorPowerStateListener) {
         listener.onDeviceStarted(avdName, device.getSerialNumber());

@@ -108,7 +108,7 @@ public class DefaultHardwareDevice extends AbstractDevice {
     String output = runAdbCommand("shell dumpsys power");
 
     // Lollipop and up -- API >= 20
-    if (Integer.parseInt(this.targetPlatform.getApi()) >= 20) {
+    if (Integer.parseInt(getTargetPlatform().getApi()) >= 20) {
       String value = extractValue("Display Power: state=(.*?)$", output);
       if (value.equals("OFF")) {
         // Wake screen

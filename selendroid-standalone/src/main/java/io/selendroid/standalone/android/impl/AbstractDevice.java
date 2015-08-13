@@ -30,6 +30,7 @@ import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
 import io.selendroid.standalone.io.ShellCommand;
+import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
 import org.apache.commons.exec.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -52,7 +53,6 @@ import java.util.regex.Pattern;
 
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
-  public static final String WD_STATUS_ENDPOINT = "http://localhost:8080/wd/hub/status";
   protected String serial = null;
   protected String model = null;
   protected String apiTargetType = "android";
@@ -62,6 +62,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   private ExecuteWatchdog logcatWatchdog;
   private static final Integer COMMAND_TIMEOUT = 20000;
   private boolean loggingEnabled = true;
+  private String hostname = null;
 
   /**
    * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
@@ -223,9 +224,12 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
   }
 
+
   @Override
-  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities capabilities) throws AndroidSdkException {
+  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities capabilities,
+                              String hostname) throws AndroidSdkException {
     this.port = port;
+    this.hostname = hostname;
 
     List<String> argList = Lists.newArrayList(
         "-e", "main_activity", aut.getMainActivity(),
@@ -297,7 +301,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   @Override
   public boolean isSelendroidRunning() {
     HttpClient httpClient = HttpClientBuilder.create().build();
-    String url = WD_STATUS_ENDPOINT.replace("8080", String.valueOf(port));
+    String url = "http://" + getHostname() + ":" + getSelendroidsPort() + "/wd/hub/status";
     log.info("Checking if the Selendroid server is running: " + url);
     HttpRequestBase request = new HttpGet(url);
     HttpResponse response;
@@ -326,6 +330,11 @@ public abstract class AbstractDevice implements AndroidDevice {
   @Override
   public int getSelendroidsPort() {
     return port;
+  }
+
+  @Override
+  public String getHostname() {
+    return hostname;
   }
 
   @Override
