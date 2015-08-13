@@ -201,12 +201,32 @@ public abstract class AbstractDevice implements AndroidDevice {
       CommandLine command = adbCommand("shell", "am", "force-stop", aut.getBasePackage());
       executeCommandQuietly(command);
     } finally {
+      killProcesses(aut.getBasePackage());
       freeSelendroidPort();
     }
 
     if (logcatWatchdog != null && logcatWatchdog.isWatching()) {
       logcatWatchdog.destroyProcess();
       logcatWatchdog = null;
+    }
+  }
+
+  private void killProcesses(String packageName) {
+    CommandLine command = adbCommand("shell", "ps");
+    String processes = "";
+    try {
+      processes = ShellCommand.exec(command);
+    } catch (ShellCommandException e) {
+      String logMessage = String.format("Could not execute command: %s", command);
+      log.log(Level.WARNING, logMessage, e);
+    }
+
+    for (String process: processes.split("\\r\\n|\\r|\\n")) {
+      if (process.endsWith(packageName)) {
+        String pid = process.split("\\s+")[1];
+        command = adbCommand("shell", "run-as", packageName, "kill", pid);
+        executeCommandQuietly(command);
+      }
     }
   }
 
