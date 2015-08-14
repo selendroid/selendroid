@@ -158,6 +158,13 @@ public class SelfRegisteringRemote {
     configuration.put("role", "node");
     configuration.put("registerCycle", config.getRegisterCycle());
     configuration.put("maxSession", config.getMaxSession());
+    configuration.put("browserTimeout", config.getSessionTimeoutMillis() / 1000);
+    configuration.put("cleanupCycle", config.getCleanupCycle());
+    configuration.put("timeout", config.getTimeout());
+    configuration.put("nodePolling", config.getNodePolling());
+    configuration.put("unregisterIfStillDownAfter", config.getUnregisterIfStillDownAfter());
+    configuration.put("downPollingLimit", config.getDownPollingLimit());
+    configuration.put("nodeStatusCheckTimeout", config.getNodeStatusCheckTimeout());
 
     // adding hub details
     configuration.put("hubHost", hub.getHost());
