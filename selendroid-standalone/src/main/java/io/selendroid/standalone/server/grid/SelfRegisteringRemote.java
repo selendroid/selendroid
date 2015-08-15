@@ -157,7 +157,11 @@ public class SelfRegisteringRemote {
     }
     configuration.put("role", "node");
     configuration.put("registerCycle", config.getRegisterCycle());
-    configuration.put("maxSession", config.getMaxSession());
+    if (config.getMaxSession() == 0) {
+      configuration.put("maxSession", driver.getSupportedDevices().length());
+    } else {
+      configuration.put("maxSession", config.getMaxSession());
+    }
     configuration.put("browserTimeout", config.getSessionTimeoutMillis() / 1000);
     configuration.put("cleanupCycle", config.getCleanupCycle());
     configuration.put("timeout", config.getTimeout());

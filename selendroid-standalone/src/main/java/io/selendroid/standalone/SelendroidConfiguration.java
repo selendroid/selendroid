@@ -91,10 +91,10 @@ public class SelendroidConfiguration {
   private boolean keepAdbAlive = false;
 
   @Parameter(names = "-maxSession", description = "Maximum number of sessions that a grid hub can assign at a time.")
-  private int maxSession = 5;
+  private int maxSession = 0;
 
   @Parameter(names = "-maxInstances", description = "Maximum number of instances that a grid hub can use at a time.")
-  private int maxInstances = 5;
+  private int maxInstances = 1;
 
   @Parameter(names = "-registerCycle", description = "How often in ms the node will try to register itself again" +
           ".Allow to restart the hub without having to restart the nodes. 0 to disable auto register. Default 0.")
