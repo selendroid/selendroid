@@ -128,7 +128,7 @@ public class AndroidSdk {
     public boolean accept(File pathname) {
       String fileName = pathname.getName();
 
-      String regex = "\\d{2}\\.\\d{1}\\.\\d{1}";
+      String regex = "\\d{2}\\.\\d{1}\\.\\d{1}(?:-preview)?";
       if (fileName.matches(regex) || fileName.startsWith(ANDROID_FOLDER_PREFIX)) {
         return true;
       }
