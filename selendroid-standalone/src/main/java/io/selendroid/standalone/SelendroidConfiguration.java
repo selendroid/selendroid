@@ -143,7 +143,7 @@ public class SelendroidConfiguration {
   @Parameter(names = "-deleteTmpFiles", description = "Deletes temporary files created by the Selendroid Server.")
   private boolean deleteTmpFiles = true;
 
-  @Parameter(names = "-emulatorHostname", description = "The emulator hostname that we should start the selendroid server")
+  @Parameter(names = "-emulatorHostname", description = "The emulator hostname that we should start the selendroid server.")
   private String emulatorHostname = "localhost";
 
   public void setKeystore(String keystore) {
