@@ -20,7 +20,10 @@ import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.server.grid.SelfRegisteringRemote;
 import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
+<<<<<<< HEAD
 import io.selendroid.standalone.server.model.impl.DefaultInitAndroidDevicesStrategy;
+=======
+>>>>>>> 4abaaa455751573f0fa3d8f5b2e30a0fb25afc95
 import io.selendroid.standalone.server.model.impl.InitAndroidDevicesStrategy;
 
 import java.util.Timer;
@@ -48,10 +51,13 @@ public class SelendroidStandaloneServer {
     init();
   }
 
+<<<<<<< HEAD
   public SelendroidStandaloneServer(SelendroidConfiguration config) throws  AndroidSdkException, AndroidDeviceException {
     this(config, new DefaultInitAndroidDevicesStrategy());
   }
 
+=======
+>>>>>>> 4abaaa455751573f0fa3d8f5b2e30a0fb25afc95
   public SelendroidStandaloneServer(SelendroidConfiguration config, InitAndroidDevicesStrategy initAndroidDevicesStrategy)
       throws AndroidSdkException, AndroidDeviceException {
     this.config = config;

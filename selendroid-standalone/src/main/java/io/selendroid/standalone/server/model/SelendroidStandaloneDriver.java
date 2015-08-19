@@ -245,7 +245,11 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
 
         int port = getNextSelendroidServerPort();
+<<<<<<< HEAD
         String hostname = getSelendroidConfiguration().getEmulatorHostname();
+=======
+        String hostname = getSelendroidConfiguration().getHostname();
+>>>>>>> 4abaaa455751573f0fa3d8f5b2e30a0fb25afc95
 
         boolean serverInstalled = device.isInstalled("io.selendroid." + app.getBasePackage());
         if (!serverInstalled || serverConfiguration.isForceReinstall()) {
