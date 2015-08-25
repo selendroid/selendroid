@@ -51,25 +51,6 @@ public class SelendroidStandaloneDriverTest {
   private static final Integer EMULATOR_PORT = 5560;
 
   @Test
-  public void shouldCreateNewTestSession() throws Exception {
-    SelendroidConfiguration conf = new SelendroidConfiguration();
-    conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
-
-    SelendroidCapabilities caps = new SelendroidCapabilities();
-    caps.setAut(TEST_APP_ID);
-
-    createTestSession(conf, caps);
-  }
-
-  @Test
-  public void shouldCreateNewTestSessionIfNoApkPassed() throws Exception {
-    SelendroidCapabilities caps = new SelendroidCapabilities();
-    caps.setAut(TEST_APP_ID);
-    caps.setLaunchActivity(TEST_APP_LAUNCH_ACTIVITY);
-    createTestSession(new SelendroidConfiguration(), caps);
-  }
-
-  @Test
   public void shouldInitDriver() throws Exception {
     SelendroidConfiguration conf = new SelendroidConfiguration();
     conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
@@ -120,6 +101,24 @@ public class SelendroidStandaloneDriverTest {
         apps.containsKey(TEST_APP_ID));
   }
 
+  @Test
+  public void shouldCreateNewTestSession() throws Exception {
+    SelendroidConfiguration conf = new SelendroidConfiguration();
+    conf.addSupportedApp(new File(APK_FILE).getAbsolutePath());
+
+    SelendroidCapabilities caps = new SelendroidCapabilities();
+    caps.setAut(TEST_APP_ID);
+
+    createTestSession(conf, caps);
+  }
+
+  @Test
+  public void shouldCreateNewTestSessionIfNoApkPassed() throws Exception {
+    SelendroidCapabilities caps = new SelendroidCapabilities();
+    caps.setAut(TEST_APP_ID);
+    caps.setLaunchActivity(TEST_APP_LAUNCH_ACTIVITY);
+    createTestSession(new SelendroidConfiguration(), caps);
+  }
 
   private void createTestSession(SelendroidConfiguration conf, SelendroidCapabilities caps) throws Exception{
     // Setting up driver with test app and device stub

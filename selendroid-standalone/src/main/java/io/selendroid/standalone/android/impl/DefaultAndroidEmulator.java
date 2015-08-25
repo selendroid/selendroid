@@ -181,11 +181,24 @@ public class DefaultAndroidEmulator extends AbstractAndroidDeviceEmulator {
       Matcher matcher = pattern.matcher(line);
       if (matcher.find()) {
         String serial = matcher.group(0);
+
+
         Integer port = Integer.valueOf(serial.replaceAll("emulator-", ""));
-        String avdName = "test_remote_test";
-        mapping.put(avdName, port);
+        TelnetClient client = null;
+        try {
+          client = new TelnetClient(port);
+          String avdName = client.sendCommand("avd name");
+          mapping.put(avdName, port);
+        } catch (AndroidDeviceException e) {
+          // ignore
+        } finally {
+          if (client != null) {
+            client.close();
+          }
+        }
       }
     }
+
     return mapping;
   }
 

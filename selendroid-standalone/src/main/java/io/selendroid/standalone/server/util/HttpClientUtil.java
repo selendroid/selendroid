@@ -46,6 +46,11 @@ public class HttpClientUtil {
   }
 
   public static HttpResponse executeRequestWithPayload(String uri, int port, HttpMethod method,
+                                                       String payload) throws Exception {
+    return executeRequestWithPayload(uri, port, method, payload, "localhost");
+    }
+
+  public static HttpResponse executeRequestWithPayload(String uri, int port, HttpMethod method,
       String payload, String hostname) throws Exception {
     BasicHttpEntityEnclosingRequest request =
         new BasicHttpEntityEnclosingRequest(method.name(), uri);
