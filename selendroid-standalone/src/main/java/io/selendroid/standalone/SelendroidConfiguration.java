@@ -367,6 +367,10 @@ public class SelendroidConfiguration {
     return folder;
   }
 
+  public void setAppFolderToMonitor(String path) {
+    folder = path;
+  }
+
   public boolean isDeleteTmpFiles() {
     return deleteTmpFiles;
   }
