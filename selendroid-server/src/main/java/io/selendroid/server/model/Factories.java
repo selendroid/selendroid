@@ -20,6 +20,7 @@ public class Factories {
 
   private static AndroidNativeElementFactory androidNativeElementFactory = null;
   private static PredicatesFactory predicatesFactory = null;
+  private static SelendroidDriverFactory selendroidDriverFactory = null;
 
   public static void set(AndroidNativeElementFactory factory) {
     androidNativeElementFactory = Preconditions.checkNotNull(factory);
@@ -43,4 +44,16 @@ public class Factories {
     return predicatesFactory;
 
   }
+
+  public static SelendroidDriverFactory getSelendroidDriverFactory() {
+    if (selendroidDriverFactory == null) {
+      set(new DefaultSelendroidDriverFactory());
+    }
+    return selendroidDriverFactory;
+  }
+
+  public static void set(SelendroidDriverFactory factory) {
+    selendroidDriverFactory = Preconditions.checkNotNull(factory);
+  }
+
 }

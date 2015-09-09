@@ -250,8 +250,8 @@ public class AndroidServlet extends BaseServlet {
     try {
       addHandlerAttributesToRequest(request, handler.getMappedUri());
       if (!handler.commandAllowedWithAlertPresentInWebViewMode()) {
-        DefaultSelendroidDriver driver =
-            (DefaultSelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
+        SelendroidDriver driver =
+            (SelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
         if (driver != null && driver.isAlertPresent()) {
           result =
               new SelendroidResponse(handler.getSessionId(request),
