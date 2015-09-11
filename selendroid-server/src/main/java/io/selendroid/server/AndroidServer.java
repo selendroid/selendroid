@@ -17,6 +17,7 @@ import io.selendroid.server.common.StatusServlet;
 import io.selendroid.server.common.http.HttpServer;
 import io.selendroid.server.inspector.InspectorServlet;
 import io.selendroid.server.model.DefaultSelendroidDriver;
+import io.selendroid.server.model.Factories;
 import io.selendroid.server.model.SelendroidDriver;
 
 public class AndroidServer {
@@ -30,7 +31,7 @@ public class AndroidServer {
   }
 
   protected void init(ServerInstrumentation androidInstrumentation) {
-    SelendroidDriver driver = new DefaultSelendroidDriver(androidInstrumentation);
+    SelendroidDriver driver = Factories.getSelendroidDriverFactory().createSelendroidDriver(androidInstrumentation);
     webServer.addHandler(new StatusServlet(androidInstrumentation));
     webServer.addHandler(new InspectorServlet(driver, androidInstrumentation));
     webServer.addHandler(new AndroidServlet(driver, androidInstrumentation.getExtensionLoader()));

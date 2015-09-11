@@ -22,7 +22,6 @@ import io.selendroid.server.common.exceptions.*;
 import io.selendroid.server.common.exceptions.UnsupportedOperationException;
 import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.server.model.AndroidElement;
-import io.selendroid.server.model.DefaultSelendroidDriver;
 import io.selendroid.server.model.KnownElements;
 import io.selendroid.server.model.SelendroidDriver;
 import io.selendroid.server.util.SelendroidLogger;
@@ -37,7 +36,7 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
   }
   
   protected SelendroidDriver getSelendroidDriver(HttpRequest request) {
-    return (DefaultSelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
+    return (SelendroidDriver) request.data().get(AndroidServlet.DRIVER_KEY);
   }
 
   protected String getIdOfKnownElement(HttpRequest request, AndroidElement element) {
