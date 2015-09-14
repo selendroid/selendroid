@@ -24,10 +24,8 @@ import io.selendroid.standalone.SelendroidConfiguration;
 import io.selendroid.standalone.android.AndroidApp;
 import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.AndroidEmulator;
-import io.selendroid.standalone.android.AndroidSdk;
 import io.selendroid.standalone.android.DeviceManager;
-import io.selendroid.standalone.android.impl.DefaultAndroidEmulator;
-import io.selendroid.standalone.android.impl.DefaultDeviceManager;
+import io.selendroid.standalone.android.impl.AbstractAndroidDeviceEmulator;
 import io.selendroid.standalone.android.impl.DefaultHardwareDevice;
 import io.selendroid.standalone.android.impl.InstalledAndroidApp;
 import io.selendroid.standalone.builder.AndroidDriverAPKBuilder;
@@ -35,6 +33,8 @@ import io.selendroid.standalone.builder.SelendroidServerBuilder;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
+import io.selendroid.standalone.server.model.impl.InitAndroidDevicesConfig;
+import io.selendroid.standalone.server.model.impl.InitAndroidDevicesStrategy;
 import io.selendroid.standalone.server.util.FolderMonitor;
 import io.selendroid.standalone.server.util.HttpClientUtil;
 import org.json.JSONArray;
@@ -49,12 +49,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,6 +62,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   public static final String APP_ID = "appId";
   private static int selendroidServerPort = 38080;
   private static final Logger log = Logger.getLogger(SelendroidStandaloneDriver.class.getName());
+  private InitAndroidDevicesStrategy initAndroidDevicesStrategy;
   private Map<String, AndroidApp> appsStore = new HashMap<String, AndroidApp>();
   private Map<String, AndroidApp> selendroidServers = new HashMap<String, AndroidApp>();
   private Map<String, ActiveSession> sessions = new HashMap<String, ActiveSession>();
@@ -80,8 +76,10 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       = new DummySelendroidStandaloneDriverEventListener();
 
 
-  public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration)
+  public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration,
+                                    InitAndroidDevicesStrategy initAndroidDevicesStrategy)
       throws AndroidSdkException, AndroidDeviceException {
+    this.initAndroidDevicesStrategy = initAndroidDevicesStrategy;
     this.serverConfiguration = serverConfiguration;
     selendroidApkBuilder = new SelendroidServerBuilder(serverConfiguration);
     androidDriverAPKBuilder = new AndroidDriverAPKBuilder();
@@ -101,9 +99,11 @@ public class SelendroidStandaloneDriver implements ServerDetails {
    * For testing only
    */
   SelendroidStandaloneDriver(SelendroidServerBuilder builder, DeviceManager deviceManager,
-                             AndroidDriverAPKBuilder androidDriverAPKBuilder) {
+                             AndroidDriverAPKBuilder androidDriverAPKBuilder,
+                             InitAndroidDevicesStrategy initAndroidDevicesStrategy) {
     this.selendroidApkBuilder = builder;
     this.deviceManager = deviceManager;
+    this.initAndroidDevicesStrategy = initAndroidDevicesStrategy;
     this.androidDriverAPKBuilder = androidDriverAPKBuilder;
   }
 
@@ -178,12 +178,11 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   }
 
   /* package */void initAndroidDevices() throws AndroidDeviceException {
-    deviceManager =
-        new DefaultDeviceManager(AndroidSdk.adb().getAbsolutePath(),
-            serverConfiguration.shouldKeepAdbAlive());
-    deviceStore = new DeviceStore(serverConfiguration.getEmulatorPort(), deviceManager);
-    deviceStore.initAndroidDevices(new DefaultHardwareDeviceListener(deviceStore, this),
-        serverConfiguration.shouldKeepAdbAlive());
+    InitAndroidDevicesStrategy devicesStrategy = this.initAndroidDevicesStrategy;
+    InitAndroidDevicesConfig config = devicesStrategy.getInitAndroidDevicesConfig(this);
+    deviceManager = config.getDeviceManager();
+    deviceStore = config.getDeviceStore();
+    deviceStore.initAndroidDevices(config.getListener(), config.isShouldKeepAdbAlive());
   }
 
   @Override
@@ -206,7 +205,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     return System.getProperty("os.name");
   }
 
-  protected SelendroidConfiguration getSelendroidConfiguration() {
+  public SelendroidConfiguration getSelendroidConfiguration() {
     return serverConfiguration;
   }
 
@@ -246,6 +245,8 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         }
 
         int port = getNextSelendroidServerPort();
+        String hostname = getSelendroidConfiguration().getEmulatorHostname();
+
         boolean serverInstalled = device.isInstalled("io.selendroid." + app.getBasePackage());
         if (!serverInstalled || serverConfiguration.isForceReinstall()) {
           try {
@@ -272,7 +273,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         // It's GO TIME!
         // start the selendroid server on the device and make sure it's up
         eventListener.onBeforeDeviceServerStart();
-        device.startSelendroid(app, port, desiredCapabilities);
+        device.startSelendroid(app, port, desiredCapabilities, hostname);
         waitForServerStart(device);
         eventListener.onAfterDeviceServerStart();
 
@@ -285,14 +286,13 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           Thread.currentThread().interrupt();
         }
 
-        // create the new session on the device server
         RemoteWebDriver driver =
-          new RemoteWebDriver(new URL("http://localhost:" + port + "/wd/hub"), desiredCapabilities);
+          new RemoteWebDriver(new URL("http://" + hostname + ":" + port + "/wd/hub"), desiredCapabilities);
         String sessionId = driver.getSessionId().toString();
         SelendroidCapabilities requiredCapabilities =
           new SelendroidCapabilities(driver.getCapabilities().asMap());
         ActiveSession session =
-          new ActiveSession(sessionId, requiredCapabilities, app, device, port, this);
+          new ActiveSession(sessionId, requiredCapabilities, app, device, port, this, hostname);
 
         this.sessions.put(sessionId, session);
 
@@ -483,7 +483,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   /**
    * For testing only
    */
-  /* package */void setDeviceStore(DeviceStore store) {
+  /* package */void setDeviceStore(DefaultDeviceStore store) {
     this.deviceStore = store;
   }
 
@@ -508,7 +508,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       session.stopSessionTimer();
       try {
         HttpClientUtil.executeRequest(
-            "http://localhost:" + session.getSelendroidServerPort() + "/wd/hub/session/" + sessionId,
+            "http://" + session.getHostname() + ":" + session.getSelendroidServerPort() + "/wd/hub/session/" + sessionId,
             HttpMethod.DELETE);
       } catch (Exception e) {
         log.log(Level.WARNING, "Error stopping session, safe to ignore", e);
@@ -569,9 +569,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     for (AndroidDevice device : deviceStore.getDevices()) {
       JSONObject deviceInfo = new JSONObject();
       try {
-        if (device instanceof DefaultAndroidEmulator) {
+        if (device instanceof AbstractAndroidDeviceEmulator) {
           deviceInfo.put(SelendroidCapabilities.EMULATOR, true);
-          deviceInfo.put("avdName", ((DefaultAndroidEmulator) device).getAvdName());
+          deviceInfo.put("avdName", ((AbstractAndroidDeviceEmulator) device).getAvdName());
         } else {
           deviceInfo.put(SelendroidCapabilities.EMULATOR, false);
           deviceInfo.put("model", ((DefaultHardwareDevice) device).getModel());
@@ -610,5 +610,13 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
   public void setEventListener(SelendroidStandaloneDriverEventListener eventListener) {
     this.eventListener = eventListener;
+  }
+
+  public void setDeviceManager(DeviceManager deviceManager) {
+    this.deviceManager = deviceManager;
+  }
+
+  public void setDeviceStore(DeviceStore deviceStore) {
+    this.deviceStore = deviceStore;
   }
 }

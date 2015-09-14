@@ -29,6 +29,7 @@ import io.selendroid.standalone.server.model.SelendroidStandaloneDriver;
 import java.io.File;
 import java.io.IOException;
 
+import io.selendroid.standalone.server.model.impl.DefaultInitAndroidDevicesStrategy;
 import org.openqa.selenium.remote.BrowserType;
 
 public class SelendroidStandaloneDriverFixture {
@@ -81,6 +82,7 @@ public class SelendroidStandaloneDriverFixture {
   protected static SelendroidStandaloneDriver getSelendroidStandaloneDriver(
       SelendroidServerBuilder builder) throws IOException, ShellCommandException,
       AndroidSdkException, AndroidDeviceException {
-    return new SelendroidStandaloneDriver(builder, getDeviceManager(), getAndroidDriverAPKBuilder());
+    return new SelendroidStandaloneDriver(builder, getDeviceManager(), getAndroidDriverAPKBuilder(),
+            new DefaultInitAndroidDevicesStrategy());
   }
 }

@@ -23,10 +23,10 @@ import java.util.logging.Logger;
 
 public class DefaultHardwareDeviceListener implements HardwareDeviceListener {
   private static final Logger log = Logger.getLogger(DefaultHardwareDeviceListener.class.getName());
-  private DeviceStore store = null;
+  private DefaultDeviceStore store = null;
   private SelendroidStandaloneDriver driver;
 
-  public DefaultHardwareDeviceListener(DeviceStore store, SelendroidStandaloneDriver driver) {
+  public DefaultHardwareDeviceListener(DefaultDeviceStore store, SelendroidStandaloneDriver driver) {
     this.store = store;
     this.driver = driver;
   }
