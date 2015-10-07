@@ -13,6 +13,47 @@
  */
 package io.selendroid.server.model;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.net.http.SslError;
+import android.os.Build;
+import android.os.Message;
+import android.view.InputEvent;
+import android.view.KeyEvent;
+import android.view.View;
+import android.webkit.ConsoleMessage;
+import android.webkit.GeolocationPermissions;
+import android.webkit.HttpAuthHandler;
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
+import android.webkit.WebStorage;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import org.apache.cordova.CordovaChromeClient;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.engine.SystemWebChromeClient;
+import org.apache.cordova.engine.SystemWebView;
+import org.apache.cordova.engine.SystemWebViewEngine;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+
 import io.selendroid.server.ServerInstrumentation;
 import io.selendroid.server.android.AndroidTouchScreen;
 import io.selendroid.server.android.KeySender;
@@ -26,30 +67,6 @@ import io.selendroid.server.common.exceptions.TimeoutException;
 import io.selendroid.server.model.internal.WebViewHandleMapper;
 import io.selendroid.server.model.js.AndroidAtoms;
 import io.selendroid.server.util.SelendroidLogger;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-
-import org.apache.cordova.CordovaChromeClient;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.engine.SystemWebChromeClient;
-import org.apache.cordova.engine.SystemWebView;
-import org.apache.cordova.engine.SystemWebViewEngine;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.graphics.Bitmap;
-import android.webkit.JsPromptResult;
-import android.webkit.JsResult;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -236,7 +253,11 @@ public class SelendroidWebDriver {
         if (webview.getUrl() == null) {
           return;
         }
-        // seems to be needed
+        // needed in case the AUT re-set the WebChromeClient, which overrides selendroid's
+        // which handles the onAlert, which is used to communicate response messages.
+        // If this happens to cause undesired behavior for an end user, they should
+        // switch back to NATIVE_APP and then to the webview again, this will allow
+        // selendroid to wrap the 'new' chromeClient set by the AUT.
         webview.setWebChromeClient(chromeClient);
         webview.loadUrl("javascript:" + script);
       }
@@ -346,34 +367,65 @@ public class SelendroidWebDriver {
           // since when it is not an instanceof, it likely means the app under test
           // does not contain the Cordova project and this will cause a RuntimeException
           if (view.getClass().getSimpleName().equalsIgnoreCase("CordovaWebView")) {
+            SelendroidLogger.info("WebView is Cordova, extending with ExtendedCordovaChromeClient");
             CordovaWebView webview=(CordovaWebView)view;
             CordovaInterface ci=null;
             chromeClient = new ExtendedCordovaChromeClient(null,webview);
           } else if (view.getClass().getSimpleName().equalsIgnoreCase("SystemWebView")) {
+            SelendroidLogger.info("WebView is SystemWebView");
             SystemWebView webview=(SystemWebView)view;
             SystemWebViewEngine webEngine= new SystemWebViewEngine(webview);
             chromeClient = new ExtendedSystemWebChromeClient(webEngine);
           } else {
-            chromeClient = new SelendroidWebChromeClient();
+            SelendroidLogger.info("Other WebView type, using SelendroidWebChromeClient");
+            // get the existing WebChromeClient
+            try {
+              Field f = view.getClass().getDeclaredField("mProvider");
+              f.setAccessible(true);
+              Object webViewProvider = f.get(view);
+              f = webViewProvider.getClass().getDeclaredField("mContentsClientAdapter");
+              f.setAccessible(true);
+              Object contentsClientAdapter = f.get(webViewProvider);
+              f = contentsClientAdapter.getClass().getDeclaredField("mWebChromeClient");
+              f.setAccessible(true);
+              Object webChromeClient = f.get(contentsClientAdapter);
+              if (webChromeClient != null) {
+                SelendroidLogger.info("webChromeClient is something! proxying it");
+                chromeClient = new WrappedChromeClient((WebChromeClient) webChromeClient);
+              } else {
+                SelendroidLogger.info("webChromeClient is null, not proxying it");
+                chromeClient = new SelendroidWebChromeClient();
+              }
+            } catch (Exception e) {
+              e.printStackTrace();
+              SelendroidLogger.info("failed to reflect and get the current ChromeWebViewClientClass: " + e);
+              chromeClient = new SelendroidWebChromeClient();
+            }
+
+
           }
           view.setWebChromeClient(chromeClient);
           // set handlers to indicate whether a page has started/done loading
-          view.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-              synchronized (syncObject) {
-                pageStartedLoading = true;
-                syncObject.notify();
-              }
+          try {
+            Field f = view.getClass().getDeclaredField("mProvider");
+            f.setAccessible(true);
+            Object webViewProvider = f.get(view);
+            f = webViewProvider.getClass().getDeclaredField("mContentsClientAdapter");
+            f.setAccessible(true);
+            Object contentsClientAdapter = f.get(webViewProvider);
+            f = contentsClientAdapter.getClass().getDeclaredField("mWebViewClient");
+            f.setAccessible(true);
+            Object webViewClient = f.get(contentsClientAdapter);
+            if (webViewClient != null) {
+              view.setWebViewClient(new WrappingSelendroidWebClient((WebViewClient) webViewClient));
+            } else {
+              view.setWebViewClient(new SelendroidWebClient());
             }
-            @Override
-            public void onPageFinished(WebView view, String url) {
-              synchronized (syncObject) {
-                pageDoneLoading = true;
-                syncObject.notify();
-              }
-            }
-          });
+          } catch (Exception e) {
+            e.printStackTrace();
+            SelendroidLogger.info("failed to reflectively find the WebViewClient attached");
+            view.setWebViewClient(new SelendroidWebClient());
+          }
 
           WebSettings settings = view.getSettings();
           settings.setJavaScriptCanOpenWindowsAutomatically(true);
@@ -606,6 +658,15 @@ public class SelendroidWebDriver {
 
   public class SelendroidWebChromeClient extends WebChromeClient {
 
+    private boolean callSuper = true;
+
+    public SelendroidWebChromeClient() {
+    }
+
+    public SelendroidWebChromeClient(boolean callSuper) {
+      this.callSuper = callSuper;
+    }
+
     /**
      * Unconventional way of adding a Javascript interface but the main reason why I took this way
      * is that it is working stable compared to the webview.addJavascriptInterface way.
@@ -638,18 +699,22 @@ public class SelendroidWebDriver {
         }
 
         return true;
-      } else {
+      } else if (callSuper){
         currentAlertMessage.add(message == null ? "null" : message);
         SelendroidLogger.info("new alert message: " + message);
         return super.onJsAlert(view, url, message, jsResult);
       }
+      return false;
     }
 
     @Override
     public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
       currentAlertMessage.add(message == null ? "null" : message);
       SelendroidLogger.info("new confirm message: " + message);
-      return super.onJsConfirm(view, url, message, result);
+      if (callSuper) {
+        return super.onJsConfirm(view, url, message, result);
+      }
+      return false;
     }
 
     @Override
@@ -657,9 +722,357 @@ public class SelendroidWebDriver {
         JsPromptResult result) {
       currentAlertMessage.add(message == null ? "null" : message);
       SelendroidLogger.info("new prompt message: " + message);
-      return super.onJsPrompt(view, url, message, defaultValue, result);
+      if (callSuper) {
+        return super.onJsPrompt(view, url, message, defaultValue, result);
+      }
+      return false;
     }
 
+  }
+
+  // Would be so awesome to use a Proxy here and just intercept the two methods we care about.
+  // alas, WebChromeClient is a concrete class and there's no interface provided.
+  // And trying to do alternatives in Android proved to be too difficult
+  public class WrappedChromeClient extends WebChromeClient {
+
+    private WebChromeClient WCC;
+    private WebChromeClient selendroidWCC = new SelendroidWebChromeClient(false);
+
+    public WrappedChromeClient(WebChromeClient webChromeClient) {
+      WCC = webChromeClient;
+    }
+
+    @Override
+    public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+      // if the alert was a selendroid one, this method will return true, otherwise false
+      // and the alert should be propagated to the original WebChromeClient
+      if (!selendroidWCC.onJsAlert(view, url, message, result)) {
+        return WCC.onJsAlert(view, url, message, result);
+      }
+      return true;
+    }
+
+    @Override
+    public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+      selendroidWCC.onJsConfirm(view, url, message, result);
+      return WCC.onJsConfirm(view, url, message, result);
+    }
+
+    @Override
+    public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+      selendroidWCC.onJsPrompt(view, url, message, defaultValue, result);
+      return WCC.onJsPrompt(view, url, message, defaultValue, result);
+    }
+
+    @Override
+    public void onProgressChanged(WebView view, int newProgress) {
+      WCC.onProgressChanged(view, newProgress);
+    }
+
+    @Override
+    public void onReceivedTitle(WebView view, String title) {
+      WCC.onReceivedTitle(view, title);
+    }
+
+    @Override
+    public void onReceivedIcon(WebView view, Bitmap icon) {
+      WCC.onReceivedIcon(view, icon);
+    }
+
+    @Override
+    public void onReceivedTouchIconUrl(WebView view, String url, boolean precomposed) {
+      WCC.onReceivedTouchIconUrl(view, url, precomposed);
+    }
+
+    @Override
+    public void onShowCustomView(View view, CustomViewCallback callback) {
+      WCC.onShowCustomView(view, callback);
+    }
+
+    @Override
+    public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        WCC.onShowCustomView(view, requestedOrientation, callback);
+      }
+    }
+
+    @Override
+    public void onHideCustomView() {
+      WCC.onHideCustomView();
+    }
+
+    @Override
+    public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      return WCC.onCreateWindow(view, isDialog, isUserGesture, resultMsg);
+    }
+
+    @Override
+    public void onRequestFocus(WebView view) {
+      WCC.onRequestFocus(view);
+    }
+
+    @Override
+    public void onCloseWindow(WebView window) {
+      WCC.onCloseWindow(window);
+    }
+
+    @Override
+    public boolean onJsBeforeUnload(WebView view, String url, String message, JsResult result) {
+      return WCC.onJsBeforeUnload(view, url, message, result);
+    }
+
+    @Override
+    public void onExceededDatabaseQuota(String url, String databaseIdentifier, long quota, long estimatedDatabaseSize, long totalQuota, WebStorage.QuotaUpdater quotaUpdater) {
+      WCC.onExceededDatabaseQuota(url, databaseIdentifier, quota, estimatedDatabaseSize, totalQuota, quotaUpdater);
+    }
+
+    @Override
+    public void onReachedMaxAppCacheSize(long requiredStorage, long quota, WebStorage.QuotaUpdater quotaUpdater) {
+      WCC.onReachedMaxAppCacheSize(requiredStorage, quota, quotaUpdater);
+    }
+
+    @Override
+    public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+      WCC.onGeolocationPermissionsShowPrompt(origin, callback);
+    }
+
+    @Override
+    public void onGeolocationPermissionsHidePrompt() {
+      WCC.onGeolocationPermissionsHidePrompt();
+    }
+
+// can't build for things above 4.1.1.4
+//    @Override
+//    public void onPermissionRequest(PermissionRequest request) {
+//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//        WCC.onPermissionRequest(request);
+//      }
+//    }
+//
+//    @Override
+//    public void onPermissionRequestCanceled(PermissionRequest request) {
+//      WCC.onPermissionRequestCanceled(request);
+//    }
+
+    @Override
+    public boolean onJsTimeout() {
+      return WCC.onJsTimeout();
+    }
+
+    @Override
+    public void onConsoleMessage(String message, int lineNumber, String sourceID) {
+      WCC.onConsoleMessage(message, lineNumber, sourceID);
+    }
+
+    @Override
+    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+      return WCC.onConsoleMessage(consoleMessage);
+    }
+
+    @Override
+    public Bitmap getDefaultVideoPoster() {
+      return WCC.getDefaultVideoPoster();
+    }
+
+    @Override
+    public View getVideoLoadingProgressView() {
+      return WCC.getVideoLoadingProgressView();
+    }
+
+    @Override
+    public void getVisitedHistory(ValueCallback<String[]> callback) {
+      WCC.getVisitedHistory(callback);
+    }
+
+// can't build over 4.1.1.4
+//    @Override
+//    public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//        return WCC.onShowFileChooser(webView, filePathCallback, fileChooserParams);
+//      }
+//      return false;
+//    }
+  }
+
+  public class SelendroidWebClient extends WebViewClient {
+    @Override
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+      synchronized (syncObject) {
+        pageStartedLoading = true;
+        syncObject.notify();
+      }
+    }
+    @Override
+    public void onPageFinished(WebView view, String url) {
+      synchronized (syncObject) {
+        pageDoneLoading = true;
+        syncObject.notify();
+      }
+    }
+  }
+
+  // Would be so awesome to use a Proxy here and just intercept the two methods we care about.
+  // alas, WebViewClient is a concrete class and there's no interface provided.
+  // And trying to do alternatives in Android proved to be too difficult
+  public class WrappingSelendroidWebClient extends WebViewClient {
+    private WebViewClient selendroidWVC = new SelendroidWebClient();
+    private WebViewClient WVC;
+
+    public WrappingSelendroidWebClient(WebViewClient webViewClient) {
+      WVC = webViewClient;
+    }
+
+    @Override
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+      selendroidWVC.onPageStarted(view, url, favicon);
+      WVC.onPageStarted(view, url, favicon);
+    }
+
+    @Override
+    public void onPageFinished(WebView view, String url) {
+      selendroidWVC.onPageFinished(view, url);
+      WVC.onPageFinished(view, url);
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+      return WVC.shouldOverrideUrlLoading(view, url);
+    }
+
+    @Override
+    public void onLoadResource(WebView view, String url) {
+      WVC.onLoadResource(view, url);
+    }
+
+// can't build over 4.1.1.4
+//    @Override
+//    public void onPageCommitVisible(WebView view, String url) {
+//      if (Build.VERSION.SDK_INT >= 23) {
+//        WVC.onPageCommitVisible(view, url);
+//      }
+//    }
+
+    @Override
+    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        return WVC.shouldInterceptRequest(view, url);
+      }
+      return null;
+    }
+
+// can't build over 4.1.1.4
+//    @Override
+//    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//        return WVC.shouldInterceptRequest(view, request);
+//      }
+//      return null;
+//    }
+
+    @Override
+    public void onTooManyRedirects(WebView view, Message cancelMsg, Message continueMsg) {
+      WVC.onTooManyRedirects(view, cancelMsg, continueMsg);
+    }
+
+    @Override
+    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+      WVC.onReceivedError(view, errorCode, description, failingUrl);
+    }
+
+// can't build over 4.1.1.4
+//    @Override
+//    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+//      if (Build.VERSION.SDK_INT >= 23) {
+//        WVC.onReceivedError(view, request, error);
+//      }
+//    }
+//
+//    @Override
+//    public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+//      if (Build.VERSION.SDK_INT >= 23) {
+//        WVC.onReceivedHttpError(view, request, errorResponse);
+//      }
+//    }
+
+    @Override
+    public void onFormResubmission(WebView view, Message dontResend, Message resend) {
+      WVC.onFormResubmission(view, dontResend, resend);
+    }
+
+    @Override
+    public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+      WVC.doUpdateVisitedHistory(view, url, isReload);
+    }
+
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+      WVC.onReceivedSslError(view, handler, error);
+    }
+
+// can't build above 4.1.1.4 with maven! actually a good reason to switch to gradle.
+//    @Override
+//    public void onReceivedClientCertRequest(WebView view, ClientCertRequest request) {
+//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//        WVC.onReceivedClientCertRequest(view, request);
+//      }
+//    }
+
+    @Override
+    public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+      WVC.onReceivedHttpAuthRequest(view, handler, host, realm);
+    }
+
+    @Override
+    public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
+      return WVC.shouldOverrideKeyEvent(view, event);
+    }
+
+    @Override
+    public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+      WVC.onUnhandledKeyEvent(view, event);
+    }
+
+// can't build over 4.1.1.4
+//    @Override
+//    public void onUnhandledInputEvent(WebView view, InputEvent event) {
+//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//        WVC.onUnhandledInputEvent(view, event);
+//      }
+//    }
+
+    @Override
+    public void onScaleChanged(WebView view, float oldScale, float newScale) {
+      WVC.onScaleChanged(view, oldScale, newScale);
+    }
+
+    @Override
+    public void onReceivedLoginRequest(WebView view, String realm, String account, String args) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+        WVC.onReceivedLoginRequest(view, realm, account, args);
+      }
+    }
+  }
+
+  public class WebClientProxy implements InvocationHandler {
+
+    private WebViewClient wrappedClient;
+    private SelendroidWebClient selendroidWebViewClient = new SelendroidWebClient();
+
+    public WebClientProxy(Object wrapped) {
+      wrappedClient = (WebViewClient) wrapped;
+    }
+
+    @Override
+    public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
+
+      if (method.getName().equalsIgnoreCase("onPageStarted") || method.getName().equalsIgnoreCase("onPageFinished")) {
+        method.invoke(selendroidWebViewClient);
+        return method.invoke(wrappedClient);
+
+      } else {
+        return method.invoke(wrappedClient);
+      }
+    }
   }
 
   public String getTitle() {

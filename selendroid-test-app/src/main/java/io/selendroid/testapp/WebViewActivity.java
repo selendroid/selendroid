@@ -21,12 +21,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class WebViewActivity extends Activity {
   private HttpServer server = null;
@@ -42,7 +44,7 @@ public class WebViewActivity extends Activity {
     setContentView(io.selendroid.testapp.R.layout.webview);
 
     mainWebView = (WebView) findViewById(io.selendroid.testapp.R.id.mainWebView);
-    mainWebView.setWebViewClient(new WebViewClient());
+    mainWebView.setWebViewClient(new TestAppWebViewClient());
     testDataSpinner =
         (Spinner) findViewById(io.selendroid.testapp.R.id.spinner_webdriver_test_data);
     arrayAdapter =
@@ -89,6 +91,15 @@ public class WebViewActivity extends Activity {
       }
     });
     super.onCreate(savedInstanceState);
+  }
+
+  private class TestAppWebViewClient extends WebViewClient {
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+      ((TextView)findViewById(R.id.webviewLocation)).setText(url);
+      return super.shouldOverrideUrlLoading(view, url);
+    }
   }
 
   @Override

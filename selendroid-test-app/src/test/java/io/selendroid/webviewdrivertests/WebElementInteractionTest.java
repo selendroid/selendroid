@@ -47,6 +47,14 @@ public class WebElementInteractionTest extends BaseAndroidTest {
   }
 
   @Test
+  public void canClickOnLinkThatChangesUrlWithWebViewThatListensToShouldOverrideUrlLoading() {
+    openWebdriverTestPage(HtmlTestData.TEST_CLICK_PAGE_1);
+    driver().findElement(By.tagName("a")).click();
+    driver().context(NATIVE_APP);
+    Assert.assertEquals("file:///android_asset/web/test_click_page2.html", driver().findElement(By.id("webviewLocation")).getText());
+  }
+
+  @Test
   public void shouldGetAttributeOfTextField() {
     openWebdriverTestPage(HtmlTestData.FORM_PAGE);
     WebElement button = driver().findElement(By.cssSelector("input[id='inputWithText']"));
