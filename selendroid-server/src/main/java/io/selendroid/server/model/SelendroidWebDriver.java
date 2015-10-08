@@ -380,15 +380,7 @@ public class SelendroidWebDriver {
             SelendroidLogger.info("Other WebView type, using SelendroidWebChromeClient");
             // get the existing WebChromeClient
             try {
-              Field f = view.getClass().getDeclaredField("mProvider");
-              f.setAccessible(true);
-              Object webViewProvider = f.get(view);
-              f = webViewProvider.getClass().getDeclaredField("mContentsClientAdapter");
-              f.setAccessible(true);
-              Object contentsClientAdapter = f.get(webViewProvider);
-              f = contentsClientAdapter.getClass().getDeclaredField("mWebChromeClient");
-              f.setAccessible(true);
-              Object webChromeClient = f.get(contentsClientAdapter);
+              Object webChromeClient = getWebClientViaReflection(view, "mWebChromeClient");
               if (webChromeClient != null) {
                 SelendroidLogger.info("webChromeClient is something! proxying it");
                 chromeClient = new WrappedChromeClient((WebChromeClient) webChromeClient);
@@ -407,15 +399,7 @@ public class SelendroidWebDriver {
           view.setWebChromeClient(chromeClient);
           // set handlers to indicate whether a page has started/done loading
           try {
-            Field f = view.getClass().getDeclaredField("mProvider");
-            f.setAccessible(true);
-            Object webViewProvider = f.get(view);
-            f = webViewProvider.getClass().getDeclaredField("mContentsClientAdapter");
-            f.setAccessible(true);
-            Object contentsClientAdapter = f.get(webViewProvider);
-            f = contentsClientAdapter.getClass().getDeclaredField("mWebViewClient");
-            f.setAccessible(true);
-            Object webViewClient = f.get(contentsClientAdapter);
+            Object webViewClient = getWebClientViaReflection(view, "mWebViewClient");
             if (webViewClient != null) {
               view.setWebViewClient(new WrappingSelendroidWebClient((WebViewClient) webViewClient));
             } else {
@@ -452,6 +436,19 @@ public class SelendroidWebDriver {
         }
       }
     });
+  }
+
+  private Object getWebClientViaReflection(WebView view, String clientField) throws NoSuchFieldException, IllegalAccessException {
+    Field f = view.getClass().getDeclaredField("mProvider");
+    f.setAccessible(true);
+    Object webViewProvider = f.get(view);
+    f = webViewProvider.getClass().getDeclaredField("mContentsClientAdapter");
+    f.setAccessible(true);
+    Object contentsClientAdapter = f.get(webViewProvider);
+    f = contentsClientAdapter.getClass().getDeclaredField(clientField);
+    f.setAccessible(true);
+    return f.get(contentsClientAdapter);
+
   }
 
   private String getWindowString() {
