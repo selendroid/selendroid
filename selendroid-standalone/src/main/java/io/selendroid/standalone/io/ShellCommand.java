@@ -17,6 +17,7 @@ import io.selendroid.standalone.exceptions.DeviceOfflineException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
 
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.exec.CommandLine;
@@ -47,6 +48,7 @@ public class ShellCommand {
     try {
       exec.execute(commandline);
     } catch (Exception e) {
+      log.log(Level.SEVERE, "Error executing command: " + commandline, e);
       if (e.getMessage().contains("device offline")) {
         throw new DeviceOfflineException(e);
       }
@@ -80,6 +82,7 @@ public class ShellCommand {
         exec.execute(commandline, env, handler);
       }
     } catch (Exception e) {
+      log.log(Level.SEVERE, "Error executing command: " + commandline, e);
       throw new ShellCommandException("Error executing shell command: " + commandline, e);
     }
   }
