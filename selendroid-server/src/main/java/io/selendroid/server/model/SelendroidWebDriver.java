@@ -19,21 +19,20 @@ import android.os.Build;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
-import android.webkit.ConsoleMessage;
-import android.webkit.GeolocationPermissions;
-import android.webkit.HttpAuthHandler;
-import android.webkit.JsPromptResult;
-import android.webkit.JsResult;
-import android.webkit.SslErrorHandler;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceResponse;
-import android.webkit.WebSettings;
-import android.webkit.WebStorage;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-
-import org.apache.cordova.*;
+import android.webkit.*;
+import io.selendroid.server.ServerInstrumentation;
+import io.selendroid.server.android.*;
+import io.selendroid.server.android.internal.DomWindow;
+import io.selendroid.server.common.exceptions.SelendroidException;
+import io.selendroid.server.common.exceptions.StaleElementReferenceException;
+import io.selendroid.server.common.exceptions.TimeoutException;
+import io.selendroid.server.model.internal.WebViewHandleMapper;
+import io.selendroid.server.model.js.AndroidAtoms;
+import io.selendroid.server.util.SelendroidLogger;
+import org.apache.cordova.CordovaChromeClient;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.CordovaWebViewClient;
 import org.apache.cordova.engine.SystemWebChromeClient;
 import org.apache.cordova.engine.SystemWebView;
 import org.apache.cordova.engine.SystemWebViewClient;
@@ -44,20 +43,6 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.*;
-
-import io.selendroid.server.ServerInstrumentation;
-import io.selendroid.server.android.AndroidTouchScreen;
-import io.selendroid.server.android.KeySender;
-import io.selendroid.server.android.MotionSender;
-import io.selendroid.server.android.WebViewKeySender;
-import io.selendroid.server.android.WebViewMotionSender;
-import io.selendroid.server.android.internal.DomWindow;
-import io.selendroid.server.common.exceptions.SelendroidException;
-import io.selendroid.server.common.exceptions.StaleElementReferenceException;
-import io.selendroid.server.common.exceptions.TimeoutException;
-import io.selendroid.server.model.internal.WebViewHandleMapper;
-import io.selendroid.server.model.js.AndroidAtoms;
-import io.selendroid.server.util.SelendroidLogger;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -220,9 +205,10 @@ public class SelendroidWebDriver {
       JSONObject json = new JSONObject(jsResult);
       if (0 != json.optInt("status")) {
         Object value = json.get("value");
-        if ((value instanceof String && value.equals("Element does not exist in cache"))
-            || (value instanceof JSONObject && ((JSONObject) value).getString("message").equals(
-                "Element does not exist in cache"))) {
+        if ((value instanceof String && value.equals("Element does not exist in cache")) ||
+            ( value instanceof JSONObject &&
+                (((JSONObject) value).getString("message").equals("Element does not exist in cache") ||
+                 ((JSONObject) value).getString("message").equals("Element is no longer attached to the DOM")))) {
           throw new StaleElementReferenceException(json.optString("value"));
         }
         throw new SelendroidException(json.optString("value"));
