@@ -574,7 +574,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           deviceInfo.put("avdName", ((DefaultAndroidEmulator) device).getAvdName());
         } else {
           deviceInfo.put(SelendroidCapabilities.EMULATOR, false);
-          deviceInfo.put("model", ((DefaultHardwareDevice) device).getModel());
+          deviceInfo.put(SelendroidCapabilities.MODEL, ((DefaultHardwareDevice) device).getModel());
           deviceInfo.put(SelendroidCapabilities.SERIAL,((DefaultHardwareDevice) device).getSerial());
         }
         deviceInfo.put(SelendroidCapabilities.API_TARGET_TYPE,

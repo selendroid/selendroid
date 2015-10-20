@@ -115,12 +115,7 @@ public class SelfRegisteringRemote {
   }
 
   private JSONObject getDeviceConfig(final JSONObject device, final JSONObject supportedApp) throws JSONException {
-    JSONObject capa = new JSONObject();
-    capa.put(SelendroidCapabilities.SCREEN_SIZE,
-            device.getString(SelendroidCapabilities.SCREEN_SIZE));
-    String version = device.getString(SelendroidCapabilities.PLATFORM_VERSION);
-    capa.put(SelendroidCapabilities.PLATFORM_VERSION, version);
-    capa.put(SelendroidCapabilities.EMULATOR, device.getString(SelendroidCapabilities.EMULATOR));
+    JSONObject capa = new JSONObject(device, JSONObject.getNames(device));
     // For each device, register as "android" for WebView tests and also selendroid if an aut is specified
     if (ANDROIDDRIVER_APP.equals(supportedApp.get(APP_BASE_PACKAGE))) {
       //it's possible the user does not want to register the device as capable to recieve webview tests
@@ -133,7 +128,7 @@ public class SelfRegisteringRemote {
     }
     capa.put(CapabilityType.PLATFORM, "ANDROID");
     capa.put(SelendroidCapabilities.PLATFORM_NAME, "android");
-    capa.put(CapabilityType.VERSION, version);
+    capa.put(CapabilityType.VERSION, device.getString(SelendroidCapabilities.PLATFORM_VERSION));
     capa.put("maxInstances", config.getMaxInstances());
     return capa;
   }
