@@ -551,16 +551,23 @@ public class AndroidNativeElement implements AndroidElement {
             + "' was not found.");
       }
     }
-    try {
-      Object result = method.invoke(getView());
-      return String.valueOf(result);
-    } catch (IllegalArgumentException e) {
-      throw new SelendroidException(e);
-    } catch (IllegalAccessException e) {
-      throw new SelendroidException(e);
-    } catch (InvocationTargetException e) {
-      throw new SelendroidException(e);
+    final Object[] result = new Object[1];
+    final Exception[] exception = new Exception[1];
+    final Method m = method;
+    instrumentation.runOnMainSync(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          result[0] = m.invoke(getView());
+        } catch(Exception e) {
+          exception[0] = e;
+        }
+      }
+    });
+    if (exception.length == 1 && exception[0] != null) {
+      throw new SelendroidException(exception[0]);
     }
+    return String.valueOf(result[0]);
   }
 
   private String capitalizeFirstLetter(String name) {
