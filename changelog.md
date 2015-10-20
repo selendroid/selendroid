@@ -1,5 +1,16 @@
-0.17.0-SNAPSHOT (under current development)
+0.18.0-SNAPSHOT (under current development)
 ---
+
+
+0.17.0
+---
+- wrapping webviews in a better way, to handle hybrid apps that override methods on the webview(s)
+- native element getAttribute now run on UI Thread, to access certain attributes on a WebView (like getScale)
+- marshmallow support
+- add factory to allow custom drivers
+- merge device config into node capability for grid auto re-register
+- kill orphaned processes after test has finished
+- update selenium maven dependency
 
 0.16.0
 ---
