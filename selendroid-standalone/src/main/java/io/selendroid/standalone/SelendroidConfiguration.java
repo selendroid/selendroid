@@ -90,15 +90,41 @@ public class SelendroidConfiguration {
              description = "If true, adb will not be terminated on server shutdown.")
   private boolean keepAdbAlive = false;
 
-  @Parameter(names = "-maxSession", description = "Maximum number of sessions that a grid hub can assign at a time.")
-  private int maxSession = 5;
+  @Parameter(names = "-maxSession", description = "Maximum number of sessions that a grid hub can assign at a time. " +
+          "Default 0, use number of supported devices")
+  private int maxSession = 0;
 
   @Parameter(names = "-maxInstances", description = "Maximum number of instances that a grid hub can use at a time.")
-  private int maxInstances = 5;
+  private int maxInstances = 1;
 
   @Parameter(names = "-registerCycle", description = "How often in ms the node will try to register itself again" +
           ".Allow to restart the hub without having to restart the nodes. 0 to disable auto register. Default 0.")
   private long registerCycle = 0;
+
+  @Parameter(names = "-cleanupCycle",
+          description = "How often in ms a proxy will check for timed out thread. Default 5000")
+  private long cleanupCycle = 5000;
+
+  @Parameter(names = "-timeout", description = "The timeout in seconds before the hub automatically ends a test " +
+          "that hasn't had any activity in the last X seconds. The browser will be released for another test to use." +
+          "This typically takes care of the client crashes. Default 300000.")
+  private long timeout = 300000;
+
+  @Parameter(names = "-nodePolling", description = "Interval in ms between alive checks of node how often the hub checks " +
+          "if the node is still alive. Default 5000")
+  private long nodePolling  = 5000;
+
+  @Parameter(names = "-unregisterIfStillDownAfter", description = "If the node remains down for more than " +
+          "unregisterIfStillDownAfter ms, it will disappear from the hub. Default is 1min.")
+  private long unregisterIfStillDownAfter = 60000;
+
+  @Parameter(names = "-downPollingLimit",
+          description = "node is marked as down after downPollingLimit alive checks. Default 2.")
+  private long downPollingLimit = 2;
+
+  @Parameter(names = "-nodeStatusCheckTimeout", description = "Connection and socket timeout which is used for " +
+          "node alive check. Default 0 and for connection timeout - 120sec, for socket timeout - 3hours")
+  private long nodeStatusCheckTimeout = 0;
 
   @Parameter(names = "-noWebviewApp",
              description = "If you don't want selendroid to auto-extract and have 'AndroidDriver' (webview only app) available.")
@@ -394,4 +420,51 @@ public class SelendroidConfiguration {
     this.registerCycle = registerCycle;
   }
 
+  public long getCleanupCycle() {
+    return cleanupCycle;
+  }
+
+  public void setCleanupCycle(long cleanupCycle) {
+    this.cleanupCycle = cleanupCycle;
+  }
+
+  public long getTimeout() {
+    return timeout;
+  }
+
+  public void setTimeout(long timeout) {
+    this.timeout = timeout;
+  }
+
+  public long getNodePolling() {
+    return nodePolling;
+  }
+
+  public void setNodePolling(long nodePolling) {
+    this.nodePolling = nodePolling;
+  }
+
+  public long getUnregisterIfStillDownAfter() {
+    return unregisterIfStillDownAfter;
+  }
+
+  public void setUnregisterIfStillDownAfter(long unregisterIfStillDownAfter) {
+    this.unregisterIfStillDownAfter = unregisterIfStillDownAfter;
+  }
+
+  public long getDownPollingLimit() {
+    return downPollingLimit;
+  }
+
+  public void setDownPollingLimit(long downPollingLimit) {
+    this.downPollingLimit = downPollingLimit;
+  }
+
+  public long getNodeStatusCheckTimeout() {
+    return nodeStatusCheckTimeout;
+  }
+
+  public void setNodeStatusCheckTimeout(long nodeStatusCheckTimeout) {
+    this.nodeStatusCheckTimeout = nodeStatusCheckTimeout;
+  }
 }
