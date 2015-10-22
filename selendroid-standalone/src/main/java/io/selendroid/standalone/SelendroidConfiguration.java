@@ -90,7 +90,8 @@ public class SelendroidConfiguration {
              description = "If true, adb will not be terminated on server shutdown.")
   private boolean keepAdbAlive = false;
 
-  @Parameter(names = "-maxSession", description = "Maximum number of sessions that a grid hub can assign at a time.")
+  @Parameter(names = "-maxSession", description = "Maximum number of sessions that a grid hub can assign at a time. " +
+          "Default 0, use number of supported devices")
   private int maxSession = 0;
 
   @Parameter(names = "-maxInstances", description = "Maximum number of instances that a grid hub can use at a time.")
