@@ -1,0 +1,59 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+dependencies {
+    compile project(':selendroid-common')
+    compile project(':selendroid-server-common')
+    compile 'org.apache.httpcomponents:httpclient:4.3.4'
+    compile rootProject.ext.json
+    compile 'commons-io:commons-io:2.2'
+    compile 'org.apache.commons:commons-exec:1.1'
+    compile 'org.apache.commons:commons-compress:1.5'
+    compile 'com.beust:jcommander:1.30'
+    compile 'com.android.tools.ddms:ddmlib:23.0.1'
+    compile 'com.google.guava:guava:17.0'
+    compile 'org.apache.commons:commons-lang3:3.1'
+    // https://bintray.com/bintray/jcenter/org.seleniumhq.selenium%3Aselenium-java/2.48.2/view#files
+    compile("org.seleniumhq.selenium:selenium-java:$rootProject.ext.seleniumVersion") {
+        exclude(module: 'selenium-chrome-driver')
+        exclude(module: 'selenium-edge-driver')
+        exclude(module: 'selenium-htmlunit-driver')
+        exclude(module: 'selenium-firefox-driver')
+        exclude(module: 'selenium-ie-driver')
+        exclude(module: 'selenium-safari-driver')
+        exclude(module: 'webbit')
+        exclude(module: 'selenium-leg-rc')
+    }
+    testCompile rootProject.ext.junit
+    testCompile 'org.mockito:mockito-core:1.9.5'
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
+}
+
+mainClassName = 'io.selendroid.standalone.SelendroidLauncher'
+
+jar {
+    archiveName = 'selendroid-standalone-'
+    archiveName += version
+    archiveName += '-with-dependencies.jar'
+
+    // Version from manifest attributes will be retrieved while building selendroid-server apk
+    manifest {
+        attributes('Main-Class': "$mainClassName", 'version': version)
+    }
+
+    into('prebuild') {
+        from {
+            ['../selendroid-server/build/outputs/apk/selendroid-server-' + version + '.apk',
+             '../android-driver/build/outputs/apk/android-driver-app-' + version + '.apk']
+        }
+    }
+
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    from {
+        ['./AndroidManifestTemplate.xml',
+         '../README.md']
+    }
+}

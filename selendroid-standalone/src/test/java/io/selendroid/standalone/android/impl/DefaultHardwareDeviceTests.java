@@ -15,23 +15,22 @@ package io.selendroid.standalone.android.impl;
 
 import com.android.ddmlib.IDevice;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.http.HttpResponse;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.File;
+
 import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.standalone.android.AndroidApp;
 import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.AndroidSdk;
-import io.selendroid.standalone.android.impl.DefaultAndroidApp;
-import io.selendroid.standalone.android.impl.DefaultHardwareDevice;
 import io.selendroid.standalone.io.ShellCommand;
 import io.selendroid.standalone.server.util.HttpClientUtil;
 import io.selendroid.standalone.util.SelendroidAssert;
-
-import org.apache.commons.exec.CommandLine;
-import org.apache.http.HttpResponse;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.File;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,6 +60,7 @@ public class DefaultHardwareDeviceTests {
     Assert.assertFalse(installedAPKs.contains(AUT_PACKAGE));
   }
 
+  @Ignore("Fail. Requires an active emulator to install the selendroid apk.")
   @Test
   public void testShouldBeAbleToStartSelendroid() throws Exception {
     IDevice device = mock(IDevice.class);
