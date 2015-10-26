@@ -1,6 +1,6 @@
 0.18.0-SNAPSHOT (under current development)
 ---
-
+- uninstall before installing, since adb install -r doesn't appear to work correctly all the time [#994](../../issues/994)
 
 0.17.0
 ---

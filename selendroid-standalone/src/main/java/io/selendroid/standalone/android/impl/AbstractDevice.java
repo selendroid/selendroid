@@ -127,8 +127,13 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public void install(AndroidApp app) throws AndroidSdkException {
-    // Reinstall if already installed, Install otherwise
-    CommandLine command = adbCommand("install", "-r", app.getAbsolutePath());
+    // Uninstall if already installed
+    if (isInstalled(app)) {
+      uninstall(app);
+    }
+    // -r: replace existing application
+    // -d: allow version code downgrade
+    CommandLine command = adbCommand("install", "-rd", app.getAbsolutePath());
 
     String out = executeCommandQuietly(command, COMMAND_TIMEOUT * 6);
     try {
