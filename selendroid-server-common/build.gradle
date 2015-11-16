@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+sourceCompatibility = rootProject.ext.sourceCompatibilityVersion
+targetCompatibility = rootProject.ext.targetCompatibilityVersion
+
+dependencies {
+    compile rootProject.ext.json
+    compile 'io.netty:netty-all:4.0.21.Final'
+    testCompile rootProject.ext.junit
+}

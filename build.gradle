@@ -1,0 +1,24 @@
+allprojects {
+    repositories {
+        jcenter()
+    }
+
+    version = '0.18.0-SNAPSHOT'
+
+    ext {
+        // https://bintray.com/android/android-tools/com.android.tools.build.gradle/view
+        androidBuildToolsGradle = 'com.android.tools.build:gradle:1.4.0-beta6'
+        // https://bintray.com/bintray/jcenter/com.jakewharton.sdkmanager:gradle-plugin
+        sdkManager = 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
+        // https://bintray.com/bintray/jcenter/org.json%3Ajson/20090211/view
+        json = 'org.json:json:20090211'
+        seleniumVersion = '2.48.2'
+        compileSdkVersion = 23
+        buildToolsVersion = '23.0.0'
+        minSdkVersion = 10
+        targetSdkVersion = 16
+        sourceCompatibilityVersion = 1.7
+        targetCompatibilityVersion = 1.7
+        junit = 'junit:junit:4.12'
+    }
+}

@@ -13,8 +13,6 @@
  */
 package io.selendroid.standalone.android.impl;
 
-import io.selendroid.standalone.android.impl.AbstractDevice;
-
 import org.apache.commons.exec.CommandLine;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -24,7 +22,10 @@ import org.junit.Test;
 import java.util.regex.Pattern;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AbstractDeviceTest {
   private static final Matcher<CommandLine> matchesCmdLine(final String cmdString) {
@@ -50,10 +51,10 @@ public class AbstractDeviceTest {
     when(device.getExternalStoragePath()).thenReturn("/storage");
     when(device.getCrashLog()).thenCallRealMethod();
     when(
-        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)? shell ls /storage/$"))))  // The trailing '/' is key
+        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)?, shell, ls, /storage/]$"))))  // The trailing '/' is key
         .thenReturn("some_file\nappcrash.log\nanother_file");
     when(
-        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)? shell cat /storage/appcrash\\.log$"))))
+        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)?, shell, cat, /storage/appcrash\\.log]$"))))
         .thenReturn("crash log contents");
 
     assertEquals("crash log contents", device.getCrashLog());
@@ -72,7 +73,7 @@ public class AbstractDeviceTest {
         "1 zygote\n" +
         "23 /system/bin/mediaserver";
     when(
-        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)? shell ps$"))))
+        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)?, shell, ps]$"))))
             .thenReturn(psOutput);
     String expected =
         "PID NAME\n" +

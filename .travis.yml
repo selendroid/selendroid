@@ -1,7 +1,7 @@
 language: android
 android:
   components:
-    - build-tools-19.0.3
+    - build-tools-23.0.2
     - extra-google-m2repository
     - extra-android-m2repository
     - android-16
@@ -23,16 +23,28 @@ branches:
   only:
     - master
 
-before_install: 
+before_install:
+  # Comment gradle build command to use maven and vice versa
+  - wget http://services.gradle.org/distributions/gradle-2.7-bin.zip
+  - unzip -qq gradle-2.7-bin.zip
+  - export GRADLE_HOME=$PWD/gradle-2.7
+  - export PATH=$GRADLE_HOME/bin:$PATH
   - "git clone -b travis `git config --get remote.origin.url` target/travis"
-  - "mvn --version"
-  - "cd third-party/"
-  - "./mvnInstall.sh"
-  - "cd ../"
+
+  # Maven
+  # - "mvn --version"
+  # - "cd third-party/"
+  # - "./mvnInstall.sh"
+  # - "cd ../"
+
+before_script:
+  - echo no | android create avd --force -n l10n -t android-16 --abi armeabi-v7a
 
 script: 
-  - "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && mvn clean deploy --settings target/travis/settings.xml || mvn clean verify --settings target/travis/settings.xml"
+  - "gradle clean build"
 
+  # Maven
+  #  - "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && mvn clean deploy --settings target/travis/settings.xml || mvn clean verify --settings target/travis/settings.xml"
 
 env:
   global:

@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+dependencies {
+    compile rootProject.ext.json
+    compile rootProject.ext.junit
+    // https://bintray.com/bintray/jcenter/org.seleniumhq.selenium%3Aselenium-java/2.48.2/view#files
+    compile("org.seleniumhq.selenium:selenium-java:$rootProject.ext.seleniumVersion") {
+        exclude(module: 'selenium-chrome-driver')
+        exclude(module: 'selenium-edge-driver')
+        exclude(module: 'selenium-htmlunit-driver')
+        exclude(module: 'selenium-firefox-driver')
+        exclude(module: 'selenium-ie-driver')
+        exclude(module: 'selenium-safari-driver')
+        exclude(module: 'webbit')
+        exclude(module: 'selenium-leg-rc')
+    }
+}
