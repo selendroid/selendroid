@@ -193,6 +193,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return this;
   }
 
+  public void setAutomationName(String automationName) {
+        setCapability(AUTOMATION_NAME, automationName);
+      }
+
   /**
    * Adds a class to run on app startup. Class names are stored as a string separated by commas.
    */

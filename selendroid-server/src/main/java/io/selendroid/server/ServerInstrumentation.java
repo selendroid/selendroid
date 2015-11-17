@@ -56,6 +56,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   private AndroidWait androidWait = new AndroidWait();
   private PowerManager.WakeLock wakeLock;
   private int serverPort = 8080;
+  private static String automationName = "selendroid";
 
   /**
    * Arguments this instrumentation was started with.
@@ -135,6 +136,9 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     } else {
       extensionLoader = new ExtensionLoader(context);
     }
+    if (args.getAutomationName() != null) {
+           automationName = args.getAutomationName();
+     }
 
     // Queue bootstrapping and starting of the main activity on the main thread.
     mainThreadHandler.post(new Runnable() {
@@ -305,7 +309,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     public HttpdThread(ServerInstrumentation instrumentation, int serverPort) {
       this.instrumentation = instrumentation;
       // Create the server but absolutely do not start it here
-      server = new AndroidServer(this.instrumentation, serverPort);
+      server = new AndroidServer(this.instrumentation, serverPort ,automationName);
     }
 
     @Override
