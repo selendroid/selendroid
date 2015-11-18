@@ -1,0 +1,7 @@
+ext.selArtifactId  = 'selendroid'
+ext.selGroup = 'io.selendroid'
+ext.selVersion = '0.18.0-SNAPSHOT'
+ext.selWebsite = 'https://github.com/selendroid/selendroid'
+ext.selTracker = 'https://github.com/selendroid/selendroid/issues'
+ext.selGit = 'https://github.com/selendroid/selendroid.git'
+ext.selDescription = 'Android UI testing framework'

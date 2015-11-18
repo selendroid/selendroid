@@ -1,0 +1,9 @@
+// Find latest version at https://bintray.com/bintray/jcenter/org.jacoco%3Ajacoco/view
+android {
+    // Use gradle createDebugCoverageReport or connectedCheck to generate jacoco coverage reports
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+    }
+}
