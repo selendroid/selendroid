@@ -29,6 +29,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -94,7 +95,7 @@ public class SelendroidServerBuilder {
   /* package */void init(AndroidApp aut) throws IOException, ShellCommandException {
     applicationUnderTest = aut;
     File customizedServer = File.createTempFile("selendroid-server", ".apk");
-    if(serverConfiguration != null && serverConfiguration.isDeleteTmpFiles()) {
+    if (deleteTmpFiles()) {
       customizedServer.deleteOnExit(); //Deletes temporary files created
     }
     log.info("Creating customized Selendroid-server: " + customizedServer.getAbsolutePath());
@@ -112,11 +113,11 @@ public class SelendroidServerBuilder {
     init(aut);
     cleanUpPrebuildServer();
     File selendroidServer = createAndAddCustomizedAndroidManifestToSelendroidServer();
-    File outputFile =
-      new File(FileUtils.getTempDirectory(), String.format("selendroid-server-%s-%s.apk",
-                                                             applicationUnderTest.getBasePackage(),
-                                                             getJarVersionNumber()));
-    if(serverConfiguration != null && serverConfiguration.isDeleteTmpFiles()) {
+    File outputFile = File.createTempFile(
+            String.format("selendroid-server-%s-%s", applicationUnderTest.getBasePackage(), getJarVersionNumber()),
+            ".apk"
+    );
+    if (deleteTmpFiles()) {
       outputFile.deleteOnExit(); //Deletes file when done
     }
     return signTestServer(selendroidServer, outputFile);
@@ -136,7 +137,7 @@ public class SelendroidServerBuilder {
     }
   }
 
-  public AndroidApp resignApp(File appFile) throws ShellCommandException, AndroidSdkException {
+  public AndroidApp resignApp(File appFile) throws ShellCommandException, AndroidSdkException, IOException {
     AndroidApp app = new DefaultAndroidApp(appFile);
     // Delete existing certificates
     deleteFileFromAppSilently(app, "META-INF/MANIFEST.MF");
@@ -147,8 +148,8 @@ public class SelendroidServerBuilder {
     deleteFileFromAppSilently(app, "META-INF/NDKEYSTO.SF");
     deleteFileFromAppSilently(app, "META-INF/NDKEYSTO.RSA");
 
-    File outputFile = new File(appFile.getParentFile(), "resigned-" + appFile.getName());
-    if(serverConfiguration != null && serverConfiguration.isDeleteTmpFiles()) {
+    File outputFile = File.createTempFile("resigned-", appFile.getName());
+    if (deleteTmpFiles()) {
       outputFile.deleteOnExit();
     }
     return signTestServer(appFile, outputFile);
@@ -158,15 +159,16 @@ public class SelendroidServerBuilder {
                                                                                      ShellCommandException,
                                                                                      AndroidSdkException {
     String targetPackageName = applicationUnderTest.getBasePackage();
-    File tempdir =
-        new File(FileUtils.getTempDirectoryPath() + File.separatorChar + targetPackageName
-                 + System.currentTimeMillis());
 
-    if (!tempdir.exists()) {
-      tempdir.mkdirs();
+    File tmpDir = Files.createTempDir();
+    if (deleteTmpFiles()) {
+      tmpDir.deleteOnExit();
     }
 
-    File customizedManifest = new File(tempdir, "AndroidManifest.xml");
+    File customizedManifest = new File(tmpDir, "AndroidManifest.xml");
+    if (deleteTmpFiles()) {
+      customizedManifest.deleteOnExit();
+    }
     log.info("Adding target package '" + targetPackageName + "' to "
              + customizedManifest.getAbsolutePath());
 
@@ -204,22 +206,29 @@ public class SelendroidServerBuilder {
     // adding the xml to an empty apk
     CommandLine createManifestApk = new CommandLine(AndroidSdk.aapt());
 
+    File manifestApkFile = File.createTempFile("manifest", ".apk");
+    if (deleteTmpFiles()) {
+      manifestApkFile.deleteOnExit();
+    }
+
     createManifestApk.addArgument("package", false);
     createManifestApk.addArgument("-M", false);
     createManifestApk.addArgument(customizedManifest.getAbsolutePath(), false);
     createManifestApk.addArgument("-I", false);
     createManifestApk.addArgument(AndroidSdk.androidJar(), false);
     createManifestApk.addArgument("-F", false);
-    createManifestApk.addArgument(tempdir.getAbsolutePath() + File.separatorChar + "manifest.apk",
-                                  false);
+    createManifestApk.addArgument(manifestApkFile.getAbsolutePath(), false);
     createManifestApk.addArgument("-f", false);
     log.info(ShellCommand.exec(createManifestApk, 20000L));
 
     ZipFile manifestApk =
-        new ZipFile(new File(tempdir.getAbsolutePath() + File.separatorChar + "manifest.apk"));
+        new ZipFile(manifestApkFile);
     ZipArchiveEntry binaryManifestXml = manifestApk.getEntry("AndroidManifest.xml");
 
-    File finalSelendroidServerFile = new File(tempdir.getAbsolutePath() + "selendroid-server.apk");
+    File finalSelendroidServerFile = File.createTempFile("selendroid-server", ".apk");
+    if (deleteTmpFiles()) {
+      finalSelendroidServerFile.deleteOnExit();
+    }
 
     ZipArchiveOutputStream finalSelendroidServer =
         new ZipArchiveOutputStream(finalSelendroidServerFile);
@@ -435,5 +444,10 @@ public class SelendroidServerBuilder {
           "Error getting signature algorithm for jarsigner. Defaulting to %s. Reason: %s", sigAlg, e.getMessage()));
     }
     return sigAlg;
+  }
+
+  private boolean deleteTmpFiles() {
+    return serverConfiguration != null
+            && serverConfiguration.isDeleteTmpFiles();
   }
 }

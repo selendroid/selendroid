@@ -119,7 +119,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     AndroidApp app = null;
     try {
       app = selendroidApkBuilder.resignApp(file);
-    } catch (ShellCommandException e) {
+    } catch (Exception e) {
       throw new SessionNotCreatedException(
           "An error occurred while resigning the app '" + file.getName()
               + "'. ", e);
