@@ -86,13 +86,14 @@ public class SelendroidServerBuilderTest {
     SelendroidServerBuilder builder = getDefaultBuilder();
     File androidApp = File.createTempFile("testapp", ".apk");
     FileUtils.copyFile(new File(APK_FILE), androidApp);
-    AndroidApp app = builder.resignApp(androidApp);
-    Assert.assertEquals("resigned-" + androidApp.getName(),
-        new File(app.getAbsolutePath()).getName());
+
+    AndroidApp resignedApp = builder.resignApp(androidApp);
+    assertResignedApp(resignedApp, androidApp);
+
     // Verify that apk is signed
     CommandLine cmd = new CommandLine(AndroidSdk.aapt());
     cmd.addArgument("list", false);
-    cmd.addArgument(app.getAbsolutePath(), false);
+    cmd.addArgument(resignedApp.getAbsolutePath(), false);
 
     String output = ShellCommand.exec(cmd);
 
@@ -109,13 +110,14 @@ public class SelendroidServerBuilderTest {
     File androidApp = File.createTempFile("testapp", ".apk");
     System.out.println("App name: " + androidApp.getName());
     FileUtils.copyFile(new File(APK_FILE), androidApp);
-    AndroidApp app = builder.resignApp(androidApp);
-    Assert.assertEquals("resigned-" + androidApp.getName(),
-        new File(app.getAbsolutePath()).getName());
+
+    AndroidApp resignedApp = builder.resignApp(androidApp);
+    assertResignedApp(resignedApp, androidApp);
+
     // Verify that apk is signed
     CommandLine cmd = new CommandLine(AndroidSdk.aapt());
     cmd.addArgument("list", false);
-    cmd.addArgument(app.getAbsolutePath(), false);
+    cmd.addArgument(resignedApp.getAbsolutePath(), false);
 
     String output = ShellCommand.exec(cmd);
     String sigFileName = selendroidConfiguration.getKeystoreAlias().toUpperCase();
@@ -190,6 +192,12 @@ public class SelendroidServerBuilderTest {
     if (!output.contains(file)) {
       Assert.fail("Output does not contain the file: " + file);
     }
+  }
+
+  private static void assertResignedApp(AndroidApp resignedApp, File originalApp) {
+    String resignedName =  new File(resignedApp.getAbsolutePath()).getName();
+    Assert.assertTrue(resignedName.startsWith("resigned-"));
+    Assert.assertTrue(resignedName.endsWith(originalApp.getName()));
   }
 
   public static SelendroidServerBuilder getDefaultBuilder() {
