@@ -23,5 +23,6 @@ selendroid.iws
 gradle/
 gradlew
 gradlew.bat
+local.properties
 
 build/
