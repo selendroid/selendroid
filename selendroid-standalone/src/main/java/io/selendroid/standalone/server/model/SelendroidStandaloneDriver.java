@@ -245,7 +245,10 @@ public class SelendroidStandaloneDriver implements ServerDetails {
           device.clearUserData(app);
         }
 
-        int port = getNextSelendroidServerPort();
+        int port = serverConfiguration.isReuseSelendroidServerPort()
+            ? serverConfiguration.getSelendroidServerPort()
+            : getNextSelendroidServerPort();
+
         boolean serverInstalled = device.isInstalled("io.selendroid." + app.getBasePackage());
         if (!serverInstalled || serverConfiguration.isForceReinstall()) {
           try {
