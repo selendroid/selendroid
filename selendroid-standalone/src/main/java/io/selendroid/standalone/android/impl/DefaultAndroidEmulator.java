@@ -13,7 +13,6 @@
  */
 package io.selendroid.standalone.android.impl;
 
-import com.android.ddmlib.IDevice;
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableMap;
 
@@ -37,13 +36,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmulator {
-  private static final String EMULATOR_SERIAL_PREFIX = "emulator-";
+public class DefaultAndroidEmulator extends AbstractAndroidDeviceEmulator {
+
   private static final Logger log = Logger.getLogger(DefaultAndroidEmulator.class.getName());
   public static final String ANDROID_EMULATOR_HARDWARE_CONFIG = "hardware-qemu.ini";
   public static final String FILE_LOCKING_SUFIX = ".lock";
@@ -60,11 +58,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       .put("WXGA800", new Dimension(1280, 800))
       .build();
 
-  private Dimension screenSize;
-  private DeviceTargetPlatform targetPlatform;
-  private String avdName;
-  private File avdRootFolder;
-  private Locale locale = null;
   private boolean wasStartedBySelendroid;
 
   protected DefaultAndroidEmulator() {
@@ -73,7 +66,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   
   // this contructor is used only for test purposes in setting the capabilities information. Change to public if there
   // is ever a desire to construct one of these besides reading the avdOutput
-  DefaultAndroidEmulator(String avdName, String abi, Dimension screenSize, String target,
+  public DefaultAndroidEmulator(String avdName, String abi, Dimension screenSize, String target,
                                 String model, File avdFilePath, String apiTargetType) {
     this.avdName = avdName;
     this.model = model;
@@ -111,18 +104,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     }
   }
 
-  public File getAvdRootFolder() {
-    return avdRootFolder;
-  }
-
-  public Dimension getScreenSize() {
-    return screenSize;
-  }
-
-  public DeviceTargetPlatform getTargetPlatform() {
-    return targetPlatform;
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -134,10 +115,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         new File(FileUtils.getUserDirectory(), File.separator + ".android" + File.separator + "avd"
             + File.separator + getAvdName() + ".avd");
     return emulatorFolder.exists();
-  }
-
-  public String getAvdName() {
-    return avdName;
   }
 
   public static List<AndroidEmulator> listAvailableAvds() throws AndroidDeviceException {
@@ -171,7 +148,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     return avds;
   }
 
-  public static Dimension getScreenSizeFromSkin(String skinName) {
+  private static Dimension getScreenSizeFromSkin(String skinName) {
     final Pattern dimensionSkinPattern = Pattern.compile("([0-9]+)x([0-9]+)");
     Matcher matcher = dimensionSkinPattern.matcher(skinName);
     if (matcher.matches()) {
@@ -190,15 +167,17 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     Map<String, Integer> mapping = new HashMap<String, Integer>();
     CommandLine command = new CommandLine(AndroidSdk.adb());
     command.addArgument("devices");
-    Scanner scanner;
+    List<String> allLines = Lists.newArrayList();
+
     try {
-      scanner = new Scanner(ShellCommand.exec(command));
+      allLines = getADBDevicesOutput();
     } catch (ShellCommandException e) {
-      return mapping;
+      log.warning("Shell exception when trying to get adb devices");
+      log.warning(e.getMessage());
     }
-    while (scanner.hasNextLine()) {
-      String line = scanner.nextLine();
-      Pattern pattern = Pattern.compile("emulator-\\d\\d\\d\\d");
+
+    for (String line: allLines) {
+      Pattern pattern = Pattern.compile("emulator-\\d+");
       Matcher matcher = pattern.matcher(line);
       if (matcher.find()) {
         String serial = matcher.group(0);
@@ -219,34 +198,15 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
         }
       }
     }
-    scanner.close();
 
     return mapping;
   }
 
   @Override
   public boolean isEmulatorStarted() {
-    File lockedEmulatorHardwareConfig =
-        new File(avdRootFolder, ANDROID_EMULATOR_HARDWARE_CONFIG + FILE_LOCKING_SUFIX);
-    return lockedEmulatorHardwareConfig.exists();
-  }
-
-  @Override
-  public String toString() {
-    return "AndroidEmulator [screenSize=" + screenSize + ", targetPlatform=" + targetPlatform
-        + ", serial=" + serial + ", avdName=" + avdName + ", model=" + model + ", apiTargetType=" + apiTargetType + "]";
-  }
-
-  public void setSerial(int port) {
-    this.port = port;
-    serial = EMULATOR_SERIAL_PREFIX + port;
-  }
-
-  public Integer getPort() {
-    if (isSerialConfigured()) {
-      return Integer.parseInt(serial.replace(EMULATOR_SERIAL_PREFIX, ""));
-    }
-    return null;
+      File lockedEmulatorHardwareConfig =
+              new File(getAvdRootFolder(), ANDROID_EMULATOR_HARDWARE_CONFIG + FILE_LOCKING_SUFIX);
+      return lockedEmulatorHardwareConfig.exists();
   }
 
   @Override
@@ -284,7 +244,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
     cmd.addArgument("-no-snapshot-save", false);
     cmd.addArgument("-avd", false);
-    cmd.addArgument(avdName, false);
+    cmd.addArgument(getAvdName(), false);
     cmd.addArgument("-port", false);
     cmd.addArgument(String.valueOf(emulatorPort), false);
     if (locale != null) {
@@ -368,33 +328,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     setWasStartedBySelendroid(true);
   }
 
-  public void unlockScreen() throws AndroidDeviceException {
-    // Send menu key event
-    CommandLine menuKeyCommand = getAdbCommand();
-    menuKeyCommand.addArgument("shell", false);
-    menuKeyCommand.addArgument("input", false);
-    menuKeyCommand.addArgument("keyevent", false);
-    menuKeyCommand.addArgument("82", false);
-
-    try {
-      ShellCommand.exec(menuKeyCommand, 20000);
-    } catch (ShellCommandException e) {
-      throw new AndroidDeviceException(e);
-    }
-
-    // Send back key event
-    CommandLine backKeyCommand = getAdbCommand();
-    backKeyCommand.addArgument("shell", false);
-    backKeyCommand.addArgument("input", false);
-    backKeyCommand.addArgument("keyevent", false);
-    backKeyCommand.addArgument("4", false);
-    try {
-      ShellCommand.exec(backKeyCommand, 20000);
-    } catch (ShellCommandException e) {
-      throw new AndroidDeviceException(e);
-    }
-  }
-
   private void waitForLauncherToComplete() throws AndroidDeviceException {
     CommandLine processListCommand = getAdbCommand();
     processListCommand.addArgument("shell", false);
@@ -416,18 +349,9 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     } while (processList == null || !processList.contains("S com.android.launcher"));
   }
 
-  private CommandLine getAdbCommand() {
-    CommandLine processListCommand = new CommandLine(AndroidSdk.adb());
-    if (isSerialConfigured()) {
-      processListCommand.addArgument("-s", false);
-      processListCommand.addArgument(serial, false);
-    }
-    return processListCommand;
-  }
-
   private void allAppsGridView() throws AndroidDeviceException {
-    int x = screenSize.width;
-    int y = screenSize.height;
+    int x = getScreenSize().width;
+    int y = getScreenSize().height;
     if (x > y) {
       y = y / 2;
       x = x - 30;
@@ -502,21 +426,13 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     }
   }
 
-  @Override
-  public Locale getLocale() {
-    return locale;
-  }
-
-  @Override
-  public void setIDevice(IDevice iDevice) {
-    super.device = iDevice;
-  }
-
-  public String getSerial() {
-    return serial;
-  }
-
   public void setWasStartedBySelendroid(boolean wasStartedBySelendroid) {
     this.wasStartedBySelendroid = wasStartedBySelendroid;
+  }
+
+  @Override
+  public String toString() {
+    return "AndroidEmulator [screenSize=" + getScreenSize() + ", targetPlatform=" + getTargetPlatform()
+        + ", serial=" + getSerial() + ", avdName=" + getAvdName() + ", model=" + model + ", apiTargetType=" + apiTargetType + "]";
   }
 }

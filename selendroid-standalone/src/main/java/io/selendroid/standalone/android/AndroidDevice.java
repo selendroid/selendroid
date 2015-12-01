@@ -43,7 +43,8 @@ public interface AndroidDevice {
 
   public void clearUserData(AndroidApp app) throws AndroidSdkException;
 
-  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities capabilities) throws AndroidSdkException;
+  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities capabilities,
+                              String hostname) throws AndroidSdkException;
 
   public boolean isSelendroidRunning();
 
@@ -72,6 +73,8 @@ public interface AndroidDevice {
   public void setVerbose();
 
   public String getSerial();
+
+  public String getHostname();
 
   public void inputKeyevent(int value);
 

@@ -77,7 +77,7 @@ public class DefaultHardwareDeviceTests {
     Assert.assertTrue(installedAPKs.contains(AUT_PACKAGE));
 
     // start selendroid
-    emulator.startSelendroid(aut, port, new SelendroidCapabilities());
+    emulator.startSelendroid(aut, port, new SelendroidCapabilities(), "localhost");
     String url = "http://localhost:" + port + "/wd/hub/status";
     HttpResponse response = HttpClientUtil.executeRequest(url, HttpMethod.GET);
     SelendroidAssert.assertResponseIsOk(response);

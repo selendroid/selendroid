@@ -91,7 +91,7 @@ public class MultipleWebviewHandlingTests extends BaseAndroidTest {
 
     // TODO: do not hardcode the client port
     HttpClientUtil.parseJsonResponse(HttpClientUtil.executeRequestWithPayload(uri, 4444,
-        HttpMethod.POST, "{'name':'WEBVIEW_0'}"));
+        HttpMethod.POST, "{'name':'WEBVIEW_0'}", "localhost"));
     String getContextUri =
         "http://localhost:4444/wd/hub/session/" + driver.getSessionId() + "/context";
 

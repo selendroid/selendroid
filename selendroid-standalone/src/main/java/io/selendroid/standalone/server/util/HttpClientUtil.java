@@ -41,13 +41,24 @@ public class HttpClientUtil {
   }
 
   public static HttpResponse executeRequestWithPayload(String uri, int port, HttpMethod method,
-      String payload) throws Exception {
+                                                       String payload) throws Exception {
+    return executeRequestWithPayload(uri, port, method, payload, "localhost");
+  }
+
+  public static HttpResponse executeRequestWithPayload(String uri, int port, HttpMethod method,
+                                                       String payload) throws Exception {
+    return executeRequestWithPayload(uri, port, method, payload, "localhost");
+    }
+
+  public static HttpResponse executeRequestWithPayload(String uri, int port, HttpMethod method,
+      String payload, String hostname) throws Exception {
     BasicHttpEntityEnclosingRequest request =
         new BasicHttpEntityEnclosingRequest(method.name(), uri);
     request.setEntity(new StringEntity(payload, "UTF-8"));
 
-    return getHttpClient().execute(new HttpHost("localhost", port), request);
+    return getHttpClient().execute(new HttpHost(hostname, port), request);
   }
+
 
   public static JSONObject parseJsonResponse(HttpResponse response) throws Exception {
     String r = IOUtils.toString(response.getEntity().getContent(), "UTF-8");

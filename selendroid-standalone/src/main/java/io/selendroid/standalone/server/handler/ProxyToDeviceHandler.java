@@ -73,7 +73,7 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
                   "This happens if a hardware device was disconnected but a " +
                   "test session was still active on the device."));
     }
-    String url = "http://localhost:" + session.getSelendroidServerPort() + request.uri();
+    String url = "http://" + session.getHostname() + ":" + session.getSelendroidServerPort() + request.uri();
 
     String method = request.method();
 
@@ -167,7 +167,7 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
       JSONObject payload = getPayload(request);
       log.fine("Proxy POST to the device: " + url + ", payload:\n" + payload);
       r = HttpClientUtil.executeRequestWithPayload(
-          url, session.getSelendroidServerPort(), HttpMethod.POST, payload.toString());
+          url, session.getSelendroidServerPort(), HttpMethod.POST, payload.toString(), session.getHostname());
     } else if ("delete".equalsIgnoreCase(method)) {
       log.fine("Proxy DELETE to the device: " + url);
       r = HttpClientUtil.executeRequest(url, HttpMethod.DELETE);
