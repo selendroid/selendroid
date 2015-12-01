@@ -70,10 +70,11 @@ public class SelendroidStandaloneServer {
       selfRegisterInGrid();
     }
 
-    log.info("Selendroid standalone server has been started on port: " + config.getPort());
+    log.info("Selendroid standalone server has been started on port: " + getPort());
   }
 
   private void selfRegisterInGrid() {
+    config.setPort(webServer.getPort()); // Update configuration to include randomly assigned port
     final SelfRegisteringRemote selfRegisteringRemote = new SelfRegisteringRemote(config, driver);
 
     if (config.getRegisterCycle() > 0) {

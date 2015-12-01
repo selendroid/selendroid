@@ -90,9 +90,9 @@ public class SelendroidLauncher {
     launchServer();
     if (config.isGrid()) {
       // Longer timeout to allow for grid registration
-      HttpClientUtil.waitForServer(config.getPort(), 3, TimeUnit.MINUTES);
+      HttpClientUtil.waitForServer(server.getPort(), 3, TimeUnit.MINUTES);
     } else {
-      HttpClientUtil.waitForServer(config.getPort(), 20, TimeUnit.SECONDS);
+      HttpClientUtil.waitForServer(server.getPort(), 20, TimeUnit.SECONDS);
     }
   }
 
