@@ -54,6 +54,11 @@ public class SelendroidConfiguration {
       names = {"-selendroidServerPort"})
   private int selendroidServerPort = 8080;
 
+  @Parameter(
+      description = "re-use the configured -selendroidServerPort for each test session",
+      names = {"-reuseSelendroidServerPort"})
+  private boolean reuseSelendroidServerPort = false;
+
   @Parameter(description = "The file of the keystore to be used", names = {"-keystore"})
   private String keystore = null;
 
@@ -466,5 +471,13 @@ public class SelendroidConfiguration {
 
   public void setNodeStatusCheckTimeout(long nodeStatusCheckTimeout) {
     this.nodeStatusCheckTimeout = nodeStatusCheckTimeout;
+  }
+
+  public boolean isReuseSelendroidServerPort() {
+    return reuseSelendroidServerPort;
+  }
+
+  public void setReuseSelendroidServerPort(boolean reuseSelendroidServerPort) {
+    this.reuseSelendroidServerPort = reuseSelendroidServerPort;
   }
 }
