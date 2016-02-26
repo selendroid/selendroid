@@ -68,6 +68,9 @@ public class SelendroidConfiguration {
   @Parameter(description = "The alias of the keystore to be used", names = {"-keystoreAlias"})
   private String keystoreAlias = null;
 
+  @Parameter(description = "The password used to protect the private key of the keystore entry, same as 'keypass' of jarsigner", names = {"-keyPassword"})
+  private String keyPassword = null;
+
   @Parameter(description = "The emulator options used for starting emulators: e.g. -no-audio. When passing multiple options, put them in double quotes: e.g. \"-no-audio -no-window\"",
              names = {"-emulatorOptions"})
   private String emulatorOptions = null;
@@ -479,5 +482,13 @@ public class SelendroidConfiguration {
 
   public void setReuseSelendroidServerPort(boolean reuseSelendroidServerPort) {
     this.reuseSelendroidServerPort = reuseSelendroidServerPort;
+  }
+
+  public String getKeyPassword() {
+    return keyPassword;
+  }
+
+  public void setKeyPassword(String keyPassword) {
+    this.keyPassword = keyPassword;
   }
 }

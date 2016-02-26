@@ -66,6 +66,7 @@ public class SelendroidServerBuilder {
   private SelendroidConfiguration serverConfiguration = null;
   private String storepass = "android";
   private String alias = "androiddebugkey";
+  private String keypass = null;
   private X509Certificate cert509;
 
   /**
@@ -302,6 +303,10 @@ public class SelendroidServerBuilder {
     commandline.addArgument(androidKeyStore.toString(), false);
     commandline.addArgument(customSelendroidServer.getAbsolutePath(), false);
     commandline.addArgument(alias, false);
+    if(keypass != null){
+      commandline.addArgument("-keypass", false);
+      commandline.addArgument(keypass, false);
+    }
     String output = ShellCommand.exec(commandline, 20000);
     if (log.isLoggable(Level.INFO)) {
       log.info("App signing output: " + output);
@@ -320,6 +325,9 @@ public class SelendroidServerBuilder {
       }
       if (serverConfiguration.getKeystoreAlias() != null) {
         alias = serverConfiguration.getKeystoreAlias();
+      }
+      if(serverConfiguration.getKeyPassword() != null){
+        keypass = serverConfiguration.getKeyPassword();
       }
       // there is a possibility that keystore path may be invalid due to user typo. Should we add a try catch?
       return new File(serverConfiguration.getKeystore());
