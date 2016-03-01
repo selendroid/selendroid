@@ -43,8 +43,8 @@ jar {
 
     into('prebuild') {
         from {
-            ['../selendroid-server/build/outputs/apk/selendroid-server-' + version + '.apk',
-             '../android-driver/build/outputs/apk/android-driver-app-' + version + '.apk']
+            ['../selendroid-server/build/outputs/apk/selendroid-server-' + rootProject.ext.selVersion + '.apk',
+             '../android-driver/build/outputs/apk/android-driver-app-' + rootProject.ext.selVersion + '.apk']
         }
     }
 
