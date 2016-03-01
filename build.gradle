@@ -56,7 +56,7 @@ allprojects {
                 repo = 'maven'
                 name = "${selGroup}:${selArtifactId}"
                 // an userOrg of selendroid can be added here
-                // userOrg = 'appium'
+                userOrg = 'selendroid'
                 websiteUrl = selWebsite
                 issueTrackerUrl = selTracker
                 vcsUrl = selGit
