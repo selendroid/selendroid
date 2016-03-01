@@ -1,6 +1,6 @@
 ext.selArtifactId  = 'selendroid'
 ext.selGroup = 'io.selendroid'
-ext.selVersion = '0.18.0'
+ext.selVersion = '0.18.1'
 ext.selWebsite = 'https://github.com/selendroid/selendroid'
 ext.selTracker = 'https://github.com/selendroid/selendroid/issues'
 ext.selGit = 'https://github.com/selendroid/selendroid.git'
