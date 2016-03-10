@@ -19,6 +19,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        versionName rootProject.ext.selVersion
     }
 
     lintOptions {
@@ -44,7 +45,7 @@ android {
                 variant.outputs.each { output ->
                     output.outputFile = new File(
                             output.outputFile.parent,
-                            output.outputFile.name.replace('-debug.apk', "-${variant.versionName}.apk"))
+                            output.outputFile.name.replace('-debug.apk', "-${rootProject.ext.selVersion}.apk"))
                 }
             }
         }

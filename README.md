@@ -21,15 +21,12 @@ We have [documented Selendroid's Architecture](http://selendroid.io/architecture
 Maven Artifacts
 ---------------
 
-You can find the current version in Maven central and the latest snapshot version here: [https://oss.sonatype.org/content/repositories/snapshots/](https://oss.sonatype.org/content/repositories/snapshots/)
+You can find the current version in Maven central.
 
 Building
 --------
-1. Install third party artifacts to local .m2 repo by executing:
-```
-$ third-party/mvnInstall.sh
-```
-2. Run ```mvn clean compile package```
+
+1. Run ```gradle clean build```
 
 License
 -----------

@@ -30,6 +30,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        versionName rootProject.ext.selVersion
     }
 
     lintOptions {
