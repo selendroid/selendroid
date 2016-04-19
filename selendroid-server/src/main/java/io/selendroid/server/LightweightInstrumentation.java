@@ -60,7 +60,12 @@ public class LightweightInstrumentation extends Instrumentation {
                 }
 
                 // Start the new activity
-                Intent intent = Intents.createStartActivityIntent(context, args.getActivityClassName());
+                Intent intent;
+                if (args.getActivityClassName() != null) {
+                    intent = Intents.createStartActivityIntent(context, args.getActivityClassName());
+                } else {
+                    intent = Intents.createUriIntent(args.getIntentUri());
+                }
                 context.startActivity(intent);
             }
         });

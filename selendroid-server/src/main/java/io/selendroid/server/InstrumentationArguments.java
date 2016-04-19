@@ -22,12 +22,14 @@ import io.selendroid.server.extension.BootstrapHandler;
 public class InstrumentationArguments {
   // Copy to avoid holding reference to the Bundle
   private final String mainActivityClassName;
+  private final String intentUri;
   private final boolean loadExtensions;
   private final String bootstrapClassNames;
   private final String serverPort;
 
   public InstrumentationArguments(Bundle arguments) {
     mainActivityClassName = arguments.getString("main_activity");
+    intentUri = arguments.getString("intent_uri");
     loadExtensions = Boolean.parseBoolean(arguments.getString("load_extensions"));
     bootstrapClassNames = arguments.getString("bootstrap");
     serverPort = arguments.getString("server_port");
@@ -37,7 +39,11 @@ public class InstrumentationArguments {
   public String getActivityClassName() {
     return mainActivityClassName;
   }
-  
+
+  public String getIntentUri() {
+    return intentUri;
+  }
+
   /** Should we load extensions (assumes they have already been pushed to the device) */
   public boolean isLoadExtensions() {
     return loadExtensions;

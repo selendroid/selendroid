@@ -52,6 +52,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
   private static ServerInstrumentation instance = null;
   public static String mainActivityName = null;
+  public static String intentUri = null;
   private HttpdThread serverThread = null;
   private AndroidWait androidWait = new AndroidWait();
   private PowerManager.WakeLock wakeLock;
@@ -65,7 +66,11 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   public void startMainActivity() {
     doFinishAllActivities();
-    startActivity(mainActivityName);
+    if (mainActivityName != null) {
+      startActivity(mainActivityName);
+    } else {
+      getTargetContext().startActivity(Intents.createUriIntent(intentUri));
+    }
   }
 
   public void startActivity(String activityClassName) {
@@ -105,6 +110,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     this.args = new InstrumentationArguments(arguments);
 
     mainActivityName = arguments.getString("main_activity");
+    intentUri = arguments.getString("intent_uri");
 
     int parsedServerPort = 0;
 
@@ -122,7 +128,13 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
       this.serverPort = parsedServerPort;
     }
 
-    SelendroidLogger.info("Instrumentation initialized with main activity: " + mainActivityName);
+    String destination;
+    if (mainActivityName != null) {
+      destination = "main activity: " + mainActivityName;
+    } else {
+      destination = "URI: " + intentUri;
+    }
+    SelendroidLogger.info("Instrumentation initialized with " + destination);
     instance = this;
 
     final Context context = getTargetContext();

@@ -2,6 +2,7 @@ package io.selendroid.server.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 /**
  * A helper class for working with intents
@@ -18,5 +19,12 @@ public class Intents {
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         return intent;
+    }
+
+    /**
+     * Create an implicit intent based on the given URI.
+     */
+    public static Intent createUriIntent(String intentUri) {
+        return new Intent(Intent.ACTION_VIEW, Uri.parse(intentUri));
     }
 }
