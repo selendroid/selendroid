@@ -23,6 +23,8 @@ public class InstrumentationArguments {
   // Copy to avoid holding reference to the Bundle
   private final String mainActivityClassName;
   private final String intentUri;
+  private final String intentAction;
+  private final String serviceClassName;
   private final boolean loadExtensions;
   private final String bootstrapClassNames;
   private final String serverPort;
@@ -30,6 +32,8 @@ public class InstrumentationArguments {
   public InstrumentationArguments(Bundle arguments) {
     mainActivityClassName = arguments.getString("main_activity");
     intentUri = arguments.getString("intent_uri");
+    intentAction = arguments.getString("intent_action");
+    serviceClassName = arguments.getString("service");
     loadExtensions = Boolean.parseBoolean(arguments.getString("load_extensions"));
     bootstrapClassNames = arguments.getString("bootstrap");
     serverPort = arguments.getString("server_port");
@@ -42,6 +46,14 @@ public class InstrumentationArguments {
 
   public String getIntentUri() {
     return intentUri;
+  }
+
+  public String getIntentAction() {
+    return intentAction;
+  }
+
+  public String getServiceClassName() {
+    return serviceClassName;
   }
 
   /** Should we load extensions (assumes they have already been pushed to the device) */

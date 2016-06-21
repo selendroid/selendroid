@@ -24,9 +24,21 @@ public class Intents {
     /**
      * Create an implicit intent based on the given URI.
      */
-    public static Intent createUriIntent(String intentUri) {
-        return new Intent(Intent.ACTION_VIEW, Uri.parse(intentUri))
+    public static Intent createUriIntent(String intentAction, String intentUri) {
+        if (intentAction == null) {
+            intentAction = Intent.ACTION_VIEW;
+        }
+        return new Intent(intentAction, Uri.parse(intentUri))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    }
+
+    /**
+     * Create an Intent to start a service using the given class name and action.
+     */
+    public static Intent createStartServiceIntent(
+        Context context, String serviceClassName, String intentAction) {
+      Intent intent = intentAction != null ? new Intent(intentAction) : new Intent();
+      return intent.setClassName(context, serviceClassName);
     }
 }

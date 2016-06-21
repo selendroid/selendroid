@@ -59,14 +59,23 @@ public class LightweightInstrumentation extends Instrumentation {
                         args.getBootstrapClassNames().split(","));
                 }
 
-                // Start the new activity
-                Intent intent;
-                if (args.getActivityClassName() != null) {
-                    intent = Intents.createStartActivityIntent(context, args.getActivityClassName());
+                if (args.getServiceClassName() != null) {
+                    Intent serviceIntent = Intents.createStartServiceIntent(
+                            context, args.getServiceClassName(), args.getIntentAction());
+                    context.startService(serviceIntent);
                 } else {
-                    intent = Intents.createUriIntent(args.getIntentUri());
+                    // Start the new activity
+                    String activity = args.getActivityClassName();
+                    Intent intent;
+                    if (activity != null) {
+                        intent = Intents.createStartActivityIntent(context, activity);
+                    } else {
+                        intent = Intents.createUriIntent(args.getIntentAction(), args.getIntentUri());
+                    }
+                    if (intent != null) {
+                        context.startActivity(intent);
+                    }
                 }
-                context.startActivity(intent);
             }
         });
         SelendroidLogger.info("LightweightInstrumentation initialized");

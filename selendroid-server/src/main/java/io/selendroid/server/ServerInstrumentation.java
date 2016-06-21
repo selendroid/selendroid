@@ -53,6 +53,8 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   private static ServerInstrumentation instance = null;
   public static String mainActivityName = null;
   public static String intentUri = null;
+  public static String intentAction = null;
+  public static String serviceClassName = null;
   private HttpdThread serverThread = null;
   private AndroidWait androidWait = new AndroidWait();
   private PowerManager.WakeLock wakeLock;
@@ -64,12 +66,18 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   public InstrumentationArguments args = null;
   private ExtensionLoader extensionLoader;
 
+  public void startService() {
+    Context context = getTargetContext();
+    context.startService(
+        Intents.createStartServiceIntent(context, serviceClassName, intentAction));
+  }
+
   public void startMainActivity() {
     doFinishAllActivities();
     if (mainActivityName != null) {
       startActivity(mainActivityName);
     } else {
-      getTargetContext().startActivity(Intents.createUriIntent(intentUri));
+      getTargetContext().startActivity(Intents.createUriIntent(intentAction, intentUri));
     }
   }
 
@@ -109,8 +117,10 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     Handler mainThreadHandler = new Handler();
     this.args = new InstrumentationArguments(arguments);
 
-    mainActivityName = arguments.getString("main_activity");
-    intentUri = arguments.getString("intent_uri");
+    mainActivityName = args.getActivityClassName();
+    intentUri = args.getIntentUri();
+    intentAction = args.getIntentAction();
+    serviceClassName = args.getServiceClassName();
 
     int parsedServerPort = 0;
 
@@ -129,10 +139,12 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     }
 
     String destination;
-    if (mainActivityName != null) {
+    if (serviceClassName != null) {
+      destination = "service: " + serviceClassName + ", action: " + intentAction;
+    } else if (mainActivityName != null) {
       destination = "main activity: " + mainActivityName;
     } else {
-      destination = "URI: " + intentUri;
+      destination = "URI: " + intentUri + ", action: " + intentAction;
     }
     SelendroidLogger.info("Instrumentation initialized with " + destination);
     instance = this;
@@ -159,7 +171,11 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
           extensionLoader.runAfterApplicationCreateBootstrap(instance, args.getBootstrapClassNames().split(","));
         }
 
-        startMainActivity();
+        if (args.getServiceClassName() != null) {
+          startService();
+        } else {
+          startMainActivity();
+        }
         try {
           startServer();
         } catch (Exception e) {
