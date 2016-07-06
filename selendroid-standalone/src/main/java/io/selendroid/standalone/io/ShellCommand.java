@@ -20,13 +20,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecuteResultHandler;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteResultHandler;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.LogOutputStream;
-import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.*;
 import org.apache.commons.exec.environment.EnvironmentUtils;
 
 public class ShellCommand {
@@ -66,20 +60,32 @@ public class ShellCommand {
 
   public static void execAsync(String display, CommandLine commandline)
       throws ShellCommandException {
+    execAsync(display, commandline, null, null);
+  }
+
+  public static void execAsync(String display,
+                               CommandLine commandline,
+                               ExecuteStreamHandler streamHandler,
+                               ExecuteResultHandler resultHandler)
+          throws ShellCommandException {
     log.info("executing async command: " + commandline);
     DefaultExecutor exec = new DefaultExecutor();
 
-    ExecuteResultHandler handler = new DefaultExecuteResultHandler();
-    PumpStreamHandler streamHandler = new PumpStreamHandler(new PrintingLogOutputStream());
+    if (resultHandler == null) {
+      resultHandler = new DefaultExecuteResultHandler();
+    }
+    if (streamHandler == null) {
+      streamHandler = new PumpStreamHandler(new PrintingLogOutputStream());
+    }
     exec.setStreamHandler(streamHandler);
     try {
       if (display == null || display.isEmpty()) {
-        exec.execute(commandline, handler);
+        exec.execute(commandline, resultHandler);
       } else {
         Map env = EnvironmentUtils.getProcEnvironment();
         EnvironmentUtils.addVariableToEnvironment(env, "DISPLAY=:" + display);
 
-        exec.execute(commandline, env, handler);
+        exec.execute(commandline, env, resultHandler);
       }
     } catch (Exception e) {
       log.log(Level.SEVERE, "Error executing command: " + commandline, e);
@@ -87,7 +93,7 @@ public class ShellCommand {
     }
   }
 
-  private static class PrintingLogOutputStream extends LogOutputStream {
+  public static class PrintingLogOutputStream extends LogOutputStream {
 
     private StringBuilder output = new StringBuilder();
 

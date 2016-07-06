@@ -16,7 +16,6 @@ package io.selendroid.server;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
-import android.app.Instrumentation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -25,10 +24,10 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.CallLog;
 import android.util.Log;
+import android.support.test.runner.AndroidJUnitRunner;
 import android.view.View;
 import io.selendroid.server.android.ActivitiesReporter;
 import io.selendroid.server.android.AndroidWait;
@@ -48,13 +47,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public class ServerInstrumentation extends Instrumentation implements ServerDetails {
+public class ServerInstrumentation extends AndroidJUnitRunner implements ServerDetails {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
   private static ServerInstrumentation instance = null;
   public static String mainActivityName = null;
   public static String intentUri = null;
-  private HttpdThread serverThread = null;
   private AndroidWait androidWait = new AndroidWait();
+  private AndroidServer server;
   private PowerManager.WakeLock wakeLock;
   private int serverPort = 8080;
 
@@ -68,7 +67,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     doFinishAllActivities();
     if (mainActivityName != null) {
       startActivity(mainActivityName);
-    } else {
+    } else if (args.getIntentUri() != null) {
       getTargetContext().startActivity(Intents.createUriIntent(intentUri));
     }
   }
@@ -106,67 +105,26 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   @SuppressWarnings("unchecked")
   @Override
   public void onCreate(Bundle arguments) {
-    Handler mainThreadHandler = new Handler();
     this.args = new InstrumentationArguments(arguments);
 
-    mainActivityName = arguments.getString("main_activity");
-    intentUri = arguments.getString("intent_uri");
-
-    int parsedServerPort = 0;
-
-    try {
-      String port = args.getServerPort();
-      if (port != null && !port.isEmpty()) {
-        parsedServerPort = Integer.parseInt(port);
-      }
-    } catch (NumberFormatException ex) {
-      SelendroidLogger.error("Unable to parse the value of server_port key, defaulting to " + this.serverPort);
-      parsedServerPort = this.serverPort;
+    String destination = null;
+    if (args.getActivityClassName()!= null) {
+      destination = "main activity: " + args.getActivityClassName();
+    } else if (args.getIntentUri() != null) {
+      destination = "URI: " + args.getIntentUri();
     }
 
-    if (isValidPort(parsedServerPort)) {
-      this.serverPort = parsedServerPort;
-    }
-
-    String destination;
-    if (mainActivityName != null) {
-      destination = "main activity: " + mainActivityName;
+    if (destination != null) {
+      SelendroidLogger.info("Instrumentation initialized with " + destination);
     } else {
-      destination = "URI: " + intentUri;
+      SelendroidLogger.error("Instrumentation initialized without destination");
     }
-    SelendroidLogger.info("Instrumentation initialized with " + destination);
+
+    parseServerPort(args.getServerPort());
     instance = this;
+    callBeforeApplicationCreateBootstraps();
 
-    final Context context = getTargetContext();
-    if (args.isLoadExtensions()) {
-      extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
-      String bootstrapClassNames = args.getBootstrapClassNames();
-      if (bootstrapClassNames != null) {
-        extensionLoader.runBeforeApplicationCreateBootstrap(instance, bootstrapClassNames.split(","));
-      }
-    } else {
-      extensionLoader = new ExtensionLoader(context);
-    }
-
-    // Queue bootstrapping and starting of the main activity on the main thread.
-    mainThreadHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        UncaughtExceptionHandling.clearCrashLogFile();
-        UncaughtExceptionHandling.setGlobalExceptionHandler();
-
-        if (args.isLoadExtensions() && args.getBootstrapClassNames() != null) {
-          extensionLoader.runAfterApplicationCreateBootstrap(instance, args.getBootstrapClassNames().split(","));
-        }
-
-        startMainActivity();
-        try {
-          startServer();
-        } catch (Exception e) {
-          SelendroidLogger.error("Failed to start selendroid server", e);
-        }
-      }
-    });
+    super.onCreate(arguments);
   }
 
   private boolean isValidPort(int port) {
@@ -235,7 +193,10 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
         wakeLock.release();
         wakeLock = null;
       }
-      stopServer();
+      if (server != null) {
+        server.stop();
+        server = null;
+      }
     } catch (Exception e) {
       SelendroidLogger.error("Error shutting down: ", e);
     }
@@ -244,39 +205,51 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
 
   public void startServer() {
-    if (serverThread != null && serverThread.isAlive()) {
-      return;
-    }
+    Handler handler = new Handler();
+    handler.post(new Runnable() {
+      @Override
+      public void run() {
+        UncaughtExceptionHandling.clearCrashLogFile();
+        UncaughtExceptionHandling.setGlobalExceptionHandler();
 
-    if (serverThread != null) {
-      SelendroidLogger.info("Stopping selendroid http server");
-      stopServer();
-    }
+        callAfterApplicationCreateBootstraps();
 
-    serverThread = new HttpdThread(this, this.serverPort);
-    serverThread.start();
+        startMainActivity();
+        try {
+          doStartServer();
+          SelendroidLogger.info("Started Selendroid HTTP server on port " + server.getPort());
+        } catch (Exception e) {
+          SelendroidLogger.error("Failed to start Selendroid server", e);
+        }
+      }
+    });
   }
 
-  protected void stopServer() {
-    if (serverThread == null) {
-      return;
-    }
-    if (!serverThread.isAlive()) {
-      serverThread = null;
-      return;
+  private void doStartServer() {
+    if (server != null) {
+      server.stop();
     }
 
-    SelendroidLogger.info("Stopping selendroid http server");
-    serverThread.stopLooping();
-    serverThread.interrupt();
     try {
-      serverThread.join();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-    serverThread = null;
-  }
+      if (server == null) {
+        server = new AndroidServer(this, serverPort);
+      }
+      // Get a wake lock to stop the cpu going to sleep
+      PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
+      wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
+      try {
+        wakeLock.acquire();
+      } catch (SecurityException e) {
+      }
 
+      server.start();
+
+      SelendroidLogger.info("Started selendroid http server on port " + server.getPort());
+    } catch (Exception e) {
+      SelendroidLogger.error("Error starting httpd.", e);
+      throw new SelendroidException("Httpd failed to start!");
+    }
+  }
 
   public AndroidWait getAndroidWait() {
     return androidWait;
@@ -306,58 +279,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   @Override
   public String getOsVersion() {
     return String.valueOf(android.os.Build.VERSION.SDK_INT);
-  }
-
-  private class HttpdThread extends Thread {
-
-    private final AndroidServer server;
-    private ServerInstrumentation instrumentation = null;
-    private Looper looper;
-
-    public HttpdThread(ServerInstrumentation instrumentation, int serverPort) {
-      this.instrumentation = instrumentation;
-      // Create the server but absolutely do not start it here
-      server = new AndroidServer(this.instrumentation, serverPort);
-    }
-
-    @Override
-    public void run() {
-      Looper.prepare();
-      looper = Looper.myLooper();
-      startServer();
-      Looper.loop();
-    }
-
-    public AndroidServer getServer() {
-      return server;
-    }
-
-    private void startServer() {
-      try {
-        // Get a wake lock to stop the cpu going to sleep
-        PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
-        try {
-          wakeLock.acquire();
-        } catch (SecurityException e) {
-        }
-
-        server.start();
-
-        SelendroidLogger.info("Started selendroid http server on port " + server.getPort());
-      } catch (Exception e) {
-        SelendroidLogger.error("Error starting httpd.", e);
-
-        throw new SelendroidException("Httpd failed to start!");
-      }
-    }
-
-    public void stopLooping() {
-      if (looper == null) {
-        return;
-      }
-      looper.quit();
-    }
   }
 
   @Override
@@ -448,4 +369,37 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   }
 
+  private void parseServerPort(String port) {
+    int parsedServerPort;
+    try {
+      parsedServerPort = Integer.parseInt(port);
+    } catch (NumberFormatException e) {
+      SelendroidLogger.info("Failed to parse server port, defaulting to 8080");
+      parsedServerPort = serverPort;
+    }
+
+    if (isValidPort(parsedServerPort)) {
+      serverPort = parsedServerPort;
+    } else {
+      SelendroidLogger.info("Invalid port " + parsedServerPort + ", defaulting to 8080");
+    }
+  }
+
+  private void callBeforeApplicationCreateBootstraps() {
+    final Context context = getTargetContext();
+    if (args.isLoadExtensions()) {
+      extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
+      if (args.getBootstrapClassNames() != null) {
+        extensionLoader.runBeforeApplicationCreateBootstrap(this, args.getBootstrapClassNames().split(","));
+      }
+    } else {
+      extensionLoader = new ExtensionLoader(context);
+    }
+  }
+
+  private void callAfterApplicationCreateBootstraps() {
+    if (args.isLoadExtensions() && args.getBootstrapClassNames() != null) {
+      extensionLoader.runAfterApplicationCreateBootstrap(this, args.getBootstrapClassNames().split(","));
+    }
+  }
 }

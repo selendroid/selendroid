@@ -51,10 +51,10 @@ public class AbstractDeviceTest {
     when(device.getExternalStoragePath()).thenReturn("/storage");
     when(device.getCrashLog()).thenCallRealMethod();
     when(
-        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)?, shell, ls, /storage/]$"))))  // The trailing '/' is key
+            device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)?, shell, ls, /storage/]$"))))  // The trailing '/' is key
         .thenReturn("some_file\nappcrash.log\nanother_file");
     when(
-        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)?, shell, cat, /storage/appcrash\\.log]$"))))
+            device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)?, shell, cat, /storage/appcrash\\.log]$"))))
         .thenReturn("crash log contents");
 
     assertEquals("crash log contents", device.getCrashLog());
@@ -73,7 +73,7 @@ public class AbstractDeviceTest {
         "1 zygote\n" +
         "23 /system/bin/mediaserver";
     when(
-        device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)?, shell, ps]$"))))
+            device.executeCommandQuietly(argThat(matchesCmdLine(".*adb(\\.exe)?, shell, ps]$"))))
             .thenReturn(psOutput);
     String expected =
         "PID NAME\n" +
