@@ -29,6 +29,7 @@ import io.selendroid.server.handler.alert.Alert;
 import io.selendroid.server.handler.alert.AlertAccept;
 import io.selendroid.server.handler.alert.AlertDismiss;
 import io.selendroid.server.handler.alert.AlertSendKeys;
+import io.selendroid.server.handler.extension.AccessibilityExtensionCallHandler;
 import io.selendroid.server.handler.extension.ExtensionCallHandler;
 import io.selendroid.server.handler.network.GetNetworkConnectionType;
 import io.selendroid.server.handler.script.ExecuteAsyncScript;
@@ -149,6 +150,9 @@ public class AndroidServlet extends BaseServlet {
     // Handle calls to dynamically loaded handlers
     register(postHandler, new ExtensionCallHandler(
         "/wd/hub/session/:sessionId/selendroid/extension", extensionLoader));
+
+    //Handle class to dynamically loaded accessibility extensions
+    register(postHandler, new AccessibilityExtensionCallHandler("/wd/hub/session/:sessionId/accessibilityextension"));
 
     // Actions sequencing endpoint
     register(postHandler, new Actions("/wd/hub/session/:sessionId/actions"));

@@ -221,6 +221,14 @@
                 </includes>
                 <targetPath>prebuild/</targetPath>
             </resource>
+            <resource>
+                <directory>../selendroid-server/res/xml/</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>accessibilityservice.xml</include>
+                </includes>
+                <targetPath>prebuild/</targetPath>
+            </resource>
         </resources>
     </build>
 

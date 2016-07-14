@@ -16,19 +16,24 @@ package io.selendroid.server;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
-import android.app.Instrumentation;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.PowerManager;
+import android.os.RemoteException;
 import android.provider.CallLog;
 import android.util.Log;
+import android.support.test.runner.AndroidJUnitRunner;
 import android.view.View;
 import io.selendroid.server.android.ActivitiesReporter;
 import io.selendroid.server.android.AndroidWait;
@@ -38,25 +43,88 @@ import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.utils.CallLogEntry;
 import io.selendroid.server.extension.ExtensionLoader;
 import io.selendroid.server.model.ExternalStorage;
+import io.selendroid.server.util.Function;
 import io.selendroid.server.util.Intents;
 import io.selendroid.server.util.SelendroidLogger;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public class ServerInstrumentation extends Instrumentation implements ServerDetails {
+import static io.selendroid.server.AccessibilityServiceInteractionService.*;
+
+public class ServerInstrumentation extends AndroidJUnitRunner implements ServerDetails {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
   private static ServerInstrumentation instance = null;
   public static String mainActivityName = null;
   public static String intentUri = null;
-  private HttpdThread serverThread = null;
   private AndroidWait androidWait = new AndroidWait();
+  private AndroidServer server;
   private PowerManager.WakeLock wakeLock;
   private int serverPort = 8080;
+
+  private boolean accessibilityServiceStarted = false;
+  private JSONObject accessibilityExtensionResult = null;
+  private final Messenger client = new Messenger(new AccessibilityServiceInteractionHandler());
+  private Messenger service;
+  private ServiceConnection serviceConnection = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+      try {
+        ServerInstrumentation.this.service = new Messenger(service);
+
+        Message registerMsg = Message.obtain(null, MSG_REGISTER_CLIENT);
+        registerMsg.replyTo = client;
+        Bundle data = new Bundle();
+        if (args.isLoadExtensions()) {
+          data.putString(EXTRA_EXTENSION_DEX_PATH, ExternalStorage.getExtensionDex().getAbsolutePath());
+        }
+        registerMsg.setData(data);
+
+        ServerInstrumentation.this.service.send(registerMsg);
+
+        ServerInstrumentation.this.service.send(Message.obtain(null, MSG_START_ACCESSIBILITY_SERVICE));
+      } catch (RemoteException e) {
+        e.printStackTrace();
+      }
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+
+    }
+  };
+  private class AccessibilityServiceInteractionHandler extends Handler {
+    @Override
+    public void handleMessage(Message msg) {
+      switch (msg.what) {
+        case MSG_STARTED_ACCESSIBILITY_SERVICE:
+          accessibilityServiceStarted = true;
+          break;
+        case MSG_STOPPED_ACCESSIBILITY_SERVICE:
+          accessibilityServiceStarted = false;
+          break;
+        case MSG_EXECUTE_ACCESSIBILITY_EXTENSION:
+          try {
+            String response = msg.getData().getString(EXTRA_EXTENSION_RESULT);
+            accessibilityExtensionResult = new JSONObject();
+            if (response != null) {
+              JSONObject result = new JSONObject(msg.getData().getString(EXTRA_EXTENSION_RESULT));
+              accessibilityExtensionResult.put("payload", result);
+            }
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
+        default:
+          super.handleMessage(msg);
+      }
+    }
+  }
 
   /**
    * Arguments this instrumentation was started with.
@@ -68,7 +136,7 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     doFinishAllActivities();
     if (mainActivityName != null) {
       startActivity(mainActivityName);
-    } else {
+    } else if (args.getIntentUri() != null) {
       getTargetContext().startActivity(Intents.createUriIntent(intentUri));
     }
   }
@@ -103,70 +171,109 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     });
   }
 
+  @Override
+  public void onStart() {
+    super.onStart();
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public void onCreate(Bundle arguments) {
-    Handler mainThreadHandler = new Handler();
     this.args = new InstrumentationArguments(arguments);
 
-    mainActivityName = arguments.getString("main_activity");
-    intentUri = arguments.getString("intent_uri");
-
-    int parsedServerPort = 0;
-
-    try {
-      String port = args.getServerPort();
-      if (port != null && !port.isEmpty()) {
-        parsedServerPort = Integer.parseInt(port);
-      }
-    } catch (NumberFormatException ex) {
-      SelendroidLogger.error("Unable to parse the value of server_port key, defaulting to " + this.serverPort);
-      parsedServerPort = this.serverPort;
+    String destination = null;
+    if (args.getActivityClassName()!= null) {
+      destination = "main activity: " + args.getActivityClassName();
+    } else if (args.getIntentUri() != null) {
+      destination = "URI: " + args.getIntentUri();
     }
 
-    if (isValidPort(parsedServerPort)) {
-      this.serverPort = parsedServerPort;
-    }
-
-    String destination;
-    if (mainActivityName != null) {
-      destination = "main activity: " + mainActivityName;
+    if (destination != null) {
+      SelendroidLogger.info("Instrumentation initialized with " + destination);
     } else {
-      destination = "URI: " + intentUri;
+      SelendroidLogger.error("Instrumentation initialized without destination");
     }
-    SelendroidLogger.info("Instrumentation initialized with " + destination);
+
+    parseServerPort(args.getServerPort());
     instance = this;
+    callBeforeApplicationCreateBootstraps();
 
-    final Context context = getTargetContext();
-    if (args.isLoadExtensions()) {
-      extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
-      String bootstrapClassNames = args.getBootstrapClassNames();
-      if (bootstrapClassNames != null) {
-        extensionLoader.runBeforeApplicationCreateBootstrap(instance, bootstrapClassNames.split(","));
-      }
-    } else {
-      extensionLoader = new ExtensionLoader(context);
-    }
+    super.onCreate(arguments);
+  }
 
-    // Queue bootstrapping and starting of the main activity on the main thread.
-    mainThreadHandler.post(new Runnable() {
+  public void doAccessibilityServiceSetup() {
+    Intent enableIntent = new Intent(getContext(), AccessibilityServiceInteractionService.class);
+    getContext().bindService(enableIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+    AndroidWait wait = new AndroidWait();
+    wait.setTimeoutInMillis(20000); // Wait for up to 20s
+    Boolean success = wait.until(new Function<Void, Boolean>() {
       @Override
-      public void run() {
-        UncaughtExceptionHandling.clearCrashLogFile();
-        UncaughtExceptionHandling.setGlobalExceptionHandler();
-
-        if (args.isLoadExtensions() && args.getBootstrapClassNames() != null) {
-          extensionLoader.runAfterApplicationCreateBootstrap(instance, args.getBootstrapClassNames().split(","));
-        }
-
-        startMainActivity();
-        try {
-          startServer();
-        } catch (Exception e) {
-          SelendroidLogger.error("Failed to start selendroid server", e);
-        }
+      public Boolean apply(Void input) {
+        return accessibilityServiceStarted;
       }
     });
+
+    if (!success) {
+      throw new SelendroidException("AccessibilityService setup timed out :(");
+    }
+  }
+
+  public void doAccessibilityTearDown() {
+    try {
+      service.send(Message.obtain(null, MSG_STOP_ACCESSIBILITY_SERVICE));
+
+      AndroidWait wait = new AndroidWait();
+      wait.setTimeoutInMillis(20000); // Wait for up to 20s
+      Boolean success = wait.until(new Function<Void, Boolean>() {
+        @Override
+        public Boolean apply(Void input) {
+          return !accessibilityServiceStarted;
+        }
+      });
+
+      if (!success) {
+        throw new SelendroidException("AccessibilityService tearDown timed out :(");
+      }
+    } catch (RemoteException e) {
+      throw new SelendroidException(e);
+    }
+  }
+
+  public JSONObject executeAccessibilityExtension(String extensionClassName, JSONObject payload) {
+    JSONObject result = null;
+
+    try {
+      Bundle data = new Bundle();
+      data.putString(EXTRA_EXTENSION_CLASS_NAME, extensionClassName);
+      data.putString(EXTRA_PAYLOAD, payload.toString());
+
+      Message message = Message.obtain(null, MSG_EXECUTE_ACCESSIBILITY_EXTENSION);
+      message.setData(data);
+      service.send(message);
+
+      AndroidWait wait = new AndroidWait();
+      wait.setTimeoutInMillis(20000); // Wait for up to 20 seconds
+      Boolean success = wait.until(new Function<Void, Boolean>() {
+        @Override
+        public Boolean apply(Void input) {
+          return accessibilityExtensionResult != null;
+        }
+      });
+
+      if (success != null && Boolean.TRUE.equals(success)) {
+        result = accessibilityExtensionResult;
+        accessibilityExtensionResult = null;
+      }
+    } catch (RemoteException e) {
+      throw new SelendroidException(e);
+    }
+
+    return result;
+  }
+
+  public boolean isWithAccessibilityService() {
+    return args != null && args.isWithAccessibilityService();
   }
 
   private boolean isValidPort(int port) {
@@ -228,6 +335,13 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
     throw new SelendroidException("Could not find any views");
   }
 
+  public void stopServer() {
+    if (server != null) {
+      server.stop();
+      server = null;
+    }
+  }
+
   @Override
   public void onDestroy() {
     try {
@@ -235,7 +349,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
         wakeLock.release();
         wakeLock = null;
       }
-      stopServer();
     } catch (Exception e) {
       SelendroidLogger.error("Error shutting down: ", e);
     }
@@ -244,39 +357,51 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
 
   public void startServer() {
-    if (serverThread != null && serverThread.isAlive()) {
-      return;
-    }
+    Handler handler = new Handler();
+    handler.post(new Runnable() {
+      @Override
+      public void run() {
+        UncaughtExceptionHandling.clearCrashLogFile();
+        UncaughtExceptionHandling.setGlobalExceptionHandler();
 
-    if (serverThread != null) {
-      SelendroidLogger.info("Stopping selendroid http server");
-      stopServer();
-    }
+        callAfterApplicationCreateBootstraps();
 
-    serverThread = new HttpdThread(this, this.serverPort);
-    serverThread.start();
+        startMainActivity();
+        try {
+          doStartServer();
+          SelendroidLogger.info("Started Selendroid HTTP server on port " + server.getPort());
+        } catch (Exception e) {
+          SelendroidLogger.error("Failed to start Selendroid server", e);
+        }
+      }
+    });
   }
 
-  protected void stopServer() {
-    if (serverThread == null) {
-      return;
-    }
-    if (!serverThread.isAlive()) {
-      serverThread = null;
-      return;
+  private void doStartServer() {
+    if (server != null) {
+      server.stop();
     }
 
-    SelendroidLogger.info("Stopping selendroid http server");
-    serverThread.stopLooping();
-    serverThread.interrupt();
     try {
-      serverThread.join();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-    serverThread = null;
-  }
+      if (server == null) {
+        server = new AndroidServer(this, serverPort);
+      }
+      // Get a wake lock to stop the cpu going to sleep
+      PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
+      wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
+      try {
+        wakeLock.acquire();
+      } catch (SecurityException e) {
+      }
 
+      server.start();
+
+      SelendroidLogger.info("Started selendroid http server on port " + server.getPort());
+    } catch (Exception e) {
+      SelendroidLogger.error("Error starting httpd.", e);
+      throw new SelendroidException("Httpd failed to start!");
+    }
+  }
 
   public AndroidWait getAndroidWait() {
     return androidWait;
@@ -306,58 +431,6 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
   @Override
   public String getOsVersion() {
     return String.valueOf(android.os.Build.VERSION.SDK_INT);
-  }
-
-  private class HttpdThread extends Thread {
-
-    private final AndroidServer server;
-    private ServerInstrumentation instrumentation = null;
-    private Looper looper;
-
-    public HttpdThread(ServerInstrumentation instrumentation, int serverPort) {
-      this.instrumentation = instrumentation;
-      // Create the server but absolutely do not start it here
-      server = new AndroidServer(this.instrumentation, serverPort);
-    }
-
-    @Override
-    public void run() {
-      Looper.prepare();
-      looper = Looper.myLooper();
-      startServer();
-      Looper.loop();
-    }
-
-    public AndroidServer getServer() {
-      return server;
-    }
-
-    private void startServer() {
-      try {
-        // Get a wake lock to stop the cpu going to sleep
-        PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
-        try {
-          wakeLock.acquire();
-        } catch (SecurityException e) {
-        }
-
-        server.start();
-
-        SelendroidLogger.info("Started selendroid http server on port " + server.getPort());
-      } catch (Exception e) {
-        SelendroidLogger.error("Error starting httpd.", e);
-
-        throw new SelendroidException("Httpd failed to start!");
-      }
-    }
-
-    public void stopLooping() {
-      if (looper == null) {
-        return;
-      }
-      looper.quit();
-    }
   }
 
   @Override
@@ -448,4 +521,37 @@ public class ServerInstrumentation extends Instrumentation implements ServerDeta
 
   }
 
+  private void parseServerPort(String port) {
+    int parsedServerPort;
+    try {
+      parsedServerPort = Integer.parseInt(port);
+    } catch (NumberFormatException e) {
+      SelendroidLogger.info("Failed to parse server port, defaulting to 8080");
+      parsedServerPort = serverPort;
+    }
+
+    if (isValidPort(parsedServerPort)) {
+      serverPort = parsedServerPort;
+    } else {
+      SelendroidLogger.info("Invalid port " + parsedServerPort + ", defaulting to 8080");
+    }
+  }
+
+  private void callBeforeApplicationCreateBootstraps() {
+    final Context context = getTargetContext();
+    if (args.isLoadExtensions()) {
+      extensionLoader = new ExtensionLoader(context, ExternalStorage.getExtensionDex().getAbsolutePath());
+      if (args.getBootstrapClassNames() != null) {
+        extensionLoader.runBeforeApplicationCreateBootstrap(this, args.getBootstrapClassNames().split(","));
+      }
+    } else {
+      extensionLoader = new ExtensionLoader(context);
+    }
+  }
+
+  private void callAfterApplicationCreateBootstraps() {
+    if (args.isLoadExtensions() && args.getBootstrapClassNames() != null) {
+      extensionLoader.runAfterApplicationCreateBootstrap(this, args.getBootstrapClassNames().split(","));
+    }
+  }
 }

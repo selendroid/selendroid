@@ -261,6 +261,12 @@ public class SelendroidStandaloneDriver implements ServerDetails {
               "Not creating and installing selendroid-server because it is already installed for this app under test.");
         }
 
+        // If we're going to use the accessibility service, we need this permission to be granted
+        // to the instrumentation package in order to start it
+        if (serverConfiguration.isWithAccessibilityService()) {
+          device.runAdbCommand(
+                  "shell pm grant io.selendroid." + app.getBasePackage() + " android.permission.WRITE_SECURE_SETTINGS");
+        }
         // Run any adb commands requested in the capabilities
         List<String> preSessionAdbCommands = desiredCapabilities.getPreSessionAdbCommands();
         runPreSessionCommands(device, preSessionAdbCommands);
@@ -420,6 +426,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     SelendroidCapabilities desiredCapabilities;// Convert the JSON capabilities to SelendroidCapabilities
     try {
       desiredCapabilities = new SelendroidCapabilities(caps);
+      desiredCapabilities.setWithAccessibilityService(serverConfiguration.isWithAccessibilityService());
     } catch (JSONException e) {
       throw new SelendroidException("Desired capabilities cannot be parsed.");
     }

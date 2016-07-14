@@ -26,6 +26,7 @@ public class InstrumentationArguments {
   private final boolean loadExtensions;
   private final String bootstrapClassNames;
   private final String serverPort;
+  private final boolean withAccessibilityService;
 
   public InstrumentationArguments(Bundle arguments) {
     mainActivityClassName = arguments.getString("main_activity");
@@ -33,6 +34,7 @@ public class InstrumentationArguments {
     loadExtensions = Boolean.parseBoolean(arguments.getString("load_extensions"));
     bootstrapClassNames = arguments.getString("bootstrap");
     serverPort = arguments.getString("server_port");
+    withAccessibilityService = Boolean.parseBoolean(arguments.getString("with_accessibility_service"));
   }
 
   /** Full class name of the activity to start. */
@@ -57,5 +59,9 @@ public class InstrumentationArguments {
   /** The port at which the server should listen. */
   public String getServerPort() {
     return serverPort;
+  }
+
+  public boolean isWithAccessibilityService() {
+    return withAccessibilityService;
   }
 }

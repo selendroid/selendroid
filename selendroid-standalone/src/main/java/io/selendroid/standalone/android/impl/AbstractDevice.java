@@ -254,7 +254,9 @@ public abstract class AbstractDevice implements AndroidDevice {
 
     List<String> argList = Lists.newArrayList(
         "-e", "main_activity", aut.getMainActivity(),
-        "-e", "server_port", Integer.toString(port));
+        "-e", "server_port", Integer.toString(port),
+        "-e", "with_accessibility_service", Boolean.toString(capabilities.getWithAccessibilityService()),
+        "-e", "timeout_msec", "0"); // Set no timeout for the looper thread
     if (capabilities.getSelendroidExtensions() != null) {
       argList.addAll(Lists.newArrayList("-e", "load_extensions", "true"));
       if (capabilities.getBootstrapClassNames() != null) {
@@ -264,30 +266,27 @@ public abstract class AbstractDevice implements AndroidDevice {
     argList.add("io.selendroid." + aut.getBasePackage() + "/io.selendroid.server.ServerInstrumentation");
 
     String[] args = argList.toArray(new String[argList.size()]);
-    CommandLine command
-        = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument"}, args, String.class));
+    final CommandLine command
+        = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class));
 
-    String result = executeCommandQuietly(command);
-    if (result.contains("FAILED")) {
-      String genericMessage = "Could not start the app under test using instrumentation.";
-      String detailedMessage;
-      try {
-        // Try again, waiting for instrumentation to finish. This way we'll get more error output.
-        String[] instrumentCmd =
-            ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class);
-        CommandLine getDetailedErrorCommand = adbCommand(instrumentCmd);
-        String detailedResult = executeCommandQuietly(getDetailedErrorCommand);
-        if (detailedResult.contains("package")) {
-          detailedMessage =
-              genericMessage + " Is the correct app under test installed? Read the details below:\n" + detailedResult;
-        } else {
-          detailedMessage = genericMessage + " Read the details below:\n" + detailedResult;
+    final ShellCommand.PrintingLogOutputStream os = new ShellCommand.PrintingLogOutputStream();
+    try {
+      ShellCommand.execAsync(null, command, new PumpStreamHandler(os), new ExecuteResultHandler() {
+        @Override
+        public void onProcessComplete(int exitValue) {
+          String output = os.getOutput();
+          if (os.getOutput().contains("FAILED") || os.getOutput().contains("crashed")) {
+            throw new SelendroidException(output);
+          }
         }
-      } catch (Exception e) {
-        // Can't get detailed results
-        throw new SelendroidException(genericMessage, e);
-      }
-      throw new SelendroidException(detailedMessage);
+
+        @Override
+        public void onProcessFailed(ExecuteException e) {
+          throw new SelendroidException(e);
+        }
+      });
+    } catch (Exception e) {
+      throw new SelendroidException(e);
     }
 
     forwardSelendroidPort(port);

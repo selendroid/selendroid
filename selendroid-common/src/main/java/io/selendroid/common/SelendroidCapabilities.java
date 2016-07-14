@@ -58,6 +58,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String LAUNCH_ACTIVITY = "launchActivity";
   public static final String SELENDROID_EXTENSIONS = "selendroidExtensions";
   public static final String BOOTSTRAP_CLASS_NAMES = "bootstrapClassNames";
+  public static final String WITH_ACCESSIBILITY_SERVICE = "withAccessibilityService";
 
   public static SelendroidCapabilities empty() {
     return new SelendroidCapabilities(new HashMap<String, Object>());
@@ -109,6 +110,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     if (getRawCapabilities().get(EMULATOR) == null
         || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL)) return null;
     return getBooleanCapability(EMULATOR);
+  }
+
+  public Boolean getWithAccessibilityService() {
+    return getBooleanCapability(WITH_ACCESSIBILITY_SERVICE);
   }
 
   public String getPlatformName() {
@@ -178,6 +183,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public void setEmulator(Boolean emulator) {
     setCapability(EMULATOR, emulator);
+  }
+
+  public void setWithAccessibilityService(Boolean withAccessibilityService) {
+    setCapability(WITH_ACCESSIBILITY_SERVICE, withAccessibilityService);
   }
 
   public void setLocale(String locale) {

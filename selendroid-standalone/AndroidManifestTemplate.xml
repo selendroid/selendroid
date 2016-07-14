@@ -12,9 +12,21 @@
     <uses-permission android:name="android.permission.INJECT_EVENTS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"/>
 
     <application android:debuggable="true" android:icon="@drawable/selenium_icon" android:label="Selendroid">
-        <uses-library android:name="android.test.runner"/>
+        <service android:name="io.selendroid.server.SelendroidAccesibilityService"
+                 android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+                <category android:name="android.accessibilityservice.category.FEEDBACK_AUDIBLE" />
+                <category android:name="android.accessibilityservice.category.FEEDBACK_HAPTIC" />
+                <category android:name="android.accessibilityservice.category.FEEDBACK_SPOKEN" />
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/accessibilityservice" />
+        </service>
+        <service android:name="io.selendroid.server.AccessibilityServiceInteractionService" android:exported="true" android:enabled="true"/>
     </application>
 
 </manifest>
