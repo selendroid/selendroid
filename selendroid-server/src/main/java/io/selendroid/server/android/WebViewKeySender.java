@@ -8,12 +8,14 @@ import android.view.KeyEvent;
 import android.webkit.WebView;
 
 public class WebViewKeySender extends InstrumentedKeySender {
+  private final ServerInstrumentation serverInstrumentation;
   private final WebView webview;
   private volatile boolean done;
 
-  public WebViewKeySender(Instrumentation instrumentation, WebView webview) {
-    super(instrumentation);
+  public WebViewKeySender(ServerInstrumentation instrumentation, WebView webview) {
+    super(instrumentation.getInstrumentation());
     this.webview = webview;
+    this.serverInstrumentation = instrumentation;
   }
 
   /**
@@ -29,7 +31,7 @@ public class WebViewKeySender extends InstrumentedKeySender {
 
     long timeout =
         System.currentTimeMillis()
-            + ServerInstrumentation.getInstance().getAndroidWait().getTimeoutInMillis();
+            + serverInstrumentation.getAndroidWait().getTimeoutInMillis();
     SelendroidLogger.info("Using timeout of " + timeout + " milli seconds.");
 
     done = false;

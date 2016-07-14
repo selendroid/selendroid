@@ -261,7 +261,7 @@ public abstract class AbstractDevice implements AndroidDevice {
         argList.addAll(Lists.newArrayList("-e", "bootstrap", capabilities.getBootstrapClassNames()));
       }
     }
-    argList.add("io.selendroid." + aut.getBasePackage() + "/io.selendroid.server.ServerInstrumentation");
+    argList.add("io.selendroid." + aut.getBasePackage() + "/io.selendroid.server.SelendroidInstrumentation");
 
     String[] args = argList.toArray(new String[argList.size()]);
     CommandLine command

@@ -77,7 +77,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
   public DefaultSelendroidDriver(ServerInstrumentation instrumentation) {
     serverInstrumentation = instrumentation;
-    keySender = new InstrumentedKeySender(serverInstrumentation);
+    keySender = new InstrumentedKeySender(serverInstrumentation.getInstrumentation());
   }
 
   /*
@@ -242,7 +242,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
     long end =
         System.currentTimeMillis() + serverInstrumentation.getAndroidWait().getTimeoutInMillis();
     final byte[][] rawPng = new byte[1][1];
-    ServerInstrumentation.getInstance().getCurrentActivity().runOnUiThread(new Runnable() {
+    serverInstrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
       public void run() {
         synchronized (syncObject) {
           Display display =
@@ -548,7 +548,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
         activity.setRequestedOrientation(screenOrientation);
       }
     });
-    serverInstrumentation.waitForIdleSync();
+    serverInstrumentation.getInstrumentation().waitForIdleSync();
   }
 
   private int getAndroidScreenOrientation(ScreenOrientation orientation) {
@@ -769,7 +769,7 @@ public class DefaultSelendroidDriver implements SelendroidDriver {
 
   public boolean isAirplaneMode() {
     return Settings.System.getInt(
-        ServerInstrumentation.getInstance().getCurrentActivity().getContentResolver(),
+        serverInstrumentation.getCurrentActivity().getContentResolver(),
         Settings.System.AIRPLANE_MODE_ON, 0) == 1;
   }
 

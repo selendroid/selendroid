@@ -50,7 +50,7 @@ public class InvokeMenuAction implements NativeExecuteScript {
       SelendroidLogger.error("Cannot invoke menu action", e);
       return "Must pass an AndroidRElement or integer to invokeMenuActionSync (check adb log for full stacktrace): " + e.getMessage();
     }
-    serverInstrumentation.invokeMenuActionSync(serverInstrumentation.getCurrentActivity(), id, 0);
+    serverInstrumentation.getInstrumentation().invokeMenuActionSync(serverInstrumentation.getCurrentActivity(), id, 0);
     return "invoked";
   }
 }

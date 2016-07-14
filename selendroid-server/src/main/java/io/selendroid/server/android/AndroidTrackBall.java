@@ -30,8 +30,8 @@ public class AndroidTrackBall implements TrackBall {
 	@Override
 	public void roll(int dx, int dy) {
 		long eventTime = SystemClock.uptimeMillis();
-		instrumentation.sendTrackballEventSync(MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_DOWN, dx, dy, 0));
-		instrumentation.waitForIdleSync();
+		instrumentation.getInstrumentation().sendTrackballEventSync(MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_DOWN, dx, dy, 0));
+		instrumentation.getInstrumentation().waitForIdleSync();
 	}
 }
 

@@ -225,7 +225,7 @@ public class SelendroidWebDriver {
 
   private String executeJavascriptInWebView(final String script) {
     result = null;
-    ServerInstrumentation.getInstance().getCurrentActivity().runOnUiThread(new Runnable() {
+    serverInstrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
       public void run() {
         if (webview.getUrl() == null) {
           return;
@@ -329,7 +329,7 @@ public class SelendroidWebDriver {
   }
 
   private void configureWebView(final WebView view) {
-    ServerInstrumentation.getInstance().getCurrentActivity().runOnUiThread(new Runnable() {
+    serverInstrumentation.getCurrentActivity().runOnUiThread(new Runnable() {
 
       @Override
       public void run() {

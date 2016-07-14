@@ -13,6 +13,7 @@
  */
 package io.selendroid.server.android;
 
+import io.selendroid.server.ServerInstrumentationProvider;
 import io.selendroid.server.model.Factories;
 import io.selendroid.server.ServerInstrumentation;
 import io.selendroid.server.util.InstanceOfPredicate;
@@ -164,7 +165,7 @@ public class ViewHierarchyAnalyzer {
     }
     String id = "";
     try {
-      Activity currentActivity = ServerInstrumentation.getInstance().getCurrentActivity();
+      Activity currentActivity = ServerInstrumentationProvider.getServerInstrumentationInstance().getCurrentActivity();
 
       Resources resources;
       if (currentActivity != null) {

@@ -37,8 +37,8 @@ public class FindRId implements NativeExecuteScript {
   public Object executeScript(JSONArray args) {
     Class rClazz;
     try {
-      rClazz = serverInstrumentation.getTargetContext().getClassLoader().loadClass(
-          serverInstrumentation.getTargetContext().getPackageName() +".R$id"
+      rClazz = serverInstrumentation.getInstrumentation().getTargetContext().getClassLoader().loadClass(
+          serverInstrumentation.getInstrumentation().getTargetContext().getPackageName() +".R$id"
       );
     } catch (ClassNotFoundException e) {
       SelendroidLogger.error("Cannot find id", e);

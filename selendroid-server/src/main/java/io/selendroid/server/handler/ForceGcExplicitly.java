@@ -14,6 +14,7 @@
 package io.selendroid.server.handler;
 
 import io.selendroid.server.ServerInstrumentation;
+import io.selendroid.server.ServerInstrumentationProvider;
 import io.selendroid.server.common.Response;
 import io.selendroid.server.common.SelendroidResponse;
 import io.selendroid.server.common.http.HttpRequest;
@@ -31,8 +32,8 @@ public class ForceGcExplicitly extends SafeRequestHandler {
   public Response safeHandle(HttpRequest request) throws JSONException {
     SelendroidLogger.info("force GC explicitly");
 
-    ServerInstrumentation instrumentation = ServerInstrumentation.getInstance();
-    instrumentation.runOnMainSync(new Runnable() {
+    ServerInstrumentation instrumentation = ServerInstrumentationProvider.getServerInstrumentationInstance();
+    instrumentation.getInstrumentation().runOnMainSync(new Runnable() {
       @Override
       public void run() {
         System.gc();

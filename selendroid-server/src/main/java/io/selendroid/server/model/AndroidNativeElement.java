@@ -34,7 +34,6 @@ import io.selendroid.server.util.Preconditions;
 import io.selendroid.server.util.SelendroidLogger;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -195,7 +194,7 @@ public class AndroidNativeElement implements AndroidElement {
     final int left = leftTopLocation.x;
     final int top = leftTopLocation.y;
 
-    instrumentation.runOnMainSync(new Runnable() {
+    instrumentation.getInstrumentation().runOnMainSync(new Runnable() {
       @Override
       public void run() {
         synchronized (syncObject) {
@@ -232,7 +231,7 @@ public class AndroidNativeElement implements AndroidElement {
 
   private void requestFocus() {
     final View viewview = getView();
-    instrumentation.runOnMainSync(new Runnable() {
+    instrumentation.getInstrumentation().runOnMainSync(new Runnable() {
       @Override
       public void run() {
         viewview.requestFocus();
@@ -271,7 +270,7 @@ public class AndroidNativeElement implements AndroidElement {
 
   private void clickOnScreen(float x, float y) {
     SelendroidLogger.debug(String.format("Clicking at position [%f, %f]", x, y));
-    final ServerInstrumentation inst = ServerInstrumentation.getInstance();
+    final ServerInstrumentation inst = instrumentation;
     long downTime = SystemClock.uptimeMillis();
     long eventTime = SystemClock.uptimeMillis();
     final MotionEvent event =
@@ -280,8 +279,8 @@ public class AndroidNativeElement implements AndroidElement {
         MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, x, y, 0);
 
     try {
-      inst.sendPointerSync(event);
-      inst.sendPointerSync(event2);
+      inst.getInstrumentation().sendPointerSync(event);
+      inst.getInstrumentation().sendPointerSync(event2);
       try {
         Thread.sleep(300);
       } catch (InterruptedException ignored) {}
@@ -446,7 +445,7 @@ public class AndroidNativeElement implements AndroidElement {
   @Override
   public void clear() {
     final View viewview = getView();
-    instrumentation.runOnMainSync(new Runnable() {
+    instrumentation.getInstrumentation().runOnMainSync(new Runnable() {
       @Override
       public void run() {
         viewview.requestFocus();
@@ -554,7 +553,7 @@ public class AndroidNativeElement implements AndroidElement {
     final Object[] result = new Object[1];
     final Exception[] exception = new Exception[1];
     final Method m = method;
-    instrumentation.runOnMainSync(new Runnable() {
+    instrumentation.getInstrumentation().runOnMainSync(new Runnable() {
       @Override
       public void run() {
         try {
@@ -605,7 +604,7 @@ public class AndroidNativeElement implements AndroidElement {
       sb.append(keys);
     }
     final String text = getText() + sb;
-    instrumentation.runOnMainSync(new Runnable() {
+    instrumentation.getInstrumentation().runOnMainSync(new Runnable() {
       @Override
       public void run() {
         ((EditText) viewview).setText(text);

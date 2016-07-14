@@ -67,9 +67,9 @@ public class IsElementDisplayedInViewport implements NativeExecuteScript {
     if (coordinates[1] + view.getHeight() < 0) return false;
 
     if (width == 0 || height == 0) {
-      if (instrumentation.getContext() == null) return false;
+      if (instrumentation.getInstrumentation().getContext() == null) return false;
       Display display =
-          ((WindowManager) instrumentation.getContext().getSystemService(Context.WINDOW_SERVICE))
+          ((WindowManager) instrumentation.getInstrumentation().getContext().getSystemService(Context.WINDOW_SERVICE))
               .getDefaultDisplay();
       try {
         android.graphics.Point screenSize = new android.graphics.Point();
