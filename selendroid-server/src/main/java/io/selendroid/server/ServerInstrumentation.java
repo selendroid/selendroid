@@ -16,15 +16,21 @@ package io.selendroid.server;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.PowerManager;
+import android.os.RemoteException;
 import android.provider.CallLog;
 import android.util.Log;
 import android.support.test.runner.AndroidJUnitRunner;
@@ -37,15 +43,20 @@ import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.utils.CallLogEntry;
 import io.selendroid.server.extension.ExtensionLoader;
 import io.selendroid.server.model.ExternalStorage;
+import io.selendroid.server.util.Function;
 import io.selendroid.server.util.Intents;
 import io.selendroid.server.util.SelendroidLogger;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import static io.selendroid.server.AccessibilityServiceInteractionService.*;
 
 public class ServerInstrumentation extends AndroidJUnitRunner implements ServerDetails {
   private ActivitiesReporter activitiesReporter = new ActivitiesReporter();
@@ -56,6 +67,64 @@ public class ServerInstrumentation extends AndroidJUnitRunner implements ServerD
   private AndroidServer server;
   private PowerManager.WakeLock wakeLock;
   private int serverPort = 8080;
+
+  private boolean accessibilityServiceStarted = false;
+  private JSONObject accessibilityExtensionResult = null;
+  private final Messenger client = new Messenger(new AccessibilityServiceInteractionHandler());
+  private Messenger service;
+  private ServiceConnection serviceConnection = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+      try {
+        ServerInstrumentation.this.service = new Messenger(service);
+
+        Message registerMsg = Message.obtain(null, MSG_REGISTER_CLIENT);
+        registerMsg.replyTo = client;
+        Bundle data = new Bundle();
+        if (args.isLoadExtensions()) {
+          data.putString(EXTRA_EXTENSION_DEX_PATH, ExternalStorage.getExtensionDex().getAbsolutePath());
+        }
+        registerMsg.setData(data);
+
+        ServerInstrumentation.this.service.send(registerMsg);
+
+        ServerInstrumentation.this.service.send(Message.obtain(null, MSG_START_ACCESSIBILITY_SERVICE));
+      } catch (RemoteException e) {
+        e.printStackTrace();
+      }
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+
+    }
+  };
+  private class AccessibilityServiceInteractionHandler extends Handler {
+    @Override
+    public void handleMessage(Message msg) {
+      switch (msg.what) {
+        case MSG_STARTED_ACCESSIBILITY_SERVICE:
+          accessibilityServiceStarted = true;
+          break;
+        case MSG_STOPPED_ACCESSIBILITY_SERVICE:
+          accessibilityServiceStarted = false;
+          break;
+        case MSG_EXECUTE_ACCESSIBILITY_EXTENSION:
+          try {
+            String response = msg.getData().getString(EXTRA_EXTENSION_RESULT);
+            accessibilityExtensionResult = new JSONObject();
+            if (response != null) {
+              JSONObject result = new JSONObject(msg.getData().getString(EXTRA_EXTENSION_RESULT));
+              accessibilityExtensionResult.put("payload", result);
+            }
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
+        default:
+          super.handleMessage(msg);
+      }
+    }
+  }
 
   /**
    * Arguments this instrumentation was started with.
@@ -102,6 +171,11 @@ public class ServerInstrumentation extends AndroidJUnitRunner implements ServerD
     });
   }
 
+  @Override
+  public void onStart() {
+    super.onStart();
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public void onCreate(Bundle arguments) {
@@ -125,6 +199,81 @@ public class ServerInstrumentation extends AndroidJUnitRunner implements ServerD
     callBeforeApplicationCreateBootstraps();
 
     super.onCreate(arguments);
+  }
+
+  public void doAccessibilityServiceSetup() {
+    Intent enableIntent = new Intent(getContext(), AccessibilityServiceInteractionService.class);
+    getContext().bindService(enableIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+    AndroidWait wait = new AndroidWait();
+    wait.setTimeoutInMillis(20000); // Wait for up to 20s
+    Boolean success = wait.until(new Function<Void, Boolean>() {
+      @Override
+      public Boolean apply(Void input) {
+        return accessibilityServiceStarted;
+      }
+    });
+
+    if (!success) {
+      throw new SelendroidException("AccessibilityService setup timed out :(");
+    }
+  }
+
+  public void doAccessibilityTearDown() {
+    try {
+      service.send(Message.obtain(null, MSG_STOP_ACCESSIBILITY_SERVICE));
+
+      AndroidWait wait = new AndroidWait();
+      wait.setTimeoutInMillis(20000); // Wait for up to 20s
+      Boolean success = wait.until(new Function<Void, Boolean>() {
+        @Override
+        public Boolean apply(Void input) {
+          return !accessibilityServiceStarted;
+        }
+      });
+
+      if (!success) {
+        throw new SelendroidException("AccessibilityService tearDown timed out :(");
+      }
+    } catch (RemoteException e) {
+      throw new SelendroidException(e);
+    }
+  }
+
+  public JSONObject executeAccessibilityExtension(String extensionClassName, JSONObject payload) {
+    JSONObject result = null;
+
+    try {
+      Bundle data = new Bundle();
+      data.putString(EXTRA_EXTENSION_CLASS_NAME, extensionClassName);
+      data.putString(EXTRA_PAYLOAD, payload.toString());
+
+      Message message = Message.obtain(null, MSG_EXECUTE_ACCESSIBILITY_EXTENSION);
+      message.setData(data);
+      service.send(message);
+
+      AndroidWait wait = new AndroidWait();
+      wait.setTimeoutInMillis(20000); // Wait for up to 20 seconds
+      Boolean success = wait.until(new Function<Void, Boolean>() {
+        @Override
+        public Boolean apply(Void input) {
+          return accessibilityExtensionResult != null;
+        }
+      });
+
+      if (success != null && Boolean.TRUE.equals(success)) {
+        result = accessibilityExtensionResult;
+        accessibilityExtensionResult = null;
+      }
+    } catch (RemoteException e) {
+      throw new SelendroidException(e);
+    }
+
+    return result;
+  }
+
+  public boolean isWithAccessibilityService() {
+    return args != null && args.isWithAccessibilityService();
   }
 
   private boolean isValidPort(int port) {
@@ -186,16 +335,19 @@ public class ServerInstrumentation extends AndroidJUnitRunner implements ServerD
     throw new SelendroidException("Could not find any views");
   }
 
+  public void stopServer() {
+    if (server != null) {
+      server.stop();
+      server = null;
+    }
+  }
+
   @Override
   public void onDestroy() {
     try {
       if (wakeLock != null) {
         wakeLock.release();
         wakeLock = null;
-      }
-      if (server != null) {
-        server.stop();
-        server = null;
       }
     } catch (Exception e) {
       SelendroidLogger.error("Error shutting down: ", e);

@@ -174,6 +174,9 @@ public class SelendroidConfiguration {
   @Parameter(names = "-deleteTmpFiles", description = "Deletes temporary files created by the Selendroid Server.")
   private boolean deleteTmpFiles = true;
 
+  @Parameter(names = "-withAccessibilityService", description = "Whether the instrumentation should enable accessiblity mode on startup")
+  private boolean withAccessibilityService = false;
+
   public void setKeystore(String keystore) {
     this.keystore = keystore;
   }
@@ -479,5 +482,13 @@ public class SelendroidConfiguration {
 
   public void setReuseSelendroidServerPort(boolean reuseSelendroidServerPort) {
     this.reuseSelendroidServerPort = reuseSelendroidServerPort;
+  }
+
+  public boolean isWithAccessibilityService() {
+    return withAccessibilityService;
+  }
+
+  public void setWithAccessibilityService(boolean withAccessibilityService) {
+    this.withAccessibilityService = withAccessibilityService;
   }
 }

@@ -255,6 +255,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     List<String> argList = Lists.newArrayList(
         "-e", "main_activity", aut.getMainActivity(),
         "-e", "server_port", Integer.toString(port),
+        "-e", "with_accessibility_service", Boolean.toString(capabilities.getWithAccessibilityService()),
         "-e", "timeout_msec", "0"); // Set no timeout for the looper thread
     if (capabilities.getSelendroidExtensions() != null) {
       argList.addAll(Lists.newArrayList("-e", "load_extensions", "true"));

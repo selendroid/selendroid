@@ -203,6 +203,19 @@ public class SelendroidServerBuilder {
     IOUtils.closeQuietly(inputStream);
     IOUtils.closeQuietly(outputStream);
 
+    inputStream = getResourceAsStream("/prebuild/accessibilityservice.xml");
+    File accessibilityServiceRes = new File(tmpDir, "res/xml/accessibilityservice.xml");
+    accessibilityServiceRes.getParentFile().mkdirs();
+
+    outputStream = new FileOutputStream(accessibilityServiceRes);
+    IOUtils.write(IOUtils.toString(inputStream), outputStream, Charset.defaultCharset().displayName());
+    IOUtils.closeQuietly(inputStream);
+    IOUtils.closeQuietly(outputStream);
+
+    if (deleteTmpFiles()) {
+      accessibilityServiceRes.deleteOnExit();
+    }
+
     // adding the xml to an empty apk
     CommandLine createManifestApk = new CommandLine(AndroidSdk.aapt());
 
@@ -216,6 +229,8 @@ public class SelendroidServerBuilder {
     createManifestApk.addArgument(customizedManifest.getAbsolutePath(), false);
     createManifestApk.addArgument("-I", false);
     createManifestApk.addArgument(AndroidSdk.androidJar(), false);
+    createManifestApk.addArgument("-S", false);
+    createManifestApk.addArgument(tmpDir.getAbsolutePath() + "/res/", false);
     createManifestApk.addArgument("-F", false);
     createManifestApk.addArgument(manifestApkFile.getAbsolutePath(), false);
     createManifestApk.addArgument("-f", false);

@@ -16,7 +16,9 @@ package io.selendroid.server.extension;
 import android.app.Instrumentation;
 import android.content.Context;
 import dalvik.system.DexClassLoader;
+import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.selendroid.server.common.BaseRequestHandler;
+import io.selendroid.server.common.exceptions.BaseAccessibilityExtension;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.util.SelendroidLogger;
 
@@ -116,5 +118,11 @@ public class ExtensionLoader {
     Constructor<? extends BaseRequestHandler> constructor =
         handlerClass.getConstructor(String.class);
     return constructor.newInstance(uri);
+  }
+
+  public BaseAccessibilityExtension loadAccessibilityExtension(String extensionClassName)
+          throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    return classLoader.loadClass(extensionClassName).asSubclass(BaseAccessibilityExtension.class).newInstance();
+
   }
 }
