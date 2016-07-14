@@ -45,12 +45,13 @@ public class BaseTest {
   public static final String host = "127.0.0.1";
   protected AndroidServer server;
   public static final String ANY_STRING = "ANY-STRING";
+  private static String AUTOMATION_NAME = "selendroid";
 
   @Before
   public void setup() throws Exception {
     ServerInstrumentation instrumentation = mock(ServerInstrumentation.class);
     when(instrumentation.getServerVersion()).thenReturn("0.2");
-    server = new AndroidServer(instrumentation, port);
+    server = new AndroidServer(instrumentation, port, AUTOMATION_NAME);
     server.start();
   }
 

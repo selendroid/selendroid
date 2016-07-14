@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.18.0-SNAPSHOT" package="io.selendroid.server">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:versionCode="1"
+    android:versionName="0.18.0-SNAPSHOT"
+    package="io.selendroid.server">
 
-    <uses-sdk android:minSdkVersion="10"/>
+    <uses-sdk android:minSdkVersion="10" tools:overrideLibrary="android.support.test.uiautomator.v18"/>
 
     <instrumentation android:name="io.selendroid.server.ServerInstrumentation" android:targetPackage="io.selendroid.testapp"/>
     <instrumentation android:name="io.selendroid.server.LightweightInstrumentation" android:targetPackage="io.selendroid.testapp"/>
@@ -13,7 +17,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
 
-    <application android:debuggable="true" android:icon="@drawable/selenium_icon" android:label="Selendroid">
+    <application android:icon="@drawable/selenium_icon" android:label="Selendroid">
         <uses-library android:name="android.test.runner"/>
     </application>
 

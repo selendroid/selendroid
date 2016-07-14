@@ -23,15 +23,17 @@ import io.selendroid.server.model.SelendroidDriver;
 public class AndroidServer {
   private int driverPort = 8080;
   private HttpServer webServer;
+  private String automationName;
 
-  public AndroidServer(ServerInstrumentation androidInstrumentation, int port) {
+  public AndroidServer(ServerInstrumentation androidInstrumentation, int port, String automationName) {
     driverPort = port;
     webServer = new HttpServer(driverPort);
+    this.automationName = automationName;
     init(androidInstrumentation);
   }
 
   protected void init(ServerInstrumentation androidInstrumentation) {
-    SelendroidDriver driver = Factories.getSelendroidDriverFactory().createSelendroidDriver(androidInstrumentation);
+    SelendroidDriver driver = Factories.getSelendroidDriverFactory().createSelendroidDriver(androidInstrumentation, automationName);
     webServer.addHandler(new StatusServlet(androidInstrumentation));
     webServer.addHandler(new InspectorServlet(driver, androidInstrumentation));
     webServer.addHandler(new AndroidServlet(driver, androidInstrumentation.getExtensionLoader()));

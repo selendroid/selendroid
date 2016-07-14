@@ -28,6 +28,7 @@ public class InstrumentationArguments {
   private final boolean loadExtensions;
   private final String bootstrapClassNames;
   private final String serverPort;
+  private final String automationName;
 
   public InstrumentationArguments(Bundle arguments) {
     mainActivityClassName = arguments.getString("main_activity");
@@ -37,6 +38,7 @@ public class InstrumentationArguments {
     loadExtensions = Boolean.parseBoolean(arguments.getString("load_extensions"));
     bootstrapClassNames = arguments.getString("bootstrap");
     serverPort = arguments.getString("server_port");
+    automationName = arguments.getString("automationName");
   }
 
   /** Full class name of the activity to start. */
@@ -69,5 +71,10 @@ public class InstrumentationArguments {
   /** The port at which the server should listen. */
   public String getServerPort() {
     return serverPort;
+  }
+
+  /** Automation Name to decide which driver to select */
+  public String getAutomationName() {
+    return automationName;
   }
 }
