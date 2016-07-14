@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.PowerManager;
 import android.provider.CallLog;
 import android.view.View;
 import io.selendroid.server.android.ActivitiesReporter;
@@ -32,10 +34,13 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
     private InstrumentationArguments args;
     private AndroidWait androidWait;
     private ActivitiesReporter activitiesReporter;
-    private SelendroidBootstrap bootstrap;
+    protected int serverPort;
+    private HttpdThread serverThread;
+    protected PowerManager.WakeLock wakeLock;
     private ExtensionLoader extensionLoader;
 
-    public DefaultServerInstrumentation(Instrumentation instrumentation, InstrumentationArguments args) {
+    public DefaultServerInstrumentation(Instrumentation instrumentation,
+                                        InstrumentationArguments args) {
         this.instrumentation = instrumentation;
         this.args = args;
 
@@ -46,7 +51,6 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
             extensionLoader = new ExtensionLoader(instrumentation.getTargetContext());
         }
 
-        bootstrap = new DefaultSelendroidBootstrap(this, args, extensionLoader);
         activitiesReporter = new ActivitiesReporter();
         androidWait = new AndroidWait();
     }
@@ -54,20 +58,20 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
     @Override
     public void onCreate() {
         Handler mainThreadHandler = new Handler();
-        bootstrap.onCreate();
+        serverPort = Integer.parseInt(args.getServerPort());
 
         // Queue bootstrapping and starting of the main activity on the main thread.
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                bootstrap.callAfterApplicationCreateBootstraps();
+                callAfterApplicationCreateBootstraps();
                 if (args.getServiceClassName() != null) {
                     startService();
                 } else {
                     startMainActivity();
                 }
                 try {
-                    bootstrap.startServer();
+                    startServer();
                 } catch (Exception e) {
                     SelendroidLogger.error("Failed to start Selendroid server", e);
                 }
@@ -77,8 +81,15 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
 
     @Override
     public void onDestroy() {
-        bootstrap.onDestroy();
-        bootstrap.stopServer();
+        try {
+            if (wakeLock != null) {
+                wakeLock.release();
+                wakeLock = null;
+            }
+        } catch (Exception e) {
+            SelendroidLogger.error("Error shutting down: ", e);
+        }
+        stopServer();
     }
 
     @Override
@@ -113,6 +124,42 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
         // Start the new activity
         Intent intent = Intents.createStartActivityIntent(instrumentation.getTargetContext(), activityClassName);
         instrumentation.getTargetContext().startActivity(intent);
+    }
+
+    @Override
+    public void startServer() {
+        if (serverThread != null && serverThread.isAlive()) {
+            return;
+        }
+
+        if (serverThread != null) {
+            SelendroidLogger.info("Stopping selendroid http server");
+            stopServer();
+        }
+
+        serverThread = new HttpdThread(this, serverPort);
+        serverThread.startServer();
+    }
+
+    @Override
+    public void stopServer() {
+        if (serverThread == null) {
+            return;
+        }
+        if (!serverThread.isAlive()) {
+            serverThread = null;
+            return;
+        }
+
+        SelendroidLogger.info("Stopping selendroid http server");
+        serverThread.stopLooping();
+        serverThread.interrupt();
+        try {
+            serverThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        serverThread = null;
     }
 
     @Override
@@ -292,15 +339,69 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
         }
     }
 
-    private void chch() {
-        String destination;
-        if (args.getServiceClassName() != null) {
-            destination = "service: " + args.getServiceClassName() + ", action: " + args.getIntentAction();
-        } else if (args.getActivityClassName() != null) {
-            destination = "main activity: " + args.getActivityClassName();
-        } else {
-            destination = "URI: " + args.getIntentUri() + ", action: " + args.getIntentAction();
+    public void callBeforeApplicationCreateBootstraps() {
+        if (!args.isLoadExtensions() || args.getBootstrapClassNames() != null) {
+            return;
         }
-        SelendroidLogger.info("Instrumentation initialized with " + destination);
+        extensionLoader.runBeforeApplicationCreateBootstrap(instrumentation, args.getBootstrapClassNames().split(","));
+    }
+
+    public void callAfterApplicationCreateBootstraps() {
+        if (!args.isLoadExtensions() || args.getBootstrapClassNames() != null) {
+            return;
+        }
+        extensionLoader.runAfterApplicationCreateBootstrap(instrumentation, args.getBootstrapClassNames().split(","));
+    }
+
+    private class HttpdThread extends Thread {
+
+        private final AndroidServer server;
+        private ServerInstrumentation instrumentation = null;
+        private Looper looper;
+
+        public HttpdThread(ServerInstrumentation instrumentation, int serverPort) {
+            this.instrumentation = instrumentation;
+            // Create the server but absolutely do not start it here
+            server = new AndroidServer(this.instrumentation, serverPort);
+        }
+
+        @Override
+        public void run() {
+            Looper.prepare();
+            looper = Looper.myLooper();
+            startServer();
+            Looper.loop();
+        }
+
+        public AndroidServer getServer() {
+            return server;
+        }
+
+        private void startServer() {
+            try {
+                // Get a wake lock to stop the cpu going to sleep
+                PowerManager pm = (PowerManager) instrumentation.getInstrumentation().getContext().getSystemService(Context.POWER_SERVICE);
+                wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
+                try {
+                    wakeLock.acquire();
+                } catch (SecurityException e) {
+                }
+
+                server.start();
+
+                SelendroidLogger.info("Started selendroid http server on port " + server.getPort());
+            } catch (Exception e) {
+                SelendroidLogger.error("Error starting httpd.", e);
+
+                throw new SelendroidException("Httpd failed to start!");
+            }
+        }
+
+        public void stopLooping() {
+            if (looper == null) {
+                return;
+            }
+            looper.quit();
+        }
     }
 }

@@ -31,6 +31,8 @@ public interface ServerInstrumentation extends ServerDetails {
   void startService(String serviceClassName, String intentAction);
   void startMainActivity();
   void startActivity(String activityClassName);
+  void startServer();
+  void stopServer();
   View getRootView();
   ActivitiesReporter getActivitiesReporter();
   Activity getCurrentActivity();
