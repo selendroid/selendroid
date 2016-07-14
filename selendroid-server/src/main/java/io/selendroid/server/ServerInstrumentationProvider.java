@@ -7,9 +7,9 @@ import io.selendroid.server.common.exceptions.SelendroidException;
 public class ServerInstrumentationProvider {
     public static ServerInstrumentation getServerInstrumentationInstance() {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        if (!(instrumentation instanceof ServerInstrumentation)) {
-            throw new SelendroidException("Instrumentation is not an instance of ServerInstrumentation");
+        if (!(instrumentation instanceof DelegatesToServerInstrumentation)) {
+            throw new SelendroidException("Instrumentation does not use ServerInstrumentation");
         }
-        return (ServerInstrumentation) instrumentation;
+        return ((DelegatesToServerInstrumentation) instrumentation).getServerInstrumentation();
     }
 }
