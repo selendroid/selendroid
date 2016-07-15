@@ -420,6 +420,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     SelendroidCapabilities desiredCapabilities;// Convert the JSON capabilities to SelendroidCapabilities
     try {
       desiredCapabilities = new SelendroidCapabilities(caps);
+      desiredCapabilities.setUseJunitRunner(serverConfiguration.isUseJUnitRunner());
     } catch (JSONException e) {
       throw new SelendroidException("Desired capabilities cannot be parsed.");
     }

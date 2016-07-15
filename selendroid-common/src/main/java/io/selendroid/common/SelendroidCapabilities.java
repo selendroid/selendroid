@@ -59,6 +59,8 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String SELENDROID_EXTENSIONS = "selendroidExtensions";
   public static final String BOOTSTRAP_CLASS_NAMES = "bootstrapClassNames";
 
+  public static final String USE_JUNIT_RUNNER = "userJUnitRunner";
+
   public static SelendroidCapabilities empty() {
     return new SelendroidCapabilities(new HashMap<String, Object>());
   }
@@ -78,7 +80,6 @@ public class SelendroidCapabilities extends DesiredCapabilities {
         || getRawCapabilities().get(SERIAL).equals(JSONObject.NULL)) return null;
     return (String) getRawCapabilities().get(SERIAL);
   }
-
 
   public String getPlatformVersion() {
     return (String) getRawCapabilities().get(PLATFORM_VERSION);
@@ -109,6 +110,11 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     if (getRawCapabilities().get(EMULATOR) == null
         || getRawCapabilities().get(EMULATOR).equals(JSONObject.NULL)) return null;
     return getBooleanCapability(EMULATOR);
+  }
+
+  public boolean getUseJUnitRunner() {
+    Boolean useJUnitRunner = getBooleanCapability(USE_JUNIT_RUNNER);
+    return useJUnitRunner != null ? useJUnitRunner : false;
   }
 
   public String getPlatformName() {
@@ -178,6 +184,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public void setEmulator(Boolean emulator) {
     setCapability(EMULATOR, emulator);
+  }
+
+  public void setUseJunitRunner(Boolean useJUnitRunner) {
+    setCapability(USE_JUNIT_RUNNER, useJUnitRunner);
   }
 
   public void setLocale(String locale) {
