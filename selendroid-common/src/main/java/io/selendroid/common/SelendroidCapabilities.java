@@ -59,7 +59,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String SELENDROID_EXTENSIONS = "selendroidExtensions";
   public static final String BOOTSTRAP_CLASS_NAMES = "bootstrapClassNames";
 
-  public static final String USE_JUNIT_RUNNER = "userJUnitRunner";
+  public static final String USE_JUNIT_BOOTSTRAP = "useJUnitBootstrap";
 
   public static SelendroidCapabilities empty() {
     return new SelendroidCapabilities(new HashMap<String, Object>());
@@ -112,8 +112,8 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return getBooleanCapability(EMULATOR);
   }
 
-  public boolean getUseJUnitRunner() {
-    Boolean useJUnitRunner = getBooleanCapability(USE_JUNIT_RUNNER);
+  public boolean getUseJUnitBootstrap() {
+    Boolean useJUnitRunner = getBooleanCapability(USE_JUNIT_BOOTSTRAP);
     return useJUnitRunner != null ? useJUnitRunner : false;
   }
 
@@ -187,7 +187,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   }
 
   public void setUseJunitRunner(Boolean useJUnitRunner) {
-    setCapability(USE_JUNIT_RUNNER, useJUnitRunner);
+    setCapability(USE_JUNIT_BOOTSTRAP, useJUnitRunner);
   }
 
   public void setLocale(String locale) {

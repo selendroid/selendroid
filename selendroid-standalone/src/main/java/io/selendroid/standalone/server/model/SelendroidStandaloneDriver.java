@@ -34,7 +34,6 @@ import io.selendroid.standalone.builder.AndroidDriverAPKBuilder;
 import io.selendroid.standalone.builder.SelendroidServerBuilder;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
-import io.selendroid.standalone.exceptions.ShellCommandException;
 import io.selendroid.standalone.server.util.FolderMonitor;
 import io.selendroid.standalone.server.util.HttpClientUtil;
 import org.json.JSONArray;
@@ -420,7 +419,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     SelendroidCapabilities desiredCapabilities;// Convert the JSON capabilities to SelendroidCapabilities
     try {
       desiredCapabilities = new SelendroidCapabilities(caps);
-      desiredCapabilities.setUseJunitRunner(serverConfiguration.isUseJUnitRunner());
+      desiredCapabilities.setUseJunitRunner(serverConfiguration.isUseJUnitBootstrap());
     } catch (JSONException e) {
       throw new SelendroidException("Desired capabilities cannot be parsed.");
     }
