@@ -30,8 +30,9 @@ import java.util.List;
 import java.util.Set;
 
 public class DefaultServerInstrumentation implements ServerInstrumentation {
+    public static final int DEFAULT_SERVER_PORT = 8080;
     private Instrumentation instrumentation;
-    private InstrumentationArguments args;
+    protected InstrumentationArguments args;
     private AndroidWait androidWait;
     private ActivitiesReporter activitiesReporter;
     protected int serverPort;
@@ -58,7 +59,7 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
     @Override
     public void onCreate() {
         Handler mainThreadHandler = new Handler();
-        serverPort = Integer.parseInt(args.getServerPort());
+        serverPort = parseServerPort(args.getServerPort());
 
         // Queue bootstrapping and starting of the main activity on the main thread.
         mainThreadHandler.post(new Runnable() {
@@ -403,5 +404,23 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
             }
             looper.quit();
         }
+    }
+
+    protected int parseServerPort(String port) {
+        int parsedServerPort;
+        try {
+                parsedServerPort = Integer.parseInt(port);
+            } catch (NumberFormatException e) {
+                SelendroidLogger.info("Failed to parse server port, defaulting to 8080");
+                parsedServerPort = DEFAULT_SERVER_PORT;
+            }
+                if (!isValidPort(parsedServerPort)) {
+            SelendroidLogger.info("Invalid port " + parsedServerPort + ", defaulting to " + DEFAULT_SERVER_PORT);
+        }
+        return parsedServerPort;
+    }
+
+    private boolean isValidPort(int port) {
+        return port >= 1024 && port <= 65535;
     }
 }

@@ -4,6 +4,7 @@
     <uses-sdk android:minSdkVersion="10"/>
 
     <instrumentation android:name="io.selendroid.server.SelendroidInstrumentation" android:targetPackage="io.selendroid.testapp"/>
+    <instrumentation android:name="io.selendroid.server.JUnitRunnerInstrumentation" android:targetPackage="io.selendroid.testapp"/>
     <instrumentation android:name="io.selendroid.server.LightweightInstrumentation" android:targetPackage="io.selendroid.testapp"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
