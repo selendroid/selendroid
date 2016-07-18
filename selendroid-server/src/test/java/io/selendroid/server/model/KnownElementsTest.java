@@ -137,7 +137,7 @@ public class KnownElementsTest {
     when(view.getId()).thenReturn(id);
 
     ServerInstrumentation instrumentation = mock(ServerInstrumentation.class);
-    KeySender keys = new InstrumentedKeySender(instrumentation);
+    KeySender keys = new InstrumentedKeySender(instrumentation.getInstrumentation());
     return Factories.getAndroidNativeElementFactory().createAndroidNativeElement(view, instrumentation, keys, ke);
   }
 

@@ -192,7 +192,7 @@ public class AndroidTouchScreen implements TouchScreen {
     long downTime = SystemClock.uptimeMillis();
     long eventTime = SystemClock.uptimeMillis();
     Point point = where.getLocationOnScreen();
-    Instrumentation inst = instrumentation;
+    Instrumentation inst = instrumentation.getInstrumentation();
 
     MotionEvent event = null;
     boolean isSuccess = false;
@@ -389,7 +389,7 @@ public class AndroidTouchScreen implements TouchScreen {
 
   @Override
   public float getBrightness() {
-    PowerManager powerManager = (PowerManager) instrumentation.getContext().getSystemService(Context.POWER_SERVICE);
+    PowerManager powerManager = (PowerManager) instrumentation.getInstrumentation().getContext().getSystemService(Context.POWER_SERVICE);
 
     if (!powerManager.isScreenOn()) {
       return 0f;
@@ -408,7 +408,7 @@ public class AndroidTouchScreen implements TouchScreen {
       brightness = 1;
     }
 
-    PowerManager powerManager = (PowerManager) instrumentation.getContext().getSystemService(Context.POWER_SERVICE);
+    PowerManager powerManager = (PowerManager) instrumentation.getInstrumentation().getContext().getSystemService(Context.POWER_SERVICE);
     final Window window = instrumentation.getCurrentActivity().getWindow();
     final WindowManager.LayoutParams attributes = window.getAttributes();
     PowerManager.WakeLock wakeLock = null;
@@ -434,7 +434,7 @@ public class AndroidTouchScreen implements TouchScreen {
           }
         }
     );
-    instrumentation.waitForIdleSync();
+    instrumentation.getInstrumentation().waitForIdleSync();
 
     if (wakeLock != null) {
       try {

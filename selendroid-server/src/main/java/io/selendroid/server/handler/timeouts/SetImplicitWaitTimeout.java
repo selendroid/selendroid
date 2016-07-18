@@ -15,6 +15,7 @@ package io.selendroid.server.handler.timeouts;
 
 import io.selendroid.server.ServerInstrumentation;
 
+import io.selendroid.server.ServerInstrumentationProvider;
 import org.json.JSONException;
 
 import io.selendroid.server.common.Response;
@@ -34,7 +35,7 @@ public class SetImplicitWaitTimeout extends SafeRequestHandler {
     SelendroidLogger.info("set implicit wait timeout called");
     Long timeout = getPayload(request).getLong("ms");
     
-    ServerInstrumentation.getInstance().setImplicitWait(timeout);
+    ServerInstrumentationProvider.getServerInstrumentationInstance().setImplicitWait(timeout);
 
     return new SelendroidResponse(getSessionId(request), "");
   }

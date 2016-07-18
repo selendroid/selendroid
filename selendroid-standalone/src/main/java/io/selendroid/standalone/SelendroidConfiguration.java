@@ -174,6 +174,9 @@ public class SelendroidConfiguration {
   @Parameter(names = "-deleteTmpFiles", description = "Deletes temporary files created by the Selendroid Server.")
   private boolean deleteTmpFiles = true;
 
+  @Parameter(names = "-useJUnitBootstrap", description = "Use instrumentation that extends AdroidJUnitRunner")
+  private boolean useJUnitBootstrap = false;
+
   public void setKeystore(String keystore) {
     this.keystore = keystore;
   }
@@ -479,5 +482,13 @@ public class SelendroidConfiguration {
 
   public void setReuseSelendroidServerPort(boolean reuseSelendroidServerPort) {
     this.reuseSelendroidServerPort = reuseSelendroidServerPort;
+  }
+
+  public boolean isUseJUnitBootstrap() {
+    return useJUnitBootstrap;
+  }
+
+  public void setUseJUnitBootstrap(boolean useJUnitBootstrap) {
+    this.useJUnitBootstrap = useJUnitBootstrap;
   }
 }

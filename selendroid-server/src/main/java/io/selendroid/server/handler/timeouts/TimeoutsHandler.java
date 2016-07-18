@@ -2,6 +2,7 @@ package io.selendroid.server.handler.timeouts;
 
 import io.selendroid.server.ServerInstrumentation;
 
+import io.selendroid.server.ServerInstrumentationProvider;
 import org.json.JSONException;
 
 import io.selendroid.server.common.Response;
@@ -20,7 +21,7 @@ public class TimeoutsHandler extends SafeRequestHandler {
     if (type.equals("script")) {
       getSelendroidDriver(request).setAsyncTimeout(timeout);
     } else if (type.equals("implicit")) {
-      ServerInstrumentation.getInstance().setImplicitWait(timeout);
+      ServerInstrumentationProvider.getServerInstrumentationInstance().setImplicitWait(timeout);
     } else if (type.equals("page load")) {
       getSelendroidDriver(request).setPageLoadTimeout(timeout);
     } else {

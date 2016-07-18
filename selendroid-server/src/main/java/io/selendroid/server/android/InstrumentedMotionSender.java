@@ -29,9 +29,9 @@ public class InstrumentedMotionSender implements MotionSender {
   @Override
   public boolean send(Iterable<MotionEvent> events) {
     try {
-      instrumentation.waitForIdleSync();
+      instrumentation.getInstrumentation().waitForIdleSync();
       for (MotionEvent event : events) {
-        instrumentation.sendPointerSync(event);
+        instrumentation.getInstrumentation().sendPointerSync(event);
       }
       return true;
     } catch (SecurityException ignored) {

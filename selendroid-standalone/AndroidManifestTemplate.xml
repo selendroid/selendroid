@@ -3,7 +3,9 @@
 
     <uses-sdk android:minSdkVersion="10"/>
 
+    <instrumentation android:name="io.selendroid.server.SelendroidInstrumentation" android:targetPackage="io.selendroid.testapp"/>
     <instrumentation android:name="io.selendroid.server.ServerInstrumentation" android:targetPackage="io.selendroid.testapp"/>
+    <instrumentation android:name="io.selendroid.server.JUnitRunnerInstrumentation" android:targetPackage="io.selendroid.testapp"/>
     <instrumentation android:name="io.selendroid.server.LightweightInstrumentation" android:targetPackage="io.selendroid.testapp"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -13,8 +15,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
 
-    <application android:debuggable="true" android:icon="@drawable/selenium_icon" android:label="Selendroid">
-        <uses-library android:name="android.test.runner"/>
-    </application>
+    <application android:debuggable="true" android:icon="@drawable/selenium_icon" android:label="Selendroid"/>
 
 </manifest>

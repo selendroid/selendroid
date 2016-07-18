@@ -48,7 +48,7 @@ public class ResourceView extends SelendroidInspectorView {
       try {
         String filename =
             "inspector" + request.uri().replaceFirst(InspectorServlet.INSPECTOR_RESSOURCE, "");
-        InputStream asset = serverInstrumentation.getContext().getAssets().open(filename);
+        InputStream asset = serverInstrumentation.getInstrumentation().getContext().getAssets().open(filename);
 
         httpResponse.setContent(toByteArray(asset));
       } catch (IOException e) {
