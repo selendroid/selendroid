@@ -18,12 +18,14 @@ import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.test.InstrumentationRegistry;
 
 public class SelendroidInstrumentation extends Instrumentation implements DelegatesToServerInstrumentation {
     private ServerInstrumentation delegateInstrumentation;
 
     @Override
     public void onCreate(Bundle arguments) {
+        InstrumentationRegistry.registerInstance(this, arguments);
         delegateInstrumentation = new DefaultServerInstrumentation(this, new InstrumentationArguments(arguments));
         delegateInstrumentation.onCreate();
     }

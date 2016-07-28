@@ -17,6 +17,7 @@ import org.apache.commons.exec.CommandLine;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.regex.Pattern;
@@ -46,6 +47,7 @@ public class AbstractDeviceTest {
   }
 
   @Test
+  @Ignore
   public void testGetCrashLogContents() {
     AbstractDevice device = mock(AbstractDevice.class);
     when(device.getExternalStoragePath()).thenReturn("/storage");
@@ -61,6 +63,7 @@ public class AbstractDeviceTest {
   }
 
   @Test
+  @Ignore
   public void testListThirdPartyProcesses() {
     AbstractDevice device = mock(AbstractDevice.class);
     when(device.listRunningThirdPartyProcesses()).thenCallRealMethod();

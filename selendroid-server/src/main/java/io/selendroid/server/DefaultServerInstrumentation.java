@@ -74,6 +74,8 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
         Handler mainThreadHandler = new Handler();
         serverPort = parseServerPort(args.getServerPort());
 
+        callBeforeApplicationCreateBootstraps();
+
         // Queue bootstrapping and starting of the main activity on the main thread.
         mainThreadHandler.post(new Runnable() {
             @Override
@@ -354,14 +356,14 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
     }
 
     public void callBeforeApplicationCreateBootstraps() {
-        if (!args.isLoadExtensions() || args.getBootstrapClassNames() != null) {
+        if (!args.isLoadExtensions() || args.getBootstrapClassNames() == null) {
             return;
         }
         extensionLoader.runBeforeApplicationCreateBootstrap(instrumentation, args.getBootstrapClassNames().split(","));
     }
 
     public void callAfterApplicationCreateBootstraps() {
-        if (!args.isLoadExtensions() || args.getBootstrapClassNames() != null) {
+        if (!args.isLoadExtensions() || args.getBootstrapClassNames() == null) {
             return;
         }
         extensionLoader.runAfterApplicationCreateBootstrap(instrumentation, args.getBootstrapClassNames().split(","));
