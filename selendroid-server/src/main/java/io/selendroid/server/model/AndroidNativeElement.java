@@ -200,7 +200,7 @@ public class AndroidNativeElement implements AndroidElement {
         synchronized (syncObject) {
           Rect r = new Rect(left, top, getView().getWidth(), getView().getHeight());
 
-          getView().requestRectangleOnScreen(r);
+          getView().requestRectangleOnScreen(r, true);
           done = true;
           syncObject.notify();
         }
