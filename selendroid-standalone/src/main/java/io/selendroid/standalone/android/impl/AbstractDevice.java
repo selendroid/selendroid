@@ -133,7 +133,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
     // -r: replace existing application
     // -d: allow version code downgrade
-    CommandLine command = adbCommand("install", "-rd", app.getAbsolutePath());
+    // -g: grant all runtime permissions
+    CommandLine command = adbCommand("install", "-rdg", app.getAbsolutePath());
 
     String out = executeCommandQuietly(command, COMMAND_TIMEOUT * 6);
     try {
