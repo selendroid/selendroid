@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 import static org.openqa.selenium.remote.CapabilityType.PLATFORM;
@@ -39,6 +41,7 @@ import static org.openqa.selenium.remote.CapabilityType.VERSION;
 
 public class SelendroidCapabilities extends DesiredCapabilities {
   private static final long serialVersionUID = -7061568919298342362L;
+  private static final Logger LOGGER = Logger.getLogger(SelendroidCapabilities.class.getName());
   private static final String SELENDROID = "selendroid";
   public static final String AUT = "aut";
   public static final String EMULATOR = "emulator";
@@ -58,6 +61,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String LAUNCH_ACTIVITY = "launchActivity";
   public static final String SELENDROID_EXTENSIONS = "selendroidExtensions";
   public static final String BOOTSTRAP_CLASS_NAMES = "bootstrapClassNames";
+  public static final String EXTRA_ARGS = "extraArgs";
 
   public static final String USE_JUNIT_BOOTSTRAP = "useJUnitBootstrap";
 
@@ -151,6 +155,45 @@ public class SelendroidCapabilities extends DesiredCapabilities {
    */
   public String getBootstrapClassNames() {
     return (String) getRawCapabilities().get(BOOTSTRAP_CLASS_NAMES);
+  }
+
+  public String getExtraArg(String key) {
+    if (!hasExtraArgs()) {
+      return null;
+    }
+
+    try {
+      return (String) getExtraArgs().get(key);
+    } catch (JSONException e) {
+      return null;
+    }
+  }
+
+  public JSONObject getExtraArgs() {
+    if (!hasExtraArgs()) {
+      return null;
+    }
+
+    return (JSONObject) getRawCapabilities().get(EXTRA_ARGS);
+  }
+
+  public boolean hasExtraArgs() {
+    return getRawCapabilities().containsKey(EXTRA_ARGS);
+  }
+
+  public void addExtraArg(String key, String value) {
+    JSONObject extraArgs = getExtraArgs();
+
+    if (extraArgs == null) {
+      extraArgs = new JSONObject();
+    }
+
+    try {
+      extraArgs.put(key, value);
+      setCapability(EXTRA_ARGS, extraArgs);
+    } catch (JSONException e) {
+      LOGGER.log(Level.WARNING, "Failed to add extra arg: '" + key + "':'" + value + "'");
+    }
   }
 
   public void setSerial(String serial) {

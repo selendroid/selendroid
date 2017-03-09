@@ -23,6 +23,7 @@ import io.selendroid.server.common.utils.CallLogEntry;
 import io.selendroid.server.extension.ExtensionLoader;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ServerInstrumentation extends ServerDetails {
   void onCreate();
@@ -45,4 +46,6 @@ public interface ServerInstrumentation extends ServerDetails {
   List<CallLogEntry> readCallLog();
   Instrumentation getInstrumentation();
   ExtensionLoader getExtensionLoader();
+  Map<String, String> getExtraArgs();
+  String getExtraArg(String key);
 }

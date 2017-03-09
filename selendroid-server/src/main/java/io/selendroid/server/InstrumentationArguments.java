@@ -13,8 +13,12 @@
  */
 package io.selendroid.server;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import android.os.Bundle;
 import io.selendroid.server.extension.BootstrapHandler;
+import io.selendroid.server.common.utils.SelendroidArguments;
 
 /**
  * Parses arguments passed to instrumentation using 'adb shell am instrument'.
@@ -28,15 +32,22 @@ public class InstrumentationArguments {
   private final boolean loadExtensions;
   private final String bootstrapClassNames;
   private final String serverPort;
+  private final Map<String, String> extraArgs = new HashMap();
 
   public InstrumentationArguments(Bundle arguments) {
-    mainActivityClassName = arguments.getString("main_activity");
-    intentUri = arguments.getString("intent_uri");
-    intentAction = arguments.getString("intent_action");
-    serviceClassName = arguments.getString("service");
-    loadExtensions = Boolean.parseBoolean(arguments.getString("load_extensions"));
-    bootstrapClassNames = arguments.getString("bootstrap");
-    serverPort = arguments.getString("server_port");
+    mainActivityClassName = arguments.getString(SelendroidArguments.MAIN_ACTIVITY);
+    intentUri = arguments.getString(SelendroidArguments.INTENT_URI);
+    intentAction = arguments.getString(SelendroidArguments.INTENT_ACTION);
+    serviceClassName = arguments.getString(SelendroidArguments.SERVICE);
+    loadExtensions = Boolean.parseBoolean(arguments.getString(SelendroidArguments.LOAD_EXTENSIONS));
+    bootstrapClassNames = arguments.getString(SelendroidArguments.BOOTSTRAP);
+    serverPort = arguments.getString(SelendroidArguments.SERVER_PORT);
+
+    for (String key : arguments.keySet()) {
+      if (!SelendroidArguments.KNOWN_ARGUMENTS.contains(key)) {
+        extraArgs.put(key, arguments.getString(key));
+      }
+    }
   }
 
   /** Full class name of the activity to start. */
@@ -69,5 +80,13 @@ public class InstrumentationArguments {
   /** The port at which the server should listen. */
   public String getServerPort() {
     return serverPort;
+  }
+
+  public Map<String, String> getExtraArgs() {
+    return extraArgs;
+  }
+
+  public String getExtraArg(String key) {
+    return extraArgs.get(key);
   }
 }

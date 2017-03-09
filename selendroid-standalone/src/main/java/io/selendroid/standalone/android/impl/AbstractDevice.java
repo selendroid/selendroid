@@ -23,6 +23,7 @@ import com.google.common.collect.ObjectArrays;
 import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.model.ExternalStorageFile;
+import io.selendroid.server.common.utils.SelendroidArguments;
 import io.selendroid.standalone.android.AndroidApp;
 import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.AndroidSdk;
@@ -39,11 +40,14 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.logging.LogEntry;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -253,8 +257,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     this.port = port;
 
     List<String> argList = Lists.newArrayList(
-        "-e", "main_activity", aut.getMainActivity(),
-        "-e", "server_port", Integer.toString(port));
+        "-e", SelendroidArguments.MAIN_ACTIVITY, aut.getMainActivity(),
+        "-e", SelendroidArguments.SERVER_PORT, Integer.toString(port));
 
     if (capabilities.getUseJUnitBootstrap()) {
       argList.addAll(Lists.newArrayList(
@@ -262,9 +266,23 @@ public abstract class AbstractDevice implements AndroidDevice {
         "-e", "disableAnalytics", "true")); // AndroidJUnitRunner sends things to Google Analytics by default
     }
     if (capabilities.getSelendroidExtensions() != null) {
-      argList.addAll(Lists.newArrayList("-e", "load_extensions", "true"));
+      argList.addAll(Lists.newArrayList("-e", SelendroidArguments.LOAD_EXTENSIONS, "true"));
       if (capabilities.getBootstrapClassNames() != null) {
-        argList.addAll(Lists.newArrayList("-e", "bootstrap", capabilities.getBootstrapClassNames()));
+        argList.addAll(Lists.newArrayList("-e", SelendroidArguments.BOOTSTRAP, capabilities.getBootstrapClassNames()));
+      }
+    }
+
+    if (capabilities.hasExtraArgs()) {
+      try {
+        JSONObject extraArgs = capabilities.getExtraArgs();
+
+        Iterator<String> keys = extraArgs.keys();
+        while (keys.hasNext()) {
+          final String key = keys.next();
+          argList.addAll(Lists.newArrayList("-e", key, (String) extraArgs.get(key)));
+        }
+      } catch (JSONException e) {
+        log.log(Level.WARNING, "Failed to read extra args", e);
       }
     }
 
