@@ -57,6 +57,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
   public static final String WD_STATUS_ENDPOINT = "http://localhost:8080/wd/hub/status";
+  public static final int MAX_ADB_COMMAND_LENGTH = 1024;
   protected String serial = null;
   protected String model = null;
   protected String apiTargetType = "android";
@@ -616,6 +617,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     CommandLine command = adbCommand();
     for (String arg : args) {
       command.addArgument(arg, false);
+    }
+    String commandString = command.toString();
+    if (commandString != null && commandString.length() > MAX_ADB_COMMAND_LENGTH) {
+      throw new RuntimeException("Adb command must be under " + MAX_ADB_COMMAND_LENGTH);
     }
     return command;
   }
