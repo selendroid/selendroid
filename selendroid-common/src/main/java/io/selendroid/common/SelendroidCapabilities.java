@@ -61,7 +61,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String LAUNCH_ACTIVITY = "launchActivity";
   public static final String SELENDROID_EXTENSIONS = "selendroidExtensions";
   public static final String BOOTSTRAP_CLASS_NAMES = "bootstrapClassNames";
-  public static final String EXTRA_ARGS = "extraArgs";
+  public static final String EXTRA_ARGS = "extraAUTArgs";
 
   public static final String USE_JUNIT_BOOTSTRAP = "useJUnitBootstrap";
 
@@ -157,32 +157,32 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return (String) getRawCapabilities().get(BOOTSTRAP_CLASS_NAMES);
   }
 
-  public String getExtraArg(String key) {
-    if (!hasExtraArgs()) {
+  public String getExtraAUTArg(String key) {
+    if (!hasExtraAUTArgs()) {
       return null;
     }
 
     try {
-      return (String) getExtraArgs().get(key);
+      return (String) getExtraAUTArgs().get(key);
     } catch (JSONException e) {
       return null;
     }
   }
 
-  public JSONObject getExtraArgs() {
-    if (!hasExtraArgs()) {
+  public JSONObject getExtraAUTArgs() {
+    if (!hasExtraAUTArgs()) {
       return null;
     }
 
     return (JSONObject) getRawCapabilities().get(EXTRA_ARGS);
   }
 
-  public boolean hasExtraArgs() {
+  public boolean hasExtraAUTArgs() {
     return getRawCapabilities().containsKey(EXTRA_ARGS);
   }
 
-  public void addExtraArg(String key, String value) {
-    JSONObject extraArgs = getExtraArgs();
+  public void addExtraAUTArg(String key, String value) {
+    JSONObject extraArgs = getExtraAUTArgs();
 
     if (extraArgs == null) {
       extraArgs = new JSONObject();

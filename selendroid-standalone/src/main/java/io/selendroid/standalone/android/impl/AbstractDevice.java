@@ -272,9 +272,9 @@ public abstract class AbstractDevice implements AndroidDevice {
       }
     }
 
-    if (capabilities.hasExtraArgs()) {
+    if (capabilities.hasExtraAUTArgs()) {
       try {
-        JSONObject extraArgs = capabilities.getExtraArgs();
+        JSONObject extraArgs = capabilities.getExtraAUTArgs();
 
         Iterator<String> keys = extraArgs.keys();
         while (keys.hasNext()) {
@@ -282,7 +282,7 @@ public abstract class AbstractDevice implements AndroidDevice {
           argList.addAll(Lists.newArrayList("-e", key, (String) extraArgs.get(key)));
         }
       } catch (JSONException e) {
-        log.log(Level.WARNING, "Failed to read extra args", e);
+        log.log(Level.WARNING, "Failed to read extra AUT args", e);
       }
     }
 
