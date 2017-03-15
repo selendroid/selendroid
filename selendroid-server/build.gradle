@@ -10,7 +10,6 @@ buildscript {
 
 apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
-apply from:   '../jacoco.gradle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
