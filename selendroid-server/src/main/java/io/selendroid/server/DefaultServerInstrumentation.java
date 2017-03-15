@@ -40,6 +40,7 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class DefaultServerInstrumentation implements ServerInstrumentation {
@@ -224,6 +225,16 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
     @Override
     public AndroidWait getAndroidWait() {
         return androidWait;
+    }
+
+    @Override
+    public Map<String, String> getExtraArgs() {
+      return args.getExtraArgs();
+    }
+
+    @Override
+    public String getExtraArg(String key) {
+      return args.getExtraArg(key);
     }
 
     @Override

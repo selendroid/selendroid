@@ -23,6 +23,7 @@ import com.google.common.collect.ObjectArrays;
 import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.model.ExternalStorageFile;
+import io.selendroid.server.common.utils.SelendroidArguments;
 import io.selendroid.standalone.android.AndroidApp;
 import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.AndroidSdk;
@@ -39,11 +40,14 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.logging.LogEntry;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,6 +57,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractDevice implements AndroidDevice {
   private static final Logger log = Logger.getLogger(AbstractDevice.class.getName());
   public static final String WD_STATUS_ENDPOINT = "http://localhost:8080/wd/hub/status";
+  public static final int MAX_ADB_COMMAND_LENGTH = 1024;
   protected String serial = null;
   protected String model = null;
   protected String apiTargetType = "android";
@@ -253,8 +258,8 @@ public abstract class AbstractDevice implements AndroidDevice {
     this.port = port;
 
     List<String> argList = Lists.newArrayList(
-        "-e", "main_activity", aut.getMainActivity(),
-        "-e", "server_port", Integer.toString(port));
+        "-e", SelendroidArguments.MAIN_ACTIVITY, aut.getMainActivity(),
+        "-e", SelendroidArguments.SERVER_PORT, Integer.toString(port));
 
     if (capabilities.getUseJUnitBootstrap()) {
       argList.addAll(Lists.newArrayList(
@@ -262,9 +267,23 @@ public abstract class AbstractDevice implements AndroidDevice {
         "-e", "disableAnalytics", "true")); // AndroidJUnitRunner sends things to Google Analytics by default
     }
     if (capabilities.getSelendroidExtensions() != null) {
-      argList.addAll(Lists.newArrayList("-e", "load_extensions", "true"));
+      argList.addAll(Lists.newArrayList("-e", SelendroidArguments.LOAD_EXTENSIONS, "true"));
       if (capabilities.getBootstrapClassNames() != null) {
-        argList.addAll(Lists.newArrayList("-e", "bootstrap", capabilities.getBootstrapClassNames()));
+        argList.addAll(Lists.newArrayList("-e", SelendroidArguments.BOOTSTRAP, capabilities.getBootstrapClassNames()));
+      }
+    }
+
+    if (capabilities.hasExtraAUTArgs()) {
+      try {
+        JSONObject extraArgs = capabilities.getExtraAUTArgs();
+
+        Iterator<String> keys = extraArgs.keys();
+        while (keys.hasNext()) {
+          final String key = keys.next();
+          argList.addAll(Lists.newArrayList("-e", key, (String) extraArgs.get(key)));
+        }
+      } catch (JSONException e) {
+        log.log(Level.WARNING, "Failed to read extra AUT args", e);
       }
     }
 
@@ -598,6 +617,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     CommandLine command = adbCommand();
     for (String arg : args) {
       command.addArgument(arg, false);
+    }
+    String commandString = command.toString();
+    if (commandString != null && commandString.length() > MAX_ADB_COMMAND_LENGTH) {
+      throw new RuntimeException("Adb command must be under " + MAX_ADB_COMMAND_LENGTH);
     }
     return command;
   }
