@@ -57,3 +57,27 @@ jar {
          '../README.md']
     }
 }
+
+task jarWithoutDependencies(type: Jar) {
+  archiveName = 'selendroid-standalone-'
+  archiveName += version
+  archiveName += '.jar'
+
+  // Version from manifest attributes will be retrieved while building selendroid-server apk
+  manifest {
+      attributes('Main-Class': "$mainClassName", 'version': version)
+  }
+
+  into('prebuild') {
+      from {
+          ['../selendroid-server/build/outputs/apk/selendroid-server-' + rootProject.ext.selVersion + '.apk',
+           '../android-driver/build/outputs/apk/android-driver-app-' + rootProject.ext.selVersion + '.apk']
+      }
+  }
+
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+  from {
+      ['./AndroidManifestTemplate.xml',
+       '../README.md']
+  }
+}
