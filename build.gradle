@@ -20,6 +20,9 @@ buildscript {
 apply from: 'properties.gradle'
 group = selGroup
 
+task printVersion {
+  print selVersion
+}
 allprojects {
     repositories {
         jcenter()
