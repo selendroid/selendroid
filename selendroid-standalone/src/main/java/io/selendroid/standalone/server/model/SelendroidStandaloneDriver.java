@@ -278,6 +278,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         waitForServerStart(device);
         eventListener.onAfterDeviceServerStart();
 
+        // Unlock the device
+        device.inputKeyevent(82);
+
         // arbitrary sleeps? yay...
         // looks like after the server starts responding
         // we need to give it a moment before starting a session?
