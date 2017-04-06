@@ -15,6 +15,7 @@ package io.selendroid.server.model;
 
 import io.selendroid.server.android.internal.Dimension;
 import io.selendroid.server.android.internal.Point;
+import io.selendroid.server.android.internal.Rectangle;
 import io.selendroid.server.model.interactions.Coordinates;
 
 import java.util.Collection;
@@ -49,6 +50,8 @@ public interface AndroidElement {
   public void clear();
 
   public Point getLocation();
+
+  public Rectangle getRect();
 
   public Coordinates getCoordinates();
 

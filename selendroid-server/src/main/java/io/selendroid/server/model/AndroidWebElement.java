@@ -15,6 +15,7 @@ package io.selendroid.server.model;
 
 import io.selendroid.server.android.internal.Dimension;
 import io.selendroid.server.android.internal.Point;
+import io.selendroid.server.android.internal.Rectangle;
 import io.selendroid.server.common.exceptions.ElementNotVisibleException;
 import io.selendroid.server.common.exceptions.NoSuchElementException;
 import io.selendroid.server.common.exceptions.SelendroidException;
@@ -188,6 +189,13 @@ public class AndroidWebElement implements AndroidElement {
     } catch (JSONException e) {
       throw new SelendroidException(e);
     }
+  }
+
+  @Override
+  public Rectangle getRect() {
+    Point location = getLocation();
+    Dimension size = getSize();
+    return new Rectangle(location.x, location.y, size.width, size.height);
   }
 
   /**

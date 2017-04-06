@@ -21,6 +21,7 @@ import io.selendroid.server.android.KeySender;
 import io.selendroid.server.android.ViewHierarchyAnalyzer;
 import io.selendroid.server.android.internal.Dimension;
 import io.selendroid.server.android.internal.Point;
+import io.selendroid.server.android.internal.Rectangle;
 import io.selendroid.server.common.exceptions.ElementNotVisibleException;
 import io.selendroid.server.common.exceptions.NoSuchElementAttributeException;
 import io.selendroid.server.common.exceptions.NoSuchElementException;
@@ -476,6 +477,12 @@ public class AndroidNativeElement implements AndroidElement {
     int[] xy = new int[2];
     getView().getLocationOnScreen(xy);
     return new Point(xy[0], xy[1]);
+  }
+
+  @Override
+  public Rectangle getRect() {
+    Point location = getLocation();
+    return new Rectangle(location.x, location.y, getView().getWidth(), getView().getHeight());
   }
 
   private class NativeElementSearchScope extends AbstractNativeElementContext {
