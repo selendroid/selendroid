@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -72,7 +72,7 @@ public abstract class AbstractDevice implements AndroidDevice {
    * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
    * will become available if the emulator will be started. Please make sure that #setIDevice is
    * called on the emulator.
-   * 
+   *
    * @param serial
    */
   public AbstractDevice(String serial) {
@@ -82,7 +82,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   /**
    * Constructor mean to be used with Android Hardware devices because a reference to the
    * {@link IDevice} will be available immediately after they are connected.
-   * 
+   *
    * @param device
    */
   public AbstractDevice(IDevice device) {
@@ -171,7 +171,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
     return out.contains("Starting: Intent");
   }
-  
+
   protected String executeCommandQuietly(CommandLine command) {
     return executeCommandQuietly(command, COMMAND_TIMEOUT);
   }
@@ -293,12 +293,7 @@ public abstract class AbstractDevice implements AndroidDevice {
       argList.add("io.selendroid." + aut.getBasePackage() + "/io.selendroid.server.SelendroidInstrumentation");
     }
 
-    String[] args = argList.toArray(new String[argList.size()]);
-    if (capabilities.getUseJUnitBootstrap()) {
-      runInstrumentCommandWithJUnitBootstrap(args);
-    } else {
-      runInstrumentCommand(args);
-    }
+    runInstrumentCommand(argList.toArray(new String[argList.size()]));
 
     forwardSelendroidPort(port);
 
@@ -307,55 +302,51 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
   }
 
-  private void runInstrumentCommandWithJUnitBootstrap(String[] args) {
-    CommandLine command = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class));
+  private void runInstrumentCommand(String[] args) {
+    final CommandLine command = adbCommand(
+      ObjectArrays.concat(
+        new String[] {
+          "shell",
+          "am",
+          "instrument",
+          "-w",
+        },
+        args,
+        String.class
+      )
+    );
 
-    final ShellCommand.PrintingLogOutputStream os = new ShellCommand.PrintingLogOutputStream();
+    final ShellCommand.PrintingLogOutputStream os =
+      new ShellCommand.PrintingLogOutputStream();
     try {
-      ShellCommand.execAsync(null, command, new PumpStreamHandler(os), new ExecuteResultHandler() {
-        @Override
-        public void onProcessComplete(int exitValue) {
-          String output = os.getOutput();
-          if (os.getOutput().contains("FAILED")
-                  || os.getOutput().contains("FAILURE")
-                  || os.getOutput().contains("crashed")) {
-            throw new SelendroidException(output);
+      ShellCommand.execAsync(
+        null,
+        command,
+        new PumpStreamHandler(os),
+        new ExecuteResultHandler() {
+          @Override
+          public void onProcessComplete(int exitValue) {
+            log.log(
+              Level.INFO,
+              "Instrumentation process finished with exit code "
+              + exitValue + ":\n"
+              + os.getOutput()
+            );
+          }
+
+          @Override
+          public void onProcessFailed(ExecuteException e) {
+            log.log(
+              Level.SEVERE,
+              "Instrumentation process failed:\n"
+              + os.getOutput(),
+              e
+            );
           }
         }
-
-        @Override
-        public void onProcessFailed(ExecuteException e) {
-          throw new SelendroidException(e);
-        }
-      });
-    } catch(Exception e) {
-      throw new SelendroidException(e);
-    }
-  }
-
-  private void runInstrumentCommand(String[] args) {
-    CommandLine command = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument"}, args, String.class));
-    String result = executeCommandQuietly(command);
-    if (result.contains("FAILED")) {
-      String genericMessage = "Could not start the app under test using instrumentation.";
-      String detailedMessage;
-      try {
-        // Try again, waiting for instrumentation to finish. This way we'll get more error output.
-        String[] instrumentCmd =
-                ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class);
-        CommandLine getDetailedErrorCommand = adbCommand(instrumentCmd);
-        String detailedResult = executeCommandQuietly(getDetailedErrorCommand);
-        if (detailedResult.contains("package")) {
-          detailedMessage =
-                  genericMessage + " Is the correct app under test installed? Read the details below:\n" + detailedResult;
-        } else {
-          detailedMessage = genericMessage + " Read the details below:\n" + detailedResult;
-        }
-      } catch (Exception e) {
-        // Can't get detailed results
-        throw new SelendroidException(genericMessage, e);
-      }
-      throw new SelendroidException(detailedMessage);
+      );
+    } catch (ShellCommandException e) {
+      throw new SelendroidException("Instrument command failed", e);
     }
   }
 
@@ -603,7 +594,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     // make sure it's backup again
     executeCommandQuietly(adbCommand("devices"));
   }
-  
+
   private CommandLine adbCommand() {
     CommandLine command = new CommandLine(AndroidSdk.adb());
     if (isSerialConfigured()) {
@@ -688,7 +679,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   public String getModel() {
     return model;
   }
-  
+
   public String getAPITargetType() {
     return apiTargetType;
   }
