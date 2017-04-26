@@ -26,6 +26,7 @@ import io.selendroid.server.common.model.ExternalStorageFile;
 import io.selendroid.server.common.utils.SelendroidArguments;
 import io.selendroid.standalone.android.AndroidApp;
 import io.selendroid.standalone.android.AndroidDevice;
+import io.selendroid.standalone.android.InstrumentationProcessOutput;
 import io.selendroid.standalone.android.AndroidSdk;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
@@ -67,6 +68,9 @@ public abstract class AbstractDevice implements AndroidDevice {
   private ExecuteWatchdog logcatWatchdog;
   private static final Integer COMMAND_TIMEOUT = 20000;
   private boolean loggingEnabled = true;
+  private final InstrumentationProcessOutput instrumentationProcessOutput =
+    new InstrumentationProcessOutput();
+  private final Object instrumentationProcessLock = new Object();
 
   /**
    * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
@@ -326,22 +330,34 @@ public abstract class AbstractDevice implements AndroidDevice {
         new ExecuteResultHandler() {
           @Override
           public void onProcessComplete(int exitValue) {
-            log.log(
-              Level.INFO,
-              "Instrumentation process finished with exit code "
-              + exitValue + ":\n"
-              + os.getOutput()
-            );
+            synchronized (instrumentationProcessLock) {
+              String output = os.getOutput();
+              instrumentationProcessOutput.output = output;
+              instrumentationProcessOutput.exception = null;
+
+              log.log(
+                Level.INFO,
+                "Instrumentation process finished with exit code "
+                + exitValue + ":\n"
+                + os.getOutput()
+              );
+            }
           }
 
           @Override
           public void onProcessFailed(ExecuteException e) {
-            log.log(
-              Level.SEVERE,
-              "Instrumentation process failed:\n"
-              + os.getOutput(),
-              e
-            );
+            synchronized (instrumentationProcessOutput) {
+              String output = os.getOutput();
+              instrumentationProcessOutput.output = output;
+              instrumentationProcessOutput.exception = e;
+
+              log.log(
+                Level.SEVERE,
+                "Instrumentation process failed:\n"
+                + os.getOutput(),
+                e
+              );
+            }
           }
         }
       );
@@ -650,6 +666,13 @@ public abstract class AbstractDevice implements AndroidDevice {
       isFirstHeaderLine = false;
     }
     return sb.toString();
+  }
+
+  @Override
+  public InstrumentationProcessOutput getInstrumentationProcessOutput() {
+    synchronized (instrumentationProcessLock) {
+      return instrumentationProcessOutput;
+    }
   }
 
   private void sleep(int millis) {
