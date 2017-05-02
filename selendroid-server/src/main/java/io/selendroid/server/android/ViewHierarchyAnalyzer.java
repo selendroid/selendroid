@@ -69,10 +69,13 @@ public class ViewHierarchyAnalyzer {
       instanceField.setAccessible(true);
       Object instance = instanceField.get(null);
       synchronized (windowManager) {
-        if (android.os.Build.VERSION.SDK_INT <= 18) {
-          return new HashSet<View>(Arrays.asList(((View[]) views.get(instance))));
+        Object viewsVal = views.get(instance);
+        if (viewsVal == null) {
+          return new HashSet<View>();
+        } else if (android.os.Build.VERSION.SDK_INT <= 18) {
+          return new HashSet<View>(Arrays.asList((View[]) viewsVal));
         } else {
-          return new HashSet<View>((ArrayList) views.get(instance));
+          return new HashSet<View>((ArrayList) viewsVal); 
         }
       }
     } catch (Exception e) {
