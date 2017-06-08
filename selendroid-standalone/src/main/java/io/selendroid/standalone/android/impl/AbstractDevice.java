@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -72,7 +72,7 @@ public abstract class AbstractDevice implements AndroidDevice {
    * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
    * will become available if the emulator will be started. Please make sure that #setIDevice is
    * called on the emulator.
-   * 
+   *
    * @param serial
    */
   public AbstractDevice(String serial) {
@@ -82,7 +82,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   /**
    * Constructor mean to be used with Android Hardware devices because a reference to the
    * {@link IDevice} will be available immediately after they are connected.
-   * 
+   *
    * @param device
    */
   public AbstractDevice(IDevice device) {
@@ -171,7 +171,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
     return out.contains("Starting: Intent");
   }
-  
+
   protected String executeCommandQuietly(CommandLine command) {
     return executeCommandQuietly(command, COMMAND_TIMEOUT);
   }
@@ -270,20 +270,6 @@ public abstract class AbstractDevice implements AndroidDevice {
       argList.addAll(Lists.newArrayList("-e", SelendroidArguments.LOAD_EXTENSIONS, "true"));
       if (capabilities.getBootstrapClassNames() != null) {
         argList.addAll(Lists.newArrayList("-e", SelendroidArguments.BOOTSTRAP, capabilities.getBootstrapClassNames()));
-      }
-    }
-
-    if (capabilities.hasExtraAUTArgs()) {
-      try {
-        JSONObject extraArgs = capabilities.getExtraAUTArgs();
-
-        Iterator<String> keys = extraArgs.keys();
-        while (keys.hasNext()) {
-          final String key = keys.next();
-          argList.addAll(Lists.newArrayList("-e", key, (String) extraArgs.get(key)));
-        }
-      } catch (JSONException e) {
-        log.log(Level.WARNING, "Failed to read extra AUT args", e);
       }
     }
 
@@ -603,7 +589,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     // make sure it's backup again
     executeCommandQuietly(adbCommand("devices"));
   }
-  
+
   private CommandLine adbCommand() {
     CommandLine command = new CommandLine(AndroidSdk.adb());
     if (isSerialConfigured()) {
@@ -688,7 +674,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   public String getModel() {
     return model;
   }
-  
+
   public String getAPITargetType() {
     return apiTargetType;
   }

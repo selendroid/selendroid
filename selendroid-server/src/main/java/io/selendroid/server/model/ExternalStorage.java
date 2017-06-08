@@ -35,6 +35,10 @@ public class ExternalStorage {
     return new File(getExternalStorageDir(), "extension.dex");
   }
 
+  public static File getExtraArgsFile() {
+    return new File(getExternalStorageDir(), "extra_args.json");
+  }
+
   public static File getCrashLog() {
     return new File(getExternalStorageDir(), ExternalStorageFile.APP_CRASH_LOG.toString());
   }

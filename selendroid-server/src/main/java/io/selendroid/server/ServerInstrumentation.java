@@ -25,6 +25,8 @@ import io.selendroid.server.extension.ExtensionLoader;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 public interface ServerInstrumentation extends ServerDetails {
   void onCreate();
   void onDestroy();
@@ -46,6 +48,6 @@ public interface ServerInstrumentation extends ServerDetails {
   List<CallLogEntry> readCallLog();
   Instrumentation getInstrumentation();
   ExtensionLoader getExtensionLoader();
-  Map<String, String> getExtraArgs();
-  String getExtraArg(String key);
+  JSONObject getExtraArgs();
+  Object getExtraArg(String key);
 }
