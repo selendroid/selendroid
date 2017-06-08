@@ -36,6 +36,7 @@ import io.selendroid.server.model.ExternalStorage;
 import io.selendroid.server.util.Intents;
 import io.selendroid.server.util.SelendroidLogger;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -228,12 +229,12 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
     }
 
     @Override
-    public Map<String, String> getExtraArgs() {
+    public JSONObject getExtraArgs() {
       return args.getExtraArgs();
     }
 
     @Override
-    public String getExtraArg(String key) {
+    public Object getExtraArg(String key) {
       return args.getExtraArg(key);
     }
 

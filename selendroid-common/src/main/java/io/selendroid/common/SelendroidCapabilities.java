@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -57,7 +57,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public static final String PLATFORM_VERSION = "platformVersion";
   public static final String PLATFORM_NAME = "platformName";
   public static final String AUTOMATION_NAME = "automationName";
-  
+
   public static final String LAUNCH_ACTIVITY = "launchActivity";
   public static final String SELENDROID_EXTENSIONS = "selendroidExtensions";
   public static final String BOOTSTRAP_CLASS_NAMES = "bootstrapClassNames";
@@ -181,7 +181,23 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return getRawCapabilities().containsKey(EXTRA_ARGS);
   }
 
+  public void addExtraAUTArg(String key, boolean value) {
+    doAddExtraAUTArg(key, value);
+  }
+
+  public void addExtraAUTArg(String key, int value) {
+    doAddExtraAUTArg(key, value);
+  }
+
   public void addExtraAUTArg(String key, String value) {
+    doAddExtraAUTArg(key, value);
+  }
+
+  public void addExtraAUTArg(String key, JSONObject value) {
+    doAddExtraAUTArg(key, value);
+  }
+
+  private void doAddExtraAUTArg(String key, Object value) {
     JSONObject extraArgs = getExtraAUTArgs();
 
     if (extraArgs == null) {
@@ -192,7 +208,14 @@ public class SelendroidCapabilities extends DesiredCapabilities {
       extraArgs.put(key, value);
       setCapability(EXTRA_ARGS, extraArgs);
     } catch (JSONException e) {
-      LOGGER.log(Level.WARNING, "Failed to add extra arg: '" + key + "':'" + value + "'");
+      throw new RuntimeException(
+        String.format(
+          "Failed to add extra AUT arg with key %s and value %s",
+          key,
+          value.toString()
+        ),
+        e
+      );
     }
   }
 
@@ -220,7 +243,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public void setAut(String aut) {
     setCapability(AUT, aut);
   }
-  
+
   public void setLaunchActivity(String launchActivity) {
 	setCapability(LAUNCH_ACTIVITY, launchActivity);
   }
@@ -297,7 +320,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   }
 
   /**
-   * 
+   *
    * @param aut The application under test. Expected format is basePackage:version. E.g.:
    *        io.selendroid.testapp:0.4
    * @return Desired Capabilities of an emulator.
@@ -310,7 +333,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   }
 
   /**
-   * 
+   *
    * @param platform The Android target platform to use.
    * @param aut The application under test. Expected format is basePackage:version. E.g.:
    *        io.selendroid.testapp:0.4
@@ -352,7 +375,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   /**
    * Command like: "shell setprop name selendroid", please note that the adb command itself and the
    * serial will be added by selendroid automatically.
-   * 
+   *
    * @param commands The list of ADB commands that will be executed before the test session starts
    *        on the device.
    */
@@ -361,7 +384,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   }
 
   /**
-   * 
+   *
    * @param platform The Android target platform to use.
    * @param aut The application under test. Expected format is basePackage:version. E.g.:
    *        io.selendroid.testapp:0.4
@@ -375,7 +398,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   }
 
   /**
-   * 
+   *
    * @param aut The application under test. Expected format is basePackage:version. E.g.:
    *        io.selendroid.testapp:0.4
    * @return Desired Capabilities of an device.
@@ -400,7 +423,7 @@ public class SelendroidCapabilities extends DesiredCapabilities {
       return o;
     }
   }
-  
+
   /**
    * Returns a copy of this instance with {@code caps} merged, overwriting existing keys on
    * collision.

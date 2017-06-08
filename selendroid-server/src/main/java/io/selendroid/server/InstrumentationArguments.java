@@ -13,12 +13,23 @@
  */
 package io.selendroid.server;
 
+import android.os.Bundle;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Map;
 import java.util.HashMap;
 
-import android.os.Bundle;
 import io.selendroid.server.extension.BootstrapHandler;
 import io.selendroid.server.common.utils.SelendroidArguments;
+import io.selendroid.server.model.ExternalStorage;
+import io.selendroid.server.util.SelendroidLogger;
+
+import org.json.JSONObject;
+import org.json.JSONException;
 
 /**
  * Parses arguments passed to instrumentation using 'adb shell am instrument'.
@@ -32,7 +43,7 @@ public class InstrumentationArguments {
   private final boolean loadExtensions;
   private final String bootstrapClassNames;
   private final String serverPort;
-  private final Map<String, String> extraArgs = new HashMap();
+  private final JSONObject extraArgs;
 
   public InstrumentationArguments(Bundle arguments) {
     mainActivityClassName = arguments.getString(SelendroidArguments.MAIN_ACTIVITY);
@@ -42,10 +53,55 @@ public class InstrumentationArguments {
     loadExtensions = Boolean.parseBoolean(arguments.getString(SelendroidArguments.LOAD_EXTENSIONS));
     bootstrapClassNames = arguments.getString(SelendroidArguments.BOOTSTRAP);
     serverPort = arguments.getString(SelendroidArguments.SERVER_PORT);
+    extraArgs = readExtraArgsFile();
+  }
 
-    for (String key : arguments.keySet()) {
-      if (!SelendroidArguments.KNOWN_ARGUMENTS.contains(key)) {
-        extraArgs.put(key, arguments.getString(key));
+  private JSONObject readExtraArgsFile() {
+    File extraArgsFile = ExternalStorage.getExtraArgsFile();
+    if (!extraArgsFile.exists()) {
+      return new JSONObject();
+    }
+
+    try {
+      return new JSONObject(readFile(extraArgsFile));
+    } catch (JSONException e) {
+      throw new RuntimeException(
+        "Should never have a malformed JSON in extra args file",
+        e
+      );
+    }
+  }
+
+  // There's no nio on Android and it's not worth importing Apache commons
+  private String readFile(File file) {
+    BufferedReader reader = null;
+    try {
+      reader = new BufferedReader(new FileReader(file));
+      String line = null;
+      StringBuilder sb = new StringBuilder();
+      String separator = System.getProperty("line.separator");
+      while ((line = reader.readLine()) != null) {
+        sb.append(line).append(separator);
+      }
+
+      return sb.toString();
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(
+        "We already made sure the extra args file exists",
+        e
+      );
+    } catch (IOException e) {
+      throw new RuntimeException(
+        "Error while reading from extra args file",
+        e
+      );
+    } finally {
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          SelendroidLogger.error("Failed to close reader for args file", e);
+        }
       }
     }
   }
@@ -82,11 +138,19 @@ public class InstrumentationArguments {
     return serverPort;
   }
 
-  public Map<String, String> getExtraArgs() {
+  public JSONObject getExtraArgs() {
     return extraArgs;
   }
 
-  public String getExtraArg(String key) {
-    return extraArgs.get(key);
+  public Object getExtraArg(String key) {
+    if (extraArgs.has(key)) {
+      return null;
+    }
+
+    try {
+      return extraArgs.get(key);
+    } catch (JSONException e) {
+      return null;
+    }
   }
 }
