@@ -383,7 +383,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
       File temp = File.createTempFile("extra_args", ".json");
       FileUtils.write(temp, fileContents);
 
-      log.debug("Pushing new extra args file to device");
+      log.info("Pushing new extra args file to device");
       device.runAdbCommand(
         String.format("push %s %s", temp.getAbsolutePath(), devicePath)
       );
