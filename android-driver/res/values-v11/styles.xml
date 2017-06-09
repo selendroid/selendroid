@@ -2,6 +2,7 @@
 <resources>
 
     <style name="FullscreenTheme">
+        <item name="android:textSelectHandle">@drawable/text_select_handle</item>
     </style>
 
 </resources>
