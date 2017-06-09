@@ -157,13 +157,13 @@ public class SelendroidCapabilities extends DesiredCapabilities {
     return (String) getRawCapabilities().get(BOOTSTRAP_CLASS_NAMES);
   }
 
-  public String getExtraAUTArg(String key) {
+  public Object getExtraAUTArg(String key) {
     if (!hasExtraAUTArgs()) {
       return null;
     }
 
     try {
-      return (String) getExtraAUTArgs().get(key);
+      return getExtraAUTArgs().get(key);
     } catch (JSONException e) {
       return null;
     }
