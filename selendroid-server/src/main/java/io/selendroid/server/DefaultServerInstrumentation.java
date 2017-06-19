@@ -60,6 +60,13 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
         this.instrumentation = instrumentation;
         this.args = args;
 
+        // Get a wake lock to stop the cpu going to sleep
+        PowerManager pm =(PowerManager) instrumentation
+          .getContext()
+          .getSystemService(Context.POWER_SERVICE);
+        this.wakeLock =
+          pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
+
         if (args.isLoadExtensions()) {
             extensionLoader = new ExtensionLoader(instrumentation.getTargetContext(),
                     ExternalStorage.getExtensionDex().getAbsolutePath());
@@ -73,32 +80,14 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
 
     @Override
     public void onCreate() {
-        Handler mainThreadHandler = new Handler();
+        SelendroidLogger.info("*** ServerInstrumentation#onCreate() ***");
         serverPort = parseServerPort(args.getServerPort());
-
         callBeforeApplicationCreateBootstraps();
-
-        // Queue bootstrapping and starting of the main activity on the main thread.
-        mainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                callAfterApplicationCreateBootstraps();
-                if (args.getServiceClassName() != null) {
-                    startService();
-                } else {
-                    startMainActivity();
-                }
-                try {
-                    startServer();
-                } catch (Exception e) {
-                    SelendroidLogger.error("Failed to start Selendroid server", e);
-                }
-            }
-        });
     }
 
     @Override
     public void onDestroy() {
+        SelendroidLogger.info("*** ServerInstrumentation#onDestroy() ***");
         try {
             if (wakeLock != null) {
                 wakeLock.release();
@@ -119,6 +108,13 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
 
     @Override
     public void startService(String serviceClassName, String intentAction) {
+        SelendroidLogger.info(
+          String.format(
+            "*** ServerInstrumentation#startService(%s,%s) ***",
+            serviceClassName,
+            intentAction
+          )
+        );
         instrumentation.getTargetContext().startService(
                 Intents.createStartServiceIntent(instrumentation.getTargetContext(), serviceClassName, intentAction));
     }
@@ -137,6 +133,12 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
 
     @Override
     public void startActivity(String activityClassName) {
+        SelendroidLogger.info(
+          String.format(
+            "*** ServerInstrumentation startActivity(%s) ***",
+            activityClassName
+          )
+        );
         doFinishAllActivities();
 
         // Start the new activity
@@ -146,12 +148,36 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
 
     @Override
     public void startServer() {
+        SelendroidLogger.info("*** ServerInstrumentation#startSever() ***");
+        // Queue bootstrapping and starting of the main activity on the main thread.
+        Handler mainThreadHandler = new Handler();
+        mainThreadHandler.post(new Runnable() {
+          @Override
+          public void run() {
+              callAfterApplicationCreateBootstraps();
+              if (args.getServiceClassName() != null) {
+                  startService();
+              } else {
+                  startMainActivity();
+              }
+              try {
+                  startServerImpl();
+              } catch (Exception e) {
+                  SelendroidLogger.error("Failed to start Selendroid server", e);
+              }
+          }
+        });
+    }
+
+    // TODO: Make this class a base class and extract all the serverthread
+    // specific logic to a subclass
+    protected void startServerImpl() {
+        SelendroidLogger.info("*** ServerInstrumentation#startSeverImpl() ***");
         if (serverThread != null && serverThread.isAlive()) {
             return;
         }
 
         if (serverThread != null) {
-            SelendroidLogger.info("Stopping selendroid http server");
             stopServer();
         }
 
@@ -161,6 +187,7 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
 
     @Override
     public void stopServer() {
+        SelendroidLogger.info("*** ServerInstrumentation#stopServer() ***");
         if (serverThread == null) {
             return;
         }
@@ -407,17 +434,9 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
 
         private void startServer() {
             try {
-                // Get a wake lock to stop the cpu going to sleep
-                PowerManager pm = (PowerManager) instrumentation.getInstrumentation().getContext().getSystemService(Context.POWER_SERVICE);
-                wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
-                try {
-                    wakeLock.acquire();
-                } catch (SecurityException e) {
-                }
-
-                server.start();
-
-                SelendroidLogger.info("Started selendroid http server on port " + server.getPort());
+              startAndroidServer(
+                this.server,
+                DefaultServerInstrumentation.this.wakeLock);
             } catch (Exception e) {
                 SelendroidLogger.error("Error starting httpd.", e);
 
@@ -445,6 +464,20 @@ public class DefaultServerInstrumentation implements ServerInstrumentation {
             SelendroidLogger.info("Invalid port " + parsedServerPort + ", defaulting to " + DEFAULT_SERVER_PORT);
         }
         return parsedServerPort;
+    }
+
+    protected static void startAndroidServer(
+      AndroidServer server,
+      PowerManager.WakeLock wakeLock
+    ) {
+      try {
+          wakeLock.acquire();
+      } catch (SecurityException e) {
+      }
+
+      server.start();
+
+      SelendroidLogger.info("Started selendroid http server on port " + server.getPort());
     }
 
     private boolean isValidPort(int port) {
