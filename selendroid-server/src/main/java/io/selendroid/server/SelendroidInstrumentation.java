@@ -28,6 +28,7 @@ public class SelendroidInstrumentation extends Instrumentation implements Delega
         InstrumentationRegistry.registerInstance(this, arguments);
         delegateInstrumentation = new DefaultServerInstrumentation(this, new InstrumentationArguments(arguments));
         delegateInstrumentation.onCreate();
+        delegateInstrumentation.startServer();
     }
 
     @Override

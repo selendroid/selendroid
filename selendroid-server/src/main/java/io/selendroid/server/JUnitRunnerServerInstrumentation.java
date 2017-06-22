@@ -16,7 +16,6 @@ package io.selendroid.server;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.os.Handler;
-import android.os.PowerManager;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.util.SelendroidLogger;
 
@@ -29,33 +28,17 @@ public class JUnitRunnerServerInstrumentation extends DefaultServerInstrumentati
 
     @Override
     public void onCreate() {
-        serverPort = parseServerPort(args.getServerPort());
-        callBeforeApplicationCreateBootstraps();
+        super.onCreate();
     }
 
     @Override
     public void startServer() {
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                UncaughtExceptionHandling.clearCrashLogFile();
-                UncaughtExceptionHandling.setGlobalExceptionHandler();
-
-                callAfterApplicationCreateBootstraps();
-
-                startMainActivity();
-                try {
-                    doStartServer();
-                    SelendroidLogger.info("Started Selendroid HTTP server on port " + server.getPort());
-                } catch (Exception e) {
-                    SelendroidLogger.error("Failed to start Selendroid server", e);
-                }
-            }
-        });
+        super.startServer();
     }
 
-    private void doStartServer() {
+    @Override
+    protected void startServerImpl() {
+        SelendroidLogger.info("*** ServerInstrumentation#startServerImpl() ***");
         if (server != null) {
             server.stop();
         }
@@ -64,17 +47,10 @@ public class JUnitRunnerServerInstrumentation extends DefaultServerInstrumentati
             if (server == null) {
                 server = new AndroidServer(this, serverPort);
             }
-            // Get a wake lock to stop the cpu going to sleep
-            PowerManager pm = (PowerManager) getInstrumentation().getContext().getSystemService(Context.POWER_SERVICE);
-            wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Selendroid");
-            try {
-                wakeLock.acquire();
-            } catch (SecurityException e) {
-            }
 
-            server.start();
-
-            SelendroidLogger.info("Started selendroid http server on port " + server.getPort());
+            DefaultServerInstrumentation.startAndroidServer(
+              server,
+              wakeLock);
         } catch (Exception e) {
             SelendroidLogger.error("Error starting httpd.", e);
             throw new SelendroidException("Httpd failed to start!");
