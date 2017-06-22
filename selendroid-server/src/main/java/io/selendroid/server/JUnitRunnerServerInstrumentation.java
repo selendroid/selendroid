@@ -38,7 +38,7 @@ public class JUnitRunnerServerInstrumentation extends DefaultServerInstrumentati
 
     @Override
     protected void startServerImpl() {
-        SelendroidLogger.info("*** ServerInstrumentation#startSeverImpl() ***");
+        SelendroidLogger.info("*** ServerInstrumentation#startServerImpl() ***");
         if (server != null) {
             server.stop();
         }
