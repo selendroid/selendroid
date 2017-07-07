@@ -444,7 +444,23 @@ public class SelendroidWebDriver {
   }
 
   private Object reflectionGet(Object object, String field) throws NoSuchFieldException, IllegalAccessException {
-    Field f = object.getClass().getDeclaredField(field);
+    Field f = null;
+    Class clazz = object.getClass();
+    NoSuchFieldException ex = null;
+    while (f == null && clazz != null) {
+      try {
+        f = clazz.getDeclaredField(field);
+        break;
+      } catch (NoSuchFieldException nsfe) {
+        if (ex == null) {
+          ex = nsfe;
+        }
+        clazz = clazz.getSuperclass();
+      }
+    }
+    if (f == null) {
+      throw ex;
+    }
     f.setAccessible(true);
     return f.get(object);
   }
