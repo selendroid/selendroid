@@ -447,6 +447,8 @@ public class SelendroidWebDriver {
     Field f = null;
     Class clazz = object.getClass();
     NoSuchFieldException ex = null;
+    // Look for the field in the object's class or its class hierarchy.
+    // This is useful if you are testing a subclass of WebView.
     while (f == null && clazz != null) {
       try {
         f = clazz.getDeclaredField(field);
