@@ -41,9 +41,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -254,18 +256,49 @@ public class AndroidNativeElement implements AndroidElement {
   public void click() {
     waitUntilIsDisplayed();
     scrollIntoScreenIfNeeded();
-    try {
-      // is needed for recalculation of location
-      Thread.sleep(300);
-    } catch (InterruptedException e) {}
-    int[] xy = new int[2];
-    getView().getLocationOnScreen(xy);
-    final int viewWidth = getView().getWidth();
-    final int viewHeight = getView().getHeight();
-    final float x = xy[0] + (viewWidth / 2.0f);
-    float y = xy[1] + (viewHeight / 2.0f);
 
-    clickOnScreen(x, y);
+    final View view = getView();
+
+    final int viewWidth = view.getWidth();
+    final int viewHeight = view.getHeight();
+    final int[] xy = new int[2];
+
+    if (viewWidth > 0 && viewHeight > 0) {
+      view.getLocationOnScreen(xy);
+      clickOnScreen(xy[0] + viewWidth / 2.0f, xy[1] + viewHeight / 2.0f);
+      return;
+    }
+
+    final ViewTreeObserver observer = view.getViewTreeObserver();
+    observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override
+      public void onGlobalLayout() {
+        try {
+          view.getLocationOnScreen(xy);
+          clickOnScreen(xy[0] + viewWidth / 2.0f, xy[1] + viewHeight / 2.0f);
+        } finally {
+          if (observer.isAlive()) {
+            removeOnGlobalLayoutListener(observer, this);
+          } else {
+            removeOnGlobalLayoutListener(view.getViewTreeObserver(), this);
+          }
+        }
+      }
+    }); 
+  }
+
+  private void removeOnGlobalLayoutListener(
+    ViewTreeObserver observer,
+    ViewTreeObserver.OnGlobalLayoutListener listener) {
+    if (observer == null || !observer.isAlive()) {
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= 16) {
+      observer.removeOnGlobalLayoutListener(listener);
+    } else {
+      observer.removeGlobalOnLayoutListener(listener);
+    }
   }
 
   private void clickOnScreen(float x, float y) {
