@@ -259,13 +259,11 @@ public class AndroidNativeElement implements AndroidElement {
 
     final View view = getView();
 
-    final int viewWidth = view.getWidth();
-    final int viewHeight = view.getHeight();
     final int[] xy = new int[2];
 
     if (viewWidth > 0 && viewHeight > 0) {
       view.getLocationOnScreen(xy);
-      clickOnScreen(xy[0] + viewWidth / 2.0f, xy[1] + viewHeight / 2.0f);
+      clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
       return;
     }
 
@@ -275,7 +273,7 @@ public class AndroidNativeElement implements AndroidElement {
       public void onGlobalLayout() {
         try {
           view.getLocationOnScreen(xy);
-          clickOnScreen(xy[0] + viewWidth / 2.0f, xy[1] + viewHeight / 2.0f);
+          clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
         } finally {
           if (observer.isAlive()) {
             removeOnGlobalLayoutListener(observer, this);
