@@ -275,13 +275,14 @@ public class AndroidNativeElement implements AndroidElement {
       return;
     }
 
+    final AndroidWait wait = instrumentation.getAndroidWait();
+    boolean isLaidOut = false;
     final ViewTreeObserver observer = view.getViewTreeObserver();
     observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override
       public void onGlobalLayout() {
         try {
-          view.getLocationOnScreen(xy);
-          clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
+          isLaidOut = true;
         } finally {
           if (observer.isAlive()) {
             removeOnGlobalLayoutListener(observer, this);
@@ -291,6 +292,19 @@ public class AndroidNativeElement implements AndroidElement {
         }
       }
     }); 
+    try {
+      wait.until(new Function<Void, Boolean>() {
+        @Override
+        public Boolean apply(Void input) {
+          return isLaidOut;
+        }
+      });
+    } catch (TimeoutException e) {
+      throw new SelendroidException("View was never laid out", e);
+    }
+
+    view.getLocationOnScreen(xy);
+    clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
   }
 
   private void removeOnGlobalLayoutListener(
