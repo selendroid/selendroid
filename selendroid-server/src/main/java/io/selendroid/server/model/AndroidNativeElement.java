@@ -36,6 +36,7 @@ import io.selendroid.server.util.SelendroidLogger;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -276,13 +277,13 @@ public class AndroidNativeElement implements AndroidElement {
     }
 
     final AndroidWait wait = instrumentation.getAndroidWait();
-    final BooleanWrapper isLaidOut = new BooleanWrapper();
+    final AtomicBoolean isLaidOut = new AtomicBoolean(false);
     final ViewTreeObserver observer = view.getViewTreeObserver();
     observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override
       public void onGlobalLayout() {
         try {
-          isLaidOut.value = true;
+          isLaidOut.set(true);
         } finally {
           if (observer.isAlive()) {
             removeOnGlobalLayoutListener(observer, this);
@@ -296,7 +297,7 @@ public class AndroidNativeElement implements AndroidElement {
       wait.until(new Function<Void, Boolean>() {
         @Override
         public Boolean apply(Void input) {
-          return isLaidOut.value;
+          return isLaidOut.get();
         }
       });
     } catch (TimeoutException e) {
@@ -305,10 +306,6 @@ public class AndroidNativeElement implements AndroidElement {
 
     view.getLocationOnScreen(xy);
     clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
-  }
-
-  private class BooleanWrapper {
-    public boolean value = false;
   }
 
   private void removeOnGlobalLayoutListener(
