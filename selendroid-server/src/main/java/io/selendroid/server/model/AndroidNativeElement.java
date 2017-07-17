@@ -260,8 +260,6 @@ public class AndroidNativeElement implements AndroidElement {
 
     final View view = getView();
 
-    final int[] xy = new int[2];
-
     if (Build.VERSION.SDK_INT < 19 || view.isLaidOut()) {
       if (Build.VERSION.SDK_INT < 19) {
         try {
@@ -271,8 +269,7 @@ public class AndroidNativeElement implements AndroidElement {
         } catch (InterruptedException e) {}
       }
 
-      view.getLocationOnScreen(xy);
-      clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
+      doClick();
       return;
     }
 
@@ -303,6 +300,13 @@ public class AndroidNativeElement implements AndroidElement {
     } catch (TimeoutException e) {
       throw new SelendroidException("View was never laid out", e);
     }
+
+    doClick();
+  }
+
+  private void doClick() {
+    final View view = getView();
+    final int[] xy = new int[2];
 
     view.getLocationOnScreen(xy);
     clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
