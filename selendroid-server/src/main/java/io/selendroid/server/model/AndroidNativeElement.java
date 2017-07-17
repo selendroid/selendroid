@@ -276,13 +276,13 @@ public class AndroidNativeElement implements AndroidElement {
     }
 
     final AndroidWait wait = instrumentation.getAndroidWait();
-    boolean isLaidOut = false;
+    final BooleanWrapper isLaidOut = new BooleanWrapper();
     final ViewTreeObserver observer = view.getViewTreeObserver();
     observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override
       public void onGlobalLayout() {
         try {
-          isLaidOut = true;
+          isLaidOut.value = true;
         } finally {
           if (observer.isAlive()) {
             removeOnGlobalLayoutListener(observer, this);
@@ -296,7 +296,7 @@ public class AndroidNativeElement implements AndroidElement {
       wait.until(new Function<Void, Boolean>() {
         @Override
         public Boolean apply(Void input) {
-          return isLaidOut;
+          return isLaidOut.value;
         }
       });
     } catch (TimeoutException e) {
@@ -305,6 +305,10 @@ public class AndroidNativeElement implements AndroidElement {
 
     view.getLocationOnScreen(xy);
     clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
+  }
+
+  private class BooleanWrapper {
+    public boolean value = false;
   }
 
   private void removeOnGlobalLayoutListener(
