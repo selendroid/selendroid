@@ -261,7 +261,15 @@ public class AndroidNativeElement implements AndroidElement {
 
     final int[] xy = new int[2];
 
-    if (viewWidth > 0 && viewHeight > 0) {
+    if (Build.VERSION.SDK_INT < 19 || view.isLaidOut()) {
+      if (Build.VERSION.SDK_INT < 19) {
+        try {
+          // This is needed for recalculation of location when we cannot
+          // explicitly check if the view's been laid out
+          Thread.sleep(300);
+        } catch (InterruptedException e) {}
+      }
+
       view.getLocationOnScreen(xy);
       clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
       return;
@@ -292,10 +300,10 @@ public class AndroidNativeElement implements AndroidElement {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= 16) {
-      observer.removeOnGlobalLayoutListener(listener);
-    } else {
+    if (Build.VERSION.SDK_INT < 16) {
       observer.removeGlobalOnLayoutListener(listener);
+    } else {
+      observer.removeOnGlobalLayoutListener(listener);
     }
   }
 
