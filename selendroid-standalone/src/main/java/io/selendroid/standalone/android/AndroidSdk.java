@@ -24,11 +24,15 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class AndroidSdk {
-  public static final String ANDROID_FOLDER_PREFIX = "android-";
-  public static final String ANDROID_HOME = "ANDROID_HOME";
+  private static final String ANDROID_FOLDER_PREFIX = "android-";
+  private static final String ANDROID_HOME = "ANDROID_HOME";
+
+  private static String sAndroidHome;
+  private static String sAndroidSdkVersion;
+  private static String sBuildToolsVersion;
+
 
   public static File adb() {
-
     return new File(platformToolsHome(), "adb" + platformExecutableSuffixExe());
   }
 
@@ -42,14 +46,22 @@ public class AndroidSdk {
       return platformToolsAapt;
     }
 
+    return new File(buildToolsFolder(), command.toString());
+  }
+
+  public static File buildToolsFolder() {
     File buildToolsFolder = buildToolsHome();
 
-    return new File(
-        findLatestAndroidPlatformFolder(
-            buildToolsFolder,
-            String.format("Command 'aapt' was not found inside the Android SDK: %s. Please update to the latest development tools and try again.",
-                buildToolsFolder)),
-        command.toString());
+    if (sBuildToolsVersion != null) {
+      return new File(buildToolsFolder, sBuildToolsVersion);
+    } else {
+      return findLatestAndroidPlatformFolder(
+        buildToolsFolder,
+        String.format(
+          "Command 'aapt' was not found inside the Android SDK: %s. "
+          + "Please update to the latest development tools and try again.",
+          buildToolsFolder));
+    }
   }
 
   public static File android() {
@@ -92,7 +104,11 @@ public class AndroidSdk {
   }
 
   public static String androidHome() {
-    String androidHome = System.getenv(ANDROID_HOME);
+    if (sAndroidHome != null) {
+      return sAndroidHome;
+    }
+
+    String androidHome =  System.getenv(ANDROID_HOME);
 
     if (androidHome == null) {
       throw new SelendroidException("Environment variable '" + ANDROID_HOME + "' was not found!");
@@ -100,17 +116,24 @@ public class AndroidSdk {
     return androidHome;
   }
 
-
-
   /**
    * @return path to android.jar of latest android api.
    */
   public static String androidJar() {
+    return new File(androidSdkFolder(), "android.jar").getAbsolutePath();
+  }
+
+  public static File androidSdkFolder() {
     String platformsRootFolder = androidHome() + File.separator + "platforms";
     File platformsFolder = new File(platformsRootFolder);
 
-    return new File(findLatestAndroidPlatformFolder(platformsFolder,
-        "No installed Android APIs have been found."), "android.jar").getAbsolutePath();
+    if (sAndroidSdkVersion != null) {
+      return new File(platformsFolder, sAndroidSdkVersion);
+    } else {
+      return findLatestAndroidPlatformFolder(
+        platformsFolder,
+        "No installed Android APIs have been found.");
+    }
   }
 
   protected static File findLatestAndroidPlatformFolder(File rootFolder, String errorMessage) {
@@ -120,6 +143,18 @@ public class AndroidSdk {
     }
     Arrays.sort(androidApis, Collections.reverseOrder());
     return androidApis[0].getAbsoluteFile();
+  }
+
+  public static void setAndroidHome(String androidHome) {
+    sAndroidHome = androidHome;
+  }
+
+  public static void setAndroidSdkVersion(String androidSdkVersion) {
+    sAndroidSdkVersion = androidSdkVersion;
+  }
+
+  public static void setBuildToolsVersion(String buildToolsVersion) {
+    sBuildToolsVersion = buildToolsVersion;
   }
 
   public static class AndroidFileFilter implements FileFilter {

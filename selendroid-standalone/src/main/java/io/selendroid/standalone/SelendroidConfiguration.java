@@ -177,6 +177,15 @@ public class SelendroidConfiguration {
   @Parameter(names = "-useJUnitBootstrap", description = "Use instrumentation that extends AdroidJUnitRunner")
   private boolean useJUnitBootstrap = false;
 
+  @Parameter(names = "-androidHome", description = "Specify path to android sdk installation, if not specified it will be read from the ANDROID_HOME env var")
+  private String androidHome = null;
+
+  @Parameter(names = "-androidSdkVersion", description = "Which Android SDK version to use to build the selendroid-server")
+  private String androidSdkVersion = null;
+
+  @Parameter(names = "-buildToolsVersion", description = "Which version of the android build-tools to use")
+  private String buildToolsVersion = null;
+
   public void setKeystore(String keystore) {
     this.keystore = keystore;
   }
@@ -490,5 +499,29 @@ public class SelendroidConfiguration {
 
   public void setUseJUnitBootstrap(boolean useJUnitBootstrap) {
     this.useJUnitBootstrap = useJUnitBootstrap;
+  }
+
+  public String getAndroidHome() {
+    return androidHome;
+  }
+
+  public void setAndroidHome(String androidHome) {
+    this.androidHome = androidHome;
+  }
+
+  public String getAndroidSdkVersion() {
+    return androidSdkVersion;
+  }
+
+  public void setAndroidSdkVersion(String androidSdkVersion) {
+    this.androidSdkVersion = androidSdkVersion;
+  }
+
+  public String getBuildToolsVersion() {
+    return buildToolsVersion;
+  }
+
+  public void setBuildToolsVersion(String buildToolsVersion) {
+    this.buildToolsVersion = buildToolsVersion;
   }
 }
