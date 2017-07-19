@@ -17,6 +17,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.google.common.base.Throwables;
 
+import io.selendroid.standalone.android.AndroidSdk;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.log.LogLevelEnum;
 import io.selendroid.standalone.server.SelendroidStandaloneServer;
@@ -61,6 +62,21 @@ public class SelendroidLauncher {
    */
   private void launchServer() {
     try {
+      log.info("Configuring Android SDK");
+      if (config.getAndroidHome() != null) {
+        AndroidSdk.setAndroidHome(config.getAndroidHome());
+      }
+      if (config.getAndroidSdkVersion() != null) {
+        AndroidSdk.setAndroidSdkVersion(config.getAndroidSdkVersion());
+      }
+      if (config.getBuildToolsVersion() != null) {
+        AndroidSdk.setBuildToolsVersion(config.getBuildToolsVersion());
+      }
+
+      log.info("Using Android SDK installed in: " + AndroidSdk.androidHome());
+      log.info("Using Android SDK version: " + AndroidSdk.androidSdkFolder().getAbsolutePath());
+      log.info("Using build-tolls in: " + AndroidSdk.buildToolsFolder().getAbsolutePath());
+
       log.info("Starting Selendroid standalone on port " + config.getPort());
       server = new SelendroidStandaloneServer(config);
       server.start();
