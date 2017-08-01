@@ -48,6 +48,14 @@ public class AndroidSdk {
 
     return new File(buildToolsFolder(), command.toString());
   }
+  
+  public static File apksigner() throws AndroidSdkException {
+    StringBuffer command = new StringBuffer();
+    command.append("apksigner");
+    command.append(platformExecutableSuffixExe());
+
+    return new File(buildToolsFolder(), command.toString());
+  }
 
   public static File buildToolsFolder() {
     File buildToolsFolder = buildToolsHome();

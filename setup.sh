@@ -5,7 +5,7 @@ sudo apt update
 sudo apt install -y libc6:i386 libncurses5:i386 libstdc++6:i386
 sudo apt remove -y gradle
 sudo mkdir /opt/gradle
-wget https://services.gradle.org/distributions/gradle-4.0.2-bin.zip
+wget https://downloads.gradle.org/distributions/gradle-4.0.2-bin.zip
 sudo unzip -o -d /opt/gradle/ gradle-4.0.2-bin.zip
 rm gradle-4.0.2-bin.zip
 
