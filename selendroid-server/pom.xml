@@ -12,18 +12,6 @@
 	<properties>
 		<com.google.android.android-version>4.1.1.4</com.google.android.android-version>
 	</properties>
-	
-	<repositories>
-	    <repository>
-	        <id>google.com</id>
-	        <url>https://maven.google.com</url>
-	    </repository>
-	    <repository>
-	        <id>bintray.com</id>
-	        <url>http://jcenter.bintray.com</url>
-	    </repository>
-	</repositories>
-	
 	<dependencies>
 		<dependency>
 			<groupId>io.selendroid</groupId>
@@ -43,40 +31,32 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.android.support.test</groupId>
+			<groupId>android.support.test</groupId>
 			<artifactId>runner</artifactId>
-			<version>1.0.0</version>
-			<type>aar</type>
+			<version>0.5</version>
+			<type>jar</type>
 		</dependency>
-        <!--<dependency>
-            <groupId>org.apache.cordova</groupId>
-            <artifactId>framework</artifactId>
-            <version>6.2.3</version>
-            <classifier>sources</classifier>
-            <type>jar</type>
-        </dependency>-->
-        <dependency>
-            <groupId>org.apache.cordova</groupId>
-            <artifactId>cordova</artifactId>
-            <classifier>android</classifier>
-            <version>3.7.0</version>
-            <scope>system</scope>
-            <systemPath>${user.home}/selendroid/selendroid/third-party/cordova-3.7.0/classes.jar</systemPath>
-            <exclusions>
-              <exclusion>
-                <groupId>com.simpligility.maven.plugins</groupId>
-                <artifactId>android-maven-plugin</artifactId>
-              </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cordova-android</groupId>
-            <artifactId>cordova</artifactId>
-            <classifier>android</classifier>
-            <version>4.0.0</version>
-            <scope>system</scope>
-            <systemPath>${user.home}/selendroid/selendroid/third-party/cordova-4.0.0/classes.jar</systemPath>
-        </dependency>
+		<dependency>
+			<groupId>android.support.test</groupId>
+			<artifactId>exposed-instrumentation-api</artifactId>
+			<version>0.5</version>
+			<type>aar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cordova</groupId>
+			<artifactId>cordova</artifactId>
+			<classifier>android</classifier>
+			<version>3.7.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cordova-android</groupId>
+			<artifactId>cordova</artifactId>
+			<classifier>android</classifier>
+			<version>4.0.0</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
@@ -108,11 +88,6 @@
 			  <groupId>com.simpligility.maven.plugins</groupId>
 				<artifactId>android-maven-plugin</artifactId>
 				<configuration>
-                    <artifactTypeSet>
-                        <excludes>
-                            <exclude>org.apache.cordova:cordova:*</exclude>
-                        </excludes>
-                    </artifactTypeSet>
 					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
 					<resourceDirectory>${project.basedir}/res</resourceDirectory>
 					<assetsDirectory>${project.basedir}/assets</assetsDirectory>
@@ -199,3 +174,4 @@
 		</pluginManagement>
 	</build>
 </project>
+
