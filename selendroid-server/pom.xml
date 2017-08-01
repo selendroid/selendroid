@@ -95,7 +95,7 @@
 					<testOutputDirectory>bin/test-classes</testOutputDirectory>
 					<failOnNonStandardStructure>false</failOnNonStandardStructure>
 					<sdk>
-						<platform>16</platform>
+						<platform>26</platform>
 					</sdk>
 					<manifest>
 						<debuggable>true</debuggable>

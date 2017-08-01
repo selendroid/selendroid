@@ -4,8 +4,8 @@ android:
     - build-tools-23.0.2
     - extra-google-m2repository
     - extra-android-m2repository
-    - android-16
-    - sysimg-16
+    - android-26
+    - sysimg-26
   licences:
     - android-sdk-license-bcbbd656
     - '.*intel.+'

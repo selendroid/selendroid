@@ -27,7 +27,7 @@ function wait_for_boot_complete {
 platform_version=$1
 base_package="io.selendroid.testapp"
 if [ -z "$platform_version" ]; then
-  platform_version=18
+  platform_version=26
 fi
 
 echo "Using platform version: ${platform_version}"
