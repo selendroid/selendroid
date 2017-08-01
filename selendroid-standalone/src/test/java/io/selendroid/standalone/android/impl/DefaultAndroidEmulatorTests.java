@@ -27,6 +27,7 @@ import io.selendroid.standalone.android.AndroidEmulator;
 
 public class DefaultAndroidEmulatorTests {
 
+  @Ignore("Does not work with real android device.")
   @Test
   public void shouldBeAbleToListAvds() throws Exception {
     List<AndroidEmulator> avds = DefaultAndroidEmulator.listAvailableAvds();

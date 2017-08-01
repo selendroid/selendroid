@@ -70,6 +70,13 @@ public class AndroidSdk {
 
     return new File(toolsHome(), "android" + platformExecutableSuffixBat());
   }
+  
+  public static File avdmanager() {
+    StringBuffer command = new StringBuffer();
+    command.append(toolsHome());
+
+    return new File(toolsHome(), "bin/avdmanager" + platformExecutableSuffixBat());
+  }
 
   public static File emulator() {
     return new File(toolsHome(), "emulator" + platformExecutableSuffixExe());
