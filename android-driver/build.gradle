@@ -1,4 +1,5 @@
 buildscript {
+    System.properties['com.android.build.gradle.overrideVersionCheck'] = 'true'
     repositories {
         jcenter()
     }
@@ -8,7 +9,6 @@ buildscript {
     }
 }
 
-apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
 apply from:   '../jacoco.gradle'
 
