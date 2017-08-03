@@ -108,7 +108,7 @@
 					<extensions>true</extensions>
 					<configuration>
 						<sdk>
-							<platform>16</platform>
+							<platform>26</platform>
 						</sdk>
 						<undeployBeforeDeploy>true</undeployBeforeDeploy>
 					</configuration>

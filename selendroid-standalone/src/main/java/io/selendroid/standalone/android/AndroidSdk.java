@@ -48,6 +48,14 @@ public class AndroidSdk {
 
     return new File(buildToolsFolder(), command.toString());
   }
+  
+  public static File apksigner() throws AndroidSdkException {
+    StringBuffer command = new StringBuffer();
+    command.append("apksigner");
+    command.append(platformExecutableSuffixExe());
+
+    return new File(buildToolsFolder(), command.toString());
+  }
 
   public static File buildToolsFolder() {
     File buildToolsFolder = buildToolsHome();
@@ -69,6 +77,13 @@ public class AndroidSdk {
     command.append(toolsHome());
 
     return new File(toolsHome(), "android" + platformExecutableSuffixBat());
+  }
+  
+  public static File avdmanager() {
+    StringBuffer command = new StringBuffer();
+    command.append(toolsHome());
+
+    return new File(toolsHome(), "bin/avdmanager" + platformExecutableSuffixBat());
   }
 
   public static File emulator() {

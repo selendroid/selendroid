@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/bin/bash
 
 mvn install:install-file -Dfile=classes.aar \
   -DgroupId=android.support.test -DartifactId=exposed-instrumentation-api \

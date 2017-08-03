@@ -117,7 +117,7 @@
 					<nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
 					<failOnNonStandardStructure>false</failOnNonStandardStructure>
 					<sdk>
-						<platform>16</platform>
+						<platform>26</platform>
 					</sdk>
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
 					<manifest>

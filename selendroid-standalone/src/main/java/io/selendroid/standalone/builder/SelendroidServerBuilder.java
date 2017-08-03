@@ -288,20 +288,16 @@ public class SelendroidServerBuilder {
     }
 
     // Sign the jar
-    CommandLine commandline = new CommandLine(JavaSdk.jarsigner());
+    CommandLine commandline = new CommandLine(AndroidSdk.apksigner());
 
-    commandline.addArgument("-sigalg", false);
-    commandline.addArgument(getSigAlg(), false);
-    commandline.addArgument("-digestalg", false);
-    commandline.addArgument("SHA1", false);
-    commandline.addArgument("-signedjar", false);
-    commandline.addArgument(outputFileName.getAbsolutePath(), false);
-    commandline.addArgument("-storepass", false);
-    commandline.addArgument(storepass, false);
-    commandline.addArgument("-keystore", false);
+    commandline.addArgument("sign", false);
+    commandline.addArgument("--ks", false);
     commandline.addArgument(androidKeyStore.toString(), false);
+    commandline.addArgument("--out", false);
+    commandline.addArgument(outputFileName.getAbsolutePath(), false);
+    commandline.addArgument("--ks-pass", false);
+    commandline.addArgument("pass:"+storepass, false);
     commandline.addArgument(customSelendroidServer.getAbsolutePath(), false);
-    commandline.addArgument(alias, false);
     String output = ShellCommand.exec(commandline, 20000);
     if (log.isLoggable(Level.INFO)) {
       log.info("App signing output: " + output);
