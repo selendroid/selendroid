@@ -36,14 +36,17 @@ import io.selendroid.server.util.SelendroidLogger;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -254,18 +257,73 @@ public class AndroidNativeElement implements AndroidElement {
   public void click() {
     waitUntilIsDisplayed();
     scrollIntoScreenIfNeeded();
-    try {
-      // is needed for recalculation of location
-      Thread.sleep(300);
-    } catch (InterruptedException e) {}
-    int[] xy = new int[2];
-    getView().getLocationOnScreen(xy);
-    final int viewWidth = getView().getWidth();
-    final int viewHeight = getView().getHeight();
-    final float x = xy[0] + (viewWidth / 2.0f);
-    float y = xy[1] + (viewHeight / 2.0f);
 
-    clickOnScreen(x, y);
+    final View view = getView();
+
+    if (Build.VERSION.SDK_INT < 19 || view.isLaidOut()) {
+      if (Build.VERSION.SDK_INT < 19) {
+        try {
+          // This is needed for recalculation of location when we cannot
+          // explicitly check if the view's been laid out
+          Thread.sleep(300);
+        } catch (InterruptedException e) {}
+      }
+
+      doClick();
+      return;
+    }
+
+    final AndroidWait wait = instrumentation.getAndroidWait();
+    final AtomicBoolean isLaidOut = new AtomicBoolean(false);
+    final ViewTreeObserver observer = view.getViewTreeObserver();
+    observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override
+      public void onGlobalLayout() {
+        try {
+          isLaidOut.set(true);
+        } finally {
+          if (observer.isAlive()) {
+            removeOnGlobalLayoutListener(observer, this);
+          } else {
+            removeOnGlobalLayoutListener(view.getViewTreeObserver(), this);
+          }
+        }
+      }
+    }); 
+    try {
+      wait.until(new Function<Void, Boolean>() {
+        @Override
+        public Boolean apply(Void input) {
+          return isLaidOut.get();
+        }
+      });
+    } catch (TimeoutException e) {
+      throw new SelendroidException("View was never laid out", e);
+    }
+
+    doClick();
+  }
+
+  private void doClick() {
+    final View view = getView();
+    final int[] xy = new int[2];
+
+    view.getLocationOnScreen(xy);
+    clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
+  }
+
+  private void removeOnGlobalLayoutListener(
+    ViewTreeObserver observer,
+    ViewTreeObserver.OnGlobalLayoutListener listener) {
+    if (observer == null || !observer.isAlive()) {
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT < 16) {
+      observer.removeGlobalOnLayoutListener(listener);
+    } else {
+      observer.removeOnGlobalLayoutListener(listener);
+    }
   }
 
   private void clickOnScreen(float x, float y) {
