@@ -10,7 +10,7 @@ dependencies {
     compile 'org.apache.commons:commons-exec:1.1'
     compile 'org.apache.commons:commons-compress:1.5'
     compile 'com.beust:jcommander:1.30'
-    compile 'com.android.tools.ddms:ddmlib:23.0.1'
+    compile 'com.android.tools.ddms:ddmlib:25.3.1'
     compile 'com.google.guava:guava:17.0'
     compile 'org.apache.commons:commons-lang3:3.1'
     // https://bintray.com/bintray/jcenter/org.seleniumhq.selenium%3Aselenium-java/2.48.2/view#files
