@@ -260,15 +260,13 @@ public class AndroidNativeElement implements AndroidElement {
 
     final View view = getView();
 
-    if (Build.VERSION.SDK_INT < 19 || view.isLaidOut()) {
-      if (Build.VERSION.SDK_INT < 19) {
-        try {
-          // This is needed for recalculation of location when we cannot
-          // explicitly check if the view's been laid out
-          Thread.sleep(300);
-        } catch (InterruptedException e) {}
-      }
+    try {
+      Thread.sleep(300);
+    } cath (InterruptedException e) {
+      // No-op
+    }
 
+    if (view.isLaidOut()) {
       doClick();
       return;
     }
