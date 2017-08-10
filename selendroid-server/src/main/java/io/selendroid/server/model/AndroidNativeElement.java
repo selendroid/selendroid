@@ -262,7 +262,7 @@ public class AndroidNativeElement implements AndroidElement {
 
     try {
       Thread.sleep(300);
-    } cath (InterruptedException e) {
+    } catch (InterruptedException e) {
       // No-op
     }
 
