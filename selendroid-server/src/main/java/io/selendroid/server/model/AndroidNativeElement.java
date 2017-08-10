@@ -259,11 +259,19 @@ public class AndroidNativeElement implements AndroidElement {
     scrollIntoScreenIfNeeded();
 
     final View view = getView();
+    final int[] xy = new int[2];
 
     try {
       Thread.sleep(300);
     } catch (InterruptedException e) {
       // No-op
+    }
+
+    view.getLocationOnScreen(xy);
+
+    if (xy[0] !=0 && xy[1] != 0) {
+      doClick();
+      return;
     }
 
     if (view.isLaidOut()) {
