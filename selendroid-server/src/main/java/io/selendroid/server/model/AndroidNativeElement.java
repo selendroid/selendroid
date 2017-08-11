@@ -266,15 +266,14 @@ public class AndroidNativeElement implements AndroidElement {
     } catch (InterruptedException e) {
       // No-op
     }
-
     view.getLocationOnScreen(xy);
-
-    if (xy[0] !=0 && xy[1] != 0) {
+    if (Buid.VERSION.SDK_INT < 19 || xy[0] !=0 && xy[1] != 0) {
       doClick();
       return;
     }
 
     if (view.isLaidOut()) {
+      SelendroidLogger.debug("View is laid out, clicking immediately");
       doClick();
       return;
     }
@@ -286,6 +285,7 @@ public class AndroidNativeElement implements AndroidElement {
       @Override
       public void onGlobalLayout() {
         try {
+          SelendroidLogger.debug("View onGlobalLayout called");
           isLaidOut.set(true);
         } finally {
           if (observer.isAlive()) {
@@ -315,6 +315,7 @@ public class AndroidNativeElement implements AndroidElement {
     final int[] xy = new int[2];
 
     view.getLocationOnScreen(xy);
+    SelendroidLogger.debug("View reported coordinates: " + xy[0] + "," + xy[1]);
     clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
   }
 
