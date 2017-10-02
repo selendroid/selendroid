@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.objenesis</groupId>
+  <artifactId>objenesis</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+  <name>Objenesis</name>
+  <description>A library for instantiating Java objects</description>
+  <url>http://objenesis.googlecode.com/svn/docs/index.html</url>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://objenesis.googlecode.com/svn/docs/license.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>http://objenesis.googlecode.com/svn/tags/1_0</url>
+  </scm>
+  <dependencies/>
+</project>

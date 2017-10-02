@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.webbitserver</groupId>
+    <artifactId>webbit</artifactId>
+    <name>${project.artifactId}</name>
+    <description>A Java event based WebSocket and HTTP server</description>
+    <url>http://webbitserver.org/</url>
+    <version>0.4.14</version>
+    <packaging>jar</packaging>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>6</version>
+    </parent>
+    <licenses>
+        <license>
+            <name>BSD License</name>
+            <url>http://www.opensource.org/licenses/bsd-license</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git://github.com/webbit/webbit.git</connection>
+        <developerConnection>scm:git:git@github.com:webbit/webbit.git</developerConnection>
+        <url>git://github.com/webbit/webbit.git</url>
+    </scm>
+    <developers>
+        <developer>
+            <id>joewalnes</id>
+            <name>Joe Walnes</name>
+            <email>joe@walnes.com</email>
+        </developer>
+        <developer>
+            <id>aslakhellesoy</id>
+            <name>Aslak Hellesøy</name>
+            <email>aslak.hellesoy@gmail.com</email>
+        </developer>
+        <developer>
+            <id>KushalP</id>
+            <name>Kushal Pisavadia</name>
+            <email>kushi.p@gmail.com</email>
+        </developer>
+        <developer>
+            <id>hellige</id>
+            <name>Matt Hellige</name>
+            <email>mhellige@drw.com</email>
+        </developer>
+    </developers>
+    
+    <dependencies>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>3.5.2.Final</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>1.7.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.2</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.4</version>
+                        <configuration>
+                            <useAgent>true</useAgent>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
