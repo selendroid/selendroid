@@ -157,6 +157,17 @@ public class AndroidSdk {
     sBuildToolsVersion = buildToolsVersion;
   }
 
+  public static int getAndroidVersionNumber() {
+
+
+    return 0;
+  }
+
+  public static File avdManager() {
+
+    return null;
+  }
+
   public static class AndroidFileFilter implements FileFilter {
 
     @Override

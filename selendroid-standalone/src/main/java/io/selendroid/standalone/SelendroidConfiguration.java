@@ -186,6 +186,18 @@ public class SelendroidConfiguration {
   @Parameter(names = "-buildToolsVersion", description = "Which version of the android build-tools to use")
   private String buildToolsVersion = null;
 
+
+  @Parameter(names ="-avdManager", description = "Absolute path to avdmanager command line utility")
+  private String avdManagerHome = null;
+
+  public String getAvdManagerHome() {
+    return avdManagerHome;
+  }
+
+  public void setAvdManagerHome(String avdManagerHome) {
+    this.avdManagerHome = avdManagerHome;
+  }
+
   public void setKeystore(String keystore) {
     this.keystore = keystore;
   }

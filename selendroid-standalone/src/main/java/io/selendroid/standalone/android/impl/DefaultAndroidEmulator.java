@@ -60,12 +60,14 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
       .put("WXGA800", new Dimension(1280, 800))
       .build();
 
+
   private Dimension screenSize;
   private DeviceTargetPlatform targetPlatform;
   private String avdName;
   private File avdRootFolder;
   private Locale locale = null;
   private boolean wasStartedBySelendroid;
+  private static final int SDK_VERSION_FOR_AVD_MANAGER = 25;
 
   protected DefaultAndroidEmulator() {
     this.wasStartedBySelendroid = Boolean.FALSE;
@@ -143,6 +145,12 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   public static List<AndroidEmulator> listAvailableAvds() throws AndroidDeviceException {
     List<AndroidEmulator> avds = Lists.newArrayList();
 
+    File clu = AndroidSdk.getAndroidVersionNumber() > SDK_VERSION_FOR_AVD_MANAGER ?
+            AndroidSdk.avdManager() : AndroidSdk.android();
+
+    CommandLine getAVDCommand = new CommandLine(clu);
+    getAVDCommand.addArgument("list", false);
+    getAVDCommand.addArgument("avd", false);
     CommandLine cmd = new CommandLine(AndroidSdk.android());
     cmd.addArgument("list", false);
     cmd.addArgument("avds", false);
