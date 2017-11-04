@@ -1,8 +1,0 @@
-#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
-#Wed Aug 23 20:07:09 EEST 2017
-https\://artifactory.ing.net/artifactory/mvnpublic/.error=Could not transfer artifact com.android.tools.ddms\:ddmlib\:pom\:25.3.1 from/to artifactory (https\://artifactory.ing.net/artifactory/mvnpublic)\: artifactory.ing.net
-c2af7cb5fc60c834747f6817f293c6ae0169ff7f@default-artifactory-https\://artifactory.ing.net/artifactory/mvnpublic/.lastUpdated=1503508029497
-c2af7cb5fc60c834747f6817f293c6ae0169ff7f@default-hb.repo.thirdparty-https\://artifactory.ing.net/artifactory/thirdparty_mvn_roHomebank/.lastUpdated=1503508029485
-https\://artifactory.ing.net/artifactory/releases_mvn_roHomebank/.error=Could not transfer artifact com.android.tools.ddms\:ddmlib\:pom\:25.3.1 from/to hb.repo.releases (https\://artifactory.ing.net/artifactory/releases_mvn_roHomebank/)\: artifactory.ing.net
-c2af7cb5fc60c834747f6817f293c6ae0169ff7f@default-hb.repo.releases-https\://artifactory.ing.net/artifactory/releases_mvn_roHomebank/.lastUpdated=1503508029493
-https\://artifactory.ing.net/artifactory/thirdparty_mvn_roHomebank/.error=Could not transfer artifact com.android.tools.ddms\:ddmlib\:pom\:25.3.1 from/to hb.repo.thirdparty (https\://artifactory.ing.net/artifactory/thirdparty_mvn_roHomebank/)\: artifactory.ing.net\: nodename nor servname provided, or not known
