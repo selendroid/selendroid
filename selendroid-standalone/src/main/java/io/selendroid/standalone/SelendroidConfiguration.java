@@ -190,7 +190,7 @@ public class SelendroidConfiguration {
   @Parameter(names ="-avdManager", description = "Absolute path to avdmanager command line utility")
   private String avdManagerHome = null;
 
-  public String getAvdManagerHome() {
+  public String getAvdManager() {
     return avdManagerHome;
   }
 

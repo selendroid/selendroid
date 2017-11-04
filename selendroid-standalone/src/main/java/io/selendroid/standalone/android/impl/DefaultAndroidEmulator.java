@@ -17,15 +17,6 @@ import com.android.ddmlib.IDevice;
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.ImmutableMap;
 
-import io.selendroid.common.device.DeviceTargetPlatform;
-import io.selendroid.server.common.exceptions.SelendroidException;
-import io.selendroid.standalone.android.AndroidEmulator;
-import io.selendroid.standalone.android.AndroidSdk;
-import io.selendroid.standalone.android.TelnetClient;
-import io.selendroid.standalone.exceptions.AndroidDeviceException;
-import io.selendroid.standalone.exceptions.ShellCommandException;
-import io.selendroid.standalone.io.ShellCommand;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +32,15 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.selendroid.common.device.DeviceTargetPlatform;
+import io.selendroid.server.common.exceptions.SelendroidException;
+import io.selendroid.standalone.android.AndroidEmulator;
+import io.selendroid.standalone.android.AndroidSdk;
+import io.selendroid.standalone.android.TelnetClient;
+import io.selendroid.standalone.exceptions.AndroidDeviceException;
+import io.selendroid.standalone.exceptions.ShellCommandException;
+import io.selendroid.standalone.io.ShellCommand;
 
 public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmulator {
   private static final String EMULATOR_SERIAL_PREFIX = "emulator-";
@@ -145,19 +145,17 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   public static List<AndroidEmulator> listAvailableAvds() throws AndroidDeviceException {
     List<AndroidEmulator> avds = Lists.newArrayList();
 
-    File clu = AndroidSdk.getAndroidVersionNumber() > SDK_VERSION_FOR_AVD_MANAGER ?
+    File clu = AndroidSdk.getAndroidVersionNumber() >= SDK_VERSION_FOR_AVD_MANAGER ?
             AndroidSdk.avdManager() : AndroidSdk.android();
 
     CommandLine getAVDCommand = new CommandLine(clu);
     getAVDCommand.addArgument("list", false);
     getAVDCommand.addArgument("avd", false);
-    CommandLine cmd = new CommandLine(AndroidSdk.android());
-    cmd.addArgument("list", false);
-    cmd.addArgument("avds", false);
+
 
     String output = null;
     try {
-      output = ShellCommand.exec(cmd, 20000);
+      output = ShellCommand.exec(getAVDCommand, 20000);
     } catch (ShellCommandException e) {
       throw new AndroidDeviceException(e);
     }

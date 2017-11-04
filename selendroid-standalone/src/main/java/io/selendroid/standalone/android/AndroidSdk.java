@@ -13,23 +13,28 @@
  */
 package io.selendroid.standalone.android;
 
-import static io.selendroid.standalone.android.OS.platformExecutableSuffixBat;
-import static io.selendroid.standalone.android.OS.platformExecutableSuffixExe;
-import io.selendroid.server.common.exceptions.SelendroidException;
-import io.selendroid.standalone.exceptions.AndroidSdkException;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import io.selendroid.server.common.exceptions.SelendroidException;
+import io.selendroid.standalone.exceptions.AndroidSdkException;
+
+import static io.selendroid.standalone.android.OS.platformExecutableSuffixBat;
+import static io.selendroid.standalone.android.OS.platformExecutableSuffixExe;
 
 public class AndroidSdk {
   private static final String ANDROID_FOLDER_PREFIX = "android-";
   private static final String ANDROID_HOME = "ANDROID_HOME";
-
+  private static final Logger log = Logger.getLogger(AndroidSdk.class.getName());
   private static String sAndroidHome;
   private static String sAndroidSdkVersion;
   private static String sBuildToolsVersion;
+  private static String sAvdManager;
 
 
   public static File adb() {
@@ -156,16 +161,41 @@ public class AndroidSdk {
   public static void setBuildToolsVersion(String buildToolsVersion) {
     sBuildToolsVersion = buildToolsVersion;
   }
-
-  public static int getAndroidVersionNumber() {
-
-
-    return 0;
+  public static File avdManager() {
+    if (sAvdManager != null) {
+      return new File(sAvdManager + platformExecutableSuffixExe());
+    }
+    else {
+      return new File("advmanager");
+    }
   }
 
-  public static File avdManager() {
+  public static int getAndroidVersionNumber() {
+    if (sAndroidSdkVersion != null) {
+      try {
+        return Integer.parseInt(sAndroidSdkVersion);
+      } catch (NumberFormatException ex) {
+        log.warning("The android sdk version seems to be invalid: " + sAndroidSdkVersion);
+      }
 
-    return null;
+    }
+    if (androidSdkFolder() != null) {
+      String versionString = androidSdkFolder().getName();
+      log.info("Android SDK folder name is: " + versionString);
+      Pattern p = Pattern.compile("(android-)(\\d{2})");
+      Matcher matcher = p.matcher(versionString);
+      if (matcher.matches()) {
+        return Integer.parseInt(matcher.group(2));
+      } else {
+        log.warning("Could not parse Android SDK version number " +
+                "from the sdk folder name !");
+      }
+    }
+    return -1;
+  }
+
+  public static void setAvdManagerHome(String avdManager) {
+    AndroidSdk.sAvdManager = avdManager;
   }
 
   public static class AndroidFileFilter implements FileFilter {
