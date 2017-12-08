@@ -374,14 +374,14 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     log.info("Clearing extra args file from device");
     device.runAdbCommand(String.format("shell rm %s", devicePath));
 
-    if (!caps.hasExtraAUTArgs()) {
-      return;
-    }
-
     try {
       final String fileContents = caps.getExtraAUTArgs().toString();
+      JSONObject args = caps.getExtraAUTArgs();
+      if (args == null) {
+        args = new JSONObject();
+      }
       File temp = File.createTempFile("extra_args", ".json");
-      FileUtils.write(temp, fileContents);
+      FileUtils.write(temp, args.toString());
 
       log.info("Pushing new extra args file to device");
       device.runAdbCommand(
