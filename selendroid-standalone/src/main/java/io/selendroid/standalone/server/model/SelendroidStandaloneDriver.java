@@ -622,7 +622,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
         list.put(deviceInfo);
       } catch (Exception e) {
-        log.info("Error occurred when building supported device info: " + e.getMessage());
+        log.log(Level.WARNING, "Error occurred when building supported device info", e);
       }
     }
     return list;
