@@ -267,7 +267,7 @@ public class AndroidNativeElement implements AndroidElement {
       // No-op
     }
     view.getLocationOnScreen(xy);
-    if (Buid.VERSION.SDK_INT < 19 || xy[0] !=0 && xy[1] != 0) {
+    if (Build.VERSION.SDK_INT < 19 || xy[0] !=0 && xy[1] != 0) {
       doClick();
       return;
     }
