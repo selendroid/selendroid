@@ -259,16 +259,21 @@ public class AndroidNativeElement implements AndroidElement {
     scrollIntoScreenIfNeeded();
 
     final View view = getView();
+    final int[] xy = new int[2];
 
-    if (Build.VERSION.SDK_INT < 19 || view.isLaidOut()) {
-      if (Build.VERSION.SDK_INT < 19) {
-        try {
-          // This is needed for recalculation of location when we cannot
-          // explicitly check if the view's been laid out
-          Thread.sleep(300);
-        } catch (InterruptedException e) {}
-      }
+    try {
+      Thread.sleep(300);
+    } catch (InterruptedException e) {
+      // No-op
+    }
+    view.getLocationOnScreen(xy);
+    if (Build.VERSION.SDK_INT < 19 || xy[0] !=0 && xy[1] != 0) {
+      doClick();
+      return;
+    }
 
+    if (view.isLaidOut()) {
+      SelendroidLogger.debug("View is laid out, clicking immediately");
       doClick();
       return;
     }
@@ -309,6 +314,7 @@ public class AndroidNativeElement implements AndroidElement {
     final int[] xy = new int[2];
 
     view.getLocationOnScreen(xy);
+    SelendroidLogger.debug("View reported coordinates: " + xy[0] + "," + xy[1]);
     clickOnScreen(xy[0] + view.getWidth() / 2.0f, xy[1] + view.getHeight() / 2.0f);
   }
 
