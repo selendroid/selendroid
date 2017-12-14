@@ -27,6 +27,7 @@ import io.selendroid.server.common.utils.SelendroidArguments;
 import io.selendroid.standalone.android.AndroidApp;
 import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.AndroidSdk;
+import io.selendroid.standalone.android.InstrumentationProcessListener;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
@@ -47,6 +48,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -67,6 +69,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   private ExecuteWatchdog logcatWatchdog;
   private static final Integer COMMAND_TIMEOUT = 20000;
   private boolean loggingEnabled = true;
+  private final List<InstrumentationProcessListener> instrumentationProcessListeners = new ArrayList();
 
   /**
    * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
@@ -98,6 +101,11 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   public void setVerbose() {
     log.setLevel(Level.FINEST);
+  }
+
+  public void addInstrumentationProcessListener(
+    InstrumentationProcessListener listener) {
+    instrumentationProcessListeners.add(listener);
   }
 
   @Override
@@ -297,20 +305,21 @@ public abstract class AbstractDevice implements AndroidDevice {
         @Override
         public void onProcessComplete(int exitValue) {
           String output = os.getOutput();
-          if (os.getOutput().contains("FAILED")
-                  || os.getOutput().contains("FAILURE")
-                  || os.getOutput().contains("crashed")) {
-            throw new SelendroidException(output);
+          for (InstrumentationProcessListener listener : instrumentationProcessListeners) {
+            listener.onInstrumentationProcessComplete(output);
           }
         }
 
         @Override
         public void onProcessFailed(ExecuteException e) {
-          throw new SelendroidException(e);
+          String output = os.getOutput();
+          for (InstrumentationProcessListener listener : instrumentationProcessListeners) {
+            listener.onInstrumentationProcessFailed(output, e);
+          }
         }
       });
     } catch(Exception e) {
-      throw new SelendroidException(e);
+      throw new SelendroidException("Failed to execute instrument command", e);
     }
   }
 

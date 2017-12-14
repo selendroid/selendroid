@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -78,8 +78,19 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
     String method = request.method();
 
     JSONObject response = null;
+    AndroidDevice device = session.getDevice();
 
     int retries = 3;
+
+    // Check if instrumentation finished/was killed in the middle of the session
+    if (session.instrumentationProcessFinished()) {
+      return respondWithInstrumentationProcessFinished(
+        sessionId,
+        session.getInstrumentationProcessOutput(),
+        session.getInstrumentationProcessError(),
+        device.getCrashLog());
+    }
+
     while (retries-- > 0) {
       try {
         response = proxyRequestToDevice(request, session, url, method);
@@ -88,14 +99,15 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
         }
         break;
       } catch (Exception e) {
-        if (retries == 0) {
-          AndroidDevice device = session.getDevice();
-
-          String crashMessage = device.getCrashLog();
-          if (!crashMessage.isEmpty()) {
-            return respondWithFailure(sessionId, new AppCrashedException(crashMessage));
-          }
-
+        // Check if instrumentation finished/was killed in between retries
+        // There's no point in retrying then
+        if (session.instrumentationProcessFinished()) {
+          return respondWithInstrumentationProcessFinished(
+            sessionId,
+            session.getInstrumentationProcessOutput(),
+            session.getInstrumentationProcessError(),
+            device.getCrashLog());
+        } else if (retries == 0) {
           if (device.isLoggingEnabled()) {
             log.info("Failed to proxy request to the device, dumping logcat");
             device.setVerbose();
@@ -117,9 +129,19 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
         }
       }
     }
-    if (response == null) {
-      return respondWithFailure(sessionId, new SelendroidException(
-          "Selendroid server on the device became unreachable"));
+
+    if (response == null) { // We ran out of retries with no response
+      // Check if we timed out because of the instrumentation process dying
+      if (session.instrumentationProcessFinished()) {
+        return respondWithInstrumentationProcessFinished(
+          sessionId,
+          session.getInstrumentationProcessOutput(),
+          session.getInstrumentationProcessError(),
+          device.getCrashLog());
+      } else {
+        return respondWithFailure(sessionId, new SelendroidException(
+            "Selendroid server on the device became unreachable"));
+      }
     }
 
     Object value = response.opt("value");
@@ -128,6 +150,37 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
     log.fine("return status from selendroid android server: " + statusCode);
 
     return new SelendroidResponse(sessionId, StatusCode.fromInteger(statusCode), value);
+  }
+
+  private SelendroidResponse respondWithInstrumentationProcessFinished(
+    String sessionId,
+    String output,
+    Exception error,
+    String crashLog) throws JSONException {
+    // The instrumentation process will die because of app crashes
+    if (!crashLog.isEmpty()) {
+      return respondWithFailure(sessionId, new AppCrashedException(crashLog));
+    }
+
+    if (error != null) {
+      return respondWithFailure(
+        sessionId,
+        new SelendroidException(
+          "Failed to execute instrument command, output:\n" + output,
+          error));
+    }
+
+    String message = null;
+    if (output.contains("INSTRUMENTATION_FAILED")) {
+      message = "Instrumentation process failed in the middle of the session";
+    } else {
+      message = "Instrumentation process finished in the middle of the session";
+    }
+
+    return respondWithFailure(
+      sessionId,
+      new SelendroidException(
+        message + "\nOutput from instrumentation process:\n" + output));
   }
 
   /**
