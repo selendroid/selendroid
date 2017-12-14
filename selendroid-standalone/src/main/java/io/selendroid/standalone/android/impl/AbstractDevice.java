@@ -279,12 +279,7 @@ public abstract class AbstractDevice implements AndroidDevice {
       argList.add("io.selendroid." + aut.getBasePackage() + "/io.selendroid.server.SelendroidInstrumentation");
     }
 
-    String[] args = argList.toArray(new String[argList.size()]);
-    if (capabilities.getUseJUnitBootstrap()) {
-      runInstrumentCommandWithJUnitBootstrap(args);
-    } else {
-      runInstrumentCommand(args);
-    }
+    runInstrumentCommand(argList.toArray(new String[argList.size()]));
 
     forwardSelendroidPort(port);
 
@@ -293,7 +288,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
   }
 
-  private void runInstrumentCommandWithJUnitBootstrap(String[] args) {
+  private void runInstrumentCommand(String[] args) {
     CommandLine command = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class));
 
     final ShellCommand.PrintingLogOutputStream os = new ShellCommand.PrintingLogOutputStream();
@@ -316,32 +311,6 @@ public abstract class AbstractDevice implements AndroidDevice {
       });
     } catch(Exception e) {
       throw new SelendroidException(e);
-    }
-  }
-
-  private void runInstrumentCommand(String[] args) {
-    CommandLine command = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument"}, args, String.class));
-    String result = executeCommandQuietly(command);
-    if (result.contains("FAILED")) {
-      String genericMessage = "Could not start the app under test using instrumentation.";
-      String detailedMessage;
-      try {
-        // Try again, waiting for instrumentation to finish. This way we'll get more error output.
-        String[] instrumentCmd =
-                ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class);
-        CommandLine getDetailedErrorCommand = adbCommand(instrumentCmd);
-        String detailedResult = executeCommandQuietly(getDetailedErrorCommand);
-        if (detailedResult.contains("package")) {
-          detailedMessage =
-                  genericMessage + " Is the correct app under test installed? Read the details below:\n" + detailedResult;
-        } else {
-          detailedMessage = genericMessage + " Read the details below:\n" + detailedResult;
-        }
-      } catch (Exception e) {
-        // Can't get detailed results
-        throw new SelendroidException(genericMessage, e);
-      }
-      throw new SelendroidException(detailedMessage);
     }
   }
 
