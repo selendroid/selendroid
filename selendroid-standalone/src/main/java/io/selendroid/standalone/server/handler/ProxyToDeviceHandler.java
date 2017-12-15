@@ -115,15 +115,6 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
               System.out.println(le.getMessage());
             }
           }
-
-          if (e instanceof SocketException) {
-            return respondWithServerOnDeviceUnreachable(sessionId, session.getDevice());
-          } else if (e instanceof NoHttpResponseException) {
-            return respondWithServerOnDeviceUnreachable(sessionId, session.getDevice());
-          } else {
-            return respondWithFailure(sessionId, new SelendroidException(
-                "Unexpected error communicating with selendroid server on the device", e));
-          }
         } else {
           log.log(Level.SEVERE, "Failed to proxy request to Selendroid Server, retrying.", e);
         }
@@ -181,28 +172,6 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
       sessionId,
       new SelendroidException(
         message + "\nOutput from instrumentation process:\n" + output));
-  }
-
-  /**
-   * selendroid-server can't be reached and there is no crash log file.
-   */
-  private SelendroidResponse respondWithServerOnDeviceUnreachable(String sessionId, AndroidDevice device)
-      throws JSONException {
-    String message =
-        "The selendroid server on the device became unreachable and there is no crash log from Android's " +
-        "uncaught exception handler. This can mean:\n" +
-        "- The test is trying to use a driver associated to a process that has finished " +
-        "(has the app been killed by the test?)\n" +
-        "- The app has been killed by the OS abruptly or there was a native crash (look at logcat)";
-    try {
-      String psOutput = device.listRunningThirdPartyProcesses();
-      if (!Strings.isNullOrEmpty(psOutput)) {
-        message += "\nCurrently running processes excluding system processes (via 'adb shell ps'):\n" + psOutput;
-      }
-    } catch (Exception e) {
-      message += "\nCould not get list of running processes: " + e.getMessage();
-    }
-    return respondWithFailure(sessionId, new SelendroidException(message));
   }
 
 
