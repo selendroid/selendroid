@@ -177,6 +177,9 @@ public class SelendroidConfiguration {
   @Parameter(names = "-useJUnitBootstrap", description = "Use instrumentation that extends AdroidJUnitRunner")
   private boolean useJUnitBootstrap = false;
 
+  @Parameter(names = "-adbHome", description = "Specify path to adb installation. If not specified, it will default to ANDROID_HOME/platform-tools")
+  private String adbHome = null;
+
   @Parameter(names = "-androidHome", description = "Specify path to android sdk installation, if not specified it will be read from the ANDROID_HOME env var")
   private String androidHome = null;
 
@@ -507,6 +510,14 @@ public class SelendroidConfiguration {
 
   public void setAndroidHome(String androidHome) {
     this.androidHome = androidHome;
+  }
+
+  public String getAdbHome() {
+    return adbHome;
+  }
+
+  public void setAdbHome(String adbHome) {
+    this.adbHome = adbHome;
   }
 
   public String getAndroidSdkVersion() {

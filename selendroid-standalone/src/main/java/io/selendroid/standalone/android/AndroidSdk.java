@@ -30,10 +30,13 @@ public class AndroidSdk {
   private static String sAndroidHome;
   private static String sAndroidSdkVersion;
   private static String sBuildToolsVersion;
+  private static String sAdbHome;
 
 
   public static File adb() {
-    return new File(platformToolsHome(), "adb" + platformExecutableSuffixExe());
+    return new File(
+      sAdbHome != null ? new File(sAdbHome) : platformToolsHome(),
+      "adb" + platformExecutableSuffixExe());
   }
 
   public static File aapt() throws AndroidSdkException {
@@ -147,6 +150,10 @@ public class AndroidSdk {
 
   public static void setAndroidHome(String androidHome) {
     sAndroidHome = androidHome;
+  }
+
+  public static void setAdbHome(String adbHome) {
+    sAdbHome = adbHome;
   }
 
   public static void setAndroidSdkVersion(String androidSdkVersion) {
