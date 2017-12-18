@@ -355,7 +355,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     try {
       response = httpClient.execute(request);
     } catch (Exception e) {
-      log.info("Can't connect to Selendroid server, assuming it is not running.");
+      log.log(
+        Level.INFO,
+        "Can't connect to Selendroid server, assuming it is not running.",
+        e);
       return false;
     }
 
