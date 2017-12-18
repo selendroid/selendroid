@@ -24,6 +24,7 @@ import io.selendroid.server.common.exceptions.AppCrashedException;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.standalone.android.AndroidDevice;
+import io.selendroid.standalone.android.InstrumentationProcessOutput;
 import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
 import io.selendroid.standalone.server.util.HttpClientUtil;
@@ -137,8 +138,11 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
 
     Object value = response.opt("value");
     int statusCode = response.getInt("status");
-    log.fine(String.format("Response from selendroid-server, status %d:\n%s", statusCode, value));
-    log.fine("return status from selendroid android server: " + statusCode);
+    log.fine(
+      String.format(
+        "Response from selendroid-server, status %d:\n%s",
+        statusCode,
+        value));
 
     return new SelendroidResponse(sessionId, StatusCode.fromInteger(statusCode), value);
   }
@@ -148,30 +152,40 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
     String output,
     Exception error,
     String crashLog) throws JSONException {
-    // The instrumentation process will die because of app crashes
-    if (!crashLog.isEmpty()) {
-      return respondWithFailure(sessionId, new AppCrashedException(crashLog));
-    }
+    InstrumentationProcessOutput instrumentationOutput =
+      InstrumentationProcessOutput.parse(output);
 
     if (error != null) {
       return respondWithFailure(
         sessionId,
         new SelendroidException(
-          "Failed to execute instrument command, output:\n" + output,
+          "Failed to execute instrument command, output:\n" +
+          instrumentationOutput.getFullOutput(),
           error));
     }
 
-    String message = null;
-    if (output.contains("INSTRUMENTATION_FAILED")) {
-      message = "Instrumentation process failed in the middle of the session";
-    } else {
-      message = "Instrumentation process finished in the middle of the session";
+    if (instrumentationOutput.isAppCrash()) {
+      String crashMessage;
+
+      if (!crashLog.isEmpty()) {
+        crashMessage = crashLog;
+      } else {
+        crashMessage = instrumentationOutput.getMessage() +
+        "\nSee logcat for more details";
+      }
+
+      return respondWithFailure(
+        sessionId,
+        new AppCrashedException(crashMessage));
     }
 
     return respondWithFailure(
       sessionId,
       new SelendroidException(
-        message + "\nOutput from instrumentation process:\n" + output));
+        "Instrumentation process failed with message: " +
+        instrumentationOutput.getMessage() +
+        "\nSee full output for more details:\n" +
+        instrumentationOutput.getFullOutput()));
   }
 
 

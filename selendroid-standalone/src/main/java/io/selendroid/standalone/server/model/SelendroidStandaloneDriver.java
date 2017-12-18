@@ -28,6 +28,7 @@ import io.selendroid.standalone.android.AndroidEmulator;
 import io.selendroid.standalone.android.AndroidSdk;
 import io.selendroid.standalone.android.DeviceManager;
 import io.selendroid.standalone.android.InstrumentationProcessListener;
+import io.selendroid.standalone.android.InstrumentationProcessOutput;
 import io.selendroid.standalone.android.impl.DefaultAndroidEmulator;
 import io.selendroid.standalone.android.impl.DefaultDeviceManager;
 import io.selendroid.standalone.android.impl.DefaultHardwareDevice;
@@ -38,6 +39,7 @@ import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.server.util.FolderMonitor;
 import io.selendroid.standalone.server.util.HttpClientUtil;
+import io.selendroid.server.common.exceptions.AppCrashedException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -359,27 +361,45 @@ public class SelendroidStandaloneDriver
       wait.until(new Function<AndroidDevice, Boolean>() {
         @Override
         public Boolean apply(AndroidDevice device) {
-          String crashMessage = device.getCrashLog();
-          if (!crashMessage.isEmpty()) {
-            throw new AppCrashedException(crashMessage);
+          if (!device.getCrashLog().isEmpty()) {
+            throw new AppCrashedException(device.getCrashLog());
           }
 
           if (instrumentationProcessFinished()) {
-            final String instrumentationOutput = getInstrumentationProcessOutput();
+            InstrumentationProcessOutput instrumentationOutput =
+              InstrumentationProcessOutput.parse(getInstrumentationProcessOutput());
             final Exception instrumentationError = getInstrumentationProcessError();
+
             if (instrumentationError != null) {
                 throw new SelendroidException(
-                  "Failed to execute instrument command, output:\n" + instrumentationOutput,
+                  "Failed to execute instrument command, full output:\n"
+                  + instrumentationOutput.getFullOutput(),
                   instrumentationError);
             }
 
-            String message;
-            if (instrumentationOutput.contains("package")) {
-              message = "Could not start the app under test using instrumentation."
-                + " Is the correct app under test installed? Read the details below:\n"
-                + instrumentationOutput;
+            if (instrumentationOutput.isAppCrash()) {
+              String crashMessage;
+
+              if (!device.getCrashLog().isEmpty()) {
+                crashMessage = device.getCrashLog();
+              } else {
+                crashMessage = instrumentationOutput.getMessage() +
+                "\nSee logcat for more details";
+              }
+
+              throw new AppCrashedException(crashMessage);
+            }
+
+            String message = instrumentationOutput.getMessage();
+            if (message.contains("Unable to find instrumentation target package")) {
+              message =
+                "Could not start the app under test using instrumentation." +
+                " Is the correct app under test installed? Read the details below:\n" +
+                instrumentationOutput.getFullOutput();
             } else {
-              message = "Instrumentation process failed. See output:\n" + instrumentationOutput;
+              message =
+                "Instrumentation process failed. See output:\n" +
+                instrumentationOutput.getFullOutput();
             }
 
             throw new SelendroidException(message);
