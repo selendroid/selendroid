@@ -21,15 +21,19 @@ import io.selendroid.standalone.exceptions.AndroidSdkException;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AndroidSdk {
-  private static final String ANDROID_FOLDER_PREFIX = "android-";
   private static final String ANDROID_HOME = "ANDROID_HOME";
 
   private static String sAndroidHome;
   private static String sAndroidSdkVersion;
   private static String sBuildToolsVersion;
+
+  private static final String PLATFORM_VERSION_REGEX = "android-(\\d+)$";
+  private static final String BUILD_TOOLS_VERSION_REGEX = "(\\d+)\\.(\\d+)\\.(\\d+)";
 
 
   public static File adb() {
@@ -47,21 +51,6 @@ public class AndroidSdk {
     }
 
     return new File(buildToolsFolder(), command.toString());
-  }
-
-  public static File buildToolsFolder() {
-    File buildToolsFolder = buildToolsHome();
-
-    if (sBuildToolsVersion != null) {
-      return new File(buildToolsFolder, sBuildToolsVersion);
-    } else {
-      return findLatestAndroidPlatformFolder(
-        buildToolsFolder,
-        String.format(
-          "Command 'aapt' was not found inside the Android SDK: %s. "
-          + "Please update to the latest development tools and try again.",
-          buildToolsFolder));
-    }
   }
 
   public static File android() {
@@ -124,25 +113,103 @@ public class AndroidSdk {
   }
 
   public static File androidSdkFolder() {
-    String platformsRootFolder = androidHome() + File.separator + "platforms";
-    File platformsFolder = new File(platformsRootFolder);
-
     if (sAndroidSdkVersion != null) {
-      return new File(platformsFolder, sAndroidSdkVersion);
-    } else {
-      return findLatestAndroidPlatformFolder(
-        platformsFolder,
-        "No installed Android APIs have been found.");
+      return new File(platformsFolder(), sAndroidSdkVersion);
     }
+    return findLatestAndroidPlatformFolder();
   }
 
-  protected static File findLatestAndroidPlatformFolder(File rootFolder, String errorMessage) {
-    File[] androidApis = rootFolder.listFiles(new AndroidFileFilter());
-    if (androidApis == null || androidApis.length == 0) {
-      throw new SelendroidException(errorMessage);
+  private static File platformsFolder() {
+    return new File(androidHome(), "platforms");
+  }
+
+  public static File findLatestAndroidPlatformFolder() {
+    return findLatestAndroidPlatformFolder(platformsFolder());
+  }
+
+  public static File findLatestAndroidPlatformFolder(File platformsFolder) {
+    File[] platformVersions = platformsFolder.listFiles(new FileFilter() {
+      @Override
+      public boolean accept(File file) {
+        return file.getName().matches(PLATFORM_VERSION_REGEX);
+      }
+    });
+
+    if (platformVersions == null || platformVersions.length == 0) {
+      throw new SelendroidException("No valid Android platform folder found in " + platformsFolder.getName());
     }
-    Arrays.sort(androidApis, Collections.reverseOrder());
-    return androidApis[0].getAbsoluteFile();
+
+    Pattern pattern = Pattern.compile(PLATFORM_VERSION_REGEX);
+    Arrays.sort(
+      platformVersions,
+      new Comparator<File>() {
+        @Override
+        public int compare(File f1, File f2) {
+          Matcher m1 = pattern.matcher(f1.getName());
+          Matcher m2 = pattern.matcher(f2.getName());
+
+          m1.find();
+          m2.find();
+
+          return Integer.compare(
+            Integer.parseInt(m1.group(1)),
+            Integer.parseInt(m2.group(1)));
+        }
+      });
+
+    return platformVersions[platformVersions.length - 1].getAbsoluteFile();
+  }
+
+  public static File buildToolsFolder() {
+    if (sBuildToolsVersion != null) {
+      return new File(buildToolsHome(), sBuildToolsVersion);
+    }
+    return findLatestBuildToolsFolder();
+  }
+
+  public static File findLatestBuildToolsFolder() {
+    return findLatestBuildToolsFolder(buildToolsHome());
+  }
+
+  public static File findLatestBuildToolsFolder(File buildToolsHome) {
+    File[] buildToolsVersions = buildToolsHome.listFiles(new FileFilter() {
+      @Override
+      public boolean accept(File file) {
+        return file.getName().matches(BUILD_TOOLS_VERSION_REGEX);
+      }
+    });
+
+    if (buildToolsVersions == null || buildToolsVersions.length == 0) {
+      throw new SelendroidException("No valid build-tools versions found in " + buildToolsHome.getName());
+    }
+
+    Pattern pattern = Pattern.compile(BUILD_TOOLS_VERSION_REGEX);
+    Arrays.sort(
+      buildToolsVersions,
+      new Comparator<File>() {
+        @Override
+        public int compare(File f1, File f2) {
+          Matcher m1 = pattern.matcher(f1.getName());
+          Matcher m2 = pattern.matcher(f2.getName());
+
+          m1.find();
+          m2.find();
+
+          for (int i = 1; i <= 3; i++) {
+            int compare = Integer.compare(
+              Integer.parseInt(m1.group(i)),
+              Integer.parseInt(m2.group(i)));
+
+            if (compare != 0) {
+              return compare;
+            }
+          }
+
+          return 0;
+        }
+      });
+
+    return buildToolsVersions[buildToolsVersions.length - 1].getAbsoluteFile();
   }
 
   public static void setAndroidHome(String androidHome) {
@@ -155,19 +222,5 @@ public class AndroidSdk {
 
   public static void setBuildToolsVersion(String buildToolsVersion) {
     sBuildToolsVersion = buildToolsVersion;
-  }
-
-  public static class AndroidFileFilter implements FileFilter {
-
-    @Override
-    public boolean accept(File pathname) {
-      String fileName = pathname.getName();
-
-      String regex = "\\d{2}\\.\\d{1}\\.\\d{1}";
-      if (fileName.matches(regex) || fileName.startsWith(ANDROID_FOLDER_PREFIX)) {
-        return true;
-      }
-      return false;
-    }
   }
 }
