@@ -13,7 +13,7 @@
  */
 package io.selendroid.standalone.server.model;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -216,7 +216,7 @@ public class DeviceStore {
     Iterable<AndroidDevice> candidateDevices = Strings.isNullOrEmpty(platformVersion) ?
         Iterables.concat(androidDevices.values()) : androidDevices.get(DeviceTargetPlatform.fromPlatformVersion(platformVersion));
 
-    candidateDevices = Objects.firstNonNull(candidateDevices, Collections.EMPTY_LIST);
+    candidateDevices = MoreObjects.firstNonNull(candidateDevices, Collections.EMPTY_LIST);
 
     FluentIterable<AndroidDevice> allMatchingDevices = FluentIterable.from(candidateDevices)
         .filter(deviceNotInUse())
