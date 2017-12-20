@@ -146,7 +146,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
     CommandLine cmd = new CommandLine(AndroidSdk.android());
     cmd.addArgument("list", false);
-    cmd.addArgument("avds", false);
+    cmd.addArgument("avd", false);
 
     String output = null;
     try {
