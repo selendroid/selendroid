@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2015 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -20,9 +20,11 @@ import io.selendroid.standalone.log.LogLevelEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.openqa.selenium.support.ui.FluentWait;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SelendroidConfiguration {
 
@@ -160,6 +162,10 @@ public class SelendroidConfiguration {
   @Parameter(description = "Maximum time in milliseconds to wait for the selendroid-server to come up on the device",
       names = "-serverStartTimeout")
   private long serverStartTimeout = 20000;
+
+  @Parameter(description = "Time in milliseconds to wait between attempts to check if the selendroid-server has come up on the device.",
+      names = "-serverStartPollingInterval")
+  private long serverStartPollingInterval = FluentWait.FIVE_HUNDRED_MILLIS.in(TimeUnit.MILLISECONDS);
 
   @Parameter(names = {"-h", "--help"}, description = "Prints usage instructions to the terminal")
   private boolean printHelp = false;
@@ -362,6 +368,14 @@ public class SelendroidConfiguration {
 
   public void setServerStartTimeout(long serverStartTimeout) {
     this.serverStartTimeout = serverStartTimeout;
+  }
+
+  public long getServerStartPollingInterval() {
+    return serverStartPollingInterval;
+  }
+
+  public void setServerStartPollingInterval(long serverStartPollingInterval) {
+    this.serverStartPollingInterval = serverStartPollingInterval;
   }
 
   public int getServerStartRetries() {

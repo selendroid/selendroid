@@ -13,6 +13,7 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
@@ -33,9 +34,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NoHttpResponseException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 
 import java.net.SocketException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +49,9 @@ import java.util.logging.Logger;
  */
 public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
   private static final Logger log = Logger.getLogger(ProxyToDeviceHandler.class.getName());
+
+  private static final long PROXY_REQUEST_ATTEMPT_TIMEOUT_MS = 10000;
+  private static final long PROXY_REQUEST_ATTEMPT_INTERVAL_MS = 200;
 
   public ProxyToDeviceHandler(String mappedUri) {
     super(mappedUri);
@@ -62,7 +70,7 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
           sessionId, new SelendroidException("No session id passed to the request."));
     }
 
-    ActiveSession session = getActiveSession(request);
+    final ActiveSession session = getActiveSession(request);
     if (session == null) {
       return respondWithFailure(sessionId,
           new SelendroidException("No session found for sessionId: " + sessionId));
@@ -78,80 +86,77 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
 
     String method = request.method();
 
-    JSONObject response = null;
-    AndroidDevice device = session.getDevice();
+    final AndroidDevice device = session.getDevice();
 
-    int retries = 3;
-
-    // Check if instrumentation finished/was killed in the middle of the session
-    if (session.instrumentationProcessFinished()) {
-      return respondWithInstrumentationProcessFinished(
-        sessionId,
-        session.getInstrumentationProcessOutput(),
-        session.getInstrumentationProcessError(),
-        device.getCrashLog());
-    }
-
-    while (retries-- > 0) {
-      try {
-        response = proxyRequestToDevice(request, session, url, method);
-        if (response == null) { // Unknown command
-          return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_COMMAND);
-        }
-        break;
-      } catch (Exception e) {
-        // Check if instrumentation finished/was killed in between retries
-        // There's no point in retrying then
-        if (session.instrumentationProcessFinished()) {
-          return respondWithInstrumentationProcessFinished(
-            sessionId,
-            session.getInstrumentationProcessOutput(),
-            session.getInstrumentationProcessError(),
-            device.getCrashLog());
-        } else if (retries == 0) {
-          if (device.isLoggingEnabled()) {
-            log.info("Failed to proxy request to the device, dumping logcat");
-            device.setVerbose();
-            for (LogEntry le : device.getLogs()) {
-              System.out.println(le.getMessage());
+    try {
+      Wait<AndroidDevice> wait =
+        new FluentWait<AndroidDevice>(device)
+          .withTimeout(PROXY_REQUEST_ATTEMPT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+          .pollingEvery(PROXY_REQUEST_ATTEMPT_INTERVAL_MS, TimeUnit.MILLISECONDS);
+      return wait.until(new Function<AndroidDevice, Response>() {
+        @Override
+        public Response apply(AndroidDevice device) {
+          try {
+            // Check if the app crashed in the middle of the request
+            String crashLog = device.getCrashLog();
+            if (!crashLog.isEmpty()) {
+              return respondWithFailure(sessionId, new AppCrashedException(crashLog));
             }
-          }
-        } else {
-          log.log(Level.SEVERE, "Failed to proxy request to Selendroid Server, retrying.", e);
-        }
-      }
-    }
 
-    if (response == null) { // We ran out of retries with no response
+            // Check if the instrumentation process died in the middle of the request
+            if (session.instrumentationProcessFinished()) {
+              return respondWithInstrumentationProcessFinished(
+                sessionId,
+                session.getInstrumentationProcessOutput(),
+                session.getInstrumentationProcessError());
+            }
+
+            JSONObject response = proxyRequestToDevice(request, session, url, method);
+            if (response == null) { // Unknown command
+              return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_COMMAND);
+            }
+
+            Object value = response.opt("value");
+            int statusCode = response.getInt("status");
+            log.fine(
+              String.format(
+                "Response from selendroid-server, status %d:\n%s",
+                statusCode,
+                value));
+
+            return new SelendroidResponse(sessionId, StatusCode.fromInteger(statusCode), value);
+          } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to proxy request to Selendroid Server, retrying.", e);
+            return null;
+          }
+        }
+      });
+    } catch (TimeoutException e) {
+      // Check for regular app crashes first
+      String crashLog = device.getCrashLog();
+      if (!crashLog.isEmpty()) {
+        return respondWithFailure(sessionId, new AppCrashedException(crashLog));
+      }
+
       // Check if we timed out because of the instrumentation process dying
       if (session.instrumentationProcessFinished()) {
         return respondWithInstrumentationProcessFinished(
           sessionId,
           session.getInstrumentationProcessOutput(),
-          session.getInstrumentationProcessError(),
-          device.getCrashLog());
-      } else {
-        return respondWithFailure(sessionId, new SelendroidException(
-            "Selendroid server on the device became unreachable"));
+          session.getInstrumentationProcessError());
       }
+
+      // Last resort, we really don't know what happened
+      return respondWithFailure(
+        sessionId,
+        new SelendroidException("Selendroid server on the device became unreachable"));
     }
-
-    Object value = response.opt("value");
-    int statusCode = response.getInt("status");
-    log.fine(
-      String.format(
-        "Response from selendroid-server, status %d:\n%s",
-        statusCode,
-        value));
-
-    return new SelendroidResponse(sessionId, StatusCode.fromInteger(statusCode), value);
   }
 
   private SelendroidResponse respondWithInstrumentationProcessFinished(
     String sessionId,
     String output,
-    Exception error,
-    String crashLog) throws JSONException {
+    Exception error) throws JSONException {
     InstrumentationProcessOutput instrumentationOutput =
       InstrumentationProcessOutput.parse(output);
 
@@ -165,18 +170,11 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
     }
 
     if (instrumentationOutput.isAppCrash()) {
-      String crashMessage;
-
-      if (!crashLog.isEmpty()) {
-        crashMessage = crashLog;
-      } else {
-        crashMessage = instrumentationOutput.getMessage() +
-        "\nSee logcat for more details";
-      }
-
       return respondWithFailure(
         sessionId,
-        new AppCrashedException(crashMessage));
+        new AppCrashedException(
+          instrumentationOutput.getMessage() +
+          "\nSee logcat for more details"));
     }
 
     return respondWithFailure(

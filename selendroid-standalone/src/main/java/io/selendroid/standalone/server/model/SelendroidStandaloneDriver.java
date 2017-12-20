@@ -356,15 +356,14 @@ public class SelendroidStandaloneDriver
     Wait<AndroidDevice> wait = new FluentWait<AndroidDevice>(device)
       .withTimeout(
         serverConfiguration.getServerStartTimeout(),
+        TimeUnit.MILLISECONDS)
+      .pollingEvery(
+        serverConfiguration.getServerStartPollingInterval(),
         TimeUnit.MILLISECONDS);
     try {
       wait.until(new Function<AndroidDevice, Boolean>() {
         @Override
         public Boolean apply(AndroidDevice device) {
-          if (!device.getCrashLog().isEmpty()) {
-            throw new AppCrashedException(device.getCrashLog());
-          }
-
           if (instrumentationProcessFinished()) {
             InstrumentationProcessOutput instrumentationOutput =
               InstrumentationProcessOutput.parse(getInstrumentationProcessOutput());
@@ -378,16 +377,9 @@ public class SelendroidStandaloneDriver
             }
 
             if (instrumentationOutput.isAppCrash()) {
-              String crashMessage;
-
-              if (!device.getCrashLog().isEmpty()) {
-                crashMessage = device.getCrashLog();
-              } else {
-                crashMessage = instrumentationOutput.getMessage() +
-                "\nSee logcat for more details";
-              }
-
-              throw new AppCrashedException(crashMessage);
+              throw new AppCrashedException(
+                instrumentationOutput.getMessage() +
+                "\nSee logcat for more details");
             }
 
             String message = instrumentationOutput.getMessage();
