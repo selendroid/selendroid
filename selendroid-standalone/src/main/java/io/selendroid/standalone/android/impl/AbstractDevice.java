@@ -299,22 +299,19 @@ public abstract class AbstractDevice implements AndroidDevice {
   private void runInstrumentCommand(String[] args) {
     CommandLine command = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class));
 
-    final ShellCommand.PrintingLogOutputStream os = new ShellCommand.PrintingLogOutputStream();
     try {
-      ShellCommand.execAsync(null, command, new PumpStreamHandler(os), new ExecuteResultHandler() {
+      ShellCommand.execAsync(null, command, new ShellCommand.Listener() {
         @Override
-        public void onProcessComplete(int exitValue) {
-          String output = os.getOutput();
+        public void onCommandExecutionFinished(int exitCode, String output) {
           for (InstrumentationProcessListener listener : instrumentationProcessListeners) {
             listener.onInstrumentationProcessComplete(output);
           }
         }
 
         @Override
-        public void onProcessFailed(ExecuteException e) {
-          String output = os.getOutput();
+        public void onCommandExecutionFailed(Exception error, String partialOutput) {
           for (InstrumentationProcessListener listener : instrumentationProcessListeners) {
-            listener.onInstrumentationProcessFailed(output, e);
+            listener.onInstrumentationProcessFailed(partialOutput, error);
           }
         }
       });

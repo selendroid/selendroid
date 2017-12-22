@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -16,6 +16,8 @@ package io.selendroid.standalone.io;
 import io.selendroid.standalone.exceptions.DeviceOfflineException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +26,6 @@ import org.apache.commons.exec.*;
 import org.apache.commons.exec.environment.EnvironmentUtils;
 
 public class ShellCommand {
-
   private static final Logger log = Logger.getLogger(ShellCommand.class.getName());
 
   public static String exec(CommandLine commandLine) throws ShellCommandException {
@@ -54,43 +55,100 @@ public class ShellCommand {
     return result;
   }
 
-  public static void execAsync(CommandLine commandline) throws ShellCommandException {
-    execAsync(null, commandline);
+  public static void execAsync(
+    CommandLine commandLine) throws ShellCommandException {
+    execAsync(null, commandLine, null);
   }
 
-  public static void execAsync(String display, CommandLine commandline)
-          throws ShellCommandException {
-    execAsync(display, commandline, null, null);
+  public static void execAsync(
+    CommandLine commandLine,
+    Listener listener) throws ShellCommandException {
+    execAsync(null, commandLine, listener);
   }
 
-  public static void execAsync(String display,
-                               CommandLine commandline,
-                               ExecuteStreamHandler streamHandler,
-                               ExecuteResultHandler resultHandler)
-          throws ShellCommandException {
-    log.info("executing async command: " + commandline);
-    DefaultExecutor exec = new DefaultExecutor();
+  public static void execAsync(
+    String display,
+    CommandLine commandLine) throws ShellCommandException {
+    execAsync(display, commandLine, null);
+  }
 
-    if (resultHandler == null) {
-      resultHandler = new DefaultExecuteResultHandler();
-    }
-    if (streamHandler == null) {
-      streamHandler = new PumpStreamHandler(new PrintingLogOutputStream());
-    }
-    exec.setStreamHandler(streamHandler);
+  public static void execAsync(
+    String display,
+    CommandLine commandLine,
+    Listener listener) throws ShellCommandException {
+    final OutputStream os = new ByteArrayOutputStream();
     try {
-      if (display == null || display.isEmpty()) {
-        exec.execute(commandline, resultHandler);
-      } else {
-        Map env = EnvironmentUtils.getProcEnvironment();
-        EnvironmentUtils.addVariableToEnvironment(env, "DISPLAY=:" + display);
+      DefaultExecutor exec = new DefaultExecutor();
+      exec.setStreamHandler(new PumpStreamHandler(os));
 
-        exec.execute(commandline, env, resultHandler);
+      Map<String, String> env = EnvironmentUtils.getProcEnvironment();
+      if (display == null || display.isEmpty()) {
+        EnvironmentUtils.addVariableToEnvironment(env, "DISPLAY=:" + display);
       }
+
+      log.log(
+        Level.INFO,
+        String.format(
+          "Executing shell command asynchronously: %s",
+          commandLine));
+
+      exec.execute(
+        commandLine,
+        env,
+        new ExecuteResultHandler() {
+          @Override
+          public void onProcessComplete(int exitValue) {
+            String output = os.toString();
+            log.log(
+              Level.INFO,
+              String.format(
+                "Shell command executed: %s\n-->\n%s\n<--\n",
+                commandLine,
+                output
+              ));
+
+            if (listener != null) {
+              listener.onCommandExecutionFinished(exitValue, output);
+            }
+          }
+
+          @Override
+          public void onProcessFailed(ExecuteException e) {
+            String output = os.toString();
+            log.log(
+              Level.SEVERE,
+              String.format(
+                "Shell command failed: %s\n-->\n%s\n<--\n",
+                commandLine,
+                output
+              ),
+              e);
+
+            if (listener != null) {
+              listener.onCommandExecutionFailed(e, os.toString());
+            }
+          }
+        });
     } catch (Exception e) {
-      log.log(Level.SEVERE, "Error executing command: " + commandline, e);
-      throw new ShellCommandException("Error executing shell command: " + commandline, e);
+      String message = "Error executing command: " + commandLine;
+      String output = os.toString();
+
+      if (output != null && !output.isEmpty()) {
+        message += "\n-->" + output + "\n<--";
+      }
+
+      log.log(Level.SEVERE, message, e);
+      throw new ShellCommandException(message, e);
     }
+  }
+
+  // Listener for async shell command execution
+  public static interface Listener {
+    // Callback for when the command finished execution
+    public void onCommandExecutionFinished(int exitCode, String output);
+    // Callback for when the command execution failed, include whatever output
+    // we have up to that point
+    public void onCommandExecutionFailed(Exception error, String partialOutput);
   }
 
   public static class PrintingLogOutputStream extends LogOutputStream {
@@ -99,8 +157,6 @@ public class ShellCommand {
 
     @Override
     protected void processLine(String line, int level) {
-      log.fine("OUTPUT FROM PROCESS: " + line);
-
       output.append(line).append("\n");
     }
 
