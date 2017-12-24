@@ -27,6 +27,7 @@ import io.selendroid.server.common.utils.SelendroidArguments;
 import io.selendroid.standalone.android.AndroidApp;
 import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.AndroidSdk;
+import io.selendroid.standalone.android.InstrumentationProcessListener;
 import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.exceptions.ShellCommandException;
@@ -47,6 +48,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -67,6 +69,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   private ExecuteWatchdog logcatWatchdog;
   private static final Integer COMMAND_TIMEOUT = 20000;
   private boolean loggingEnabled = true;
+  private final List<InstrumentationProcessListener> instrumentationProcessListeners = new ArrayList();
 
   /**
    * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
@@ -98,6 +101,11 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   public void setVerbose() {
     log.setLevel(Level.FINEST);
+  }
+
+  public void addInstrumentationProcessListener(
+    InstrumentationProcessListener listener) {
+    instrumentationProcessListeners.add(listener);
   }
 
   @Override
@@ -279,12 +287,7 @@ public abstract class AbstractDevice implements AndroidDevice {
       argList.add("io.selendroid." + aut.getBasePackage() + "/io.selendroid.server.SelendroidInstrumentation");
     }
 
-    String[] args = argList.toArray(new String[argList.size()]);
-    if (capabilities.getUseJUnitBootstrap()) {
-      runInstrumentCommandWithJUnitBootstrap(args);
-    } else {
-      runInstrumentCommand(args);
-    }
+    runInstrumentCommand(argList.toArray(new String[argList.size()]));
 
     forwardSelendroidPort(port);
 
@@ -293,7 +296,7 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
   }
 
-  private void runInstrumentCommandWithJUnitBootstrap(String[] args) {
+  private void runInstrumentCommand(String[] args) {
     CommandLine command = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class));
 
     final ShellCommand.PrintingLogOutputStream os = new ShellCommand.PrintingLogOutputStream();
@@ -302,46 +305,21 @@ public abstract class AbstractDevice implements AndroidDevice {
         @Override
         public void onProcessComplete(int exitValue) {
           String output = os.getOutput();
-          if (os.getOutput().contains("FAILED")
-                  || os.getOutput().contains("FAILURE")
-                  || os.getOutput().contains("crashed")) {
-            throw new SelendroidException(output);
+          for (InstrumentationProcessListener listener : instrumentationProcessListeners) {
+            listener.onInstrumentationProcessComplete(output);
           }
         }
 
         @Override
         public void onProcessFailed(ExecuteException e) {
-          throw new SelendroidException(e);
+          String output = os.getOutput();
+          for (InstrumentationProcessListener listener : instrumentationProcessListeners) {
+            listener.onInstrumentationProcessFailed(output, e);
+          }
         }
       });
     } catch(Exception e) {
-      throw new SelendroidException(e);
-    }
-  }
-
-  private void runInstrumentCommand(String[] args) {
-    CommandLine command = adbCommand(ObjectArrays.concat(new String[]{"shell", "am", "instrument"}, args, String.class));
-    String result = executeCommandQuietly(command);
-    if (result.contains("FAILED")) {
-      String genericMessage = "Could not start the app under test using instrumentation.";
-      String detailedMessage;
-      try {
-        // Try again, waiting for instrumentation to finish. This way we'll get more error output.
-        String[] instrumentCmd =
-                ObjectArrays.concat(new String[]{"shell", "am", "instrument", "-w"}, args, String.class);
-        CommandLine getDetailedErrorCommand = adbCommand(instrumentCmd);
-        String detailedResult = executeCommandQuietly(getDetailedErrorCommand);
-        if (detailedResult.contains("package")) {
-          detailedMessage =
-                  genericMessage + " Is the correct app under test installed? Read the details below:\n" + detailedResult;
-        } else {
-          detailedMessage = genericMessage + " Read the details below:\n" + detailedResult;
-        }
-      } catch (Exception e) {
-        // Can't get detailed results
-        throw new SelendroidException(genericMessage, e);
-      }
-      throw new SelendroidException(detailedMessage);
+      throw new SelendroidException("Failed to execute instrument command", e);
     }
   }
 
@@ -377,7 +355,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     try {
       response = httpClient.execute(request);
     } catch (Exception e) {
-      log.info("Can't connect to Selendroid server, assuming it is not running.");
+      log.log(
+        Level.INFO,
+        "Can't connect to Selendroid server, assuming it is not running.",
+        e);
       return false;
     }
 

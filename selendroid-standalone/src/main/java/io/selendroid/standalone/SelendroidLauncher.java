@@ -79,10 +79,14 @@ public class SelendroidLauncher {
       if(config.getAvdManager() !=null){
         AndroidSdk.setAvdManagerHome(config.getAvdManager());
       }
+      if (config.getAdbHome() != null) {
+        AndroidSdk.setAdbHome(config.getAdbHome());
+      }
 
       log.info("Using Android SDK installed in: " + AndroidSdk.androidHome());
       log.info("Using Android SDK version: " + AndroidSdk.androidSdkFolder().getAbsolutePath());
-      log.info("Using build-tolls in: " + AndroidSdk.buildToolsFolder().getAbsolutePath());
+      log.info("Using build-tools in: " + AndroidSdk.buildToolsFolder().getAbsolutePath());
+      log.info("Using adb in: " + AndroidSdk.adb().getAbsolutePath());
 
       log.info("Starting Selendroid standalone on port " + config.getPort());
       server = new SelendroidStandaloneServer(config);

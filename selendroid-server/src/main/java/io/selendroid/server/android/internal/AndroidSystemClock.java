@@ -14,21 +14,21 @@
 package io.selendroid.server.android.internal;
 
 import io.selendroid.server.android.Clock;
-import android.os.Process;
+import android.os.SystemClock;
 
 public class AndroidSystemClock implements Clock {
   @Override
   public long now() {
-    return Process.getElapsedCpuTime();
+    return SystemClock.elapsedRealtime();
   }
 
   @Override
   public long laterBy(long durationInMillis) {
-    return Process.getElapsedCpuTime() + durationInMillis;
+    return now() + durationInMillis;
   }
 
   @Override
   public boolean isNowBefore(long endInMillis) {
-    return Process.getElapsedCpuTime() < endInMillis;
+    return now() < endInMillis;
   }
 }

@@ -14,6 +14,7 @@
 package io.selendroid.standalone.server.model;
 
 import com.beust.jcommander.internal.Lists;
+import com.google.common.base.Function;
 import io.netty.handler.codec.http.HttpMethod;
 import io.selendroid.common.SelendroidCapabilities;
 import io.selendroid.server.common.ServerDetails;
@@ -26,6 +27,8 @@ import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.AndroidEmulator;
 import io.selendroid.standalone.android.AndroidSdk;
 import io.selendroid.standalone.android.DeviceManager;
+import io.selendroid.standalone.android.InstrumentationProcessListener;
+import io.selendroid.standalone.android.InstrumentationProcessOutput;
 import io.selendroid.standalone.android.impl.DefaultAndroidEmulator;
 import io.selendroid.standalone.android.impl.DefaultDeviceManager;
 import io.selendroid.standalone.android.impl.DefaultHardwareDevice;
@@ -36,6 +39,7 @@ import io.selendroid.standalone.exceptions.AndroidDeviceException;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.server.util.FolderMonitor;
 import io.selendroid.standalone.server.util.HttpClientUtil;
+import io.selendroid.server.common.exceptions.AppCrashedException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +48,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
@@ -57,9 +64,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.TimeUnit;
 
-public class SelendroidStandaloneDriver implements ServerDetails {
-
+public class SelendroidStandaloneDriver
+  implements ServerDetails, InstrumentationProcessListener {
   public static final String WD_RESP_KEY_VALUE = "value";
   public static final String WD_RESP_KEY_STATUS = "status";
   public static final String WD_RESP_KEY_SESSION_ID = "sessionId";
@@ -78,6 +86,9 @@ public class SelendroidStandaloneDriver implements ServerDetails {
   private FolderMonitor folderMonitor = null;
   private SelendroidStandaloneDriverEventListener eventListener
       = new DummySelendroidStandaloneDriverEventListener();
+  private boolean instrumentationProcessFinished;
+  private String instrumentationProcessOutput;
+  private Exception instrumentationProcessError;
 
 
   public SelendroidStandaloneDriver(SelendroidConfiguration serverConfiguration)
@@ -278,6 +289,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
         // start the selendroid server on the device and make sure it's up
         eventListener.onBeforeDeviceServerStart();
         device.startSelendroid(app, port, desiredCapabilities);
+        device.addInstrumentationProcessListener(this);
         waitForServerStart(device);
         eventListener.onAfterDeviceServerStart();
 
@@ -338,26 +350,63 @@ public class SelendroidStandaloneDriver implements ServerDetails {
     wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("AndroidDriver")));
   }
 
-  private void waitForServerStart(AndroidDevice device) {
-    long startTimeout = serverConfiguration.getServerStartTimeout();
-    long timeoutEnd = System.currentTimeMillis() + startTimeout;
+  private void waitForServerStart(final AndroidDevice device) {
     log.info("Waiting for the Selendroid server to start.");
-    while (!device.isSelendroidRunning()) {
-      if (timeoutEnd >= System.currentTimeMillis()) {
-        try {
-          Thread.sleep(2000);
-          String crashMessage = device.getCrashLog();
-          if (!crashMessage.isEmpty()) {
-            throw new AppCrashedException(crashMessage);
+
+    Wait<AndroidDevice> wait = new FluentWait<AndroidDevice>(device)
+      .withTimeout(
+        serverConfiguration.getServerStartTimeout(),
+        TimeUnit.MILLISECONDS)
+      .pollingEvery(
+        serverConfiguration.getServerStartPollingInterval(),
+        TimeUnit.MILLISECONDS);
+    try {
+      wait.until(new Function<AndroidDevice, Boolean>() {
+        @Override
+        public Boolean apply(AndroidDevice device) {
+          if (instrumentationProcessFinished()) {
+            InstrumentationProcessOutput instrumentationOutput =
+              InstrumentationProcessOutput.parse(getInstrumentationProcessOutput());
+            final Exception instrumentationError = getInstrumentationProcessError();
+
+            if (instrumentationError != null) {
+                throw new SelendroidException(
+                  "Failed to execute instrument command, full output:\n"
+                  + instrumentationOutput.getFullOutput(),
+                  instrumentationError);
+            }
+
+            if (instrumentationOutput.isAppCrash()) {
+              throw new AppCrashedException(
+                instrumentationOutput.getMessage() +
+                "\nSee logcat for more details");
+            }
+
+            String message = instrumentationOutput.getMessage();
+            if (message.contains("Unable to find instrumentation target package")) {
+              message =
+                "Could not start the app under test using instrumentation." +
+                " Is the correct app under test installed? Read the details below:\n" +
+                instrumentationOutput.getFullOutput();
+            } else {
+              message =
+                "Instrumentation process failed. See output:\n" +
+                instrumentationOutput.getFullOutput();
+            }
+
+            throw new SelendroidException(message);
           }
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
+
+          return device.isSelendroidRunning();
         }
-      } else {
-        throw new SelendroidException("Selendroid server on the device didn't come up after "
-            + startTimeout / 1000 + "sec:");
-      }
+      });
+    } catch (TimeoutException e) {
+      throw new SelendroidException(
+        "Selendroid server didn't come up on the device after"
+        + serverConfiguration.getServerStartTimeout() / 1000
+        + " seconds");
     }
+
     log.info("Selendroid server has started.");
   }
 
@@ -622,7 +671,7 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
         list.put(deviceInfo);
       } catch (Exception e) {
-        log.info("Error occurred when building supported device info: " + e.getMessage());
+        log.log(Level.WARNING, "Error occurred when building supported device info", e);
       }
     }
     return list;
@@ -647,5 +696,30 @@ public class SelendroidStandaloneDriver implements ServerDetails {
 
   public void setEventListener(SelendroidStandaloneDriverEventListener eventListener) {
     this.eventListener = eventListener;
+  }
+
+  private boolean instrumentationProcessFinished() {
+    return instrumentationProcessFinished;
+  }
+
+  private String getInstrumentationProcessOutput() {
+    return instrumentationProcessOutput;
+  }
+
+  private Exception getInstrumentationProcessError() {
+    return instrumentationProcessError;
+  }
+
+  @Override
+  public void onInstrumentationProcessComplete(String output) {
+    instrumentationProcessFinished = true;
+    instrumentationProcessOutput = output;
+  }
+
+  @Override
+  public void onInstrumentationProcessFailed(String output, Exception error) {
+    instrumentationProcessFinished = true;
+    instrumentationProcessOutput = output;
+    instrumentationProcessError = error;
   }
 }

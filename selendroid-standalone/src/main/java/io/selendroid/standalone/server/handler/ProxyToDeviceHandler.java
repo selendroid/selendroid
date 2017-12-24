@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -13,6 +13,7 @@
  */
 package io.selendroid.standalone.server.handler;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
@@ -24,6 +25,7 @@ import io.selendroid.server.common.exceptions.AppCrashedException;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.common.http.HttpRequest;
 import io.selendroid.standalone.android.AndroidDevice;
+import io.selendroid.standalone.android.InstrumentationProcessOutput;
 import io.selendroid.standalone.server.BaseSelendroidStandaloneHandler;
 import io.selendroid.standalone.server.model.ActiveSession;
 import io.selendroid.standalone.server.util.HttpClientUtil;
@@ -32,9 +34,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NoHttpResponseException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 
 import java.net.SocketException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +49,9 @@ import java.util.logging.Logger;
  */
 public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
   private static final Logger log = Logger.getLogger(ProxyToDeviceHandler.class.getName());
+
+  private static final long PROXY_REQUEST_ATTEMPT_TIMEOUT_MS = 10000;
+  private static final long PROXY_REQUEST_ATTEMPT_INTERVAL_MS = 200;
 
   public ProxyToDeviceHandler(String mappedUri) {
     super(mappedUri);
@@ -61,7 +70,7 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
           sessionId, new SelendroidException("No session id passed to the request."));
     }
 
-    ActiveSession session = getActiveSession(request);
+    final ActiveSession session = getActiveSession(request);
     if (session == null) {
       return respondWithFailure(sessionId,
           new SelendroidException("No session found for sessionId: " + sessionId));
@@ -77,79 +86,104 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
 
     String method = request.method();
 
-    JSONObject response = null;
+    final AndroidDevice device = session.getDevice();
 
-    int retries = 3;
-    while (retries-- > 0) {
-      try {
-        response = proxyRequestToDevice(request, session, url, method);
-        if (response == null) { // Unknown command
-          return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_COMMAND);
-        }
-        break;
-      } catch (Exception e) {
-        if (retries == 0) {
-          AndroidDevice device = session.getDevice();
-
-          String crashMessage = device.getCrashLog();
-          if (!crashMessage.isEmpty()) {
-            return respondWithFailure(sessionId, new AppCrashedException(crashMessage));
-          }
-
-          if (device.isLoggingEnabled()) {
-            log.info("Failed to proxy request to the device, dumping logcat");
-            device.setVerbose();
-            for (LogEntry le : device.getLogs()) {
-              System.out.println(le.getMessage());
+    try {
+      Wait<AndroidDevice> wait =
+        new FluentWait<AndroidDevice>(device)
+          .withTimeout(PROXY_REQUEST_ATTEMPT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+          .pollingEvery(PROXY_REQUEST_ATTEMPT_INTERVAL_MS, TimeUnit.MILLISECONDS);
+      return wait.until(new Function<AndroidDevice, Response>() {
+        @Override
+        public Response apply(AndroidDevice device) {
+          try {
+            // Check if the app crashed in the middle of the request
+            String crashLog = device.getCrashLog();
+            if (!crashLog.isEmpty()) {
+              return respondWithFailure(sessionId, new AppCrashedException(crashLog));
             }
-          }
 
-          if (e instanceof SocketException) {
-            return respondWithServerOnDeviceUnreachable(sessionId, session.getDevice());
-          } else if (e instanceof NoHttpResponseException) {
-            return respondWithServerOnDeviceUnreachable(sessionId, session.getDevice());
-          } else {
-            return respondWithFailure(sessionId, new SelendroidException(
-                "Unexpected error communicating with selendroid server on the device", e));
+            // Check if the instrumentation process died in the middle of the request
+            if (session.instrumentationProcessFinished()) {
+              return respondWithInstrumentationProcessFinished(
+                sessionId,
+                session.getInstrumentationProcessOutput(),
+                session.getInstrumentationProcessError());
+            }
+
+            JSONObject response = proxyRequestToDevice(request, session, url, method);
+            if (response == null) { // Unknown command
+              return new SelendroidResponse(sessionId, StatusCode.UNKNOWN_COMMAND);
+            }
+
+            Object value = response.opt("value");
+            int statusCode = response.getInt("status");
+            log.fine(
+              String.format(
+                "Response from selendroid-server, status %d:\n%s",
+                statusCode,
+                value));
+
+            return new SelendroidResponse(sessionId, StatusCode.fromInteger(statusCode), value);
+          } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to proxy request to Selendroid Server, retrying.", e);
+            return null;
           }
-        } else {
-          log.log(Level.SEVERE, "Failed to proxy request to Selendroid Server, retrying.", e);
         }
+      });
+    } catch (TimeoutException e) {
+      // Check for regular app crashes first
+      String crashLog = device.getCrashLog();
+      if (!crashLog.isEmpty()) {
+        return respondWithFailure(sessionId, new AppCrashedException(crashLog));
       }
-    }
-    if (response == null) {
-      return respondWithFailure(sessionId, new SelendroidException(
-          "Selendroid server on the device became unreachable"));
-    }
 
-    Object value = response.opt("value");
-    int statusCode = response.getInt("status");
-    log.fine(String.format("Response from selendroid-server, status %d:\n%s", statusCode, value));
-    log.fine("return status from selendroid android server: " + statusCode);
+      // Check if we timed out because of the instrumentation process dying
+      if (session.instrumentationProcessFinished()) {
+        return respondWithInstrumentationProcessFinished(
+          sessionId,
+          session.getInstrumentationProcessOutput(),
+          session.getInstrumentationProcessError());
+      }
 
-    return new SelendroidResponse(sessionId, StatusCode.fromInteger(statusCode), value);
+      // Last resort, we really don't know what happened
+      return respondWithFailure(
+        sessionId,
+        new SelendroidException("Selendroid server on the device became unreachable"));
+    }
   }
 
-  /**
-   * selendroid-server can't be reached and there is no crash log file.
-   */
-  private SelendroidResponse respondWithServerOnDeviceUnreachable(String sessionId, AndroidDevice device)
-      throws JSONException {
-    String message =
-        "The selendroid server on the device became unreachable and there is no crash log from Android's " +
-        "uncaught exception handler. This can mean:\n" +
-        "- The test is trying to use a driver associated to a process that has finished " +
-        "(has the app been killed by the test?)\n" +
-        "- The app has been killed by the OS abruptly or there was a native crash (look at logcat)";
-    try {
-      String psOutput = device.listRunningThirdPartyProcesses();
-      if (!Strings.isNullOrEmpty(psOutput)) {
-        message += "\nCurrently running processes excluding system processes (via 'adb shell ps'):\n" + psOutput;
-      }
-    } catch (Exception e) {
-      message += "\nCould not get list of running processes: " + e.getMessage();
+  private SelendroidResponse respondWithInstrumentationProcessFinished(
+    String sessionId,
+    String output,
+    Exception error) throws JSONException {
+    InstrumentationProcessOutput instrumentationOutput =
+      InstrumentationProcessOutput.parse(output);
+
+    if (error != null) {
+      return respondWithFailure(
+        sessionId,
+        new SelendroidException(
+          "Failed to execute instrument command, output:\n" +
+          instrumentationOutput.getFullOutput(),
+          error));
     }
-    return respondWithFailure(sessionId, new SelendroidException(message));
+
+    if (instrumentationOutput.isAppCrash()) {
+      return respondWithFailure(
+        sessionId,
+        new AppCrashedException(
+          instrumentationOutput.getMessage() +
+          "\nSee logcat for more details"));
+    }
+
+    return respondWithFailure(
+      sessionId,
+      new SelendroidException(
+        "Instrumentation process failed with message: " +
+        instrumentationOutput.getMessage() +
+        "\nSee full output for more details:\n" +
+        instrumentationOutput.getFullOutput()));
   }
 
 

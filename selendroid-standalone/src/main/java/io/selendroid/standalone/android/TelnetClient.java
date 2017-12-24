@@ -33,8 +33,15 @@ public class TelnetClient {
       socket = new Socket("127.0.0.1", port);
       out = new PrintWriter(socket.getOutputStream(), true);
       in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-      if (in.readLine() == null) {
-        throw new AndroidDeviceException("Cannot establish a connection to device. Error reading from socket.");
+
+      while (true) {
+        String line = in.readLine();
+        if (line == null) {
+          throw new AndroidDeviceException("Cannot establish a connection to device. Error reading from socket.");
+        }
+        if (line.equals("OK")) {
+          break;
+        }
       }
     } catch (Exception e) {
       throw new AndroidDeviceException("Cannot establish a connection to device.", e);

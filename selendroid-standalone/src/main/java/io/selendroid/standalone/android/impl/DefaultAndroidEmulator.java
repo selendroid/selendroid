@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -72,7 +73,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   protected DefaultAndroidEmulator() {
     this.wasStartedBySelendroid = Boolean.FALSE;
   }
-  
+
   // this contructor is used only for test purposes in setting the capabilities information. Change to public if there
   // is ever a desire to construct one of these besides reading the avdOutput
   DefaultAndroidEmulator(String avdName, String abi, Dimension screenSize, String target,
@@ -127,7 +128,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see io.selendroid.android.impl.AndroidEmulator#isEmulatorAlreadyExistent()
    */
   @Override
@@ -202,22 +203,19 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     } catch (ShellCommandException e) {
       return mapping;
     }
+    Pattern pattern = Pattern.compile("emulator-(\\d+).*");
     while (scanner.hasNextLine()) {
       String line = scanner.nextLine();
-      Pattern pattern = Pattern.compile("emulator-\\d\\d\\d\\d");
       Matcher matcher = pattern.matcher(line);
       if (matcher.find()) {
-        String serial = matcher.group(0);
-
-
-        Integer port = Integer.valueOf(serial.replaceAll("emulator-", ""));
+        Integer port = Integer.valueOf(matcher.group(1));
         TelnetClient client = null;
         try {
           client = new TelnetClient(port);
           String avdName = client.sendCommand("avd name");
           mapping.put(avdName, port);
         } catch (AndroidDeviceException e) {
-          // ignore
+          log.log(Level.WARNING, "Failed to lookup name for " + port, e);
         } finally {
           if (client != null) {
             client.close();
