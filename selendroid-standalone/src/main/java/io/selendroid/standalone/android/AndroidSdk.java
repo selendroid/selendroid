@@ -241,7 +241,7 @@ public class AndroidSdk {
       return new File(sAvdManager + platformExecutableSuffixExe());
     }
     else {
-      return new File("advmanager");
+      return android();
     }
   }
 
