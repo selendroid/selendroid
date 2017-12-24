@@ -154,6 +154,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
     getAVDCommand.addArgument("avd", false);
 
 
+    log.info("Executing command for avd: "+getAVDCommand.toString());
     String output = null;
     try {
       output = ShellCommand.exec(getAVDCommand, 20000);
