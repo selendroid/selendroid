@@ -272,18 +272,4 @@ public class AndroidSdk {
   public static void setAvdManagerHome(String avdManager) {
     AndroidSdk.sAvdManager = avdManager;
   }
-
-  public static class AndroidFileFilter implements FileFilter {
-
-    @Override
-    public boolean accept(File pathname) {
-      String fileName = pathname.getName();
-
-      String regex = "\\d{2}\\.\\d{1}\\.\\d{1}";
-      if (fileName.matches(regex) || fileName.startsWith(ANDROID_FOLDER_PREFIX)) {
-        return true;
-      }
-      return false;
-    }
-  }
 }
