@@ -257,10 +257,10 @@ public class AndroidSdk {
     if (androidSdkFolder() != null) {
       String versionString = androidSdkFolder().getName();
       log.info("Android SDK folder name is: " + versionString);
-      Pattern p = Pattern.compile("(android-)(\\d{2})");
+      Pattern p = Pattern.compile(PLATFORM_VERSION_REGEX);
       Matcher matcher = p.matcher(versionString);
       if (matcher.matches()) {
-        return Integer.parseInt(matcher.group(2));
+        return Integer.parseInt(matcher.group(1));
       } else {
         log.warning("Could not parse Android SDK version number " +
                 "from the sdk folder name !");
