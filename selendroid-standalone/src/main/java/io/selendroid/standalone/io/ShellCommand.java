@@ -34,25 +34,34 @@ public class ShellCommand {
 
   public static String exec(CommandLine commandline, long timeoutInMillies)
       throws ShellCommandException {
-    log.info("Executing shell command: " + commandline);
-    PrintingLogOutputStream outputStream = new PrintingLogOutputStream();
+    OutputStream os = new ByteArrayOutputStream();
     DefaultExecutor exec = new DefaultExecutor();
     exec.setWatchdog(new ExecuteWatchdog(timeoutInMillies));
-    PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
-    exec.setStreamHandler(streamHandler);
+    exec.setStreamHandler(new PumpStreamHandler(os));
+
     try {
       exec.execute(commandline);
     } catch (Exception e) {
-      log.log(Level.SEVERE, "Error executing command: " + commandline, e);
+      log.log(
+        Level.SEVERE,
+        String.format("Shell command execution failed: %s", commandline),
+        e);
+
       if (e.getMessage().contains("device offline")) {
         throw new DeviceOfflineException(e);
       }
       throw new ShellCommandException(
-          "Error executing shell command: " + commandline, new ShellCommandException(outputStream.getOutput()));
+          "Error executing shell command: " + commandline, new ShellCommandException(os.toString().trim()));
     }
-    String result = outputStream.getOutput().trim();
-    log.info("Shell command output\n-->\n" + result + "\n<--");
-    return result;
+
+    String output = os.toString().trim();
+    log.log(
+      Level.INFO,
+      String.format(
+        "Shell command executed: %s\n-->\n%s\n<--",
+        commandline,
+        output));
+    return output;
   }
 
   public static void execAsync(
@@ -98,14 +107,13 @@ public class ShellCommand {
         new ExecuteResultHandler() {
           @Override
           public void onProcessComplete(int exitValue) {
-            String output = os.toString();
+            String output = os.toString().trim();
             log.log(
               Level.INFO,
               String.format(
                 "Shell command executed: %s\n-->\n%s\n<--\n",
                 commandLine,
-                output
-              ));
+                output));
 
             if (listener != null) {
               listener.onCommandExecutionFinished(exitValue, output);
@@ -118,10 +126,9 @@ public class ShellCommand {
             log.log(
               Level.SEVERE,
               String.format(
-                "Shell command failed: %s\n-->\n%s\n<--\n",
+                "Shell command execution failed: %s\n-->\n%s\n<--\n",
                 commandLine,
-                output
-              ),
+                output),
               e);
 
             if (listener != null) {
@@ -130,7 +137,7 @@ public class ShellCommand {
           }
         });
     } catch (Exception e) {
-      String message = "Error executing command: " + commandLine;
+      String message = "Shell command execution failed: " + commandLine;
       String output = os.toString();
 
       if (output != null && !output.isEmpty()) {
@@ -149,19 +156,5 @@ public class ShellCommand {
     // Callback for when the command execution failed, include whatever output
     // we have up to that point
     public void onCommandExecutionFailed(Exception error, String partialOutput);
-  }
-
-  public static class PrintingLogOutputStream extends LogOutputStream {
-
-    private StringBuilder output = new StringBuilder();
-
-    @Override
-    protected void processLine(String line, int level) {
-      output.append(line).append("\n");
-    }
-
-    public String getOutput() {
-      return output.toString();
-    }
   }
 }
