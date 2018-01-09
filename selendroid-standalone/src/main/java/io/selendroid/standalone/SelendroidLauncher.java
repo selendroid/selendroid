@@ -76,7 +76,7 @@ public class SelendroidLauncher {
       if (config.getBuildToolsVersion() != null) {
         AndroidSdk.setBuildToolsVersion(config.getBuildToolsVersion());
       }
-      if(config.getAvdManager() !=null){
+      if (config.getAvdManager() !=null) {
         AndroidSdk.setAvdManagerHome(config.getAvdManager());
       }
       if (config.getAdbHome() != null) {

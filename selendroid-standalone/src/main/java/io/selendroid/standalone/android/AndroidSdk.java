@@ -246,14 +246,6 @@ public class AndroidSdk {
   }
 
   public static int getAndroidVersionNumber() {
-    if (sAndroidSdkVersion != null) {
-      try {
-        return Integer.parseInt(sAndroidSdkVersion);
-      } catch (NumberFormatException ex) {
-        log.warning("The android sdk version seems to be invalid: " + sAndroidSdkVersion);
-      }
-
-    }
     if (androidSdkFolder() != null) {
       String versionString = androidSdkFolder().getName();
       log.info("Android SDK folder name is: " + versionString);
