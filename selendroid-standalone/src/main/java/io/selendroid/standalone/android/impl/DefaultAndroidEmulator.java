@@ -145,7 +145,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
   public static List<AndroidEmulator> listAvailableAvds() throws AndroidDeviceException {
     List<AndroidEmulator> avds = Lists.newArrayList();
-    String avdParam = "avd";
     File clu = null;
 
     if (AndroidSdk.getAndroidVersionNumber() >= SDK_VERSION_FOR_AVD_MANAGER ) {
@@ -156,7 +155,7 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
 
     CommandLine getAVDCommand = new CommandLine(clu);
     getAVDCommand.addArgument("list", false);
-    getAVDCommand.addArgument(avdParam, false);
+    getAVDCommand.addArgument("avd", false);
 
     String output = null;
     try {

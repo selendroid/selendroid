@@ -254,11 +254,11 @@ public class AndroidSdk {
       if (matcher.matches()) {
         return Integer.parseInt(matcher.group(1));
       } else {
-        log.warning("Could not parse Android SDK version number " +
+        log.warning("Could not identify Android SDK version number " +
                 "from the sdk folder name !");
       }
     }
-    return -1;
+   throw new SelendroidException("Could not identify the Android SDK version number");
   }
 
   public static void setAvdManagerHome(String avdManager) {
