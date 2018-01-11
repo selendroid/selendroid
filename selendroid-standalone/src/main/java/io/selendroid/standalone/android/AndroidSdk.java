@@ -13,21 +13,26 @@
  */
 package io.selendroid.standalone.android;
 
-import static io.selendroid.standalone.android.OS.platformExecutableSuffixBat;
-import static io.selendroid.standalone.android.OS.platformExecutableSuffixExe;
-import io.selendroid.server.common.exceptions.SelendroidException;
-import io.selendroid.standalone.exceptions.AndroidSdkException;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Collections;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import io.selendroid.server.common.exceptions.SelendroidException;
+import io.selendroid.standalone.exceptions.AndroidSdkException;
+
+import static io.selendroid.standalone.android.OS.platformExecutableSuffixBat;
+import static io.selendroid.standalone.android.OS.platformExecutableSuffixExe;
 
 public class AndroidSdk {
   private static final String ANDROID_HOME = "ANDROID_HOME";
-
+  private static final Logger log = Logger.getLogger(AndroidSdk.class.getName());
   private static String sAndroidHome;
   private static String sAndroidSdkVersion;
   private static String sBuildToolsVersion;
@@ -35,6 +40,7 @@ public class AndroidSdk {
 
   private static final String PLATFORM_VERSION_REGEX = "android-(\\d+)$";
   private static final String BUILD_TOOLS_VERSION_REGEX = "(\\d+)\\.(\\d+)\\.(\\d+)";
+  private static String sAvdManager;
 
 
   public static File adb() {
@@ -229,5 +235,33 @@ public class AndroidSdk {
 
   public static void setBuildToolsVersion(String buildToolsVersion) {
     sBuildToolsVersion = buildToolsVersion;
+  }
+  public static File avdManager() {
+    if (sAvdManager != null) {
+      return new File(sAvdManager + platformExecutableSuffixExe());
+    }
+    else {
+      return android();
+    }
+  }
+
+  public static int getAndroidVersionNumber() {
+    if (androidSdkFolder() != null) {
+      String versionString = androidSdkFolder().getName();
+      log.info("Android SDK folder name is: " + versionString);
+      Pattern p = Pattern.compile(PLATFORM_VERSION_REGEX);
+      Matcher matcher = p.matcher(versionString);
+      if (matcher.matches()) {
+        return Integer.parseInt(matcher.group(1));
+      } else {
+        log.warning("Could not identify Android SDK version number " +
+                "from the sdk folder name !");
+      }
+    }
+   throw new SelendroidException("Could not identify the Android SDK version number");
+  }
+
+  public static void setAvdManagerHome(String avdManager) {
+    AndroidSdk.sAvdManager = avdManager;
   }
 }

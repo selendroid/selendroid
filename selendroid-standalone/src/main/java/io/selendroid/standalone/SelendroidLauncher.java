@@ -17,14 +17,18 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.google.common.base.Throwables;
 
+import java.util.concurrent.TimeUnit;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import io.selendroid.standalone.android.AndroidSdk;
 import io.selendroid.standalone.exceptions.AndroidSdkException;
 import io.selendroid.standalone.log.LogLevelEnum;
 import io.selendroid.standalone.server.SelendroidStandaloneServer;
 import io.selendroid.standalone.server.util.HttpClientUtil;
-
-import java.util.concurrent.TimeUnit;
-import java.util.logging.*;
 
 public class SelendroidLauncher {
 
@@ -71,6 +75,9 @@ public class SelendroidLauncher {
       }
       if (config.getBuildToolsVersion() != null) {
         AndroidSdk.setBuildToolsVersion(config.getBuildToolsVersion());
+      }
+      if (config.getAvdManager() !=null) {
+        AndroidSdk.setAvdManagerHome(config.getAvdManager());
       }
       if (config.getAdbHome() != null) {
         AndroidSdk.setAdbHome(config.getAdbHome());

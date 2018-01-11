@@ -2,6 +2,7 @@
 ---
 - uninstall before installing, since adb install -r doesn't appear to work correctly all the time [#994](../../issues/994)
 - Adding gradle build system for selendroid [#998](../../isues/998)
+- Adding support for virtual devices when using android sdk version  >= 25 [#1134](../../isues/1134)
 
 0.17.0
 ---
