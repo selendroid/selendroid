@@ -40,7 +40,7 @@ public interface AndroidDevice {
 
   public boolean start(AndroidApp app) throws AndroidSdkException;
 
-  public void forwardPort(int local, int remote);
+  public int forwardPort(int local, int remote);
 
   public void clearUserData(AndroidApp app) throws AndroidSdkException;
 

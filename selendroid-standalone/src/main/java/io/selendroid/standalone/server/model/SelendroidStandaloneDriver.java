@@ -304,7 +304,7 @@ public class SelendroidStandaloneDriver
 
         // create the new session on the device server
         RemoteWebDriver driver =
-          new RemoteWebDriver(new URL("http://localhost:" + port + "/wd/hub"), desiredCapabilities);
+          new RemoteWebDriver(new URL("http://localhost:" + device.getSelendroidsPort() + "/wd/hub"), desiredCapabilities);
         String sessionId = driver.getSessionId().toString();
         SelendroidCapabilities requiredCapabilities =
           new SelendroidCapabilities(driver.getCapabilities().asMap());
@@ -402,7 +402,7 @@ public class SelendroidStandaloneDriver
       });
     } catch (TimeoutException e) {
       throw new SelendroidException(
-        "Selendroid server didn't come up on the device after"
+        "Selendroid server didn't come up on the device after "
         + serverConfiguration.getServerStartTimeout() / 1000
         + " seconds");
     }

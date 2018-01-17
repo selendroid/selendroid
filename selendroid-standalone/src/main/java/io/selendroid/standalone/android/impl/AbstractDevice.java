@@ -63,13 +63,17 @@ public abstract class AbstractDevice implements AndroidDevice {
   protected String serial = null;
   protected String model = null;
   protected String apiTargetType = "android";
-  protected Integer port = null;
   protected IDevice device;
   private ByteArrayOutputStream logoutput;
   private ExecuteWatchdog logcatWatchdog;
   private static final Integer COMMAND_TIMEOUT = 20000;
   private boolean loggingEnabled = true;
   private final List<InstrumentationProcessListener> instrumentationProcessListeners = new ArrayList();
+
+  // Port that we forward locally to the device
+  protected int localPort;
+  // Port that's used inside the device
+  protected int remotePort;
 
   /**
    * Constructor meant to be used with Android Emulators because a reference to the {@link IDevice}
@@ -249,11 +253,7 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   private void freeSelendroidPort() {
-    if (this.port == null) {
-      // Not set
-      return;
-    }
-    CommandLine command = adbCommand("forward", "--remove", "tcp:" + this.port);
+  CommandLine command = adbCommand("forward", "--remove", "tcp:" + localPort);
     try {
       ShellCommand.exec(command, 20000);
     } catch (ShellCommandException e) {
@@ -262,8 +262,11 @@ public abstract class AbstractDevice implements AndroidDevice {
   }
 
   @Override
-  public void startSelendroid(AndroidApp aut, int port, SelendroidCapabilities capabilities) throws AndroidSdkException {
-    this.port = port;
+  public void startSelendroid(
+    AndroidApp aut,
+    int port,
+    SelendroidCapabilities capabilities) throws AndroidSdkException {
+    remotePort = port;
 
     List<String> argList = Lists.newArrayList(
         "-e", SelendroidArguments.MAIN_ACTIVITY, aut.getMainActivity(),
@@ -289,7 +292,7 @@ public abstract class AbstractDevice implements AndroidDevice {
 
     runInstrumentCommand(argList.toArray(new String[argList.size()]));
 
-    forwardSelendroidPort(port);
+    localPort = forwardPort(capabilities.getUseRandomLocalPort() ? 0 : port, port);
 
     if(isLoggingEnabled()) {
       startLogging();
@@ -320,10 +323,11 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
   }
 
-  public void forwardPort(int local, int remote) {
+  public int forwardPort(int local, int remote) {
     CommandLine command = adbCommand("forward", "tcp:" + local, "tcp:" + remote);
     try {
-      ShellCommand.exec(command, 20000);
+      String portStr = ShellCommand.exec(command);
+      return local == 0 ? Integer.parseInt(portStr) : local;
     } catch (ShellCommandException forwardException) {
       String debugForwardList;
       try {
@@ -338,14 +342,10 @@ public abstract class AbstractDevice implements AndroidDevice {
     }
   }
 
-  private void forwardSelendroidPort(int port) {
-    forwardPort(port, port);
-  }
-
   @Override
   public boolean isSelendroidRunning() {
     HttpClient httpClient = HttpClientBuilder.create().build();
-    String url = WD_STATUS_ENDPOINT.replace("8080", String.valueOf(port));
+    String url = WD_STATUS_ENDPOINT.replace("8080", String.valueOf(localPort));
     log.info("Checking if the Selendroid server is running: " + url);
     HttpRequestBase request = new HttpGet(url);
     HttpResponse response;
@@ -376,7 +376,7 @@ public abstract class AbstractDevice implements AndroidDevice {
 
   @Override
   public int getSelendroidsPort() {
-    return port;
+    return localPort;
   }
 
   @Override

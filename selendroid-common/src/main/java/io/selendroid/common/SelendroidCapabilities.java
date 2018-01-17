@@ -65,6 +65,8 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public static final String USE_JUNIT_BOOTSTRAP = "useJUnitBootstrap";
 
+  public static final String USE_RANDOM_LOCAL_PORT = "useRandomLocalPort";
+
   public static SelendroidCapabilities empty() {
     return new SelendroidCapabilities(new HashMap<String, Object>());
   }
@@ -119,6 +121,11 @@ public class SelendroidCapabilities extends DesiredCapabilities {
   public boolean getUseJUnitBootstrap() {
     Boolean useJUnitRunner = getBooleanCapability(USE_JUNIT_BOOTSTRAP);
     return useJUnitRunner != null ? useJUnitRunner : false;
+  }
+
+  public boolean getUseRandomLocalPort() {
+    Boolean useRandomLocalPort = getBooleanCapability(USE_RANDOM_LOCAL_PORT);
+    return useRandomLocalPort != null ? useRandomLocalPort : false;
   }
 
   public String getPlatformName() {
@@ -254,6 +261,10 @@ public class SelendroidCapabilities extends DesiredCapabilities {
 
   public void setUseJunitRunner(Boolean useJUnitRunner) {
     setCapability(USE_JUNIT_BOOTSTRAP, useJUnitRunner);
+  }
+
+  public void setUseRandomLocalPort(boolean useRandomLocalPort) {
+    setCapability(USE_RANDOM_LOCAL_PORT, useRandomLocalPort);
   }
 
   public void setLocale(String locale) {
