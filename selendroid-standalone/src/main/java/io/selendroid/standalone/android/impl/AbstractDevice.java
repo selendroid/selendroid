@@ -35,6 +35,7 @@ import io.selendroid.standalone.io.ShellCommand;
 import org.apache.commons.exec.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -351,12 +352,15 @@ public abstract class AbstractDevice implements AndroidDevice {
     HttpResponse response;
     try {
       response = httpClient.execute(request);
-    } catch (Exception e) {
+    } catch (NoHttpResponseException e) {
       log.log(
         Level.INFO,
-        "Can't connect to Selendroid server, assuming it is not running.",
-        e);
+        "Can't connect to Selendroid server, assuming it is not running.");
       return false;
+    } catch (Exception e) {
+      throw new SelendroidException(
+        "Unknown exception while checking Selendroid server is running",
+        e);
     }
 
     int statusCode = response.getStatusLine().getStatusCode();
