@@ -79,7 +79,7 @@ public class ActiveSession {
   }
 
   public int getSelendroidServerPort() {
-    return selendroidServerPort;
+    return getDevice().getSelendroidsPort();
   }
 
   public SelendroidCapabilities getDesiredCapabilities() {

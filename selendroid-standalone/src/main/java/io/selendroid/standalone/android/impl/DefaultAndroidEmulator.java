@@ -245,7 +245,6 @@ public class DefaultAndroidEmulator extends AbstractDevice implements AndroidEmu
   }
 
   public void setSerial(int port) {
-    this.port = port;
     serial = EMULATOR_SERIAL_PREFIX + port;
   }
 
