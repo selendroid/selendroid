@@ -62,6 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +87,7 @@ public class SelendroidStandaloneDriver
   private FolderMonitor folderMonitor = null;
   private SelendroidStandaloneDriverEventListener eventListener
       = new DummySelendroidStandaloneDriverEventListener();
-  private boolean instrumentationProcessFinished;
+  private AtomicBoolean instrumentationProcessFinished = new AtomicBoolean(false);
   private String instrumentationProcessOutput;
   private Exception instrumentationProcessError;
 
@@ -364,40 +365,24 @@ public class SelendroidStandaloneDriver
       wait.until(new Function<AndroidDevice, Boolean>() {
         @Override
         public Boolean apply(AndroidDevice device) {
-          if (instrumentationProcessFinished()) {
-            InstrumentationProcessOutput instrumentationOutput =
-              InstrumentationProcessOutput.parse(getInstrumentationProcessOutput());
-            final Exception instrumentationError = getInstrumentationProcessError();
-
-            if (instrumentationError != null) {
-                throw new SelendroidException(
-                  "Failed to execute instrument command, full output:\n"
-                  + instrumentationOutput.getFullOutput(),
-                  instrumentationError);
-            }
-
-            if (instrumentationOutput.isAppCrash()) {
-              throw new AppCrashedException(
-                instrumentationOutput.getMessage() +
-                "\nSee logcat for more details");
-            }
-
-            String message = instrumentationOutput.getMessage();
-            if (message.contains("Unable to find instrumentation target package")) {
-              message =
-                "Could not start the app under test using instrumentation." +
-                " Is the correct app under test installed? Read the details below:\n" +
-                instrumentationOutput.getFullOutput();
-            } else {
-              message =
-                "Instrumentation process failed. See output:\n" +
-                instrumentationOutput.getFullOutput();
-            }
-
-            throw new SelendroidException(message);
+          if (!instrumentationProcessFinished()) {
+            return device.isSelendroidRunning();
           }
 
-          return device.isSelendroidRunning();
+          InstrumentationProcessOutput instrumentationOutput =
+	           InstrumentationProcessOutput.parse(
+              getInstrumentationProcessOutput());
+          final Exception instrumentationError = getInstrumentationProcessError();
+          if (instrumentationError != null) {
+            throw new SelendroidException(
+              "Failed to execute instrument command, full output:\n" +
+              instrumentationOutput.getFullOutput(),
+              instrumentationError);
+          }
+
+          throw InstrumentationProcessOutput.getInstrumentationProcessError(
+            instrumentationOutput,
+            device);
         }
       });
     } catch (TimeoutException e) {
@@ -699,7 +684,7 @@ public class SelendroidStandaloneDriver
   }
 
   private boolean instrumentationProcessFinished() {
-    return instrumentationProcessFinished;
+    return instrumentationProcessFinished.get();
   }
 
   private String getInstrumentationProcessOutput() {
@@ -712,13 +697,13 @@ public class SelendroidStandaloneDriver
 
   @Override
   public void onInstrumentationProcessComplete(String output) {
-    instrumentationProcessFinished = true;
+    instrumentationProcessFinished.set(true);
     instrumentationProcessOutput = output;
   }
 
   @Override
   public void onInstrumentationProcessFailed(String output, Exception error) {
-    instrumentationProcessFinished = true;
+    instrumentationProcessFinished.set(true);
     instrumentationProcessOutput = output;
     instrumentationProcessError = error;
   }
