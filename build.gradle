@@ -26,20 +26,19 @@ task printVersion {
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 
     version = selVersion
 
     ext {
         // https://bintray.com/android/android-tools/com.android.tools.build.gradle/view
-        androidBuildToolsGradle = 'com.android.tools.build:gradle:1.5.0'
-        // https://bintray.com/bintray/jcenter/com.jakewharton.sdkmanager:gradle-plugin
-        sdkManager = 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
+        androidBuildToolsGradle = 'com.android.tools.build:gradle:3.0.1'
         // https://bintray.com/bintray/jcenter/org.json%3Ajson/20090211/view
         json = 'org.json:json:20090211'
         seleniumVersion = '2.48.2'
         compileSdkVersion = 23
-        buildToolsVersion = '23.0.0'
+        buildToolsVersion = '26.0.2'
         minSdkVersion = 10
         targetSdkVersion = 16
         sourceCompatibilityVersion = 1.7

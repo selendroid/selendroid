@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
         classpath rootProject.ext.androidBuildToolsGradle
@@ -31,6 +32,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionName rootProject.ext.selVersion
+        setProperty("archivesBaseName", "selendroid-test-app-$versionName")
     }
 
     lintOptions {

@@ -1,13 +1,14 @@
 language: android
 android:
   components:
-    - build-tools-23.0.2
+    - build-tools-26.0.2
     - extra-google-m2repository
     - extra-android-m2repository
+    - android-23
     - android-16
     - sys-img-armeabi-v7a-android-16
   licences:
-    - android-sdk-license-bcbbd656
+    - 'android-sdk-license-.+'
     - '.*intel.+'
 
 notifications:
@@ -18,33 +19,23 @@ notifications:
     on_success: always
     on_failure: always
     use_notice: true
-  
+
 branches:
   only:
     - master
 
 before_install:
-  # Comment gradle build command to use maven and vice versa
-  - wget http://services.gradle.org/distributions/gradle-2.7-bin.zip
-  - unzip -qq gradle-2.7-bin.zip
-  - export GRADLE_HOME=$PWD/gradle-2.7
+  - wget http://services.gradle.org/distributions/gradle-4.1-bin.zip
+  - unzip -qq gradle-4.1-bin.zip
+  - export GRADLE_HOME=$PWD/gradle-4.1
   - export PATH=$GRADLE_HOME/bin:$PATH
-  - "git clone -b travis `git config --get remote.origin.url` target/travis"
-
-  # Maven
-  # - "mvn --version"
-  # - "cd third-party/"
-  # - "./mvnInstall.sh"
-  # - "cd ../"
 
 before_script:
-  - echo no | android create avd --force -n l10n -t android-16 --abi armeabi-v7a
+  - echo no | android create avd --force -n test -t android-16 --abi armeabi-v7a
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - android-wait-for-emulator
 
-script: 
-  - "gradle clean build"
-
-  # Maven
-  #  - "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && mvn clean deploy --settings target/travis/settings.xml || mvn clean verify --settings target/travis/settings.xml"
+script: gradle clean build
 
 env:
   global:
