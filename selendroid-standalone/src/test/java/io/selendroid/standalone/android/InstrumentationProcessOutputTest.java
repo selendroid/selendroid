@@ -17,8 +17,15 @@ import java.lang.instrument.Instrumentation;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class InstrumentationProcessOutputTest {
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
+import io.selendroid.standalone.android.impl.DefaultAndroidEmulator;
+import io.selendroid.server.common.exceptions.AppCrashedException;
+import io.selendroid.server.common.exceptions.SelendroidException;
+
+public class InstrumentationProcessOutputTest {
   @Test
   public void testNativeCrash() {
     InstrumentationProcessOutput output = InstrumentationProcessOutput.parse(
@@ -30,10 +37,18 @@ public class InstrumentationProcessOutputTest {
     Assert.assertFalse(output.isRegularAppCrash());
     Assert.assertTrue(output.isNativeCrash());
     Assert.assertEquals("Native crash: Segmentation fault", output.getMessage());
+
+    Throwable error = InstrumentationProcessOutput
+      .getInstrumentationProcessError(
+        output,
+        mock(DefaultAndroidEmulator.class));
+
+    Assert.assertTrue(error instanceof AppCrashedException);
+    Assert.assertTrue(error.getMessage().contains(output.getMessage()));
   }
 
   @Test
-  public void testRegularCrash() {
+  public void testRegularCrashWithLogs() {
     InstrumentationProcessOutput output = InstrumentationProcessOutput.parse(
       "INSTRUMENTATION_RESULT: shortMsg=Process crashed.\n"+
       "INSTRUMENTATION_CODE: 0");
@@ -42,6 +57,34 @@ public class InstrumentationProcessOutputTest {
     Assert.assertTrue(output.isRegularAppCrash());
     Assert.assertFalse(output.isNativeCrash());
     Assert.assertEquals("Process crashed.", output.getMessage());
+
+    AndroidDevice device = mock(DefaultAndroidEmulator.class);
+    when(device.getCrashLog()).thenReturn("Some stacktrace");
+    Throwable error = InstrumentationProcessOutput
+      .getInstrumentationProcessError(output, device);
+
+    Assert.assertTrue(error instanceof AppCrashedException);
+    Assert.assertEquals(error.getMessage(), "Some stacktrace");
+  }
+
+  @Test
+  public void testRegularCrashWithNoLogs() {
+    InstrumentationProcessOutput output = InstrumentationProcessOutput.parse(
+      "INSTRUMENTATION_RESULT: shortMsg=Process crashed.\n"+
+      "INSTRUMENTATION_CODE: 0");
+
+    Assert.assertTrue(output.isAppCrash());
+    Assert.assertTrue(output.isRegularAppCrash());
+    Assert.assertFalse(output.isNativeCrash());
+    Assert.assertEquals("Process crashed.", output.getMessage());
+
+    AndroidDevice device = mock(DefaultAndroidEmulator.class);
+    when(device.getCrashLog()).thenReturn(null);
+    Throwable error = InstrumentationProcessOutput
+      .getInstrumentationProcessError(output, device);
+
+    Assert.assertTrue(error instanceof AppCrashedException);
+    Assert.assertTrue(error.getMessage().contains(output.getMessage()));
   }
 
   @Test
@@ -54,6 +97,17 @@ public class InstrumentationProcessOutputTest {
     Assert.assertEquals(
       "Unable to find instrumentation target package: com.foo",
       output.getMessage());
+
+    AndroidDevice device = mock(DefaultAndroidEmulator.class);
+    when(device.getCrashLog()).thenReturn("whatevs");
+    Throwable error = InstrumentationProcessOutput
+      .getInstrumentationProcessError(output, device);
+
+    Assert.assertTrue(error instanceof SelendroidException);
+    Assert.assertTrue(
+      error
+        .getMessage()
+        .contains(InstrumentationProcessOutput.APP_NOT_INSTALLED_ERROR_MESSAGE));
   }
 
   @Test
@@ -67,6 +121,14 @@ public class InstrumentationProcessOutputTest {
       "keyDispatchingTimedOut\n" +
       "Input dispatching timed out (Waiting because the touched window has not finished processing the input events that were previously delivered to it.)",
       output.getMessage());
+
+    AndroidDevice device = mock(DefaultAndroidEmulator.class);
+    when(device.getCrashLog()).thenReturn("whatevs");
+    Throwable error = InstrumentationProcessOutput
+      .getInstrumentationProcessError(output, device);
+
+    Assert.assertTrue(error instanceof SelendroidException);
+    Assert.assertTrue(error.getMessage().contains(output.getMessage()));
   }
 
   @Test
@@ -92,5 +154,14 @@ public class InstrumentationProcessOutputTest {
     	"at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:243)\n" +
     	"at dalvik.system.NativeStart.main(Native Method)",
       output.getMessage());
+
+
+    AndroidDevice device = mock(DefaultAndroidEmulator.class);
+    when(device.getCrashLog()).thenReturn("whatevs");
+    Throwable error = InstrumentationProcessOutput
+      .getInstrumentationProcessError(output, device);
+
+    Assert.assertTrue(error instanceof SelendroidException);
+    Assert.assertTrue(error.getMessage().contains(output.getMessage()));
   }
 }

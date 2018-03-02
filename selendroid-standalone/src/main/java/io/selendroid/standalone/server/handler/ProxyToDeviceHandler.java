@@ -108,7 +108,8 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
               return respondWithInstrumentationProcessFinished(
                 sessionId,
                 session.getInstrumentationProcessOutput(),
-                session.getInstrumentationProcessError());
+                session.getInstrumentationProcessError(),
+                device);
             }
 
             JSONObject response = proxyRequestToDevice(request, session, url, method);
@@ -143,7 +144,8 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
         return respondWithInstrumentationProcessFinished(
           sessionId,
           session.getInstrumentationProcessOutput(),
-          session.getInstrumentationProcessError());
+          session.getInstrumentationProcessError(),
+          device);
       }
 
       // Last resort, we really don't know what happened
@@ -156,7 +158,8 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
   private SelendroidResponse respondWithInstrumentationProcessFinished(
     String sessionId,
     String output,
-    Exception error) throws JSONException {
+    Exception error,
+    AndroidDevice device) throws JSONException {
     InstrumentationProcessOutput instrumentationOutput =
       InstrumentationProcessOutput.parse(output);
 
@@ -169,21 +172,12 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
           error));
     }
 
-    if (instrumentationOutput.isAppCrash()) {
-      return respondWithFailure(
-        sessionId,
-        new AppCrashedException(
-          instrumentationOutput.getMessage() +
-          "\nSee logcat for more details"));
-    }
-
     return respondWithFailure(
       sessionId,
-      new SelendroidException(
-        "Instrumentation process failed with message: " +
-        instrumentationOutput.getMessage() +
-        "\nSee full output for more details:\n" +
-        instrumentationOutput.getFullOutput()));
+      InstrumentationProcessOutput
+        .getInstrumentationProcessError(
+          instrumentationOutput,
+          device));
   }
 
 
