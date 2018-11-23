@@ -97,12 +97,6 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
         @Override
         public Response apply(AndroidDevice device) {
           try {
-            // Check if the app crashed in the middle of the request
-            String crashLog = device.getCrashLog();
-            if (!crashLog.isEmpty()) {
-              return respondWithFailure(sessionId, new AppCrashedException(crashLog));
-            }
-
             // Check if the instrumentation process died in the middle of the request
             if (session.instrumentationProcessFinished()) {
               return respondWithInstrumentationProcessFinished(
@@ -133,12 +127,6 @@ public class ProxyToDeviceHandler extends BaseSelendroidStandaloneHandler {
         }
       });
     } catch (TimeoutException e) {
-      // Check for regular app crashes first
-      String crashLog = device.getCrashLog();
-      if (!crashLog.isEmpty()) {
-        return respondWithFailure(sessionId, new AppCrashedException(crashLog));
-      }
-
       // Check if we timed out because of the instrumentation process dying
       if (session.instrumentationProcessFinished()) {
         return respondWithInstrumentationProcessFinished(
