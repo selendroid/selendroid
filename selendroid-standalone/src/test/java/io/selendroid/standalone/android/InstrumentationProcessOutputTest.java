@@ -79,12 +79,13 @@ public class InstrumentationProcessOutputTest {
     Assert.assertEquals("Process crashed.", output.getMessage());
 
     AndroidDevice device = mock(DefaultAndroidEmulator.class);
-    when(device.getCrashLog()).thenReturn(null);
+    when(device.getCrashLog()).thenReturn("");
     Throwable error = InstrumentationProcessOutput
       .getInstrumentationProcessError(output, device);
 
     Assert.assertTrue(error instanceof AppCrashedException);
-    Assert.assertTrue(error.getMessage().contains(""));
+    Assert.assertTrue(error.getMessage().contains(
+      InstrumentationProcessOutput.CRASH_LOG_TIMEOUT_ERROR_MESSAGE));
   }
 
   @Test
