@@ -1,11 +1,11 @@
 /*
  * Copyright 2012-2014 eBay Software Foundation and selendroid committers.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -28,16 +28,26 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HttpClientUtil {
   private static final Logger log = Logger.getLogger(HttpClientUtil.class.getName());
+  private static HttpClient httpClient = null;
 
   public static HttpClient getHttpClient() {
-    return new DefaultHttpClient();
+    if (httpClient == null) {
+      synchronized (HttpClientUtil.class) {
+        httpClient = HttpClients.custom()
+          .setConnectionManager(new PoolingHttpClientConnectionManager())
+          .build();
+      }
+    }
+
+    return httpClient;
   }
 
   public static HttpResponse executeRequestWithPayload(String uri, int port, HttpMethod method,
