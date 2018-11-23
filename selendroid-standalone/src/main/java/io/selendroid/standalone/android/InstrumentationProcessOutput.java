@@ -42,12 +42,15 @@ public class InstrumentationProcessOutput {
     "INSTRUMENTATION_STATUS: Error=(.+)";
 
   private static final long CRASH_LOG_TIMEOUT_MS = 2000;
+  public static final String CRASH_LOG_TIMEOUT_ERROR_MESSAGE =
+    "Failed to get stacktrace, see Logcat for more details";
 
   public static final String INSTRUMENTATION_PROCESS_FAILED_ERROR_MESSAGE =
     "Instrumentation process failed";
   public static final String APP_NOT_INSTALLED_ERROR_MESSAGE =
     "Could not start the app under test using instrumentation. " +
     "Is the correct app under test installed? Read the details below";
+
 
   public static InstrumentationProcessOutput parse(String output) {
     Matcher shortMessageMatcher =
@@ -154,24 +157,6 @@ public class InstrumentationProcessOutput {
   public static final SelendroidException getInstrumentationProcessError(
     InstrumentationProcessOutput instrumentationOutput,
     final AndroidDevice device) {
-    if (!instrumentationOutput.isAppCrash()) {
-      if (instrumentationOutput
-          .getMessage()
-          .contains("Unable to find instrumentation target package")) {
-        return new SelendroidException(
-          APP_NOT_INSTALLED_ERROR_MESSAGE +
-          ":\n" +
-          instrumentationOutput.getFullOutput());
-      }
-
-      return new SelendroidException(
-        INSTRUMENTATION_PROCESS_FAILED_ERROR_MESSAGE +
-        ": " +
-        instrumentationOutput.getMessage() +
-        "\nSee full output for more details:\n" +
-        instrumentationOutput.getFullOutput());
-    }
-
     if (instrumentationOutput.isNativeCrash()) {
       return new AppCrashedException(
         INSTRUMENTATION_PROCESS_FAILED_ERROR_MESSAGE +
@@ -180,10 +165,44 @@ public class InstrumentationProcessOutput {
         "\nSee logcat for more details");
     }
 
-    // In case of an app crash, the instrumentation process can be terminated
-    // before we actually have the crash logs, so we have to wait until we do
+    if (instrumentationOutput.isRegularAppCrash()) {
+      // There's a race condition between the instrumentation process
+      // terminating and the crash logs being written on the device
+      // so we wait a certain time in order to be able to provide a stacktrace
+      // for the crash
+      String errorMessage = waitForCrashLog(device);
+      if (errorMessage == null) {
+        errorMessage = INSTRUMENTATION_PROCESS_FAILED_ERROR_MESSAGE +
+          ": " +
+          instrumentationOutput.getMessage() + "\n" +
+          CRASH_LOG_TIMEOUT_ERROR_MESSAGE;
+      }
+
+      return new AppCrashedException(errorMessage);
+    }
+
+    // Special case for when the app under test is not installed
+    if (instrumentationOutput
+        .getMessage()
+        .contains("Unable to find instrumentation target package")) {
+      return new SelendroidException(
+        APP_NOT_INSTALLED_ERROR_MESSAGE +
+        ":\n" +
+        instrumentationOutput.getFullOutput());
+    }
+
+    return new SelendroidException(
+      INSTRUMENTATION_PROCESS_FAILED_ERROR_MESSAGE +
+      ": " +
+      instrumentationOutput.getMessage() +
+      "\nSee full output for more details:\n" +
+      instrumentationOutput.getFullOutput());
+
+  }
+
+  private static String waitForCrashLog(final AndroidDevice device) {
     try {
-      String crashLogs = (new FluentWait<AndroidDevice>(device))
+      return (new FluentWait<AndroidDevice>(device))
         .withTimeout(
           CRASH_LOG_TIMEOUT_MS,
           TimeUnit.MILLISECONDS)
@@ -191,18 +210,14 @@ public class InstrumentationProcessOutput {
           new Function<AndroidDevice, String>() {
             @Override
             public String apply(AndroidDevice device) {
-              return device.getCrashLog();
+              // getCrashLog is not nullable
+              String crashLog = device.getCrashLog();
+              return crashLog.isEmpty() ? null : crashLog;
             }
           }
         );
-
-      return new AppCrashedException(crashLogs);
     } catch (TimeoutException e) {
-      return new AppCrashedException(
-        INSTRUMENTATION_PROCESS_FAILED_ERROR_MESSAGE +
-        ": " +
-        instrumentationOutput.getMessage() +
-        "\nSee logcat for more details");
+      return null;
     }
   }
 }

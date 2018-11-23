@@ -19,6 +19,7 @@ import io.selendroid.standalone.android.AndroidDevice;
 import io.selendroid.standalone.android.InstrumentationProcessListener;
 
 import java.util.Timer;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ActiveSession {
   private final String sessionId;
@@ -29,7 +30,7 @@ public class ActiveSession {
   private boolean invalid = false;
   private final Timer stopSessionTimer = new Timer(true);
 
-  private boolean instrumentationProcessFinished = false;
+  private AtomicBoolean instrumentationProcessFinished = new AtomicBoolean(false);
   private Exception instrumentationProcessError;
   private String instrumentationProcessOutput;
 
@@ -46,7 +47,7 @@ public class ActiveSession {
       new InstrumentationProcessListener() {
         @Override
         public void onInstrumentationProcessComplete(String output) {
-          instrumentationProcessFinished = true;
+          instrumentationProcessFinished.set(true);
           instrumentationProcessOutput = output;
           instrumentationProcessError = null;
         }
@@ -55,7 +56,7 @@ public class ActiveSession {
         public void onInstrumentationProcessFailed(
           String output,
           Exception error) {
-          instrumentationProcessFinished = true;
+          instrumentationProcessFinished.set(true);
           instrumentationProcessOutput = output;
           instrumentationProcessError = error;
         }
@@ -118,7 +119,7 @@ public class ActiveSession {
   }
 
   public boolean instrumentationProcessFinished() {
-    return instrumentationProcessFinished;
+    return instrumentationProcessFinished.get();
   }
 
   public String getInstrumentationProcessOutput() {
