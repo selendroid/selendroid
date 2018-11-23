@@ -191,7 +191,9 @@ public class InstrumentationProcessOutput {
           new Function<AndroidDevice, String>() {
             @Override
             public String apply(AndroidDevice device) {
-              return device.getCrashLog();
+              // getCrashLog is not nullable
+              String crashLog = device.getCrashLog();
+              return crashLog.isEmpty() ? null : crashLog;
             }
           }
         );

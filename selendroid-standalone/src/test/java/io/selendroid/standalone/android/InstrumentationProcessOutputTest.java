@@ -84,7 +84,7 @@ public class InstrumentationProcessOutputTest {
       .getInstrumentationProcessError(output, device);
 
     Assert.assertTrue(error instanceof AppCrashedException);
-    Assert.assertTrue(error.getMessage().contains(output.getMessage()));
+    Assert.assertTrue(error.getMessage().contains(""));
   }
 
   @Test
