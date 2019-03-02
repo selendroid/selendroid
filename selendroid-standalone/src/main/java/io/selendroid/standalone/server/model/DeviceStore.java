@@ -330,11 +330,17 @@ public class DeviceStore {
     return new Predicate<AndroidDevice>() {
       @Override
       public boolean apply(AndroidDevice candidate) {
+        // serial uniquely identifies a device, so we should immediately succeed
+        // if we find a match
+        String requestedSerial = capabilities.getSerial();
+        if (StringUtils.isNotBlank(requestedSerial)) {
+          return requestedSerial.equals(candidate.getSerial());
+        }
+
         ArrayList<Boolean> booleanExpressions = Lists.newArrayList(
             candidate.screenSizeMatches(capabilities.getScreenSize()),
             capabilities.getEmulator() == null ? true : capabilities.getEmulator() ?
                 candidate instanceof DefaultAndroidEmulator : candidate instanceof DefaultHardwareDevice,
-            StringUtils.isNotBlank(capabilities.getSerial()) ? capabilities.getSerial().equals(candidate.getSerial()) : true,
             StringUtils.isNotBlank(capabilities.getModel()) ? candidate.getModel().contains(capabilities.getModel()) : true,
             StringUtils.isNotBlank(capabilities.getAPITargetType()) ? candidate.getAPITargetType() != null
                 && candidate.getAPITargetType().contains(capabilities.getAPITargetType()) : true
