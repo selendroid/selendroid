@@ -109,6 +109,10 @@ public class AndroidSdk {
     String androidHome =  System.getenv(ANDROID_HOME);
 
     if (androidHome == null) {
+      androidHome = System.getProperty(ANDROID_HOME);
+    }
+
+    if (androidHome == null) {
       throw new SelendroidException("Environment variable '" + ANDROID_HOME + "' was not found!");
     }
     return androidHome;
