@@ -20,11 +20,9 @@ import io.selendroid.standalone.log.LogLevelEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.openqa.selenium.support.ui.FluentWait;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class SelendroidConfiguration {
 
@@ -165,7 +163,7 @@ public class SelendroidConfiguration {
 
   @Parameter(description = "Time in milliseconds to wait between attempts to check if the selendroid-server has come up on the device.",
       names = "-serverStartPollingInterval")
-  private long serverStartPollingInterval = FluentWait.FIVE_HUNDRED_MILLIS.in(TimeUnit.MILLISECONDS);
+  private long serverStartPollingInterval = 1500;
 
   @Parameter(names = {"-h", "--help"}, description = "Prints usage instructions to the terminal")
   private boolean printHelp = false;
