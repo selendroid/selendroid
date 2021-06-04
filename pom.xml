@@ -21,7 +21,7 @@
 		<platform.version>2.3.3</platform.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<selenium.version>2.48.0</selenium.version>
-		<apache-httpclient.version>4.3.4</apache-httpclient.version>
+		<apache-httpclient.version>4.5.13</apache-httpclient.version>
 	</properties>
 	<url>http://selendroid.io</url>
 
