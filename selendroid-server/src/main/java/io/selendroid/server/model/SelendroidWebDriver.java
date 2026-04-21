@@ -236,7 +236,16 @@ public class SelendroidWebDriver {
         // switch back to NATIVE_APP and then to the webview again, this will allow
         // selendroid to wrap the 'new' chromeClient set by the AUT.
         webview.setWebChromeClient(chromeClient);
-        webview.loadUrl("javascript:" + script);
+        // Issue #970: pages with strict Content-Security-Policy (e.g. Cordova
+        // apps shipping `default-src 'self'`) reject loadUrl("javascript:...")
+        // as an `unsafe-eval` violation. WebView.evaluateJavascript is a
+        // separate native bridge and is not subject to the page's CSP, so it
+        // works on those pages. Fall back to the legacy path on pre-KitKat.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+          webview.evaluateJavascript(script, null);
+        } else {
+          webview.loadUrl("javascript:" + script);
+        }
       }
     });
     long timeout = System.currentTimeMillis() + scriptTimeout;
