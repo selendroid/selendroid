@@ -61,6 +61,12 @@ public class SelendroidConfiguration {
       names = {"-reuseSelendroidServerPort"})
   private boolean reuseSelendroidServerPort = false;
 
+  @Parameter(
+      description = "comma-separated list of additional ports the standalone server may use "
+          + "to host extra instrumentation servers in parallel. See issue #106 for context.",
+      names = {"-additionalSelendroidServerPorts"})
+  private String additionalSelendroidServerPortsRaw = "";
+
   @Parameter(description = "The file of the keystore to be used", names = {"-keystore"})
   private String keystore = null;
 
@@ -238,6 +244,41 @@ public class SelendroidConfiguration {
 
   public int getSelendroidServerPort() {
     return selendroidServerPort;
+  }
+
+  /**
+   * Parsed view of the comma-separated -additionalSelendroidServerPorts value.
+   *
+   * @return the list of additional ports declared on the command line, or an
+   *         empty list when none were provided. Tokens that are not valid
+   *         positive integers are silently skipped so a typo in the option
+   *         does not crash standalone startup.
+   */
+  public List<Integer> getAdditionalSelendroidServerPorts() {
+    final List<Integer> parsed = new ArrayList<Integer>();
+    if (additionalSelendroidServerPortsRaw == null
+        || additionalSelendroidServerPortsRaw.trim().isEmpty()) {
+      return parsed;
+    }
+    for (final String token : additionalSelendroidServerPortsRaw.split(",")) {
+      final String trimmed = token.trim();
+      if (trimmed.isEmpty()) {
+        continue;
+      }
+      try {
+        final int port = Integer.parseInt(trimmed);
+        if (port > 0 && port < 65536 && port != selendroidServerPort) {
+          parsed.add(port);
+        }
+      } catch (NumberFormatException ignored) {
+        // Silently skip malformed tokens, see javadoc above.
+      }
+    }
+    return parsed;
+  }
+
+  public void setAdditionalSelendroidServerPortsRaw(String value) {
+    this.additionalSelendroidServerPortsRaw = value;
   }
 
   public void addSupportedApp(String appAbsolutPath) {
