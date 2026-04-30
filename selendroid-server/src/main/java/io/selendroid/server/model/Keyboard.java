@@ -19,7 +19,32 @@ package io.selendroid.server.model;
 /**
  * Interface representing basic keyboard operations.
  *
+ * <h2>Known platform quirks</h2>
+ * <ul>
+ *   <li><b>Android 4.0 WebView (issue #267).</b> Sending characters to a
+ *       WebView text input on Android 4.0 (API 14 to 15) yields an
+ *       all-uppercase result because the system WebView leaks the SHIFT
+ *       meta state between consecutive synthesized {@code KeyEvent}s. The
+ *       behaviour does not appear on Android 2.3, 4.2 or 4.3. The bundled
+ *       {@code InstrumentedKeySender} works around the bug by sending one
+ *       character at a time and injecting an explicit {@code SHIFT_LEFT}
+ *       {@code ACTION_UP} with a zeroed meta state between characters on
+ *       API 14 and 15 only; other platforms keep the original batched
+ *       fast path. {@code adb shell input text} via the
+ *       {@code AdbSendText} handler in selendroid-standalone remains a
+ *       valid alternative for tests that prefer to bypass the WebView
+ *       input pipeline entirely.</li>
+ * </ul>
  */
 public interface Keyboard {
+  /**
+   * Type the given key sequence into the focused element.
+   *
+   * @param keysToSend characters to type, in order. Implementations are
+   *                   expected to clear any previously latched modifier
+   *                   meta state (SHIFT, ALT, CTRL) between characters so
+   *                   that mixed-case input is preserved. See the class
+   *                   javadoc for the Android 4.0 WebView caveat.
+   */
   void sendKeys(CharSequence... keysToSend);
 }

@@ -17,6 +17,8 @@ package io.selendroid.server.android;
 import io.selendroid.server.common.exceptions.SelendroidException;
 import io.selendroid.server.model.Keyboard;
 import android.app.Instrumentation;
+import android.os.Build;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 import io.selendroid.server.util.SelendroidLogger;
 
@@ -83,6 +85,7 @@ public class InstrumentedKeySender implements KeySender {
         }
         SelendroidLogger.debug("Send keys, sending special key code");
         instrumentation.sendKeyDownUpSync(keyCode);
+        clearLatchedShiftOnAndroid40();
         currentIndex++;
       } else {
         // There is at least one "normal" character, that is a character
@@ -91,10 +94,47 @@ public class InstrumentedKeySender implements KeySender {
         // as possible in a single String.
         int nextSpecialKey = indexOfSpecialKey(text, currentIndex);
         SelendroidLogger.debug("Send keys, sending string");
-        instrumentation.sendStringSync(text.subSequence(currentIndex, nextSpecialKey).toString());
+        // Issue #267: on Android 4.0 (API 14-15) the system WebView leaks the
+        // SHIFT meta state between successive synthesized KeyEvents, turning
+        // mixed-case input into all-caps. Sending each character via its own
+        // sendStringSync() call, followed by an explicit SHIFT clear, lets us
+        // reset the latched modifier between characters on the affected
+        // platforms while keeping the original batched fast path everywhere
+        // else.
+        if (isAndroid40()) {
+          String chunk = text.subSequence(currentIndex, nextSpecialKey).toString();
+          for (int i = 0; i < chunk.length(); i++) {
+            instrumentation.sendStringSync(String.valueOf(chunk.charAt(i)));
+            clearLatchedShiftOnAndroid40();
+          }
+        } else {
+          instrumentation.sendStringSync(text.subSequence(currentIndex, nextSpecialKey).toString());
+        }
         currentIndex = nextSpecialKey;
       }
     }
+  }
+
+  private static boolean isAndroid40() {
+    return Build.VERSION.SDK_INT == Build.VERSION_CODES.ICE_CREAM_SANDWICH
+        || Build.VERSION.SDK_INT == Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1;
+  }
+
+  /**
+   * Workaround for issue #267. The Android 4.0 WebView fails to clear the SHIFT
+   * meta state after a synthesized KeyEvent, so subsequent characters are typed
+   * in upper case. Injecting an explicit SHIFT_LEFT ACTION_UP with a zeroed
+   * meta state forces the WebView's input connection to drop any latched SHIFT
+   * before the next character arrives. This is a no-op on every other API
+   * level.
+   */
+  private void clearLatchedShiftOnAndroid40() {
+    if (!isAndroid40()) {
+      return;
+    }
+    long eventTime = SystemClock.uptimeMillis();
+    instrumentation.sendKeySync(new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_UP,
+        KeyEvent.KEYCODE_SHIFT_LEFT, 0, 0));
   }
 
   private class KeyboardImpl implements Keyboard {
